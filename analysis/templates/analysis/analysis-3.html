@@ -6,8 +6,8 @@
       <th scope="col">HGVS</th>
       <th scope="col">VAF</th>
       <th scope="col">This run</th>
-      <th scope="col">Previous</th>
-      <th scope="col">Conclusion</th>
+      <th scope="col">Previous runs</th>
+      <th scope="col">IGV</th>
       <th><span class="fa fa-comment-alt"></span></th>
       <th scope="col">Action</th>
     </tr>
@@ -30,7 +30,13 @@
         21 of 100 reads
       </td>
       <td>0 of 29 samples<br>Not in NTC</td>
-      <td>Artefact <button type="button" class="btn btn-light">20</button></td>
+      <td>
+        Artefact
+        <button type="button" class="btn btn-light" data-toggle="modal" data-target="#counts-modal">
+          20
+          <span class="fa fa-search"></span>
+        </button>
+      </td>
       <td>
         1: Artefact<br>
         2: Genuine<br>
@@ -87,3 +93,55 @@
 
   </tbody>
 </table>
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="counts-modal" tabindex="-1" role="dialog" aria-labelledby="counts-modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="counts-modalLabel">1:12345A>G</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <div class="btn-toolbar col-12" role="toolbar" aria-label="Toolbar with button groups">
+          <div class="btn-group col-6" role="group" aria-label="First group">
+            <button type="button" class="btn btn-info">This referral</button>
+            <button type="button" class="btn btn-light">All referrals</button>
+          </div>
+          <div class="input-group col-6">
+            <input type="text" class="form-control" placeholder="Search" aria-label="Search">
+          </div>
+        </div>
+
+        <br>
+
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th scope="col">Sample ID</th>
+              <th scope="col">Run ID</th>
+              <th scope="col">Panel</th>
+              <th scope="col">Classification</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>...</td>
+              <td>...</td>
+              <td>...</td>
+              <td>...</td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -2,59 +2,78 @@
 {% load static %}
 {% block content %}
 
+<nav class="breadcrumb flex-nowrap" aria-label="breadcrumb">
   <div class="container">
-
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th scope="col">Sample</th>
-          <th scope="col">Referral</th>
-          <th scope="col">Worksheet</th>
-          <th scope="col">Run ID</th>
-          <th scope="col">Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        
-        <tr>
-          <td>Bob</td>
-          <td>Colorectal</td>
-          <td>21-12345</td>
-          <td>210418_NB12142_212_ADSRV45G4SD</td>
-          <td>Second IGV check</td>
-        </tr>
-  
-      </tbody>
-    </table>
+    <a class="breadcrumb-item" href="#"><span class="fa fa-home"></span></a>
+    <a class="breadcrumb-item" href="#">21-123</a>
+    <a class="breadcrumb-item active" aria-current="page">21M12345</a>
   </div>
+</nav>
+<br>
 
-  <br>
+<div class="container">
 
-  <div class="container-fluid">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th scope="col">Sample</th>
+        <th scope="col">Referral</th>
+        <th scope="col">Worksheet</th>
+        <th scope="col">Run ID</th>
+        <th scope="col">Status</th>
+        <th scope="col">Assigned to</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      <tr>
+        <td>21M12345</td>
+        <td>Colorectal</td>
+        <td>21-12345</td>
+        <td>210418_NB12142_212_ADSRV45G4SD</td>
+        <td>Second IGV check</td>
+        <td>EW</td>
+      </tr>
 
-    <ul class="nav nav-tabs nav-justified">
-      <li class="nav-item">
-        <a class="nav-link section-button active" href="#section1" data-target="section1">Patient details</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link section-button" href="#section2" data-target="section2">Depth</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link section-button" href="#section3" data-target="section3">Variant calls</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link section-button" href="#section4" data-target="section4">Report</a>
-      </li>
-    </ul>
-  </div>
-  <br>
+    </tbody>
+  </table>
+</div>
+
+<br>
+
+<div class="container-fluid">
+
+  <ul class="nav nav-tabs nav-justified">
+    <li class="nav-item">
+      <a class="nav-link section-button active" href="#details" data-target="details">Patient details</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link section-button" href="#depth" data-target="depth">Depth</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link section-button" href="#snvs" data-target="snvs">SNVs & indels</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link section-button" href="#cnvs" data-target="cnvs">CNVs</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link section-button" href="#fusions" data-target="fusions">Fusions</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link section-button" href="#report" data-target="report">Report</a>
+    </li>
+  </ul>
+</div>
+<br>
 
 
-  <!-- load in each section from template -->
-  <div class="container" id="section1">{% include 'analysis/analysis-1.html' %}</div>
-  <div class="container-fluid" id="section2">{% include 'analysis/analysis-2.html' %}</div>
-  <div class="container-fluid" id="section3">{% include 'analysis/analysis-3.html' %}</div>
-  <div class="container" id="section4">{% include 'analysis/analysis-4.html' %}</div>
+<!-- load in each section from template -->
+<div class="container" id="details">{% include 'analysis/analysis-1.html' %}</div>
+<div class="container-fluid" id="depth">{% include 'analysis/analysis-2.html' %}</div>
+<div class="container-fluid" id="snvs">{% include 'analysis/analysis-3.html' %}</div>
+<div class="container-fluid" id="cnvs"><h5>CNVs</h5></div>
+<div class="container-fluid" id="fusions"><h5>Fusions</h5></div>
+<div class="container" id="report">{% include 'analysis/analysis-4.html' %}</div>
 
 
 
@@ -103,7 +122,7 @@
     if ( sections_list.includes(window.location.hash)) {
         show_section(window.location.hash, sections_list);
     } else {
-        $("#section1").fadeIn(200)
+        $("#details").fadeIn(200)
     };
 
 
