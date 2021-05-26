@@ -76,10 +76,19 @@ WSGI_APPLICATION = 'somatic_variant_db.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+DB_PASSWORD_FILE = 'password.txt'
+with open(DB_PASSWORD_FILE) as f:
+    db_password = f.readline().strip()
+
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'somatic_variant_db',
+        'USER': 'somatic_variant_db_user',
+        'PASSWORD': db_password,
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
