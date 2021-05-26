@@ -69,6 +69,7 @@ def view_samples(request, worksheet_id):
     """
     context = dummy_dicts.view_samples_dict
     context['search_form'] = SearchForm()
+
     return render(request, 'analysis/view_samples.html', context)
 
 

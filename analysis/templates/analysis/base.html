@@ -78,12 +78,12 @@
             <span class="navbar-text">{{request.user}}</span>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+            <a class="nav-link" href="{% url 'logout' %}">logout</a>
           </li>
 
           {% else %}
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'login' %}">Login</a>
+            <a class="nav-link" href="{% url 'login' %}">login</a>
           </li>
 
           {% endif %}
@@ -91,7 +91,19 @@
       </div>
     </nav>
 
+
+    <!-- insert breadcrumb section from child template -->
+    {% block breadcrumbs %}
+    <nav class="breadcrumb flex-nowrap" aria-label="breadcrumb">
+      <div class="container">
+        <a class="breadcrumb-item active" href="{% url 'home' %}" aria-current="page"><span class="fa fa-home"></span></a>
+      </div>
+    </nav>
+    {% endblock %}
+
+
     <!-- display success/ warnings -->
+    <div class="container-fluid">
     {% if success %}
       {% for s in success %}
       <div class="alert alert-success alert-dismissible">
@@ -109,8 +121,8 @@
       </div>
       {% endfor %}
     {% endif %}
+    </div>
 
-    
     <!-- Block -->
     {% block content %}
     {% endblock %}

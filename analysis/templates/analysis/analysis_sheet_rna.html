@@ -1,17 +1,20 @@
 {% extends 'analysis/base.html' %}
 {% load crispy_forms_tags %}
-{% block content %}
 
 
+{% block breadcrumbs %}
 <nav class="breadcrumb flex-nowrap" aria-label="breadcrumb">
   <div class="container">
-    <a class="breadcrumb-item" href="{% url 'view_worksheets' %}"><span class="fa fa-home"></span></a>
-    <a class="breadcrumb-item" href="{% url 'view_samples' sample_data.worksheet_id %}">{{ sample_data.worksheet_id }}</a>
+    <a class="breadcrumb-item active" href="{% url 'home' %}"><span class="fa fa-home"></span></a>
+    <a class="breadcrumb-item active" href="{% url 'view_worksheets' %}" aria-current="page">Worksheets</a>
+    <a class="breadcrumb-item active" href="{% url 'view_samples' sample_data.worksheet_id %}">{{ sample_data.worksheet_id }}</a>
     <a class="breadcrumb-item active" aria-current="page">{{ sample_data.sample_id }}</a>
   </div>
 </nav>
-<br>
+{% endblock %}
 
+
+{% block content %}
 <div class="container">
 
   <table class="table table-bordered">
