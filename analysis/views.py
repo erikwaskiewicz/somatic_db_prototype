@@ -42,6 +42,16 @@ def analysis_sheet(request, dna_or_rna, sample_id):
     context = dummy_dicts.analysis_sheet_dict
     context['new_variant_form'] = NewVariantForm()
 
+    if request.method == 'POST':
+
+        if 'hgvs_g' in request.POST:
+            new_variant_form = NewVariantForm(request.POST)
+
+            if new_variant_form.is_valid():
+                # TODO need to program function & make more robust
+                print(new_variant_form.cleaned_data)
+
+
     # DNA workflow
     if dna_or_rna == 'DNA':
         return render(request, 'analysis/analysis_sheet_dna.html', context)
