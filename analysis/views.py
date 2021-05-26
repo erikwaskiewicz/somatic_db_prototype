@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import Http404
 
-from .forms import SearchForm
+from .forms import SearchForm, NewVariantForm
 from .test_data import dummy_dicts
 
 
@@ -40,6 +40,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
     """
     # load in dummy data
     context = dummy_dicts.analysis_sheet_dict
+    context['new_variant_form'] = NewVariantForm()
 
     # DNA workflow
     if dna_or_rna == 'DNA':

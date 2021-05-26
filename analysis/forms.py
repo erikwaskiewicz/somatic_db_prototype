@@ -1,6 +1,6 @@
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout
+from crispy_forms.layout import Layout, Submit
 from crispy_forms.bootstrap import Field, FieldWithButtons, StrictButton
 
 
@@ -29,4 +29,20 @@ class SearchForm(forms.Form):
                     name='home-search-form'
                 )
             )
+        )
+
+
+class NewVariantForm(forms.Form):
+    """
+    """
+    hgvs_g = forms.CharField()
+    hgvs_p = forms.CharField()
+
+    def __init__(self, *args, **kwargs):
+        super(NewVariantForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'new-variant-form'
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Submit', css_class='btn btn-info w-25')
         )
