@@ -4,9 +4,9 @@
 
 <nav class="breadcrumb flex-nowrap" aria-label="breadcrumb">
   <div class="container">
-    <a class="breadcrumb-item" href="#"><span class="fa fa-home"></span></a>
-    <a class="breadcrumb-item" href="#">21-123</a>
-    <a class="breadcrumb-item active" aria-current="page">21M12345</a>
+    <a class="breadcrumb-item" href="{% url 'view_worksheets' %}"><span class="fa fa-home"></span></a>
+    <a class="breadcrumb-item" href="{% url 'view_samples' sample_data.worksheet_id %}">{{ sample_data.worksheet_id }}</a>
+    <a class="breadcrumb-item active" aria-current="page">{{ sample_data.sample_id }}</a>
   </div>
 </nav>
 <br>
@@ -27,12 +27,12 @@
     <tbody>
       
       <tr>
-        <td>21M12345</td>
-        <td>Colorectal</td>
-        <td>21-12345</td>
-        <td>210418_NB12142_212_ADSRV45G4SD</td>
-        <td>Second IGV check</td>
-        <td>EW</td>
+        <td>{{ sample_data.sample_id }}</td>
+        <td>{{ sample_data.panel }}</td>
+        <td>{{ sample_data.worksheet_id }}</td>
+        <td>{{ sample_data.run_id }}</td>
+        <td>{{ sample_data.status }}</td>
+        <td>{{ sample_data.assigned_to }}</td>
       </tr>
 
     </tbody>
@@ -51,13 +51,7 @@
       <a class="nav-link section-button" href="#depth" data-target="depth">Depth</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link section-button" href="#snvs" data-target="snvs">SNVs & indels</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link section-button" href="#cnvs" data-target="cnvs">CNVs</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link section-button" href="#fusions" data-target="fusions">Fusions</a>
+      <a class="nav-link section-button" href="#rna" data-target="rna">RNA</a>
     </li>
     <li class="nav-item">
       <a class="nav-link section-button" href="#report" data-target="report">Report</a>
@@ -68,12 +62,10 @@
 
 
 <!-- load in each section from template -->
-<div class="container" id="details">{% include 'analysis/analysis-1.html' %}</div>
-<div class="container-fluid" id="depth">{% include 'analysis/analysis-2.html' %}</div>
-<div class="container-fluid" id="snvs">{% include 'analysis/analysis-3.html' %}</div>
-<div class="container-fluid" id="cnvs"><h5>CNVs</h5></div>
-<div class="container-fluid" id="fusions"><h5>Fusions</h5></div>
-<div class="container" id="report">{% include 'analysis/analysis-4.html' %}</div>
+<div class="container" id="details">{% include 'analysis/analysis-info.html' %}</div>
+<div class="container-fluid" id="depth">{% include 'analysis/analysis-depth.html' %}</div>
+<div class="container-fluid" id="rna">{% include 'analysis/analysis-rna.html' %}</div>
+<div class="container" id="report">{% include 'analysis/analysis-report.html' %}</div>
 
 
 

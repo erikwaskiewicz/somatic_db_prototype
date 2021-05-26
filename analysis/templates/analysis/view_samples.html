@@ -1,0 +1,82 @@
+{% extends 'analysis/base.html' %}
+{% load static %}
+{% block content %}
+
+
+<nav class="breadcrumb flex-nowrap" aria-label="breadcrumb">
+    <div class="container">
+      <a class="breadcrumb-item" href="{% url 'view_worksheets' %}"><span class="fa fa-home"></span></a>
+      <a class="breadcrumb-item active" aria-current="page">{{ worksheet }}</a>
+    </div>
+  </nav>
+  <br>
+
+<div class="container">
+  <h5>Samples {{ worksheet }}</h5>
+  <br>
+  <p>TODO search form</p>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Sample ID</th>
+        <th scope="col">DNA/ RNA</th>
+        <th scope="col">Panel</th>
+        <th scope="col">Status</th>
+        <th scope="col">Assigned to</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in samples %}
+        {% for analysis in s.panels %}
+        <tr>
+          <td>{{ s.sample_id }}</td>
+          <td>
+            <button type="button btn-block" 
+              {% if s.dna_rna == 'DNA' %}
+                class="btn btn-info">
+              {% elif s.dna_rna == 'RNA' %}
+                class="btn btn-warning">
+              {% else %}
+                class="btn btn-light">
+              {% endif %}
+            {{ s.dna_rna }}</button>
+          </td>
+          <td>{{ analysis.panel }}</td>
+          <td>{{ analysis.status }}</td>
+          <td>{{ analysis.assigned_to }}</td>
+          <td style="text-align:right">
+            {% if analysis.assigned_to == 'Unassigned' %}
+              <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' s.dna_rna s.sample_id %}" role="button">Assign to me</a>
+            
+            {% elif analysis.status == 'Complete' %}
+            <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' s.dna_rna s.sample_id %}" role="button">View</a>
+            
+            {% else %}
+            <div class="btn-group btn-block">
+              <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' s.dna_rna s.sample_id %}" role="button">
+                Analyse
+              </a>
+              <button type="button btn-block" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="#">Reassign</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Change analysis</a>
+              </div>
+            </div>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
+  <br>
+  <br>
+
+</div>
+
+{% endblock %}

@@ -4,11 +4,11 @@
   <tbody>
     <tr>
       <td class="col-4"><b>Patient ID</b></td>
-      <td class="col-8">...</td>
+      <td class="col-8">{{ sample_data.sample_id }}</td>
     </tr>
     <tr>
       <td><b>Worksheet</b></td>
-      <td>...</td>
+      <td>{{ sample_data.worksheet_id }}</td>
     </tr><tr>
       <td><b>TAT</b></td>
       <td>...</td>
@@ -37,14 +37,10 @@
       <td><b>First ??interpretation</b></td>
       <td>...</td>
     </tr>
-    <tr>
-      <td><b>Second ??interpretation</b></td>
-      <td>...</td>
-    </tr>
   </tbody>
 </table>
 
-<button type="button" class="btn btn-light" data-toggle="modal" data-target="#audit-modal">View full audit trail</button>
+<button type="button" class="btn btn-light" data-toggle="modal" data-target="#audit-modal">View full sample audit trail</button>
 
 <!-- Modal -->
 <div class="modal fade" id="audit-modal" tabindex="-1" role="dialog" aria-labelledby="audit-modalLabel" aria-hidden="true">

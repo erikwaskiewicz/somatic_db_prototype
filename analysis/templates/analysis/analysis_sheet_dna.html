@@ -1,0 +1,131 @@
+{% extends 'analysis/base.html' %}
+{% load static %}
+{% block content %}
+
+<nav class="breadcrumb flex-nowrap" aria-label="breadcrumb">
+  <div class="container">
+    <a class="breadcrumb-item" href="{% url 'view_worksheets' %}"><span class="fa fa-home"></span></a>
+    <a class="breadcrumb-item" href="{% url 'view_samples' sample_data.worksheet_id %}">{{ sample_data.worksheet_id }}</a>
+    <a class="breadcrumb-item active" aria-current="page">{{ sample_data.sample_id }}</a>
+  </div>
+</nav>
+<br>
+
+<div class="container">
+
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th scope="col">Sample</th>
+        <th scope="col">Referral</th>
+        <th scope="col">Worksheet</th>
+        <th scope="col">Run ID</th>
+        <th scope="col">Status</th>
+        <th scope="col">Assigned to</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      <tr>
+        <td>{{ sample_data.sample_id }}</td>
+        <td>{{ sample_data.panel }}</td>
+        <td>{{ sample_data.worksheet_id }}</td>
+        <td>{{ sample_data.run_id }}</td>
+        <td>{{ sample_data.status }}</td>
+        <td>{{ sample_data.assigned_to }}</td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>
+
+<br>
+
+<div class="container-fluid">
+
+  <ul class="nav nav-tabs nav-justified">
+    <li class="nav-item">
+      <a class="nav-link section-button active" href="#details" data-target="details">Patient details</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link section-button" href="#depth" data-target="depth">Depth</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link section-button" href="#snvs" data-target="snvs">SNVs & indels</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link section-button" href="#report" data-target="report">Report</a>
+    </li>
+  </ul>
+</div>
+<br>
+
+
+<!-- load in each section from template -->
+<div class="container" id="details">{% include 'analysis/analysis-info.html' %}</div>
+<div class="container-fluid" id="depth">{% include 'analysis/analysis-depth.html' %}</div>
+<div class="container-fluid" id="snvs">{% include 'analysis/analysis-snvs.html' %}</div>
+<div class="container" id="report">{% include 'analysis/analysis-report.html' %}</div>
+
+
+
+<!--------------------------------------------------------------------------------------- 
+    Javascript
+---------------------------------------------------------------------------------------->
+<script>
+
+    // function to clear all sections
+    function clear_sections(sections) {
+        var i;
+        for (i=0; i<sections.length; i++) {
+            $(sections[i]).hide();
+        };
+    };
+
+
+    // function to show specific section
+    function show_section(target, sections) {
+        // clear all sections content
+        clear_sections(sections);
+        // get button for section
+        for (i=0; i<$('.section-button').length; i++) {
+            var temp = '#' + $('.section-button')[i].dataset.target;
+            if ( target == temp ) {
+                var section_button = $('.section-button')[i];
+            };
+        };
+        // clear active class from all, then add to current button
+        $('.section-button').removeClass('active');
+        $(section_button).addClass('active');
+        // add section content
+        $(target).fadeIn(200);
+    };
+
+
+    // get a list of section buttons
+    var i; var sections_list = [];
+    for (i=0; i<$('.section-button').length; i++) {
+        sections_list.push('#' + $('.section-button')[i].dataset.target);
+    };
+
+
+    // page loadup - load section after hash otherwise load overview
+    clear_sections(sections_list);
+    if ( sections_list.includes(window.location.hash)) {
+        show_section(window.location.hash, sections_list);
+    } else {
+        $("#details").fadeIn(200)
+    };
+
+
+    // handler for section button click
+    $('.section-button').click(function() {
+        var target = '#' + $(this).data('target');
+        show_section(target, sections_list);
+    });
+
+</script>
+
+
+
+{% endblock %}

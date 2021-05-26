@@ -7,6 +7,7 @@
       <th scope="col">% at 270X</th>
       <th scope="col">Average NTC coverage</th>
       <th scope="col">% NTC</th>
+      <th scope="col">% COSMIC</th>
       <th><span class="fa fa-comment-alt"></span></th>
       <th></th>
     </tr>
@@ -20,6 +21,7 @@
       <td>{{ v.percent_135x }}</td>
       <td>{{ v.av_ntc_coverage }}</td>
       <td>{{ v.percent_ntc }}</td>
+      <td>{{ v.percent_cosmic }}</td>
       <td>...</td>
       <td>
         <button class="btn btn-light" data-toggle="collapse" href="#collapse-{{ region }}" role="button" aria-expanded="false" aria-controls="collapse-{{ region }}">
@@ -29,10 +31,35 @@
     </tr>
     <tr class="collapse" id="collapse-{{ region }}">
       <td></td>
-      <td colspan="6">
+      <td colspan="7">
 
         <p><b>Regions</b></p>
-        <p>List all exons/hotspots etc</p>
+        <table class="table table-hover table-bordered">
+          <thead>
+            <tr>
+              <th scope="col">Region</th>
+              <th scope="col">Average coverage</th>
+              <th scope="col">% at 135X</th>
+              <th scope="col">% at 270X</th>
+              <th scope="col">Average NTC coverage</th>
+              <th scope="col">% NTC</th>
+              <th scope="col">% COSMIC</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for r in v.regions %}
+            <tr>
+              <td>...</td>
+              <td>...</td>
+              <td>...</td>
+              <td>...</td>
+              <td>...</td>
+              <td>...</td>
+              <td>...</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
         
         <p><b>Gaps</b></p>
         <table class="table table-hover table-bordered">
@@ -43,7 +70,7 @@
               <th scope="col">% at 135X</th>
               <th scope="col">% at 270X</th>
               <th scope="col">Average NTC coverage</th>
-              <th scope="col">COSMIC</th>
+              <th scope="col">% COSMIC</th>
             </tr>
           </thead>
           <tbody>
@@ -59,11 +86,6 @@
           {% endfor %}
           </tbody>
         </table>
-        
-        <p><b>Comments</b></p>
-        <p>No comments</p>
-        <button type="button" class="btn btn-info">Add comment</button>
-
       </td>
       <td></td>
     </tr>
@@ -73,51 +95,6 @@
 
 <br>
 
-
-<!--<div id="accordion">
-
-    {% for region, v in coverage_data.items %}
-
-    <div class="card">
-      <div class="card-header" id="heading-{{ region }}">
-        <h5 class="mb-0">
-          <button class="btn btn-link" data-toggle="collapse" data-target="#coverage-{{ region }}" aria-expanded="true" aria-controls="coverage-{{ region }}">
-            {{ region }}
-          </button>
-        </h5>
-      </div>
-  
-      <div id="coverage-{{ region }}" class="collapse" aria-labelledby="heading-{{ region }}" data-parent="#accordion">
-        <div class="card-body">
-          <table class="table table-sm">
-            <thead>
-              <tr>
-                <th scope="col">Region</th>
-                <th scope="col">Average coverage</th>
-                <th scope="col">% at 135X</th>
-                <th scope="col">% at 270X</th>
-                <th scope="col">Average NTC coverage</th>
-                <th scope="col">% NTC</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for k in v %}
-              <tr>
-                <td>{{ k }}</td>
-                <td>...</td>
-                <td>...</td>
-                <td>...</td>
-                <td>...</td>
-                <td>...</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    {% endfor %}
-
-  </div>-->
+<p><b>Comments</b></p>
+<p>No comments</p>
+<button type="button" class="btn btn-info">Add comment</button>
