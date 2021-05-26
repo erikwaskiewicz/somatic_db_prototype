@@ -1,7 +1,6 @@
 {% extends 'analysis/base.html' %}
-{% load static %}
 {% block content %}
-
+{% load crispy_forms_tags %}
 
 <nav class="breadcrumb flex-nowrap" aria-label="breadcrumb">
     <div class="container">
@@ -14,7 +13,7 @@
 <div class="container">
   <h5>Samples {{ worksheet }}</h5>
   <br>
-  <p>TODO search form</p>
+  {% crispy search_form %}
 
   <table class="table">
     <thead>
