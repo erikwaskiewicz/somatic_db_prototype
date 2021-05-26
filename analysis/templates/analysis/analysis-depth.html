@@ -10,7 +10,6 @@
       <th scope="col">Average NTC coverage</th>
       <th scope="col">% NTC</th>
       <th scope="col">% COSMIC</th>
-      <th><span class="fa fa-comment-alt"></span></th>
       <th></th>
     </tr>
   </thead>
@@ -24,7 +23,6 @@
       <td>{{ v.av_ntc_coverage }}</td>
       <td>{{ v.percent_ntc }}</td>
       <td>{{ v.percent_cosmic }}</td>
-      <td>...</td>
       <td>
         <button class="btn btn-light" data-toggle="collapse" href="#collapse-{{ region }}" role="button" aria-expanded="false" aria-controls="collapse-{{ region }}">
           <span class="fa fa-chevron-down"></span>
@@ -33,7 +31,7 @@
     </tr>
     <tr class="collapse" id="collapse-{{ region }}">
       <td></td>
-      <td colspan="7">
+      <td colspan="6">
 
         <p><b>Regions</b></p>
         <table class="table table-hover table-bordered">
@@ -51,7 +49,7 @@
           <tbody>
           {% for r in v.regions %}
             <tr>
-              <td>...</td>
+              <td>Exon 1 etc...</td>
               <td>...</td>
               <td>...</td>
               <td>...</td>

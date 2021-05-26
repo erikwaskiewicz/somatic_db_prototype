@@ -44,11 +44,21 @@
           {{ forloop.counter }}: {{ check }}<br>
         {% endfor %}
       </td>
-      <td><button type="button" class="btn btn-warning">{{ v.comments | length }}</button></td>
+      <td>
+        <button type="button" data-toggle="modal" data-target="#comments-modal"
+        {% if v.comments %}
+        class="btn btn-warning">
+        {% else %}
+        class="btn btn-light">
+        {% endif %}
+        {{ v.comments | length }}</button>
+      </td>
       <td>
         <select name="variant" id="variant">
           <option value="artefact">Artefact</option>
           <option value="genuine">Genuine</option>
+          <option value="genuine">Miscalled - see below</option>
+          <option value="genuine">etc</option>
         </select>
       </td>
     </tr>
@@ -153,6 +163,44 @@
               <td>...</td>
               <td>...</td>
               <td>...</td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- Comments Modal -->
+<div class="modal fade" id="comments-modal" tabindex="-1" role="dialog" aria-labelledby="comments-modal-label" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="comments-modal-label">Comments</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th scope="col">Comment</th>
+              <th scope="col">User</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Test</td>
+              <td>EW</td>
+            </tr>
+            <tr>
+              <td>Test 2</td>
+              <td>EW</td>
             </tr>
           </tbody>
         </table>

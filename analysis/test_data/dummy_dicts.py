@@ -10,6 +10,12 @@ view_worksheets_dict = {
             'worksheet_id': '21-456',
             'run_id': '210521_A34412_001_dbgwb4q32g34',
             'assay': 'TSO500',
+            'status': '2nd check',
+        },
+        {
+            'worksheet_id': '21-789',
+            'run_id': '210521_A34412_001_dbgwb4q32g34',
+            'assay': 'TSO500',
             'status': 'Complete',
         },
     ],
@@ -18,6 +24,66 @@ view_worksheets_dict = {
 view_samples_dict = {
         'worksheet': '21-123',
         'samples': [
+            {
+                'sample_id': '21M12345',
+                'dna_rna': 'DNA',
+                'panels': [
+                    {
+                        'panel': 'Lung',
+                        'status': '1st check',
+                        'analysis_id': 'TODO - link to specific analysis in database',
+                        'assigned_to': 'Unassigned',
+                    },
+                ],
+            },
+            {
+                'sample_id': '21M54321',
+                'dna_rna': 'RNA',
+                'panels': [
+                    {
+                        'panel': 'Lung',
+                        'status': 'Complete',
+                        'analysis_id': 'TODO - link to specific analysis in database',
+                        'assigned_to': 'N/A',
+                    },
+                    {
+                        'panel': 'Colorectal',
+                        'status': '1st check',
+                        'analysis_id': 'TODO - link to specific analysis in database',
+                        'assigned_to': 'EW',
+                    },
+                ],
+            },
+            {
+                'sample_id': '21M12345',
+                'dna_rna': 'DNA',
+                'panels': [
+                    {
+                        'panel': 'Lung',
+                        'status': '1st check',
+                        'analysis_id': 'TODO - link to specific analysis in database',
+                        'assigned_to': 'Unassigned',
+                    },
+                ],
+            },
+            {
+                'sample_id': '21M54321',
+                'dna_rna': 'RNA',
+                'panels': [
+                    {
+                        'panel': 'Lung',
+                        'status': 'Complete',
+                        'analysis_id': 'TODO - link to specific analysis in database',
+                        'assigned_to': 'N/A',
+                    },
+                    {
+                        'panel': 'Colorectal',
+                        'status': '1st check',
+                        'analysis_id': 'TODO - link to specific analysis in database',
+                        'assigned_to': 'EW',
+                    },
+                ],
+            },
             {
                 'sample_id': '21M12345',
                 'dna_rna': 'DNA',
@@ -256,6 +322,121 @@ analysis_sheet_dict = {
                     'comments': [
                         'test',
                     ],
+                },
+                {
+                    'genomic': '1:12345A>G',
+                    'gene': 'BRAF',
+                    'exon': '1|7',
+                    'transcript': 'NM_12345.6',
+                    'hgvs_c': 'c.123A>G',
+                    'hgvs_p': 'p.Ala123Glu',
+                    'vaf': {
+                        'vaf': '21%',
+                        'total_count': '100',
+                        'alt_count': '21',
+                    },
+                    'this_run': {
+                        'count': 0, 
+                        'total': 29,
+                        'ntc': False,
+                    },
+                    'previous_runs': {
+                        'known': 'Tier IIC',
+                        'count': 20,
+                    },
+                    'checks': [
+                        'Genuine', 
+                        'Artefact',
+                    ],
+                    'comments': [
+                        'test',
+                    ],
+                },
+                {
+                    'genomic': '1:12345A>G',
+                    'gene': 'BRAF',
+                    'exon': '1|7',
+                    'transcript': 'NM_12345.6',
+                    'hgvs_c': 'c.123A>G',
+                    'hgvs_p': 'p.Ala123Glu',
+                    'vaf': {
+                        'vaf': '21%',
+                        'total_count': '100',
+                        'alt_count': '21',
+                    },
+                    'this_run': {
+                        'count': 0, 
+                        'total': 29,
+                        'ntc': False,
+                    },
+                    'previous_runs': {
+                        'known': 'Tier IIC',
+                        'count': 20,
+                    },
+                    'checks': [
+                        'Genuine', 
+                        'Artefact',
+                    ],
+                    'comments': [
+                        'test',
+                        'test2',
+                    ],
+                },
+                {
+                    'genomic': '1:12345A>G',
+                    'gene': 'BRAF',
+                    'exon': '1|7',
+                    'transcript': 'NM_12345.6',
+                    'hgvs_c': 'c.123A>G',
+                    'hgvs_p': 'p.Ala123Glu',
+                    'vaf': {
+                        'vaf': '21%',
+                        'total_count': '100',
+                        'alt_count': '21',
+                    },
+                    'this_run': {
+                        'count': 0, 
+                        'total': 29,
+                        'ntc': False,
+                    },
+                    'previous_runs': {
+                        'known': 'Tier IA',
+                        'count': 20,
+                    },
+                    'checks': [
+                        'Genuine', 
+                        'Artefact',
+                    ],
+                    'comments': [
+                        'test',
+                    ],
+                },
+                {
+                    'genomic': '1:12345A>G',
+                    'gene': 'BRAF',
+                    'exon': '1|7',
+                    'transcript': 'NM_12345.6',
+                    'hgvs_c': 'c.123A>G',
+                    'hgvs_p': 'p.Ala123Glu',
+                    'vaf': {
+                        'vaf': '21%',
+                        'total_count': '100',
+                        'alt_count': '21',
+                    },
+                    'this_run': {
+                        'count': 0, 
+                        'total': 29,
+                        'ntc': False,
+                    },
+                    'previous_runs': {
+                        'known': '',
+                        'count': 20,
+                    },
+                    'checks': [
+                        'Genuine', 
+                        'Genuine',
+                    ],
+                    'comments': [],
                 },
             ],
             'polys': [
