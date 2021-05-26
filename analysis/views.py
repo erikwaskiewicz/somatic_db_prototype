@@ -1,10 +1,47 @@
 from django.shortcuts import render, redirect
 from django.http import Http404
 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate
+from django.contrib.auth.forms import UserCreationForm
+
 from .forms import SearchForm, NewVariantForm
 from .test_data import dummy_dicts
 
 
+def signup(request):
+    """
+    Allow users to sign up
+    User accounts are inactive by default - an admin must activate it using the admin page.
+    """
+
+    form = UserCreationForm()
+    warnings = []
+
+    if request.method == 'POST':
+
+        form = UserCreationForm(request.POST)
+
+        if form.is_valid():
+
+            form.save()
+
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            #user.is_active = False TODO - uncomment this when we go live
+            user.save()
+
+            return redirect('home')
+            #TODO - add some kind of confirmation
+
+        else:
+            warnings.append('Could not create an account, check that your password meets the requirements below')
+
+    return render(request, 'analysis/sign-up.html', {'form': form, 'warning': warnings})
+
+
+@login_required
 def home(request):
     """
     TODO - no home page yet, just redirect to list of worksheets
@@ -12,6 +49,7 @@ def home(request):
     return redirect('view_worksheets')
 
 
+@login_required
 def view_worksheets(request):
     """
     Displays all worksheets and links to the page to show all samples 
@@ -23,6 +61,7 @@ def view_worksheets(request):
     return render(request, 'analysis/view_worksheets.html', context)
 
 
+@login_required
 def view_samples(request, worksheet_id):
     """
     Displays all samples with a worksheet and links to the analysis 
@@ -33,6 +72,7 @@ def view_samples(request, worksheet_id):
     return render(request, 'analysis/view_samples.html', context)
 
 
+@login_required
 def analysis_sheet(request, dna_or_rna, sample_id):
     """
     Display coverage and variant metrics to allow checking of data 

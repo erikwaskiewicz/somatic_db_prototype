@@ -72,12 +72,45 @@
       <div class="container">
         <span class="navbar-brand">Somatic variant database</span>
         <ul class="navbar-nav ml-auto">
-          Login
+
+          {% if request.user.is_authenticated %}
+          <li class="nav-item">
+            <span class="navbar-text">{{request.user}}</span>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+          </li>
+
+          {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'login' %}">Login</a>
+          </li>
+
+          {% endif %}
         </ul>
       </div>
     </nav>
 
+    <!-- display success/ warnings -->
+    {% if success %}
+      {% for s in success %}
+      <div class="alert alert-success alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>Success!</strong> {{ s }}
+      </div>
+      {% endfor %}
+    {% endif %}
 
+    {% if warning %}
+      {% for w in warning %}
+      <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>Error:</strong> {{ w }}
+      </div>
+      {% endfor %}
+    {% endif %}
+
+    
     <!-- Block -->
     {% block content %}
     {% endblock %}
