@@ -16,7 +16,9 @@ class Worksheet(models.Model):
         return self.ws_id
 
     def get_status(self):
-        print('Pending') #TODO
+        samples = SampleAnalysis.objects.filter(worksheet = self)
+        l = [ s.get_status()['status'] for s in samples ]
+        return ' | '.join( set(l) )
 
 
 class Sample(models.Model):
@@ -42,13 +44,28 @@ class SampleAnalysis(models.Model):
         """
         Get all associated checks and work out the status
         """
-        checks = Check.objects.filter(analysis = self)
-        print(checks)
-        return('TO DO') #TODO
-        
+        all_checks = Check.objects.filter(analysis = self).order_by('pk')
+        igv_checks = all_checks.filter(stage='IGV')
+        vus_checks = all_checks.filter(stage='VUS')
 
-    def get_assigned(self):
-        return('TO DO') #TODO
+        for n, c in enumerate(vus_checks):
+            if c.status == 'P':
+                return {
+                    'status': f'{c.get_stage_display()}',
+                    'assigned_to': c.user,
+                }
+
+        for n, c in enumerate(igv_checks):
+            if c.status == 'P':
+                return {
+                    'status': f'{c.get_stage_display()} {n+1}',
+                    'assigned_to': c.user,
+                }
+
+        return {
+            'status': 'Complete',
+            'assigned_to': 'N/A',
+        }
 
 
 class Check(models.Model):
