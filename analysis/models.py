@@ -44,7 +44,11 @@ class SampleAnalysis(models.Model):
         """
         checks = Check.objects.filter(analysis = self)
         print(checks)
-        #TODO
+        return('TO DO') #TODO
+        
+
+    def get_assigned(self):
+        return('TO DO') #TODO
 
 
 class Check(models.Model):
@@ -52,7 +56,16 @@ class Check(models.Model):
     Model to store 1st, 2nd check etc
 
     """
+    STAGE_CHOICES = (
+        ('IGV', 'IGV check'),
+        ('VUS', 'Interpretation check'),
+    )
+    STATUS_CHOICES = (
+        ('P', 'Pending'),
+        ('C', 'Complete'),
+        ('F', 'Fail'),
+    )
     analysis = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
-    stage = models.CharField(max_length=50) # 1st check IGV, 2nd, 3rd..., interpretation
-    status = models.CharField(max_length=50)
-    user = models.ForeignKey('auth.User', on_delete=models.PROTECT)
+    stage = models.CharField(max_length=3, choices=STAGE_CHOICES)
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES)
+    user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True)

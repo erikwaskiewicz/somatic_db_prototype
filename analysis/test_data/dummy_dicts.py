@@ -119,15 +119,6 @@ view_samples_dict = {
 
 
 analysis_sheet_dict = {
-        'sample_data': {
-            'name': 'Bob',
-            'sample_id': '21M12345',
-            'worksheet_id': '21-123',
-            'panel': 'Colorectal',
-            'run_id': '210521_A00646_001_dffjwifwvw',
-            'status': '1st check',
-            'assigned_to': 'EW',
-        },
         'coverage_data': {
             'BRAF': {
                 'av_coverage': 300,

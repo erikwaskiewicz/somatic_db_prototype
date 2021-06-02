@@ -90,7 +90,7 @@ def view_samples(request, worksheet_id):
                 'dna_rna': s.sample.sample_type,
                 'panels': [
                     {
-                        'analysis_id': s,
+                        'analysis_id': s.pk,
                         'panel': s.panel.panel_name,
                         'status': 'TODO',
                         'assigned_to': 'TODO',
@@ -100,7 +100,7 @@ def view_samples(request, worksheet_id):
         else:
             sample_dict[sample_id]['panels'].append(
                 {
-                    'analysis_id': s,
+                    'analysis_id': s.pk,
                     'panel': s.panel.panel_name,
                     'status': 'TODO',
                     'assigned_to': 'TODO',
@@ -122,8 +122,20 @@ def analysis_sheet(request, dna_or_rna, sample_id):
     Display coverage and variant metrics to allow checking of data 
     in IGV
     """
-    # load in dummy data
+    sample_obj = SampleAnalysis.objects.get(pk = sample_id)
+    sample_data = {
+        'sample_id': sample_obj.sample.sample_id,
+        'worksheet_id': sample_obj.worksheet.ws_id,
+        'panel': sample_obj.panel.panel_name,
+        'run_id': sample_obj.worksheet.run.run_id,
+        'status': sample_obj.get_status(),
+        'assigned_to': sample_obj.get_assigned(),
+    }
+
+    # load in dummy data 
+    # TODO - add, variant and coverage query, only patient info being queried at the mo
     context = dummy_dicts.analysis_sheet_dict
+    context['sample_data'] = sample_data
     context['new_variant_form'] = NewVariantForm()
 
     if request.method == 'POST':

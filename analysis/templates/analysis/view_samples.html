@@ -49,14 +49,14 @@
           <td>{{ analysis.assigned_to }}</td>
           <td style="text-align:right">
             {% if analysis.assigned_to == 'Unassigned' %}
-              <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' sample_info.dna_rna sample %}" role="button">Assign to me</a>
+              <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' sample_info.dna_rna analysis.analysis_id %}" role="button">Assign to me</a>
             
             {% elif analysis.status == 'Complete' %}
-            <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' sample_info.dna_rna sample %}" role="button">View</a>
+            <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' sample_info.dna_rna analysis.analysis_id %}" role="button">View</a>
             
             {% else %}
             <div class="btn-group btn-block">
-              <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' sample_info.dna_rna sample %}" role="button">
+              <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' sample_info.dna_rna analysis.analysis_id %}" role="button">
                 Analyse
               </a>
               <button type="button btn-block" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
