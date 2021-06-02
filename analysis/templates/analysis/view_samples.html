@@ -29,34 +29,34 @@
       </tr>
     </thead>
     <tbody>
-      {% for s in samples %}
-        {% for analysis in s.panels %}
+      {% for sample, sample_info in samples.items %}
+        {% for analysis in sample_info.panels %}
         <tr>
-          <td>{{ s.sample_id }}</td>
+          <td>{{ sample}}</td>
           <td>
             <button type="button btn-block" 
-              {% if s.dna_rna == 'DNA' %}
+              {% if sample_info.dna_rna == 'DNA' %}
                 class="btn btn-info">
-              {% elif s.dna_rna == 'RNA' %}
+              {% elif sample_info.dna_rna == 'RNA' %}
                 class="btn btn-warning">
               {% else %}
                 class="btn btn-light">
               {% endif %}
-            {{ s.dna_rna }}</button>
+            {{ sample_info.dna_rna }}</button>
           </td>
           <td>{{ analysis.panel }}</td>
           <td>{{ analysis.status }}</td>
           <td>{{ analysis.assigned_to }}</td>
           <td style="text-align:right">
             {% if analysis.assigned_to == 'Unassigned' %}
-              <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' s.dna_rna s.sample_id %}" role="button">Assign to me</a>
+              <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' sample_info.dna_rna sample %}" role="button">Assign to me</a>
             
             {% elif analysis.status == 'Complete' %}
-            <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' s.dna_rna s.sample_id %}" role="button">View</a>
+            <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' sample_info.dna_rna sample %}" role="button">View</a>
             
             {% else %}
             <div class="btn-group btn-block">
-              <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' s.dna_rna s.sample_id %}" role="button">
+              <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' sample_info.dna_rna sample %}" role="button">
                 Analyse
               </a>
               <button type="button btn-block" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

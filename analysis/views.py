@@ -80,8 +80,38 @@ def view_samples(request, worksheet_id):
     Displays all samples with a worksheet and links to the analysis 
     for the sample
     """
-    context = dummy_dicts.view_samples_dict
-    context['search_form'] = SearchForm()
+    samples = SampleAnalysis.objects.filter(worksheet = worksheet_id)
+    sample_dict = {}
+    for s in samples:
+        sample_id = s.sample.sample_id
+        if sample_id not in sample_dict.keys():
+            sample_dict[sample_id] = {
+                'sample_id': sample_id,
+                'dna_rna': s.sample.sample_type,
+                'panels': [
+                    {
+                        'analysis_id': s,
+                        'panel': s.panel.panel_name,
+                        'status': 'TODO',
+                        'assigned_to': 'TODO',
+                    }
+                ]
+            }
+        else:
+            sample_dict[sample_id]['panels'].append(
+                {
+                    'analysis_id': s,
+                    'panel': s.panel.panel_name,
+                    'status': 'TODO',
+                    'assigned_to': 'TODO',
+                }
+            )
+
+    context = {
+        'worksheet': worksheet_id,
+        'samples': sample_dict,
+        'search_form': SearchForm(),
+    }
 
     return render(request, 'analysis/view_samples.html', context)
 
