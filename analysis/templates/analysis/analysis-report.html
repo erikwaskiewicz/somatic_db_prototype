@@ -2,31 +2,18 @@
 
 <h5>Summary</h5>
 
-<p>Do we need the extra report tab??</p>
+<p>TODO</p>
 <br>
 
-<h5>Next steps</h5>
-<table class="table table-bordered">
-    <tbody>
-      <tr>
-        <td><b>Next step</b></td>
-        <td>
-          <select name="variant" id="variant">
-            <option value="artefact">Extra check</option>
-            <option value="genuine">Authorise</option>
-          </select>
-          No dropdown if only one option
-        </td>
-      </tr>
-      <tr>
-        <td><b>Confirm</b></td>
-        <td>
-          <form>
-            <input type="text" id="fname" name="fname">
-            <input type="submit" value="Submit">
-          </form>
-          Type Patient ID to confirm
-        </td>
-      </tr>
-    </tbody>
-  </table>
+{% if sample_data.checks.current_status != 'Complete' %}
+<div class="card">
+  <div class="card-body">
+
+    <h5>Finalise check</h5>
+    <br>
+
+    {% crispy submit_form %}
+
+  </div>
+</div>
+{% endif %}

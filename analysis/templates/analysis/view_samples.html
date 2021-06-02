@@ -42,7 +42,7 @@
               <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' sample_info.dna_rna analysis.analysis_id %}" role="button">Assign to me</a>
             
             {% elif analysis.checks.current_status == 'Complete' %}
-            <a class="btn btn-light btn-block" href="{% url 'analysis_sheet' sample_info.dna_rna analysis.analysis_id %}" role="button">View</a>
+            <a class="btn btn-light btn-block" href="{% url 'analysis_sheet' sample_info.dna_rna analysis.analysis_id %}#report" role="button">View</a>
             
             {% else %}
             <div class="btn-group btn-block">

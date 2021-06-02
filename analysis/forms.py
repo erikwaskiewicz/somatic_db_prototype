@@ -46,3 +46,23 @@ class NewVariantForm(forms.Form):
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-25')
         )
+
+
+class SubmitForm(forms.Form):
+    """
+    """
+    NEXT_STEP_CHOICES = (
+        ('Complete check', 'Complete check'),
+        ('Request extra check', 'Request extra check'),
+        ('Fail sample', 'Fail sample'),
+    )
+    next_step = forms.ChoiceField(choices=NEXT_STEP_CHOICES)
+    confirm = forms.BooleanField(required=True)
+
+    def __init__(self, *args, **kwargs):
+        super(SubmitForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Submit', css_class='btn btn-info w-100')
+        )
