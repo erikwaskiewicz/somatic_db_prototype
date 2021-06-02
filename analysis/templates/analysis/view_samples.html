@@ -33,26 +33,16 @@
         {% for analysis in sample_info.panels %}
         <tr>
           <td>{{ sample}}</td>
-          <td>
-            <button type="button btn-block" 
-              {% if sample_info.dna_rna == 'DNA' %}
-                class="btn btn-info">
-              {% elif sample_info.dna_rna == 'RNA' %}
-                class="btn btn-warning">
-              {% else %}
-                class="btn btn-light">
-              {% endif %}
-            {{ sample_info.dna_rna }}</button>
-          </td>
+          <td>{{ sample_info.dna_rna }}</td>
           <td>{{ analysis.panel }}</td>
           <td>{{ analysis.checks.current_status }}</td>
           <td>{{ analysis.checks.assigned_to }}</td>
           <td style="text-align:right">
-            {% if analysis.assigned_to == 'Unassigned' %}
+            {% if analysis.checks.assigned_to == None %}
               <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' sample_info.dna_rna analysis.analysis_id %}" role="button">Assign to me</a>
             
-            {% elif analysis.status == 'Complete' %}
-            <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' sample_info.dna_rna analysis.analysis_id %}" role="button">View</a>
+            {% elif analysis.checks.current_status == 'Complete' %}
+            <a class="btn btn-light btn-block" href="{% url 'analysis_sheet' sample_info.dna_rna analysis.analysis_id %}" role="button">View</a>
             
             {% else %}
             <div class="btn-group btn-block">

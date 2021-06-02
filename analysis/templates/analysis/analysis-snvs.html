@@ -19,7 +19,7 @@
     {% for v in variant_data.variant_calls %}
     <tr>
       <td>
-        {{ v.genomic }} <a href="#" class="badge badge-info">IGV</a>
+        <p style="display:inline" id="igv">{{ v.genomic }} </p><button class="btn btn-sm btn-info" onclick="copyToClipboard('#igv')"><span class="fa fa-copy"></span></button>
       </td>
       <td>
         {{ v.gene }}<br>{{ v.exon }}
@@ -231,3 +231,15 @@
     </div>
   </div>
 </div>
+
+
+
+<script>
+    function copyToClipboard(element) {
+        var $temp = $("<input>");
+        $("body").append($temp);
+        $temp.val($(element).text()).select();
+        document.execCommand("copy");
+        $temp.remove();
+    }
+</script>
