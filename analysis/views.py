@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm
 
 from .forms import SearchForm, NewVariantForm
+from .models import *
 from .test_data import dummy_dicts
 
 
@@ -55,8 +56,20 @@ def view_worksheets(request):
     Displays all worksheets and links to the page to show all samples 
     within the worksheet
     """
-    context = dummy_dicts.view_worksheets_dict
-    context['search_form'] = SearchForm()
+    worksheets = Worksheet.objects.all()
+    ws_list = []
+    for w in worksheets:
+        ws_list.append({
+            'worksheet_id': w.ws_id,
+            'run_id': w.run.run_id,
+            'assay': w.assay,
+            'status': w.get_status(),
+        })
+
+    context = {
+        'worksheets': ws_list,
+        'search_form': SearchForm(),
+    }
 
     return render(request, 'analysis/view_worksheets.html', context)
 

@@ -4,9 +4,19 @@ from django.db import models
 class Run(models.Model):
     run_id = models.CharField(max_length=50, primary_key=True)
 
+    def __str__(self):
+        return self.run_id
 
 class Worksheet(models.Model):
     ws_id = models.CharField(max_length=50, primary_key=True)
+    run = models.ForeignKey('Run', on_delete=models.CASCADE)
+    assay = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.ws_id
+
+    def get_status(self):
+        print('Pending') #TODO
 
 
 class Sample(models.Model):
@@ -24,7 +34,6 @@ class SampleAnalysis(models.Model):
     """
 
     """
-    run = models.ForeignKey('Run', on_delete=models.CASCADE)
     worksheet = models.ForeignKey('Worksheet', on_delete=models.CASCADE)
     sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
     panel = models.ForeignKey('Panel', on_delete=models.CASCADE)
