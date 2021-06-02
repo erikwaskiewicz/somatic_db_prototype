@@ -17,7 +17,7 @@ class Worksheet(models.Model):
 
     def get_status(self):
         samples = SampleAnalysis.objects.filter(worksheet = self)
-        l = [ s.get_status()['status'] for s in samples ]
+        l = [ s.get_checks()['current_status'] for s in samples ]
         return ' | '.join( set(l) )
 
 
@@ -39,32 +39,33 @@ class SampleAnalysis(models.Model):
     worksheet = models.ForeignKey('Worksheet', on_delete=models.CASCADE)
     sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
     panel = models.ForeignKey('Panel', on_delete=models.CASCADE)
-    
-    def get_status(self):
+
+    def get_checks(self):
         """
         Get all associated checks and work out the status
+        TODO - make this a bit better
         """
         all_checks = Check.objects.filter(analysis = self).order_by('pk')
         igv_checks = all_checks.filter(stage='IGV')
         vus_checks = all_checks.filter(stage='VUS')
 
+        current_status = 'Complete'
+        assigned_to = 'N/A'
+
         for n, c in enumerate(vus_checks):
             if c.status == 'P':
-                return {
-                    'status': f'{c.get_stage_display()}',
-                    'assigned_to': c.user,
-                }
+                current_status = f'{c.get_stage_display()}'
+                assigned_to = c.user
 
         for n, c in enumerate(igv_checks):
             if c.status == 'P':
-                return {
-                    'status': f'{c.get_stage_display()} {n+1}',
-                    'assigned_to': c.user,
-                }
+                current_status = f'{c.get_stage_display()} {n+1}'
+                assigned_to = c.user
 
         return {
-            'status': 'Complete',
-            'assigned_to': 'N/A',
+            'current_status': current_status,
+            'assigned_to': assigned_to,
+            'all_checks': all_checks,
         }
 
 
@@ -86,3 +87,4 @@ class Check(models.Model):
     stage = models.CharField(max_length=3, choices=STAGE_CHOICES)
     status = models.CharField(max_length=1, choices=STATUS_CHOICES)
     user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True)
+    signoff_time = models.DateTimeField(blank=True, null=True)

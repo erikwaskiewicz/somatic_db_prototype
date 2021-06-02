@@ -45,8 +45,8 @@
             {{ sample_info.dna_rna }}</button>
           </td>
           <td>{{ analysis.panel }}</td>
-          <td>{{ analysis.status.status }}</td>
-          <td>{{ analysis.status.assigned_to }}</td>
+          <td>{{ analysis.checks.current_status }}</td>
+          <td>{{ analysis.checks.assigned_to }}</td>
           <td style="text-align:right">
             {% if analysis.assigned_to == 'Unassigned' %}
               <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' sample_info.dna_rna analysis.analysis_id %}" role="button">Assign to me</a>

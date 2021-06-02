@@ -92,7 +92,7 @@ def view_samples(request, worksheet_id):
                     {
                         'analysis_id': s.pk,
                         'panel': s.panel.panel_name,
-                        'status': s.get_status(),
+                        'checks': s.get_checks(),
                     }
                 ]
             }
@@ -101,7 +101,7 @@ def view_samples(request, worksheet_id):
                 {
                     'analysis_id': s.pk,
                     'panel': s.panel.panel_name,
-                    'status': s.get_status(),
+                    'checks': s.get_checks(),
                 }
             )
 
@@ -126,7 +126,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
         'worksheet_id': sample_obj.worksheet.ws_id,
         'panel': sample_obj.panel.panel_name,
         'run_id': sample_obj.worksheet.run.run_id,
-        'status': sample_obj.get_status(),
+        'checks': sample_obj.get_checks(),
     }
 
     # load in dummy data 

@@ -28,18 +28,14 @@
 <h5>Audit trail</h5>
 <table class="table table-bordered">
   <tbody>
+    {% for c in sample_data.checks.all_checks %}
     <tr>
-      <td class="col-4"><b>First IGV check</b></td>
-      <td class="col-8">...</td>
+      <td>{{ forloop.counter }}</td>
+      <td>{{ c.get_stage_display }}</td>
+      <td>{{ c.user }}</td>
+      <td>{{ c.signoff_time }}</td>
     </tr>
-    <tr>
-      <td><b>Second IGV check</b></td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <td><b>First ??interpretation</b></td>
-      <td>...</td>
-    </tr>
+    {% endfor %}
   </tbody>
 </table>
 
