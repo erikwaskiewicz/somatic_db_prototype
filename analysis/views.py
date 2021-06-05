@@ -121,6 +121,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
     in IGV
     """
     sample_obj = SampleAnalysis.objects.get(pk = sample_id)
+    print(sample_obj)
     sample_data = {
         'sample_id': sample_obj.sample.sample_id,
         'worksheet_id': sample_obj.worksheet.ws_id,
@@ -131,7 +132,8 @@ def analysis_sheet(request, dna_or_rna, sample_id):
 
     # load in dummy data 
     # TODO - add, variant and coverage query, only patient info being queried at the mo
-    context = dummy_dicts.analysis_sheet_dict
+    #context = dummy_dicts.analysis_sheet_dict
+    context={}
     context['sample_data'] = sample_data
     context['new_variant_form'] = NewVariantForm()
     context['submit_form'] = SubmitForm()
@@ -192,6 +194,98 @@ def analysis_sheet(request, dna_or_rna, sample_id):
 
     # DNA workflow
     if dna_or_rna == 'DNA':
+
+        sample_variants=variant_analysis.objects.filter(sampleId= sample_data.get('sample_id'))
+
+        variant_calls=[]
+
+        for sample_variant in sample_variants.iterator():
+
+            this_run=variant_analysis.objects.filter(variant= sample_variant.variant).filter(run=sample_data.get('run_id'))
+            this_run_count=(this_run.count())
+
+            previous_runs=variant_analysis.objects.filter(variant= sample_variant.variant).exclude(run=sample_data.get('run_id'))
+            previous_runs_count=(previous_runs.count())
+
+            total_runs=variant_analysis.objects.filter(variant= sample_variant.variant)
+            total_runs_count=(total_runs.count())
+
+
+            variant_calls_dict={
+            'genomic': sample_variant.variant.genomic ,
+            'gene': sample_variant.variant.gene ,
+            'exon': sample_variant.variant.exon ,
+            'transcript': sample_variant.variant.transcript,
+            'hgvs_c': sample_variant.variant.hgvs_c ,
+            'hgvs_p': sample_variant.variant.hgvs_p,
+            'this_run': {
+                        'count': this_run_count, 
+                        'total': total_runs_count,
+                    },   
+            'previous_runs': {
+                        'count': previous_runs_count,
+            },
+
+            }
+
+
+            variant_calls.append(variant_calls_dict)
+
+        polys_list=[]
+
+        for sample_variant in sample_variants.iterator():
+
+            known_polys=polys.objects.filter(genomic= sample_variant.variant.genomic)
+
+            for known_poly in known_polys:
+                polys_dict={
+                    'genomic': known_poly.genomic,
+                    'gene': known_poly.gene ,
+                    'exon': known_poly.exon,
+                    'transcript': known_poly.transcript ,
+                    'hgvs_c': known_poly.hgvs_c,
+                    'hgvs_p': known_poly.hgvs_p,
+
+    
+            }
+
+                polys_list.append(polys_dict)
+
+
+
+        coverage_data={}
+        gene_coverage_analysis_obj=gene_coverage_analysis.objects.filter(sample= sample_data.get('sample_id'))
+        for gene_coverage_obj in gene_coverage_analysis_obj.iterator():
+            regions=[]
+            coverage_regions_analysis_obj=coverage_regions_analysis.objects.filter(sample= sample_data.get('sample_id')).filter(gene=gene_coverage_obj.gene)
+            for region in coverage_regions_analysis_obj.iterator():
+                regions_dict={
+                'genomic':region.genomic.genomic,
+
+                }
+
+                regions.append(regions_dict)
+
+
+
+
+            gene_dict ={
+                'av_coverage': 300,
+                'percent_270x': gene_coverage_obj.percent_270x,
+                'percent_135x': gene_coverage_obj.percent_135x,
+                'regions':regions
+
+            }
+
+            coverage_data[gene_coverage_obj.gene.gene]=gene_dict
+
+
+
+
+        variant_data={'variant_calls':variant_calls, 'polys': polys_list }
+        context['variant_data']=variant_data
+        context['coverage_data']=coverage_data
+        print(context)
         return render(request, 'analysis/analysis_sheet_dna.html', context)
 
     # RNA workflow

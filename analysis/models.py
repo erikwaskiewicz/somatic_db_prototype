@@ -92,3 +92,63 @@ class Check(models.Model):
     status = models.CharField(max_length=1, choices=STATUS_CHOICES)
     user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True)
     signoff_time = models.DateTimeField(blank=True, null=True)
+
+
+
+class variant_call(models.Model):
+    genomic=models.CharField(max_length=50, primary_key=True)
+    gene=models.CharField(max_length=50)
+    exon=models.CharField(max_length=50)
+    transcript=models.CharField(max_length=50)
+    hgvs_c=models.CharField(max_length=50)
+    hgvs_p=models.CharField(max_length=50)
+
+class variant_analysis(models.Model):
+    sampleId=models.ForeignKey(Sample, on_delete=models.CASCADE)
+    run = models.ForeignKey('Run', on_delete=models.CASCADE)
+    variant=models.ForeignKey(variant_call, on_delete=models.CASCADE)
+    vaf=models.CharField(max_length=50)
+
+
+class polys(models.Model):
+
+    genomic=models.CharField(max_length=50, primary_key=True)
+    gene=models.CharField(max_length=50)
+    exon=models.CharField(max_length=50)
+    transcript=models.CharField(max_length=50)
+    hgvs_c=models.CharField(max_length=50)
+    hgvs_p=models.CharField(max_length=50)
+    vaf=models.CharField(max_length=50)
+
+
+class gene(models.Model):
+
+    gene=models.CharField(max_length=50, primary_key=True)
+
+
+class coverage_regions(models.Model):
+
+    genomic=models.CharField(max_length=50, primary_key=True)
+    gene=models.ForeignKey(gene, on_delete=models.CASCADE)
+    hgvs_c=models.CharField(max_length=50)
+
+
+
+class gene_coverage_analysis(models.Model):
+    sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
+    gene = models.ForeignKey('gene', on_delete=models.CASCADE)
+    percent_270x=models.CharField(max_length=50)
+    percent_135x=models.CharField(max_length=50)
+    panel=models.ForeignKey(Panel, on_delete=models.CASCADE)
+
+
+
+class coverage_regions_analysis(models.Model):
+    sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
+    genomic = models.ForeignKey('coverage_regions', on_delete=models.CASCADE)
+    panel=models.ForeignKey(Panel, on_delete=models.CASCADE)
+    gene=models.ForeignKey(gene, on_delete=models.CASCADE)
+    percent_270x=models.CharField(max_length=50)
+    percent_135x=models.CharField(max_length=50)
+
+
