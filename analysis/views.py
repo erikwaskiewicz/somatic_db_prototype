@@ -131,7 +131,6 @@ def analysis_sheet(request, dna_or_rna, sample_id):
     }
 
     # load in dummy data 
-    # TODO - add, variant and coverage query, only patient info being queried at the mo
     #context = dummy_dicts.analysis_sheet_dict
     context={}
     context['sample_data'] = sample_data
@@ -231,6 +230,8 @@ def analysis_sheet(request, dna_or_rna, sample_id):
 
             variant_calls.append(variant_calls_dict)
 
+
+        #Create a polys dictionary
         polys_list=[]
 
         for sample_variant in sample_variants.iterator():
@@ -261,20 +262,41 @@ def analysis_sheet(request, dna_or_rna, sample_id):
             for region in coverage_regions_analysis_obj.iterator():
                 regions_dict={
                 'genomic':region.genomic.genomic,
+                'average_coverage': region.percent_135x,
+                'percent_135x': region.percent_135x,
+                'percent_270x': region.percent_270x,
+
 
                 }
 
                 regions.append(regions_dict)
 
 
+            #Create a dictionary of gaps in the sample for the given gene
+            gaps=[]
+            gaps_analysis_obj=gaps_analysis.objects.filter(sample= sample_data.get('sample_id')).filter(gene=gene_coverage_obj.gene)
+            for gap in gaps_analysis_obj.iterator():
+                gaps_dict={
+                'genomic':gap.genomic.genomic,
+                'average_coverage': gap.percent_135x,
+                'percent_135x': gap.percent_135x,
+                'percent_270x': gap.percent_270x,
 
 
+                }
+
+                gaps.append(gaps_dict)
+
+
+
+
+            #combine gaps and regions dictionaries
             gene_dict ={
                 'av_coverage': 300,
                 'percent_270x': gene_coverage_obj.percent_270x,
                 'percent_135x': gene_coverage_obj.percent_135x,
-                'regions':regions
-
+                'regions':regions,
+                'gaps':gaps,
             }
 
             coverage_data[gene_coverage_obj.gene.gene]=gene_dict

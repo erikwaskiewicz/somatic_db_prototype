@@ -148,7 +148,19 @@ class coverage_regions_analysis(models.Model):
     genomic = models.ForeignKey('coverage_regions', on_delete=models.CASCADE)
     panel=models.ForeignKey(Panel, on_delete=models.CASCADE)
     gene=models.ForeignKey(gene, on_delete=models.CASCADE)
+    average_coverage=models.CharField(max_length=50)
     percent_270x=models.CharField(max_length=50)
     percent_135x=models.CharField(max_length=50)
+
+
+class gaps_analysis(models.Model):
+    sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
+    genomic = models.ForeignKey('coverage_regions', on_delete=models.CASCADE)
+    panel=models.ForeignKey(Panel, on_delete=models.CASCADE)
+    gene=models.ForeignKey(gene, on_delete=models.CASCADE)
+    average_coverage=models.CharField(max_length=50)
+    percent_270x=models.CharField(max_length=50)
+    percent_135x=models.CharField(max_length=50)
+
 
 

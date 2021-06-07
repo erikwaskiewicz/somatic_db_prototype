@@ -15,5 +15,6 @@ admin.site.register(gene)
 admin.site.register(coverage_regions)
 admin.site.register(gene_coverage_analysis)
 admin.site.register(coverage_regions_analysis)
+admin.site.register(gaps_analysis)
 
 
