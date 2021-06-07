@@ -194,7 +194,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
     # DNA workflow
     if dna_or_rna == 'DNA':
 
-        sample_variants=variant_analysis.objects.filter(sampleId= sample_data.get('sample_id'))
+        sample_variants=variant_analysis.objects.filter(sampleId= sample_data.get('sample_id')).filter(run=sample_data.get('run_id')).filter(panel=sample_data.get('panel'))
 
         variant_calls=[]
 
@@ -206,7 +206,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
             previous_runs=variant_analysis.objects.filter(variant= sample_variant.variant).exclude(run=sample_data.get('run_id'))
             previous_runs_count=(previous_runs.count())
 
-            total_runs=variant_analysis.objects.filter(variant= sample_variant.variant)
+            total_runs=variant_analysis.objects.filter(run=sample_data.get('run_id'))
             total_runs_count=(total_runs.count())
 
 
@@ -224,6 +224,12 @@ def analysis_sheet(request, dna_or_rna, sample_id):
             'previous_runs': {
                         'count': previous_runs_count,
             },
+            'vaf': {
+                        'vaf': sample_variant.vaf,
+                        'total_count': sample_variant.total_count,
+                        'alt_count': sample_variant.alt_count
+                }
+
 
             }
 
@@ -246,6 +252,11 @@ def analysis_sheet(request, dna_or_rna, sample_id):
                     'transcript': known_poly.transcript ,
                     'hgvs_c': known_poly.hgvs_c,
                     'hgvs_p': known_poly.hgvs_p,
+                    'vaf': {
+                        'vaf': sample_variant.vaf,
+                        'total_count': sample_variant.total_count,
+                        'alt_count': sample_variant.alt_count
+                }
 
     
             }
@@ -262,11 +273,11 @@ def analysis_sheet(request, dna_or_rna, sample_id):
             for region in coverage_regions_analysis_obj.iterator():
                 regions_dict={
                 'genomic':region.genomic.genomic,
-                'average_coverage': region.percent_135x,
+                'average_coverage': region.average_coverage,
                 'percent_135x': region.percent_135x,
                 'percent_270x': region.percent_270x,
-
-
+                'ntc_coverage':region.ntc_coverage,
+                'percent_ntc':region.percent_ntc,
                 }
 
                 regions.append(regions_dict)
@@ -281,6 +292,8 @@ def analysis_sheet(request, dna_or_rna, sample_id):
                 'average_coverage': gap.percent_135x,
                 'percent_135x': gap.percent_135x,
                 'percent_270x': gap.percent_270x,
+                'average_coverage':gap.average_coverage,
+                'percent_cosmic':gap.percent_cosmic
 
 
                 }
@@ -292,16 +305,16 @@ def analysis_sheet(request, dna_or_rna, sample_id):
 
             #combine gaps and regions dictionaries
             gene_dict ={
-                'av_coverage': 300,
+                'av_coverage': '300',
                 'percent_270x': gene_coverage_obj.percent_270x,
                 'percent_135x': gene_coverage_obj.percent_135x,
+                'av_ntc_coverage': gene_coverage_obj.av_ntc_coverage,
+                'percent_ntc': gene_coverage_obj.percent_ntc,
                 'regions':regions,
                 'gaps':gaps,
             }
 
             coverage_data[gene_coverage_obj.gene.gene]=gene_dict
-
-
 
 
         variant_data={'variant_calls':variant_calls, 'polys': polys_list }
@@ -312,6 +325,50 @@ def analysis_sheet(request, dna_or_rna, sample_id):
 
     # RNA workflow
     elif dna_or_rna == 'RNA':
+
+        fusions=fusion_analysis.objects.filter(sampleId= sample_data.get('sample_id')).filter(run=sample_data.get('run_id')).filter(panel=sample_data.get('panel'))
+
+        fusion_calls=[]
+
+        for fusion_object in fusions.iterator():
+
+            this_run=fusion_analysis.objects.filter(fusion_genes= fusion_object.fusion_genes).filter(run=sample_data.get('run_id'))
+            this_run_count=(this_run.count())
+
+            previous_runs=fusion_analysis.objects.filter(fusion_genes= fusion_object.fusion_genes).exclude(run=sample_data.get('run_id'))
+            previous_runs_count=(previous_runs.count())
+
+            total_runs=fusion_analysis.objects.filter(run=sample_data.get('run_id'))
+            total_runs_count=(total_runs.count())
+
+
+            fusion_calls_dict={
+            'fusion_genes': fusion_object.fusion_genes.fusion_genes,
+            'split_reads': fusion_object.split_reads,
+            'spanning_reads': fusion_object.spanning_reads,
+            'left_breakpoint': fusion_object.fusion_genes.left_breakpoint ,
+            'right_breakpoint': fusion_object.fusion_genes.right_breakpoint ,
+            'this_run': {
+                        'count': this_run_count, 
+                        'total': total_runs_count,
+                    },   
+            'previous_runs': {
+                        'count': previous_runs_count,
+            },
+
+            }
+
+            fusion_calls.append(fusion_calls_dict)
+
+
+            print(fusion_calls_dict)
+
+        fusion_data={'fusion_calls':fusion_calls }
+        context['fusion_data']=fusion_data
+
+
+
+
         return render(request, 'analysis/analysis_sheet_rna.html', context)
 
     # return error if sample type is neither RNA or DNA

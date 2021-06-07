@@ -9,7 +9,6 @@
       <th scope="col">% at 270X</th>
       <th scope="col">Average NTC coverage</th>
       <th scope="col">% NTC</th>
-      <th scope="col">% COSMIC</th>
       <th></th>
     </tr>
   </thead>
@@ -22,7 +21,7 @@
       <td>{{ v.percent_135x }}</td>
       <td>{{ v.av_ntc_coverage }}</td>
       <td>{{ v.percent_ntc }}</td>
-      <td>{{ v.percent_cosmic }}</td>
+
       <td>
         <button class="btn btn-light" data-toggle="collapse" href="#collapse-{{ region }}" role="button" aria-expanded="false" aria-controls="collapse-{{ region }}">
           <span class="fa fa-chevron-down"></span>
@@ -43,7 +42,6 @@
               <th scope="col">% at 270X</th>
               <th scope="col">Average NTC coverage</th>
               <th scope="col">% NTC</th>
-              <th scope="col">% COSMIC</th>
             </tr>
           </thead>
           <tbody>
@@ -53,9 +51,8 @@
               <td>{{ r.average_coverage }}</td>
               <td>{{ r.percent_135x}}</td>
               <td>{{ r.percent_270x }}</td>
-              <td>...</td>
-              <td>...</td>
-              <td>...</td>
+              <td>{{ r.ntc_coverage }}</td>
+              <td>{{ r.percent_ntc }}</td>
             </tr>
           {% endfor %}
           </tbody>
@@ -65,7 +62,6 @@
         <table class="table table-hover table-bordered">
           <thead>
             <tr>
-              <th scope="col">Region</th>
               <th scope="col">Genomic coords</th>
               <th scope="col">% at 135X</th>
               <th scope="col">% at 270X</th>
@@ -76,12 +72,11 @@
           <tbody>
           {% for r in v.gaps %}
             <tr>
-              <td>{{ r.hgvs_c }}</td>
               <td>{{ r.genomic }}</td>
               <td>{{ r.percent_135x }}</td>
               <td>{{ r.percent_270x }}</td>
-              <td>{{ r.ntc }}</td>
-              <td>5%</td>
+              <td>{{ r.average_coverage }}</td>
+              <td>{{ r.percent_cosmic }}</td>
             </tr>
           {% endfor %}
           </tbody>

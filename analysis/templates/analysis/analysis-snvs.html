@@ -28,7 +28,7 @@
         {{ v.transcript }}<br>{{ v.hgvs_c }}<br>{{ v.hgvs_p }}
       </td>
       <td>
-        {{ v.vaf.vaf }}<br>{{ v.vaf.alt_count }} of {{ v.vaf_total_count }} reads
+        {{ v.vaf.vaf }}<br>{{ v.vaf.alt_count }} of {{ v.vaf.total_count }} reads
       </td>
       <td>
         {{ v.this_run.count }} of {{ v.this_run.total }} samples<br>Present in NTC: {{ v.this_run.ntc }}
@@ -112,7 +112,7 @@
                 {{ p.transcript }}<br>{{ p.hgvs_c }}<br>{{ p.hgvs_p}}
               </td>
               <td>
-                {{ p.vaf.vaf }}<br>{{ p.vaf.alt_count }} of {{ p.vaf.ref_count }} reads
+                {{ p.vaf.vaf }}<br>{{ p.vaf.alt_count }} of {{ p.vaf.total_count }} reads
               </td>
             </tr>
             {% endfor %}
