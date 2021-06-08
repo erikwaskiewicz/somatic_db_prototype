@@ -200,16 +200,20 @@ def analysis_sheet(request, dna_or_rna, sample_id):
 
         for sample_variant in sample_variants.iterator():
 
+            #count how many times variant is present in other samples on the run
             this_run=variant_analysis.objects.filter(variant= sample_variant.variant).filter(run=sample_data.get('run_id'))
             this_run_count=(this_run.count())
 
+            #count how many times the variant is present in previous runs
             previous_runs=variant_analysis.objects.filter(variant= sample_variant.variant).exclude(run=sample_data.get('run_id'))
             previous_runs_count=(previous_runs.count())
 
+            #get the total number of samples on the run
             total_runs=variant_analysis.objects.filter(run=sample_data.get('run_id'))
             total_runs_count=(total_runs.count())
 
 
+            #Create a variant calls dictionary to pass to analysis-snvs.html
             variant_calls_dict={
             'genomic': sample_variant.variant.genomic ,
             'gene': sample_variant.variant.gene ,
@@ -229,17 +233,14 @@ def analysis_sheet(request, dna_or_rna, sample_id):
                         'total_count': sample_variant.total_count,
                         'alt_count': sample_variant.alt_count
                 }
-
-
             }
-
-
             variant_calls.append(variant_calls_dict)
 
 
         #Create a polys dictionary
         polys_list=[]
 
+        #loop through the sample variants and get all the polys from the database that have genomic coordinates matching the sample variant coordinates
         for sample_variant in sample_variants.iterator():
 
             known_polys=polys.objects.filter(genomic= sample_variant.variant.genomic)
@@ -257,19 +258,17 @@ def analysis_sheet(request, dna_or_rna, sample_id):
                         'total_count': sample_variant.total_count,
                         'alt_count': sample_variant.alt_count
                 }
-
-    
             }
 
                 polys_list.append(polys_dict)
 
 
-
+        #create a coverage dictionary
         coverage_data={}
-        gene_coverage_analysis_obj=gene_coverage_analysis.objects.filter(sample= sample_data.get('sample_id'))
+        gene_coverage_analysis_obj=gene_coverage_analysis.objects.filter(sample= sample_data.get('sample_id')).filter(panel= sample_data.get('panel'))
         for gene_coverage_obj in gene_coverage_analysis_obj.iterator():
             regions=[]
-            coverage_regions_analysis_obj=coverage_regions_analysis.objects.filter(sample= sample_data.get('sample_id')).filter(gene=gene_coverage_obj.gene)
+            coverage_regions_analysis_obj=coverage_regions_analysis.objects.filter(sample= sample_data.get('sample_id')).filter(gene=gene_coverage_obj.gene).filter(panel= sample_data.get('panel'))
             for region in coverage_regions_analysis_obj.iterator():
                 regions_dict={
                 'genomic':region.genomic.genomic,
@@ -295,12 +294,9 @@ def analysis_sheet(request, dna_or_rna, sample_id):
                 'average_coverage':gap.average_coverage,
                 'percent_cosmic':gap.percent_cosmic
 
-
                 }
 
                 gaps.append(gaps_dict)
-
-
 
 
             #combine gaps and regions dictionaries
@@ -365,9 +361,6 @@ def analysis_sheet(request, dna_or_rna, sample_id):
 
         fusion_data={'fusion_calls':fusion_calls }
         context['fusion_data']=fusion_data
-
-
-
 
         return render(request, 'analysis/analysis_sheet_rna.html', context)
 
