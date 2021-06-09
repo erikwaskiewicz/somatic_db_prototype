@@ -76,9 +76,6 @@ WSGI_APPLICATION = 'somatic_variant_db.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DB_PASSWORD_FILE = 'password.txt'
-with open(DB_PASSWORD_FILE) as f:
-    db_password = f.readline().strip()
 
 DB_INSTANCE = 'local'
 if DB_INSTANCE == 'local':
@@ -91,6 +88,10 @@ if DB_INSTANCE == 'local':
 	}
 
 else:
+    DB_PASSWORD_FILE = 'password.txt'
+    with open(DB_PASSWORD_FILE) as f:
+        db_password = f.readline().strip()
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
