@@ -8,6 +8,7 @@ from django.contrib.auth.forms import UserCreationForm
 from .forms import SearchForm, NewVariantForm, SubmitForm
 from .models import *
 from .test_data import dummy_dicts
+from .utils import signoff_check, make_next_check
 
 
 def signup(request):
@@ -120,8 +121,9 @@ def analysis_sheet(request, dna_or_rna, sample_id):
     Display coverage and variant metrics to allow checking of data 
     in IGV
     """
+    # load in data that is common to both RNA and DNA workflows
     sample_obj = SampleAnalysis.objects.get(pk = sample_id)
-    print(sample_obj)
+
     sample_data = {
         'sample_id': sample_obj.sample.sample_id,
         'worksheet_id': sample_obj.worksheet.ws_id,
@@ -130,65 +132,11 @@ def analysis_sheet(request, dna_or_rna, sample_id):
         'checks': sample_obj.get_checks(),
     }
 
-    # load in dummy data 
-    #context = dummy_dicts.analysis_sheet_dict
-    context={}
-    context['sample_data'] = sample_data
-    context['new_variant_form'] = NewVariantForm()
-    context['submit_form'] = SubmitForm()
-
-    if request.method == 'POST':
-
-        # if add new variant form is clicked
-        if 'hgvs_g' in request.POST:
-            new_variant_form = NewVariantForm(request.POST)
-
-            if new_variant_form.is_valid():
-                # TODO need to program function & make more robust
-                print(new_variant_form.cleaned_data)
-
-
-        # if finalise check submit for is clicked
-        if 'next_step' in request.POST:
-            submit_form = SubmitForm(request.POST)
-
-            if submit_form.is_valid():
-                next_step = submit_form.cleaned_data['next_step']
-                current_step = sample_data['checks']['current_status']
-                current_step_obj = sample_data['checks']['current_check_object']
-
-                if next_step == 'Complete check':
-                    # TODO - signoff check
-                    
-                    if 'IGV' in current_step:
-                        # TODO - if 1st IGV, make 2nd IGV
-                        if current_step == 'IGV check 1':
-                            print('TODO - if 1st IGV, make 2nd IGV')
-                            print(current_step_obj)
-                            
-                        # TODO - if 2nd IGV (or 3rd...) make interpretation
-                        else:
-                            print('TODO - if 2nd IGV (or 3rd...) make interpretation')
-
-                    # TODO - if interpretation, make complete
-                    elif 'Interpretation' in current_step:
-                        print('TODO - if interpretation, make complete')
-
-                elif next_step == 'Request extra check':
-                    # TODO - signoff check
-                    
-                    if 'IGV' in current_step:
-                        # TODO - make extra IGV check
-                        print('TODO - make extra IGV check')
-
-                    # TODO - throw error, cant do this yet
-                    elif 'Interpretation' in current_step:
-                        print('TODO - throw error, cant do this yet')
-
-                elif next_step == 'Fail sample':
-                    print('3')
-
-                return redirect('view_samples', sample_data['worksheet_id'])
+    context = {
+        'sample_data': sample_data,
+        'new_variant_form': NewVariantForm(),
+        'submit_form': SubmitForm(),
+    }
 
 
     # DNA workflow
@@ -317,7 +265,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
         context['variant_data']=variant_data
         context['coverage_data']=coverage_data
         print(context)
-        return render(request, 'analysis/analysis_sheet_dna.html', context)
+
 
     # RNA workflow
     elif dna_or_rna == 'RNA':
@@ -362,8 +310,68 @@ def analysis_sheet(request, dna_or_rna, sample_id):
         fusion_data={'fusion_calls':fusion_calls }
         context['fusion_data']=fusion_data
 
-        return render(request, 'analysis/analysis_sheet_rna.html', context)
 
-    # return error if sample type is neither RNA or DNA
+    ###  If any buttons are pressed
+    ####################################
+    if request.method == 'POST':
+
+        # if add new variant form is clicked
+        if 'hgvs_g' in request.POST:
+            new_variant_form = NewVariantForm(request.POST)
+
+            if new_variant_form.is_valid():
+                # TODO need to program function & make more robust
+                print(new_variant_form.cleaned_data)
+
+
+        # if finalise check submit for is clicked
+        if 'next_step' in request.POST:
+            submit_form = SubmitForm(request.POST)
+
+            if submit_form.is_valid():
+                next_step = submit_form.cleaned_data['next_step']
+                current_step = sample_data['checks']['current_status']
+                current_step_obj = sample_data['checks']['current_check_object']
+
+                if next_step == 'Complete check':
+                    if 'IGV' in current_step:
+                        # if 1st IGV, make 2nd IGV
+                        if current_step == 'IGV check 1':
+                            signoff_check(request.user, current_step_obj)
+                            make_next_check(sample_obj, 'IGV')
+                            
+                        # if 2nd IGV (or 3rd...) make interpretation
+                        else:
+                            signoff_check(request.user, current_step_obj)
+                            make_next_check(sample_obj, 'VUS')
+
+                    # if interpretation, make complete
+                    elif 'Interpretation' in current_step:
+                        signoff_check(request.user, current_step_obj)
+
+                    return redirect('view_samples', sample_data['worksheet_id'])
+
+
+                elif next_step == 'Request extra check':
+                    if 'IGV' in current_step:
+                        # make extra IGV check
+                        signoff_check(request.user, current_step_obj)
+                        make_next_check(sample_obj, 'IGV')
+                        return redirect('view_samples', sample_data['worksheet_id'])
+
+                    # throw error, cant do this yet
+                    elif 'Interpretation' in current_step:
+                        context['warning'] = ["Only one interpretation check is carried out within this database, please only select eith 'Complete check' or 'Fail sample'"]
+                        # dont redirect - need to keep on current screen
+
+                elif next_step == 'Fail sample':
+                    signoff_check(request.user, current_step_obj, 'F')
+                    return redirect('view_samples', sample_data['worksheet_id'])
+
+
+    if dna_or_rna == 'DNA':
+        return render(request, 'analysis/analysis_sheet_dna.html', context)
+    if dna_or_rna == 'RNA':
+        return render(request, 'analysis/analysis_sheet_rna.html', context)
     else:
         raise Http404(f'Sample must be either DNA or RNA, not {dna_or_rna}')
