@@ -152,73 +152,69 @@ def analysis_sheet(request, dna_or_rna, sample_id):
     # DNA workflow
     if dna_or_rna == 'DNA':
 
-        sample_variants=variant_analysis.objects.filter(sampleId= sample_data.get('sample_id')).filter(run=sample_data.get('run_id')).filter(panel=sample_data.get('panel'))
+        sample_variants = VariantAnalysis.objects.filter(
+            sample_id=sample_obj,
+        )
 
         variant_calls=[]
+        polys_list=[]
 
         for sample_variant in sample_variants.iterator():
 
             #count how many times variant is present in other samples on the run
-            this_run=variant_analysis.objects.filter(variant= sample_variant.variant).filter(run=sample_data.get('run_id'))
-            this_run_count=(this_run.count())
+            this_run = VariantAnalysis.objects.filter(
+                variant= sample_variant.variant,
+                run=sample_data.get('run_id'),
+            )
+            this_run_count = this_run.count()
 
+            # TODO - we're going to add this last
             #count how many times the variant is present in previous runs
-            previous_runs=variant_analysis.objects.filter(variant= sample_variant.variant).exclude(run=sample_data.get('run_id'))
-            previous_runs_count=(previous_runs.count())
+            #previous_runs = VariantAnalysis.objects.filter(variant= sample_variant.variant).exclude(run=sample_data.get('run_id'))
+            #previous_runs_count = previous_runs.count()
 
             #get the total number of samples on the run
-            total_runs=variant_analysis.objects.filter(run=sample_data.get('run_id'))
-            total_runs_count=(total_runs.count())
+            total_runs = VariantAnalysis.objects.filter(run=sample_data.get('run_id'))
+            total_runs_count = total_runs.count()
 
+            # get whether the variant falls within a poly/ known list
+            # TODO - will have to handle multiple poly/ known lists in future
+            variant_obj = Variant.objects.get(genomic=sample_variant.variant.genomic)
+            previous_classifications = []
+            for l in VariantToVariantList.objects.filter(variant=variant_obj):
+                if l.variant_list.name == 'TSO500_known':
+                    previous_classifications.append(l.classification)
+                elif l.variant_list.name == 'TSO500_polys':
+                    previous_classifications.append('Poly')
 
             #Create a variant calls dictionary to pass to analysis-snvs.html
-            variant_calls_dict={
-            'genomic': sample_variant.variant.genomic ,
-            'gene': sample_variant.variant.gene ,
-            'exon': sample_variant.variant.exon ,
-            'transcript': sample_variant.variant.transcript,
-            'hgvs_c': sample_variant.variant.hgvs_c ,
-            'hgvs_p': sample_variant.variant.hgvs_p,
-            'this_run': {
-                        'count': this_run_count, 
-                        'total': total_runs_count,
-                    },   
-            'previous_runs': {
-                        'count': previous_runs_count,
-            },
-            'vaf': {
-                        'vaf': sample_variant.vaf,
-                        'total_count': sample_variant.total_count,
-                        'alt_count': sample_variant.alt_count
-                }
-            }
-            variant_calls.append(variant_calls_dict)
-
-
-        #Create a polys dictionary
-        polys_list=[]
-
-        #loop through the sample variants and get all the polys from the database that have genomic coordinates matching the sample variant coordinates
-        for sample_variant in sample_variants.iterator():
-
-            known_polys=polys.objects.filter(genomic= sample_variant.variant.genomic)
-
-            for known_poly in known_polys:
-                polys_dict={
-                    'genomic': known_poly.genomic,
-                    'gene': known_poly.gene ,
-                    'exon': known_poly.exon,
-                    'transcript': known_poly.transcript ,
-                    'hgvs_c': known_poly.hgvs_c,
-                    'hgvs_p': known_poly.hgvs_p,
-                    'vaf': {
-                        'vaf': sample_variant.vaf,
-                        'total_count': sample_variant.total_count,
-                        'alt_count': sample_variant.alt_count
+            variant_calls_dict = {
+                'genomic': sample_variant.variant.genomic,
+                'gene': sample_variant.variant.gene,
+                'exon': sample_variant.variant.exon,
+                'transcript': sample_variant.variant.transcript,
+                'hgvs_c': sample_variant.variant.hgvs_c,
+                'hgvs_p': sample_variant.variant.hgvs_p,
+                'this_run': {
+                    'count': this_run_count, 
+                    'total': total_runs_count,
+                },   
+                'previous_runs': {
+                    'known': ' | '.join(previous_classifications),
+                    'count': '1', #previous_runs_count,
+                },
+                'vaf': {
+                    'vaf': sample_variant.vaf,
+                    'total_count': sample_variant.total_count,
+                    'alt_count': sample_variant.alt_count,
                 }
             }
 
-                polys_list.append(polys_dict)
+            # add to poly list if appears in the poly variant list, otherwise add to variant calls list
+            if 'Poly' in previous_classifications:
+                polys_list.append(variant_calls_dict)
+            else:
+                variant_calls.append(variant_calls_dict)
 
 
         #create a coverage dictionary

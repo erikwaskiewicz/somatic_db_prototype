@@ -100,37 +100,49 @@ class Check(models.Model):
     signoff_time = models.DateTimeField(blank=True, null=True)
 
 
+class Variant(models.Model):
+    """
+    """
+    genomic = models.CharField(max_length=50, primary_key=True)
+    gene = models.CharField(max_length=50)
+    exon = models.CharField(max_length=50)
+    transcript = models.CharField(max_length=50)
+    hgvs_c = models.CharField(max_length=50)
+    hgvs_p = models.CharField(max_length=50)
 
-class variant_call(models.Model):
-    genomic=models.CharField(max_length=50, primary_key=True)
-    gene=models.CharField(max_length=50)
-    exon=models.CharField(max_length=50)
-    transcript=models.CharField(max_length=50)
-    hgvs_c=models.CharField(max_length=50)
-    hgvs_p=models.CharField(max_length=50)
 
-class variant_analysis(models.Model):
-    sampleId=models.ForeignKey(Sample, on_delete=models.CASCADE)
+class VariantAnalysis(models.Model):
+    """
+    """
+    sample_id = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
     run = models.ForeignKey('Run', on_delete=models.CASCADE)
-    panel = models.ForeignKey('panel', on_delete=models.CASCADE)
-    variant=models.ForeignKey(variant_call, on_delete=models.CASCADE)
-    vaf=models.CharField(max_length=50)
-    total_count=models.IntegerField()
-    alt_count=models.IntegerField()
-    manual_upload=models.BooleanField(default=False)
+    panel = models.ForeignKey('Panel', on_delete=models.CASCADE)
+    variant = models.ForeignKey('Variant', on_delete=models.CASCADE)
+    vaf = models.CharField(max_length=50)
+    total_count = models.IntegerField()
+    alt_count = models.IntegerField()
+    manual_upload = models.BooleanField(default=False)
 
 
-class polys(models.Model):
+# TODO add variant check - outcomes of genuine artefact etc
 
-    genomic=models.CharField(max_length=50, primary_key=True)
-    gene=models.CharField(max_length=50)
-    exon=models.CharField(max_length=50)
-    transcript=models.CharField(max_length=50)
-    hgvs_c=models.CharField(max_length=50)
-    hgvs_p=models.CharField(max_length=50)
-    vaf=models.CharField(max_length=50)
-    total_count=models.IntegerField()
-    alt_count=models.IntegerField()
+
+
+# TODO replace polys with variant list table? so it can handle multiple lists 
+class VariantList(models.Model):
+    """
+    A list of known variants. e.g. a poly list or previously classified list
+    """
+    name = models.CharField(max_length=50, primary_key=True)
+
+
+class VariantToVariantList(models.Model):
+    """
+    Link variants to variant lists
+    """
+    variant_list = models.ForeignKey('VariantList', on_delete=models.CASCADE)
+    variant = models.ForeignKey('Variant', on_delete=models.CASCADE)
+    classification = models.CharField(max_length=50, blank=True, null=True)
 
 
 class gene(models.Model):
