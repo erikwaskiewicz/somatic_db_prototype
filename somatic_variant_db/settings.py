@@ -80,17 +80,27 @@ DB_PASSWORD_FILE = 'password.txt'
 with open(DB_PASSWORD_FILE) as f:
     db_password = f.readline().strip()
 
+DB_INSTANCE = 'local'
+if DB_INSTANCE == 'local':
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'somatic_variant_db',
-        'USER': 'somatic_variant_db_user',
-        'PASSWORD': db_password,
-        'HOST': 'localhost',
-        'PORT': '',
+	DATABASES = {
+		'default': {
+		'ENGINE': 'django.db.backends.sqlite3',
+		'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+ 		}
+	}
+
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'somatic_variant_db',
+            'USER': 'somatic_variant_db_user',
+            'PASSWORD': db_password,
+            'HOST': 'localhost',
+            'PORT': '',
+        }
     }
-}
 
 
 # Password validation
