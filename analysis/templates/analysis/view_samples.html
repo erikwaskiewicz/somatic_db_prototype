@@ -39,7 +39,7 @@
           <td>{{ analysis.checks.assigned_to }}</td>
           <td style="text-align:right">
             {% if analysis.checks.assigned_to == None %}
-              <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' sample_info.dna_rna analysis.analysis_id %}" role="button">Assign & analyse</a>
+              <a class="btn btn-success btn-block" href="{% url 'analysis_sheet' sample_info.dna_rna analysis.analysis_id %}" role="button">Assign & analyse</a>
             
             {% elif analysis.checks.current_status == 'Complete' %}
             <a class="btn btn-light btn-block" href="{% url 'analysis_sheet' sample_info.dna_rna analysis.analysis_id %}#report" role="button">View</a>
@@ -59,10 +59,10 @@
 
             {% else %}
             <div class="btn-group btn-block">
-              <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' sample_info.dna_rna analysis.analysis_id %}" role="button">
+              <a class="btn btn-success btn-block" href="{% url 'analysis_sheet' sample_info.dna_rna analysis.analysis_id %}" role="button">
                 Analyse
               </a>
-              <button type="button btn-block" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <button type="button btn-block" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
               <div class="dropdown-menu">

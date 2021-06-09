@@ -2,12 +2,20 @@ from django.db import models
 
 # Create your models here.
 class Run(models.Model):
+    """
+    A sequencing run
+
+    """
     run_id = models.CharField(max_length=50, primary_key=True)
 
     def __str__(self):
         return self.run_id
 
 class Worksheet(models.Model):
+    """
+    An NGS worksheet, sometimes 1 run == 1 worksheet, sometimes there are multiple ws per run
+
+    """
     ws_id = models.CharField(max_length=50, primary_key=True)
     run = models.ForeignKey('Run', on_delete=models.CASCADE)
     assay = models.CharField(max_length=50)
@@ -22,18 +30,32 @@ class Worksheet(models.Model):
 
 
 class Sample(models.Model):
+    """
+    An individual sample
+
+    """
+    TYPE_CHOICES = (
+        ('DNA', 'DNA'),
+        ('RNA', 'RNA'),
+    )
     sample_id = models.CharField(max_length=50, primary_key=True)
-    sample_type = models.CharField(max_length=50)  # DNA or RNA
+    sample_type = models.CharField(max_length=3, choices=TYPE_CHOICES)  # DNA or RNA
 
 
 class Panel(models.Model):
     """
+    A virtual panel
+    TODO - add enough info to kick off a reanalysis from within the db
+    e.g. path to BED, ?panel version number
+
     """
     panel_name = models.CharField(max_length=50, primary_key=True)
 
 
 class SampleAnalysis(models.Model):
     """
+    An analysis of a sample, if there are multiple analyses (e.g. multiple panels), 
+    then there will be multiple sample analysis objects
 
     """
     worksheet = models.ForeignKey('Worksheet', on_delete=models.CASCADE)
@@ -104,119 +126,143 @@ class Variant(models.Model):
     """
     Variant info that always stays the same
     TODO - ?extract gene/ exon etc into own model
+
     """
-    genomic = models.CharField(max_length=50, primary_key=True)
+    genomic_37 = models.CharField(max_length=200)
+    genomic_38 = models.CharField(max_length=200)
     gene = models.CharField(max_length=50)
     exon = models.CharField(max_length=50)
-    transcript = models.CharField(max_length=50)
-    hgvs_c = models.CharField(max_length=50)
-    hgvs_p = models.CharField(max_length=50)
+    transcript = models.CharField(max_length=200)
+    hgvs_c = models.CharField(max_length=200)
+    hgvs_p = models.CharField(max_length=200)
 
 
 class VariantAnalysis(models.Model):
     """
     Sample specific information about a variant
+
     """
-    sample_id = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
-    run = models.ForeignKey('Run', on_delete=models.CASCADE)
-    panel = models.ForeignKey('Panel', on_delete=models.CASCADE)
+    sample = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
     variant = models.ForeignKey('Variant', on_delete=models.CASCADE)
-    vaf = models.CharField(max_length=50)
+    vaf = models.IntegerField()
     total_count = models.IntegerField()
     alt_count = models.IntegerField()
     manual_upload = models.BooleanField(default=False)
 
 
-# TODO add variant check - outcomes of genuine artefact etc
 class VariantCheck(models.Model):
     """
     Record the genuine/ artefact check for a variant analysis
+
     """
+    DECISION_CHOICES = (
+        ('-', 'Pending'),
+        ('G', 'Genuine'),
+        ('A', 'Artefact'),
+        ('P', 'Poly'),
+        ('M', 'Miscalled'),
+    )
     variant_analysis = models.ForeignKey('VariantAnalysis', on_delete=models.CASCADE)
     check_object = models.ForeignKey('Check', on_delete=models.CASCADE)
-    decision = models.CharField(max_length=50, blank=True, null=True)
+    decision = models.CharField(max_length=1, default='-')
     comment = models.CharField(max_length=500, blank=True, null=True) # TODO - link out to seperate comment model???
 
 
-# TODO replace polys with variant list table? so it can handle multiple lists 
 class VariantList(models.Model):
     """
     A list of known variants. e.g. a poly list or previously classified list
+
     """
+    TYPE_CHOICES = (
+        ('P', 'Poly'),
+        ('K', 'Known'),
+        ('A', 'Artefact'),
+    )
     name = models.CharField(max_length=50, primary_key=True)
+    list_type = models.CharField(max_length=1, choices=TYPE_CHOICES)
 
 
 class VariantToVariantList(models.Model):
     """
     Link variants to variant lists
+    
     """
     variant_list = models.ForeignKey('VariantList', on_delete=models.CASCADE)
     variant = models.ForeignKey('Variant', on_delete=models.CASCADE)
     classification = models.CharField(max_length=50, blank=True, null=True)
 
 
-class gene(models.Model):
+class Gene(models.Model):
+    """
 
-    gene=models.CharField(max_length=50, primary_key=True)
-
-
-class coverage_regions(models.Model):
-
-    genomic=models.CharField(max_length=50, primary_key=True)
-    gene=models.ForeignKey(gene, on_delete=models.CASCADE)
-    hgvs_c=models.CharField(max_length=50)
+    """
+    gene = models.CharField(max_length=50, primary_key=True)
 
 
+class CoverageRegions(models.Model):
+    """
 
-class gene_coverage_analysis(models.Model):
-    sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
-    gene = models.ForeignKey('gene', on_delete=models.CASCADE)
-    percent_270x=models.CharField(max_length=50)
-    percent_135x=models.CharField(max_length=50)
-    panel=models.ForeignKey(Panel, on_delete=models.CASCADE)
-    av_ntc_coverage=models.IntegerField()
-    percent_ntc=models.CharField(max_length=50)
-    percent_cosmic=models.CharField(max_length=50)
+    """
+    genomic = models.CharField(max_length=50, primary_key=True)
+    gene = models.ForeignKey('Gene', on_delete=models.CASCADE)
+    hgvs_c = models.CharField(max_length=50)
 
 
-class coverage_regions_analysis(models.Model):
-    sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
-    genomic = models.ForeignKey('coverage_regions', on_delete=models.CASCADE)
-    panel=models.ForeignKey(Panel, on_delete=models.CASCADE)
-    gene=models.ForeignKey(gene, on_delete=models.CASCADE)
-    average_coverage=models.IntegerField()
-    percent_270x=models.CharField(max_length=50)
-    percent_135x=models.CharField(max_length=50)
-    ntc_coverage=models.IntegerField()
-    percent_ntc=models.CharField(max_length=50)
+class GeneCoverageAnalysis(models.Model):
+    """
+
+    """
+    sample = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
+    gene = models.ForeignKey('Gene', on_delete=models.CASCADE)
+    percent_270x = models.CharField(max_length=50)
+    percent_135x = models.CharField(max_length=50)
+    av_ntc_coverage = models.IntegerField()
+    percent_ntc = models.CharField(max_length=50)
+    percent_cosmic = models.CharField(max_length=50)
 
 
-class gaps_analysis(models.Model):
-    sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
-    genomic = models.ForeignKey('coverage_regions', on_delete=models.CASCADE)
-    panel=models.ForeignKey(Panel, on_delete=models.CASCADE)
-    gene=models.ForeignKey(gene, on_delete=models.CASCADE)
-    average_coverage=models.IntegerField()
-    percent_270x=models.CharField(max_length=50)
-    percent_135x=models.CharField(max_length=50)
-    average_coverage=models.IntegerField()
-    percent_cosmic=models.CharField(max_length=50)
+class CoverageRegionsAnalysis(models.Model):
+    """
+
+    """
+    sample = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
+    genomic = models.ForeignKey('CoverageRegions', on_delete=models.CASCADE)
+    gene = models.ForeignKey('Gene', on_delete=models.CASCADE)
+    average_coverage = models.IntegerField()
+    percent_270x = models.CharField(max_length=50)
+    percent_135x = models.CharField(max_length=50)
+    ntc_coverage = models.IntegerField()
+    percent_ntc = models.CharField(max_length=50)
 
 
+class GapsAnalysis(models.Model):
+    """
 
-class fusion(models.Model):
-    fusion_genes=models.CharField(max_length=50, primary_key=True)
-    left_breakpoint=models.CharField(max_length=50)
-    right_breakpoint=models.CharField(max_length=50)
-
-
-class fusion_analysis(models.Model):
-    sampleId=models.ForeignKey(Sample, on_delete=models.CASCADE)
-    run = models.ForeignKey('Run', on_delete=models.CASCADE)
-    panel=models.ForeignKey(Panel, on_delete=models.CASCADE)
-    fusion_genes=models.ForeignKey(fusion, on_delete=models.CASCADE)
-    split_reads=models.IntegerField()
-    spanning_reads=models.IntegerField()
+    """
+    sample = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
+    genomic = models.ForeignKey('CoverageRegions', on_delete=models.CASCADE)
+    gene = models.ForeignKey('Gene', on_delete=models.CASCADE)
+    average_coverage = models.IntegerField()
+    percent_270x = models.CharField(max_length=50)
+    percent_135x = models.CharField(max_length=50)
+    average_coverage = models.IntegerField()
+    percent_cosmic = models.CharField(max_length=50)
 
 
+class Fusion(models.Model):
+    """
 
+    """
+    fusion_genes = models.CharField(max_length=50, primary_key=True)
+    left_breakpoint = models.CharField(max_length=50)
+    right_breakpoint = models.CharField(max_length=50)
+
+
+class FusionAnalysis(models.Model):
+    """
+
+    """
+    sample = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
+    fusion_genes = models.ForeignKey('Fusion', on_delete=models.CASCADE)
+    split_reads = models.IntegerField()
+    spanning_reads = models.IntegerField()

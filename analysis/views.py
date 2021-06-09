@@ -153,7 +153,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
     if dna_or_rna == 'DNA':
 
         sample_variants = VariantAnalysis.objects.filter(
-            sample_id=sample_obj,
+            sample=sample_obj,
         )
 
         variant_calls=[]
@@ -164,7 +164,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
             #count how many times variant is present in other samples on the run
             this_run = VariantAnalysis.objects.filter(
                 variant= sample_variant.variant,
-                run=sample_data.get('run_id'),
+                sample__worksheet__run__run_id=sample_data.get('run_id'),
             )
             this_run_count = this_run.count()
 
@@ -174,12 +174,12 @@ def analysis_sheet(request, dna_or_rna, sample_id):
             #previous_runs_count = previous_runs.count()
 
             #get the total number of samples on the run
-            total_runs = VariantAnalysis.objects.filter(run=sample_data.get('run_id'))
+            total_runs = VariantAnalysis.objects.filter(sample__worksheet__run__run_id=sample_data.get('run_id'))
             total_runs_count = total_runs.count()
 
             # get whether the variant falls within a poly/ known list
             # TODO - will have to handle multiple poly/ known lists in future
-            variant_obj = Variant.objects.get(genomic=sample_variant.variant.genomic)
+            variant_obj = Variant.objects.get(genomic_37=sample_variant.variant.genomic_37)
             previous_classifications = []
             for l in VariantToVariantList.objects.filter(variant=variant_obj):
                 if l.variant_list.name == 'TSO500_known':
@@ -199,7 +199,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
 
             #Create a variant calls dictionary to pass to analysis-snvs.html
             variant_calls_dict = {
-                'genomic': sample_variant.variant.genomic,
+                'genomic': sample_variant.variant.genomic_37,
                 'gene': sample_variant.variant.gene,
                 'exon': sample_variant.variant.exon,
                 'transcript': sample_variant.variant.transcript,
@@ -231,103 +231,99 @@ def analysis_sheet(request, dna_or_rna, sample_id):
 
 
         #create a coverage dictionary
-        coverage_data={}
-        gene_coverage_analysis_obj=gene_coverage_analysis.objects.filter(sample= sample_data.get('sample_id')).filter(panel= sample_data.get('panel'))
-        for gene_coverage_obj in gene_coverage_analysis_obj.iterator():
-            regions=[]
-            coverage_regions_analysis_obj=coverage_regions_analysis.objects.filter(sample= sample_data.get('sample_id')).filter(gene=gene_coverage_obj.gene).filter(panel= sample_data.get('panel'))
-            for region in coverage_regions_analysis_obj.iterator():
-                regions_dict={
-                'genomic':region.genomic.genomic,
-                'average_coverage': region.average_coverage,
-                'percent_135x': region.percent_135x,
-                'percent_270x': region.percent_270x,
-                'ntc_coverage':region.ntc_coverage,
-                'percent_ntc':region.percent_ntc,
-                }
+        coverage_data = {}
+        gene_coverage_analysis_obj = GeneCoverageAnalysis.objects.filter(sample=sample_obj)
 
+        for gene_coverage_obj in gene_coverage_analysis_obj:
+
+            regions = []
+            coverage_regions_analysis_obj = CoverageRegionsAnalysis.objects.filter(sample=sample_obj)
+            for region in coverage_regions_analysis_obj:
+                regions_dict = {
+                    'genomic': region.genomic.genomic,
+                    'average_coverage': region.average_coverage,
+                    'percent_135x': region.percent_135x,
+                    'percent_270x': region.percent_270x,
+                    'ntc_coverage': region.ntc_coverage,
+                    'percent_ntc': region.percent_ntc,
+                }
                 regions.append(regions_dict)
 
-
-            #Create a dictionary of gaps in the sample for the given gene
-            gaps=[]
-            gaps_analysis_obj=gaps_analysis.objects.filter(sample= sample_data.get('sample_id')).filter(gene=gene_coverage_obj.gene)
-            for gap in gaps_analysis_obj.iterator():
-                gaps_dict={
-                'genomic':gap.genomic.genomic,
-                'average_coverage': gap.percent_135x,
-                'percent_135x': gap.percent_135x,
-                'percent_270x': gap.percent_270x,
-                'average_coverage':gap.average_coverage,
-                'percent_cosmic':gap.percent_cosmic
-
+            # Create a dictionary of gaps in the sample for the given gene
+            gaps = []
+            gaps_analysis_obj=gaps_analysis.objects.filter(sample=sample_obj)
+            for gap in gaps_analysis_obj:
+                gaps_dict = {
+                    'genomic': gap.genomic.genomic,
+                    'average_coverage': gap.percent_135x,
+                    'percent_135x': gap.percent_135x,
+                    'percent_270x': gap.percent_270x,
+                    'average_coverage': gap.average_coverage,
+                    'percent_cosmic': gap.percent_cosmic
                 }
-
                 gaps.append(gaps_dict)
 
-
-            #combine gaps and regions dictionaries
-            gene_dict ={
+            # combine gaps and regions dictionaries
+            gene_dict = {
                 'av_coverage': '300',
                 'percent_270x': gene_coverage_obj.percent_270x,
                 'percent_135x': gene_coverage_obj.percent_135x,
                 'av_ntc_coverage': gene_coverage_obj.av_ntc_coverage,
                 'percent_ntc': gene_coverage_obj.percent_ntc,
-                'regions':regions,
-                'gaps':gaps,
+                'regions': regions,
+                'gaps': gaps,
             }
 
-            coverage_data[gene_coverage_obj.gene.gene]=gene_dict
+            coverage_data[gene_coverage_obj.gene.gene] = gene_dict
 
-
-        variant_data={'variant_calls':variant_calls, 'polys': polys_list }
-        context['variant_data']=variant_data
-        context['coverage_data']=coverage_data
-        print(context)
+        # add variant and coverage data to context dict
+        context['variant_data'] = {
+            'variant_calls': variant_calls, 
+            'polys': polys_list,
+        }
+        context['coverage_data'] = coverage_data
 
 
     # RNA workflow
     elif dna_or_rna == 'RNA':
 
-        fusions=fusion_analysis.objects.filter(sampleId= sample_data.get('sample_id')).filter(run=sample_data.get('run_id')).filter(panel=sample_data.get('panel'))
+        fusions = FusionAnalysis.objects.filter(sample = sample_obj)
 
         fusion_calls=[]
+        for fusion_object in fusions:
 
-        for fusion_object in fusions.iterator():
+            this_run = FusionAnalysis.objects.filter(
+                fusion_genes=fusion_object.fusion_genes,
+                sample__worksheet__run__run_id=sample_data.get('run_id')
+            )
+            this_run_count = this_run.count()
 
-            this_run=fusion_analysis.objects.filter(fusion_genes= fusion_object.fusion_genes).filter(run=sample_data.get('run_id'))
-            this_run_count=(this_run.count())
+            total_runs = FusionAnalysis.objects.filter(sample__worksheet__run__run_id=sample_data.get('run_id'))
+            total_runs_count = total_runs.count()
 
-            previous_runs=fusion_analysis.objects.filter(fusion_genes= fusion_object.fusion_genes).exclude(run=sample_data.get('run_id'))
-            previous_runs_count=(previous_runs.count())
+            # TODO were leaving this til last
+            #previous_runs = FusionAnalysis.objects.filter(fusion_genes=fusion_object.fusion_genes).exclude(sample__worksheet__run__run_id=sample_data.get('run_id'))
+            #previous_runs_count = previous_runs.count()
 
-            total_runs=fusion_analysis.objects.filter(run=sample_data.get('run_id'))
-            total_runs_count=(total_runs.count())
-
-
-            fusion_calls_dict={
-            'fusion_genes': fusion_object.fusion_genes.fusion_genes,
-            'split_reads': fusion_object.split_reads,
-            'spanning_reads': fusion_object.spanning_reads,
-            'left_breakpoint': fusion_object.fusion_genes.left_breakpoint ,
-            'right_breakpoint': fusion_object.fusion_genes.right_breakpoint ,
-            'this_run': {
-                        'count': this_run_count, 
-                        'total': total_runs_count,
-                    },   
-            'previous_runs': {
-                        'count': previous_runs_count,
-            },
-
+            fusion_calls_dict = {
+                'fusion_genes': fusion_object.fusion_genes.fusion_genes,
+                'split_reads': fusion_object.split_reads,
+                'spanning_reads': fusion_object.spanning_reads,
+                'left_breakpoint': fusion_object.fusion_genes.left_breakpoint,
+                'right_breakpoint': fusion_object.fusion_genes.right_breakpoint,
+                'this_run': {
+                    'count': this_run_count, 
+                    'total': total_runs_count,
+                    'ntc': True,
+                },   
+                'previous_runs': {
+                    'count': '1',
+                },
             }
 
             fusion_calls.append(fusion_calls_dict)
 
-
-            print(fusion_calls_dict)
-
-        fusion_data={'fusion_calls':fusion_calls }
-        context['fusion_data']=fusion_data
+        context['fusion_data'] = {'fusion_calls': fusion_calls}
 
 
     ###  If any buttons are pressed
