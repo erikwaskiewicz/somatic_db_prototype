@@ -32,7 +32,7 @@
         {{ v.vaf.vaf }}<br>{{ v.vaf.alt_count }} of {{ v.vaf.total_count }} reads
       </td>
       <td>
-        {{ v.this_run.count }} of {{ v.this_run.total }} samples<br>Present in NTC: {{ v.this_run.ntc }}
+        {{ v.this_run.count }} of {{ v.this_run.total }} samples<br>In NTC: {{ v.this_run.ntc }}
       </td>
       <td>
         {{ v.previous_runs.known }}
@@ -48,7 +48,7 @@
         {% endfor %}
       </td>
       <td>
-        <button type="button" data-toggle="modal" data-target="#comments-modal"
+        <button type="button" data-toggle="modal" data-target="#comments-modal-{{ v.genomic }}"
         {% if v.comments %}
         class="btn btn-warning">
         {% else %}
@@ -126,7 +126,7 @@
   </div>
 </div>
 
-
+{% for v in variant_data.variant_calls %}
 <!-- Modal -->
 <div class="modal fade" id="counts-modal" tabindex="-1" role="dialog" aria-labelledby="counts-modalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
@@ -178,7 +178,7 @@
 
 
 <!-- Comments Modal -->
-<div class="modal fade" id="comments-modal" tabindex="-1" role="dialog" aria-labelledby="comments-modal-label" aria-hidden="true">
+<div class="modal fade" id="comments-modal-{{ v.genomic }}" tabindex="-1" role="dialog" aria-labelledby="comments-modal-label" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -197,14 +197,12 @@
             </tr>
           </thead>
           <tbody>
+            {% for c in v.comments %}
             <tr>
-              <td>Test</td>
-              <td>EW</td>
+              <td>{{ c.comment }}</td>
+              <td>{{ c.user }}</td>
             </tr>
-            <tr>
-              <td>Test 2</td>
-              <td>EW</td>
-            </tr>
+            {% endfor %}
           </tbody>
         </table>
 
@@ -213,7 +211,7 @@
     </div>
   </div>
 </div>
-
+{% endfor %}
 
 <!-- Add variant modal -->
 <div class="modal fade" id="add-variant-modal" tabindex="-1" role="dialog" aria-labelledby="add-variant-modalLabel" aria-hidden="true">

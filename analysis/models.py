@@ -102,6 +102,8 @@ class Check(models.Model):
 
 class Variant(models.Model):
     """
+    Variant info that always stays the same
+    TODO - ?extract gene/ exon etc into own model
     """
     genomic = models.CharField(max_length=50, primary_key=True)
     gene = models.CharField(max_length=50)
@@ -113,6 +115,7 @@ class Variant(models.Model):
 
 class VariantAnalysis(models.Model):
     """
+    Sample specific information about a variant
     """
     sample_id = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
     run = models.ForeignKey('Run', on_delete=models.CASCADE)
@@ -125,7 +128,14 @@ class VariantAnalysis(models.Model):
 
 
 # TODO add variant check - outcomes of genuine artefact etc
-
+class VariantCheck(models.Model):
+    """
+    Record the genuine/ artefact check for a variant analysis
+    """
+    variant_analysis = models.ForeignKey('VariantAnalysis', on_delete=models.CASCADE)
+    check_object = models.ForeignKey('Check', on_delete=models.CASCADE)
+    decision = models.CharField(max_length=50, blank=True, null=True)
+    comment = models.CharField(max_length=500, blank=True, null=True) # TODO - link out to seperate comment model???
 
 
 # TODO replace polys with variant list table? so it can handle multiple lists 

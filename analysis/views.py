@@ -159,7 +159,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
         variant_calls=[]
         polys_list=[]
 
-        for sample_variant in sample_variants.iterator():
+        for sample_variant in sample_variants:
 
             #count how many times variant is present in other samples on the run
             this_run = VariantAnalysis.objects.filter(
@@ -187,6 +187,16 @@ def analysis_sheet(request, dna_or_rna, sample_id):
                 elif l.variant_list.name == 'TSO500_polys':
                     previous_classifications.append('Poly')
 
+            # get checks for each variant
+            variant_checks = VariantCheck.objects.filter(variant_analysis=sample_variant)
+            variant_checks_list = [ v.decision for v in variant_checks ]
+            variant_comments_list = []
+            for v in variant_checks:
+                if v.comment:
+                    variant_comments_list.append(
+                        {'comment': v.comment, 'user': v.check_object.user}
+                    )
+
             #Create a variant calls dictionary to pass to analysis-snvs.html
             variant_calls_dict = {
                 'genomic': sample_variant.variant.genomic,
@@ -198,6 +208,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
                 'this_run': {
                     'count': this_run_count, 
                     'total': total_runs_count,
+                    'ntc': True,
                 },   
                 'previous_runs': {
                     'known': ' | '.join(previous_classifications),
@@ -207,7 +218,9 @@ def analysis_sheet(request, dna_or_rna, sample_id):
                     'vaf': sample_variant.vaf,
                     'total_count': sample_variant.total_count,
                     'alt_count': sample_variant.alt_count,
-                }
+                },
+                'checks': variant_checks_list,
+                'comments': variant_comments_list,
             }
 
             # add to poly list if appears in the poly variant list, otherwise add to variant calls list

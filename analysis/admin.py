@@ -12,6 +12,7 @@ admin.site.register(Variant)
 admin.site.register(VariantAnalysis)
 admin.site.register(VariantList)
 admin.site.register(VariantToVariantList)
+admin.site.register(VariantCheck)
 
 admin.site.register(gene)
 admin.site.register(coverage_regions)
