@@ -51,7 +51,7 @@ class SampleAnalysis(models.Model):
 
         current_status = 'Complete'
         assigned_to = 'N/A'
-        current_check_object = None
+        current_check_object = all_checks.latest('pk')
 
         for n, c in enumerate(vus_checks):
             if c.status == 'P':
@@ -64,6 +64,12 @@ class SampleAnalysis(models.Model):
                 current_status = f'{c.get_stage_display()} {n+1}'
                 assigned_to = c.user
                 current_check_object = c
+
+        for c in all_checks:
+            if c.status == 'F':
+                current_status = 'Fail'
+                assigned_to = 'N/A'
+                current_check_object = all_checks.latest('pk')
 
         return {
             'current_status': current_status,

@@ -132,7 +132,17 @@ def analysis_sheet(request, dna_or_rna, sample_id):
         'checks': sample_obj.get_checks(),
     }
 
+    # assign to whoever clicked the sample and reload check objects
+    current_step_obj = sample_data['checks']['current_check_object']
+    if current_step_obj.user == None:
+        current_step_obj.user = request.user
+        current_step_obj.save()
+        sample_data['checks'] = sample_obj.get_checks()
+        
+
     context = {
+        'success': [],
+        'warning': [],
         'sample_data': sample_data,
         'new_variant_form': NewVariantForm(),
         'submit_form': SubmitForm(),
@@ -324,14 +334,13 @@ def analysis_sheet(request, dna_or_rna, sample_id):
                 print(new_variant_form.cleaned_data)
 
 
-        # if finalise check submit for is clicked
+        # if finalise check submit form is clicked
         if 'next_step' in request.POST:
             submit_form = SubmitForm(request.POST)
 
             if submit_form.is_valid():
                 next_step = submit_form.cleaned_data['next_step']
                 current_step = sample_data['checks']['current_status']
-                current_step_obj = sample_data['checks']['current_check_object']
 
                 if next_step == 'Complete check':
                     if 'IGV' in current_step:
@@ -361,7 +370,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
 
                     # throw error, cant do this yet
                     elif 'Interpretation' in current_step:
-                        context['warning'] = ["Only one interpretation check is carried out within this database, please only select eith 'Complete check' or 'Fail sample'"]
+                        context['warning'].append("Only one interpretation check is carried out within this database, please only select eith 'Complete check' or 'Fail sample'")
                         # dont redirect - need to keep on current screen
 
                 elif next_step == 'Fail sample':
@@ -369,6 +378,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
                     return redirect('view_samples', sample_data['worksheet_id'])
 
 
+    # render the pages
     if dna_or_rna == 'DNA':
         return render(request, 'analysis/analysis_sheet_dna.html', context)
     if dna_or_rna == 'RNA':
