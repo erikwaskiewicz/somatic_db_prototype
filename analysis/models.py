@@ -39,7 +39,7 @@ class Sample(models.Model):
         ('RNA', 'RNA'),
     )
     sample_id = models.CharField(max_length=50, primary_key=True)
-    sample_type = models.CharField(max_length=3, choices=TYPE_CHOICES)  # DNA or RNA
+    sample_type = models.CharField(max_length=3, choices=TYPE_CHOICES)
 
 
 class Panel(models.Model):
@@ -164,7 +164,7 @@ class VariantCheck(models.Model):
     )
     variant_analysis = models.ForeignKey('VariantAnalysis', on_delete=models.CASCADE)
     check_object = models.ForeignKey('Check', on_delete=models.CASCADE)
-    decision = models.CharField(max_length=1, default='-')
+    decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
     comment = models.CharField(max_length=500, blank=True, null=True) # TODO - link out to seperate comment model???
 
 
@@ -185,7 +185,7 @@ class VariantList(models.Model):
 class VariantToVariantList(models.Model):
     """
     Link variants to variant lists
-    
+
     """
     variant_list = models.ForeignKey('VariantList', on_delete=models.CASCADE)
     variant = models.ForeignKey('Variant', on_delete=models.CASCADE)

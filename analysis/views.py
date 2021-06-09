@@ -189,7 +189,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
 
             # get checks for each variant
             variant_checks = VariantCheck.objects.filter(variant_analysis=sample_variant)
-            variant_checks_list = [ v.decision for v in variant_checks ]
+            variant_checks_list = [ v.get_decision_display() for v in variant_checks ]
             variant_comments_list = []
             for v in variant_checks:
                 if v.comment:
@@ -351,27 +351,36 @@ def analysis_sheet(request, dna_or_rna, sample_id):
                     if 'IGV' in current_step:
                         # if 1st IGV, make 2nd IGV
                         if current_step == 'IGV check 1':
-                            signoff_check(request.user, current_step_obj)
-                            make_next_check(sample_obj, 'IGV')
+                            if signoff_check(request.user, current_step_obj):
+                                make_next_check(sample_obj, 'IGV')
+                                return redirect('view_samples', sample_data['worksheet_id'])
+                            else:
+                                context['warning'].append('Not all variant have been checked')
                             
                         # if 2nd IGV (or 3rd...) make interpretation
                         else:
-                            signoff_check(request.user, current_step_obj)
-                            make_next_check(sample_obj, 'VUS')
+                            if signoff_check(request.user, current_step_obj):
+                                make_next_check(sample_obj, 'VUS')
+                                return redirect('view_samples', sample_data['worksheet_id'])
+                            else:
+                                context['warning'].append('Not all variant have been checked')
 
                     # if interpretation, make complete
                     elif 'Interpretation' in current_step:
-                        signoff_check(request.user, current_step_obj)
-
-                    return redirect('view_samples', sample_data['worksheet_id'])
+                        if signoff_check(request.user, current_step_obj):
+                            return redirect('view_samples', sample_data['worksheet_id'])
+                        else:
+                            context['warning'].append('Not all variant have been checked')
 
 
                 elif next_step == 'Request extra check':
                     if 'IGV' in current_step:
                         # make extra IGV check
-                        signoff_check(request.user, current_step_obj)
-                        make_next_check(sample_obj, 'IGV')
-                        return redirect('view_samples', sample_data['worksheet_id'])
+                        if signoff_check(request.user, current_step_obj):
+                            make_next_check(sample_obj, 'IGV')
+                            return redirect('view_samples', sample_data['worksheet_id'])
+                        else:
+                            context['warning'].append('Not all variant have been checked')
 
                     # throw error, cant do this yet
                     elif 'Interpretation' in current_step:
