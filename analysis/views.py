@@ -190,6 +190,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
             # get checks for each variant
             variant_checks = VariantCheck.objects.filter(variant_analysis=sample_variant)
             variant_checks_list = [ v.get_decision_display() for v in variant_checks ]
+            print(variant_checks)
             variant_comments_list = []
             for v in variant_checks:
                 if v.comment:
@@ -251,7 +252,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
 
             # Create a dictionary of gaps in the sample for the given gene
             gaps = []
-            gaps_analysis_obj=gaps_analysis.objects.filter(sample=sample_obj)
+            gaps_analysis_obj=GapsAnalysis.objects.filter(sample=sample_obj)
             for gap in gaps_analysis_obj:
                 gaps_dict = {
                     'genomic': gap.genomic.genomic,
