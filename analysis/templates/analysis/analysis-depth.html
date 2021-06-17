@@ -19,13 +19,13 @@
       <td>{{ v.av_coverage }}</td>
       <td>
         {{ v.percent_270x }}
-        {% if v.percent_270x != '100' %}
+        {% if v.percent_270x != 100 %}
         <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
         {% endif %}
       </td>
       <td>
         {{ v.percent_135x }}
-        {% if v.percent_135x != '100' %}
+        {% if v.percent_135x != 100 %}
         <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
         {% endif %}
       </td>
@@ -37,7 +37,7 @@
       </td>
       <td>
         {{ v.percent_ntc }}
-        {% if v.percent_ntc != '0' %}
+        {% if v.percent_ntc != 0 %}
         <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
         {% endif %}
       </td>
@@ -75,15 +75,14 @@
                   <td>Hotspot</td>
                   <td>{{ r.average_coverage }}</td>
                   <td>
-                    
                     {{ r.percent_135x}}
-                    {% if r.percent_135x != '100' %}
+                    {% if r.percent_135x != 100 %}
                     <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
                     {% endif %}
                   </td>
                   <td>
                     {{ r.percent_270x }}
-                    {% if r.percent_270x != '100' %}
+                    {% if r.percent_270x != 100 %}
                     <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
                     {% endif %}
                   </td>
@@ -95,7 +94,7 @@
                   </td>
                   <td>
                     {{ r.percent_ntc }}
-                    {% if r.percent_ntc != '0' %}
+                    {% if r.percent_ntc != 0 %}
                     <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
                     {% endif %}
                   </td>
@@ -106,6 +105,7 @@
             <br>
             
             <p><b>Gaps 270X</b></p>
+            {% if v.gaps_270 %}
             <table class="table table-hover table-bordered">
               <thead>
                 <tr>
@@ -125,7 +125,16 @@
               </tbody>
             </table>
 
+            {% else %}
+            <div class="alert alert-success">
+              No gaps at 270X
+            </div>
+            
+            {% endif %}
+
+
             <p><b>Gaps 135X</b></p>
+            {% if v.gaps_135 %}
             <table class="table table-hover table-bordered">
               <thead>
                 <tr>
@@ -145,63 +154,17 @@
               </tbody>
             </table>
 
+            {% else %}
+            <div class="alert alert-success">
+              No gaps at 135X
+            </div>
+
+            {% endif %}
+
+          </div>
       </div>
-    </div>
     </td>
     <td></td>
-        <!--<table class="table table-hover table-bordered">
-          <thead>
-            <tr>
-              <th scope="col">Region</th>
-              <th scope="col">Average coverage</th>
-              <th scope="col">% at 135X</th>
-              <th scope="col">% at 270X</th>
-              <th scope="col">Average NTC coverage</th>
-              <th scope="col">% NTC</th>
-            </tr>
-          </thead>
-          <tbody>
-          {% for r in v.regions %}
-            <tr>
-              <td>{{ r.genomic }}</td>
-              <td>{{ r.average_coverage }}</td>
-              <td>{{ r.percent_135x}}</td>
-              <td>{{ r.percent_270x }}</td>
-              <td>{{ r.ntc_coverage }}</td>
-              <td>{{ r.percent_ntc }}</td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
-        
-        <p><b>Gaps</b></p>
-        <table class="table table-hover table-bordered">
-          <thead>
-            <tr>
-              <th scope="col">Genomic coords</th>
-              <th scope="col">% at 135X</th>
-              <th scope="col">% at 270X</th>
-              <th scope="col">Average NTC coverage</th>
-              <th scope="col">% COSMIC</th>
-            </tr>
-          </thead>
-          <tbody>
-          {% for r in v.gaps %}
-            <tr>
-              <td>{{ r.genomic }}</td>
-              <td>{{ r.percent_135x }}</td>
-              <td>{{ r.percent_270x }}</td>
-              <td>{{ r.average_coverage }}</td>
-              <td>{{ r.percent_cosmic }}</td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
-      </td>
-      <td></td>
-    </tr>-->
-
-
 
     {% endfor %}
   </tbody>
