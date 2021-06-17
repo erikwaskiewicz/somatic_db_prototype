@@ -9,10 +9,17 @@
       <th scope="col">VAF</th>
       <th scope="col">This run</th>
       <th scope="col">Previously classed</th>
-      <th scope="col">Previously seen</th>
+      <!--<th scope="col">Previously seen</th>-->
       <th scope="col">IGV</th>
-      <th><span class="fa fa-comment-alt"></span></th>
+      {% if 'IGV' in sample_data.checks.current_status %}
       <th scope="col">Action</th>
+      {% elif 'Interpretation' in sample_data.checks.current_status %}
+      <th scope="col">Actionable</th>
+      <th scope="col">AMP tier</th>
+      <th scope="col">Report?</th>
+      {% endif %}
+      <th><span class="fa fa-comment-alt"></span></th>
+      
     </tr>
   </thead>
 
@@ -37,35 +44,67 @@
       <td>
         {{ v.previous_runs.known }}
       </td>
-      <td>
+      <!--<td>
         <button type="button" class="btn btn-light" data-toggle="modal" data-target="#counts-modal">
           {{ v.previous_runs.count }} <span class="fa fa-search"></span>
         </button>
-      </td>
+      </td>-->
+
+      {% if 'IGV' in sample_data.checks.current_status %}
+
       <td>
         {% for check in v.checks %}
           {{ forloop.counter }}: {{ check }}<br>
         {% endfor %}
       </td>
       <td>
-        <button type="button" data-toggle="modal" data-target="#comments-modal-{{ v.genomic }}"
-        {% if v.comments %}
-        class="btn btn-warning">
-        {% else %}
-        class="btn btn-light">
-        {% endif %}
-        {{ v.comments | length }}</button>
-      </td>
-      <td>
         <select name="variant" id="variant">
-          <option value="genuine">Pending</option>
-          <option value="artefact">Genuine</option>
-          <option value="genuine">Artefact</option>
-          <option value="genuine">Poly</option>
-          <option value="genuine">Miscalled</option>
+          <option value="pending">Pending</option>
+          <option value="genuine">Genuine</option>
+          <option value="artefact">Artefact</option>
+          <option value="poly">Poly</option>
+          <option value="miscalled">Miscalled</option>
+          <option value="wt">WT</option>
         </select>
       </td>
-    </tr>
+    
+    {% elif 'Interpretation' in sample_data.checks.current_status %}
+    <td>Genuine</td>
+    <td>
+      <select name="actionable" id="variant">
+        <option value="actionable-yes">Yes</option>
+        <option value="actionable-no">No</option>
+      </select>
+    </td>
+    <td>
+      <select name="tier" id="variant">
+        <option value="actionable-yes">None</option>
+        <option value="actionable-yes">Tier IA</option>
+        <option value="actionable-no">Tier IB</option>
+        <option value="actionable-yes">Tier IIC</option>
+        <option value="actionable-no">Tier IID</option>
+        <option value="actionable-yes">Tier III - VUS</option>
+        <option value="actionable-no">Tier IV - benign</option>
+      </select>
+    </td>
+    <td>
+      <select name="actionable" id="variant">
+        <option value="actionable-yes">Yes</option>
+        <option value="actionable-no">No</option>
+      </select>
+    </td>
+
+    {% endif %}
+    <td>
+      <button type="button" data-toggle="modal" data-target="#comments-modal-{{ v.genomic }}"
+      {% if v.comments %}
+      class="btn btn-warning">
+      {% else %}
+      class="btn btn-light">
+      {% endif %}
+      {{ v.comments | length }}</button>
+    </td>
+  </tr>
     {% endfor %}
   </tbody>
 
