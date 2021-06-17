@@ -36,10 +36,11 @@
         {{ v.transcript }}<br>{{ v.hgvs_c }}<br>{{ v.hgvs_p }}
       </td>
       <td>
-        {{ v.vaf.vaf }}<br>{{ v.vaf.alt_count }} of {{ v.vaf.total_count }} reads
+        {{ v.vaf.vaf }}%<br>{{ v.vaf.alt_count }} of {{ v.vaf.total_count }} reads
       </td>
       <td>
-        {{ v.this_run.count }} of {{ v.this_run.total }} samples<br>In NTC: {{ v.this_run.ntc }}
+        {{ v.this_run.count }} of {{ v.this_run.total }} samples<br>
+        In NTC: {{ v.this_run.ntc }} {% if v.this_run.ntc == True %}<span class="fa fa-exclamation-triangle" style="color:firebrick"></span>{% endif %}
       </td>
       <td>
         {{ v.previous_runs.known }}

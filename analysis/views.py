@@ -190,7 +190,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
             # get checks for each variant
             variant_checks = VariantCheck.objects.filter(variant_analysis=sample_variant)
             variant_checks_list = [ v.get_decision_display() for v in variant_checks ]
-            print(variant_checks)
+            #print(variant_checks)
             variant_comments_list = []
             for v in variant_checks:
                 if v.comment:
@@ -238,10 +238,10 @@ def analysis_sheet(request, dna_or_rna, sample_id):
         for gene_coverage_obj in gene_coverage_analysis_obj:
 
             regions = []
-            coverage_regions_analysis_obj = CoverageRegionsAnalysis.objects.filter(sample=sample_obj)
+            coverage_regions_analysis_obj = RegionCoverageAnalysis.objects.filter(gene=gene_coverage_obj)
             for region in coverage_regions_analysis_obj:
                 regions_dict = {
-                    'genomic': region.genomic.genomic,
+                    'hgvs_c': region.hgvs_c,
                     'average_coverage': region.average_coverage,
                     'percent_135x': region.percent_135x,
                     'percent_270x': region.percent_270x,
@@ -249,33 +249,43 @@ def analysis_sheet(request, dna_or_rna, sample_id):
                     'percent_ntc': region.percent_ntc,
                 }
                 regions.append(regions_dict)
+            #print(regions)
 
             # Create a dictionary of gaps in the sample for the given gene
-            gaps = []
-            gaps_analysis_obj=GapsAnalysis.objects.filter(sample=sample_obj)
+            gaps_270 = []
+            gaps_135 = []
+            gaps_analysis_obj=GapsAnalysis.objects.filter(gene=gene_coverage_obj)
             for gap in gaps_analysis_obj:
-                gaps_dict = {
-                    'genomic': gap.genomic.genomic,
-                    'average_coverage': gap.percent_135x,
-                    'percent_135x': gap.percent_135x,
-                    'percent_270x': gap.percent_270x,
-                    'average_coverage': gap.average_coverage,
-                    'percent_cosmic': gap.percent_cosmic
-                }
-                gaps.append(gaps_dict)
+                if gap.coverage_cutoff == 270:
+                    gaps_dict = {
+                        'genomic': gap.genomic,
+                        'hgvs_c': gap.hgvs_c,
+                        'percent_cosmic': gap.percent_cosmic
+                    }
+                    gaps_270.append(gaps_dict)
+                elif gap.coverage_cutoff == 135:
+                    gaps_dict = {
+                        'genomic': gap.genomic,
+                        'hgvs_c': gap.hgvs_c,
+                        'percent_cosmic': gap.percent_cosmic
+                    }
+                    gaps_135.append(gaps_dict)
 
             # combine gaps and regions dictionaries
+            #TODO - gaps at 135x and 270
             gene_dict = {
-                'av_coverage': '300',
+                'av_coverage': gene_coverage_obj.av_coverage,
                 'percent_270x': gene_coverage_obj.percent_270x,
                 'percent_135x': gene_coverage_obj.percent_135x,
                 'av_ntc_coverage': gene_coverage_obj.av_ntc_coverage,
                 'percent_ntc': gene_coverage_obj.percent_ntc,
                 'regions': regions,
-                'gaps': gaps,
+                'gaps_270': gaps_270,
+                'gaps_135': gaps_135,
             }
 
             coverage_data[gene_coverage_obj.gene.gene] = gene_dict
+            print(coverage_data)
 
         # add variant and coverage data to context dict
         context['variant_data'] = {

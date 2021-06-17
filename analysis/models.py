@@ -199,54 +199,59 @@ class Gene(models.Model):
     gene = models.CharField(max_length=50, primary_key=True)
 
 
-class CoverageRegions(models.Model):
-    """
-
-    """
-    genomic = models.CharField(max_length=50, primary_key=True)
-    gene = models.ForeignKey('Gene', on_delete=models.CASCADE)
-    hgvs_c = models.CharField(max_length=50)
-
-
 class GeneCoverageAnalysis(models.Model):
     """
 
     """
     sample = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
     gene = models.ForeignKey('Gene', on_delete=models.CASCADE)
-    percent_270x = models.CharField(max_length=50)
-    percent_135x = models.CharField(max_length=50)
+    av_coverage = models.IntegerField()
+    percent_270x = models.IntegerField()
+    percent_135x = models.IntegerField()
     av_ntc_coverage = models.IntegerField()
-    percent_ntc = models.CharField(max_length=50)
-    percent_cosmic = models.CharField(max_length=50)
+    percent_ntc = models.IntegerField()
 
 
-class CoverageRegionsAnalysis(models.Model):
+class RegionCoverageAnalysis(models.Model):
     """
 
     """
-    sample = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
-    genomic = models.ForeignKey('CoverageRegions', on_delete=models.CASCADE)
-    gene = models.ForeignKey('Gene', on_delete=models.CASCADE)
+    HOTSPOT_CHOICES = (
+        ('H', 'Hotspot'),
+        ('G', 'Genescreen'),
+    )
+    gene = models.ForeignKey('GeneCoverageAnalysis', on_delete=models.CASCADE)
+    hgvs_c = models.CharField(max_length=50)
+    chr_start = models.CharField(max_length=50)
+    pos_start = models.IntegerField()
+    chr_end = models.CharField(max_length=50)
+    pos_end = models.IntegerField()
+    hotspot = models.CharField(max_length=1, choices=HOTSPOT_CHOICES)
     average_coverage = models.IntegerField()
-    percent_270x = models.CharField(max_length=50)
-    percent_135x = models.CharField(max_length=50)
+    percent_270x = models.IntegerField()
+    percent_135x = models.IntegerField()
     ntc_coverage = models.IntegerField()
-    percent_ntc = models.CharField(max_length=50)
+    percent_ntc = models.IntegerField()
+
+    def genomic(self):
+        return f'{chr_start}:{pos_start}_{chr_end}:{pos_end}'
 
 
 class GapsAnalysis(models.Model):
     """
 
     """
-    sample = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
-    genomic = models.ForeignKey('CoverageRegions', on_delete=models.CASCADE)
-    gene = models.ForeignKey('Gene', on_delete=models.CASCADE)
-    average_coverage = models.IntegerField()
-    percent_270x = models.CharField(max_length=50)
-    percent_135x = models.CharField(max_length=50)
-    average_coverage = models.IntegerField()
-    percent_cosmic = models.CharField(max_length=50)
+    gene = models.ForeignKey('GeneCoverageAnalysis', on_delete=models.CASCADE)
+    hgvs_c = models.CharField(max_length=50)
+    chr_start = models.CharField(max_length=50)
+    pos_start = models.IntegerField()
+    chr_end = models.CharField(max_length=50)
+    pos_end = models.IntegerField()
+    coverage_cutoff = models.IntegerField()
+    percent_cosmic = models.IntegerField()
+
+    def genomic(self):
+        return f'{self.chr_start}:{self.pos_start}_{self.chr_end}:{self.pos_end}'
 
 
 class Fusion(models.Model):
