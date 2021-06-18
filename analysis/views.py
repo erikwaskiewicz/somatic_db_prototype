@@ -10,6 +10,8 @@ from .models import *
 from .test_data import dummy_dicts
 from .utils import signoff_check, make_next_check
 
+import json
+    
 
 def signup(request):
     """
@@ -123,8 +125,11 @@ def analysis_sheet(request, dna_or_rna, sample_id):
     """
     # load in data that is common to both RNA and DNA workflows
     sample_obj = SampleAnalysis.objects.get(pk = sample_id)
+    dna_or_rna = sample_obj.sample.sample_type
 
     sample_data = {
+        'sample_pk': sample_obj.pk,
+        'dna_or_rna': dna_or_rna,
         'sample_id': sample_obj.sample.sample_id,
         'worksheet_id': sample_obj.worksheet.ws_id,
         'panel': sample_obj.panel.panel_name,
@@ -190,7 +195,8 @@ def analysis_sheet(request, dna_or_rna, sample_id):
             # get checks for each variant
             variant_checks = VariantCheck.objects.filter(variant_analysis=sample_variant)
             variant_checks_list = [ v.get_decision_display() for v in variant_checks ]
-            #print(variant_checks)
+            latest_check = variant_checks.latest('pk').decision
+
             variant_comments_list = []
             for v in variant_checks:
                 if v.comment:
@@ -200,6 +206,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
 
             #Create a variant calls dictionary to pass to analysis-snvs.html
             variant_calls_dict = {
+                'pk': sample_variant.pk,
                 'genomic': sample_variant.variant.genomic_37,
                 'gene': sample_variant.variant.gene,
                 'exon': sample_variant.variant.exon,
@@ -221,6 +228,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
                     'alt_count': sample_variant.alt_count,
                 },
                 'checks': variant_checks_list,
+                'latest_check': latest_check,
                 'comments': variant_comments_list,
             }
 
@@ -293,6 +301,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
             'polys': polys_list,
         }
         context['coverage_data'] = coverage_data
+        context['check_options'] = VariantCheck.DECISION_CHOICES
 
 
     # RNA workflow
@@ -410,3 +419,31 @@ def analysis_sheet(request, dna_or_rna, sample_id):
         return render(request, 'analysis/analysis_sheet_rna.html', context)
     else:
         raise Http404(f'Sample must be either DNA or RNA, not {dna_or_rna}')
+
+
+def ajax(request):
+    if request.is_ajax():
+
+        sample_pk = request.POST.get('sample_pk')
+        sample_obj = SampleAnalysis.objects.get(pk = sample_pk)
+        dna_or_rna = sample_obj.sample.sample_type
+
+        selections = json.loads(request.POST.get('selections'))
+        print(selections)
+
+        for variant in selections:
+            variant_obj = VariantAnalysis.objects.get(pk=variant)
+            current_check = variant_obj.get_current_check()
+            igv_or_vus = current_check.check_object.stage
+
+            if igv_or_vus == 'IGV':
+                new_choice = selections[variant]['genuine_dropdown']
+                current_check.decision = new_choice
+                current_check.save()
+            elif igv_or_vus == 'VUS':
+                actionable_choice = selections[variant]['actionable_dropdown']
+                vus_choice = selections[variant]['tier_dropdown']
+
+        # dont think this redirect is doing anything but there needs to be a HTML response
+        # actual reidrect is handled inside AJAX call in analysis-snvs.html
+        return redirect('analysis_sheet', dna_or_rna, sample_pk)

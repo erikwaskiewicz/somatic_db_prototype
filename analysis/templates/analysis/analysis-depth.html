@@ -3,18 +3,20 @@
 <table class="table">
   <thead>
     <tr>
-      <th scope="col">Region</th>
-      <th scope="col">Average coverage</th>
-      <th scope="col">% at 135X</th>
-      <th scope="col">% at 270X</th>
-      <th scope="col">Average NTC coverage</th>
-      <th scope="col">% NTC</th>
-      <th></th>
+      <th scope="col" class="col-1"></th>
+      <th scope="col" class="col-1">Region</th>
+      <th scope="col" class="col-2">Average coverage</th>
+      <th scope="col" class="col-2">% at 135X</th>
+      <th scope="col" class="col-2">% at 270X</th>
+      <th scope="col" class="col-2">Average NTC coverage</th>
+      <th scope="col" class="col-1">% NTC</th>
+      <th scope="col" class="col-1"></th>
     </tr>
   </thead>
   <tbody>
     {% for region, v in coverage_data.items %}
     <tr>
+      <td></td>
       <td>{{ region }}<br><br></td>
       <td>{{ v.av_coverage }}</td>
       <td>
@@ -51,7 +53,7 @@
     <tr class="collapse" id="collapse-{{ region }}">
 
       <td></td>
-      <td colspan="5">
+      <td colspan="6">
         <div class="card bg-light">
           <div class="card-body">
 

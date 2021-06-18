@@ -149,6 +149,9 @@ class VariantAnalysis(models.Model):
     alt_count = models.IntegerField()
     manual_upload = models.BooleanField(default=False)
 
+    def get_current_check(self):
+        return VariantCheck.objects.filter(variant_analysis=self).latest('pk')
+
 
 class VariantCheck(models.Model):
     """
@@ -160,7 +163,10 @@ class VariantCheck(models.Model):
         ('G', 'Genuine'),
         ('A', 'Artefact'),
         ('P', 'Poly'),
+        ('W', 'WT'),
         ('M', 'Miscalled'),
+        ('N', 'Not analysed'),
+        ('F', 'Failed call'),
     )
     variant_analysis = models.ForeignKey('VariantAnalysis', on_delete=models.CASCADE)
     check_object = models.ForeignKey('Check', on_delete=models.CASCADE)
