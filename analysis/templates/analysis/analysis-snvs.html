@@ -63,7 +63,7 @@
       <td class=genuine-dropdown>
         <select name="variant" id="variant">
           {% for option in check_options %}
-            {% if v.latest_check == option.0 %}
+            {% if v.latest_check.decision == option.0 %}
             <option value="{{ option.0 }}" selected>{{ option.1 }}</option>
             {% else %}
             <option value="{{ option.0 }}">{{ option.1 }}</option>
@@ -100,7 +100,7 @@
 
     {% endif %}
     <td>
-      <button type="button" data-toggle="modal" data-target="#comments-modal-{{ v.genomic }}"
+      <button type="button" data-toggle="modal" data-target="#comments-modal-{{ v.pk }}"
       {% if v.comments %}
       class="btn btn-warning">
       {% else %}
@@ -116,12 +116,11 @@
 
 <!-- button to add new variant in case of miscalled indels -->
 <div>
-  <button type="button" class="btn btn-light" data-toggle="modal" data-target="#add-variant-modal">
-    Add variant
-  </button>
-
-  <button type="button" class="btn btn-light variants-submit" id="variants-submit">
-    Update
+  <button type="button" class="btn btn-light btn-lg" data-toggle="modal" data-target="#add-variant-modal">Add variant</button>
+</div>
+<div>
+  <button type="button" class="btn btn-success btn-lg variants-submit" style="position: fixed; bottom: 30px; right: 30px; z-index: 100;" id="variants-submit">
+    Update selections
   </button>
 </div>
 <br>
@@ -226,17 +225,17 @@
 
 
 <!-- Comments Modal -->
-<div class="modal fade" id="comments-modal-{{ v.genomic }}" tabindex="-1" role="dialog" aria-labelledby="comments-modal-label" aria-hidden="true">
+<div class="modal fade" id="comments-modal-{{ v.pk }}" tabindex="-1" role="dialog" aria-labelledby="comments-modal-label" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="comments-modal-label">Comments</h5>
+        <h5 class="modal-title" id="comments-modal-label">Comments<br>{{ v.gene }} {{ v.hgvs_c }} {{ v.hgvs_p }}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-
+        {% if v.comments %}
         <table class="table table-bordered">
           <thead>
             <tr>
@@ -245,15 +244,26 @@
             </tr>
           </thead>
           <tbody>
+            
             {% for c in v.comments %}
             <tr>
-              <td>{{ c.comment }}</td>
-              <td>{{ c.user }}</td>
+              <td class="col-9">{{ c.comment }}</td>
+              <td class="col-3">{{ c.user }}<br>Updated.....</td>
             </tr>
             {% endfor %}
+
           </tbody>
         </table>
 
+        {% else %}
+        <div class="alert alert-secondary">
+          No comments
+        </div>
+
+        {% endif %}
+
+        <!-- comment form here -->
+        {% crispy v.comment_form %}
       </div>
 
     </div>

@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm
 
-from .forms import SearchForm, NewVariantForm, SubmitForm
+from .forms import SearchForm, NewVariantForm, SubmitForm, VariantCommentForm
 from .models import *
 from .test_data import dummy_dicts
 from .utils import signoff_check, make_next_check
@@ -126,6 +126,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
     # load in data that is common to both RNA and DNA workflows
     sample_obj = SampleAnalysis.objects.get(pk = sample_id)
     dna_or_rna = sample_obj.sample.sample_type
+    #TODO - no need to pass in DNA/RNA, can be worked out from sample
 
     sample_data = {
         'sample_pk': sample_obj.pk,
@@ -178,7 +179,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
             #previous_runs = VariantAnalysis.objects.filter(variant= sample_variant.variant).exclude(run=sample_data.get('run_id'))
             #previous_runs_count = previous_runs.count()
 
-            #get the total number of samples on the run
+            #get the total number of samples on the run TODO - look into this, doesnt look like its working as expected
             total_runs = VariantAnalysis.objects.filter(sample__worksheet__run__run_id=sample_data.get('run_id'))
             total_runs_count = total_runs.count()
 
@@ -195,7 +196,9 @@ def analysis_sheet(request, dna_or_rna, sample_id):
             # get checks for each variant
             variant_checks = VariantCheck.objects.filter(variant_analysis=sample_variant)
             variant_checks_list = [ v.get_decision_display() for v in variant_checks ]
-            latest_check = variant_checks.latest('pk').decision
+            latest_check = variant_checks.latest('pk')
+            print(latest_check.comment)
+            var_comment_form = VariantCommentForm(comment=latest_check.comment)
 
             variant_comments_list = []
             for v in variant_checks:
@@ -229,6 +232,7 @@ def analysis_sheet(request, dna_or_rna, sample_id):
                 },
                 'checks': variant_checks_list,
                 'latest_check': latest_check,
+                'comment_form': var_comment_form,
                 'comments': variant_comments_list,
             }
 

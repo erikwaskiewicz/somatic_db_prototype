@@ -66,3 +66,19 @@ class SubmitForm(forms.Form):
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-100')
         )
+
+
+class VariantCommentForm(forms.Form):
+    """
+
+    """
+    comment = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}))
+
+    def __init__(self, *args, **kwargs):
+
+        self.comment = kwargs.pop('comment')
+
+        super(VariantCommentForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.fields['comment'].initial = self.comment
+        self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-success'))
