@@ -72,13 +72,19 @@ class VariantCommentForm(forms.Form):
     """
 
     """
-    comment = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}))
+    comment = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 4}),
+        required=False,
+    )
+    pk = forms.CharField(widget=forms.HiddenInput())
 
     def __init__(self, *args, **kwargs):
 
         self.comment = kwargs.pop('comment')
+        self.pk = kwargs.pop('pk')
 
         super(VariantCommentForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.fields['comment'].initial = self.comment
+        self.fields['pk'].initial = self.pk
         self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-success'))

@@ -172,6 +172,7 @@ class VariantCheck(models.Model):
     check_object = models.ForeignKey('Check', on_delete=models.CASCADE)
     decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
     comment = models.CharField(max_length=500, blank=True, null=True) # TODO - link out to seperate comment model???
+    comment_updated = models.DateTimeField(blank=True, null=True)
 
 
 class VariantList(models.Model):

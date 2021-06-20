@@ -62,7 +62,7 @@
       </td>
       <td class=genuine-dropdown>
         <select name="variant" id="variant">
-          {% for option in check_options %}
+          {% for option in variant_data.check_options %}
             {% if v.latest_check.decision == option.0 %}
             <option value="{{ option.0 }}" selected>{{ option.1 }}</option>
             {% else %}
@@ -247,8 +247,8 @@
             
             {% for c in v.comments %}
             <tr>
-              <td class="col-9">{{ c.comment }}</td>
-              <td class="col-3">{{ c.user }}<br>Updated.....</td>
+              <td class="col-9">{{ c.comment | linebreaks }}</td>
+              <td class="col-3">{{ c.user }}<br>{{ c.updated }}</td>
             </tr>
             {% endfor %}
 
