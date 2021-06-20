@@ -115,14 +115,12 @@
 </table>
 
 <!-- button to add new variant in case of miscalled indels -->
-<div>
-  <button type="button" class="btn btn-light btn-lg" data-toggle="modal" data-target="#add-variant-modal">Add variant</button>
+<div class="float-right">
+  <button type="button" class="btn btn-light" data-toggle="modal" data-target="#add-variant-modal">Add variant</button>
+  <button type="button" class="btn btn-success variants-submit" id="variants-submit">Update selections</button>
 </div>
-<div>
-  <button type="button" class="btn btn-success btn-lg variants-submit" style="position: fixed; bottom: 30px; right: 30px; z-index: 100;" id="variants-submit">
-    Update selections
-  </button>
-</div>
+<br>
+<br>
 <br>
 
 
@@ -172,6 +170,8 @@
     </div>
   </div>
 </div>
+
+
 
 {% for v in variant_data.variant_calls %}
 <!-- Modal -->

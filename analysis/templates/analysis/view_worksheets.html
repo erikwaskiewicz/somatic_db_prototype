@@ -52,7 +52,13 @@
         // Inititialise DataTable
         $('#worksheets-table').DataTable({
             paging: true,
-            ordering: true,
+            columns: [
+                {orderable: true},
+                {orderable: true},
+                {orderable: true},
+                {orderable: true},
+                {orderable: false},
+            ],
             info: true,
             pageLength: 10,
             searching: true,
