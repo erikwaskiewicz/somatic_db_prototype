@@ -14,9 +14,8 @@
 <div class="container">
   <h5>Worksheets</h5>
   <br>
-  {% crispy search_form %}
 
-  <table class="table">
+  <table class="table" id="worksheets-table">
     <thead>
       <tr>
         <th scope="col">WS ID</th>
@@ -46,5 +45,27 @@
   <br>
 
 </div>
+
+<script>
+    $(document).ready( function() {
+
+        // Inititialise DataTable
+        $('#worksheets-table').DataTable({
+            paging: true,
+            ordering: true,
+            info: true,
+            pageLength: 10,
+            searching: true,
+            aaSorting: [],
+            language: {
+                searchPlaceholder: "Search by run ID, worksheet ID, assay or status",
+                search: "",
+            },
+            initComplete: function () {
+                $('.dataTables_filter input[type="search"]').css({ 'width': '500px', 'display': 'inline-block' });
+            }
+        });
+    } );
+</script>
 
 {% endblock %}

@@ -15,9 +15,8 @@
 <div class="container">
   <h5>Samples {{ worksheet }}</h5>
   <br>
-  {% crispy search_form %}
 
-  <table class="table">
+  <table class="table" id="samples-table">
     <thead>
       <tr>
         <th scope="col">Sample ID</th>
@@ -82,5 +81,27 @@
   <br>
 
 </div>
+
+<script>
+    $(document).ready( function() {
+      
+        // Inititialise DataTable
+        $('#samples-table').DataTable({
+            paging: true,
+            ordering: true,
+            info: true,
+            pageLength: 25,
+            searching: true,
+            aaSorting: [],
+            language: {
+                searchPlaceholder: "Search by sample ID, panel, status or user",
+                search: "",
+            },
+            initComplete: function () {
+                $('.dataTables_filter input[type="search"]').css({ 'width': '500px', 'display': 'inline-block' });
+            },
+        });
+    } );
+</script>
 
 {% endblock %}
