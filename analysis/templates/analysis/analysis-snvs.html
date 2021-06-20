@@ -337,7 +337,7 @@
           contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
           processData: false, // NEEDED, DON'T OMIT THIS
           success: function(data) {
-              window.location = "{% url 'analysis_sheet' sample_data.dna_or_rna sample_data.sample_pk %}";
+              window.location = "{% url 'analysis_sheet' sample_data.sample_pk %}";
           },
           failure: function(data) {
               alert('Got an error');

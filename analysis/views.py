@@ -118,7 +118,7 @@ def view_samples(request, worksheet_id):
 
 
 @login_required
-def analysis_sheet(request, dna_or_rna, sample_id):
+def analysis_sheet(request, sample_id):
     """
     Display coverage and variant metrics to allow checking of data 
     in IGV
@@ -450,4 +450,4 @@ def ajax(request):
 
         # dont think this redirect is doing anything but there needs to be a HTML response
         # actual reidrect is handled inside AJAX call in analysis-snvs.html
-        return redirect('analysis_sheet', dna_or_rna, sample_pk)
+        return redirect('analysis_sheet', sample_pk)
