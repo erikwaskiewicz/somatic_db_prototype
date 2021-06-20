@@ -174,14 +174,14 @@ def get_coverage_data(sample_obj):
         for gap in gaps_analysis_obj:
             if gap.coverage_cutoff == 270:
                 gaps_dict = {
-                    'genomic': gap.genomic,
+                    'genomic': gap.genomic(),
                     'hgvs_c': gap.hgvs_c,
                     'percent_cosmic': gap.percent_cosmic
                 }
                 gaps_270.append(gaps_dict)
             elif gap.coverage_cutoff == 135:
                 gaps_dict = {
-                    'genomic': gap.genomic,
+                    'genomic': gap.genomic(),
                     'hgvs_c': gap.hgvs_c,
                     'percent_cosmic': gap.percent_cosmic
                 }
@@ -201,4 +201,4 @@ def get_coverage_data(sample_obj):
 
         coverage_data[gene_coverage_obj.gene.gene] = gene_dict
         
-        return coverage_data
+    return coverage_data

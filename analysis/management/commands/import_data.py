@@ -86,3 +86,49 @@ class Command(BaseCommand):
                     new_var_check.save()
 
                 # make coverage data
+                for g in ['BRAF', 'NRAS', 'EGFR']:
+                    gene, created = Gene.objects.get_or_create(gene=g)
+
+                    new_gene_coverage_obj = GeneCoverageAnalysis(
+                        sample=new_sample_analysis,
+                        gene=gene,
+                        av_coverage=200,
+                        percent_270x=99,
+                        percent_135x=100,
+                        av_ntc_coverage=1,
+                        percent_ntc=0,
+                    )
+                    new_gene_coverage_obj.save()
+
+                    for r in range(0, random.randrange(1,15)):
+                        new_regions_obj = RegionCoverageAnalysis(
+                            gene=new_gene_coverage_obj,
+                            hgvs_c='c.123_789',
+                            chr_start='7',
+                            pos_start=1234,
+                            chr_end='7',
+                            pos_end=5678,
+                            hotspot='H',
+                            average_coverage=100,
+                            percent_270x=99,
+                            percent_135x=100,
+                            ntc_coverage=0,
+                            percent_ntc=0,
+                        )
+                        new_regions_obj.save()
+                    
+                    for gap in range(0, random.randrange(1,15)):
+                        new_gap_obj = GapsAnalysis(
+                            gene=new_gene_coverage_obj,
+                            hgvs_c='c.12_34',
+                            chr_start='7',
+                            pos_start=1234,
+                            chr_end='7',
+                            pos_end=5678,
+                            coverage_cutoff=random.choice([135, 270]),
+                            percent_cosmic=1,
+                        )
+                        new_gap_obj.save()
+                    print(g)
+
+
