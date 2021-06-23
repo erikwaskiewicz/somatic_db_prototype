@@ -42,7 +42,7 @@ def make_next_check(sample_obj, next_step):
     new_check_obj.save()
 
     # make check objects for all variants
-    variant_objects = VariantAnalysis.objects.filter(sample=sample_obj)
+    variant_objects = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
     for v in variant_objects:
         new_variant_check = VariantCheck(
             variant_analysis = v,
@@ -55,32 +55,44 @@ def make_next_check(sample_obj, next_step):
 
 def get_variant_info(sample_data, sample_obj):
 
-    sample_variants = VariantAnalysis.objects.filter(sample=sample_obj)
+    sample_variants = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
 
     variant_calls=[]
     polys_list=[]
 
+    # get list of other samples on the run (excluding current sample)
+    current_run_obj = sample_obj.worksheet.run
+    current_run_samples = SampleAnalysis.objects.filter(worksheet__run = current_run_obj)
+    # remove dups
+    sample_objects = set([ s.sample for s in current_run_samples ])
+
+    # remove current sample
+    sample_objects.remove(sample_obj.sample)
+    
+
     for sample_variant in sample_variants:
 
-        #count how many times variant is present in other samples on the run
-        this_run = VariantAnalysis.objects.filter(
-            variant= sample_variant.variant,
-            sample__worksheet__run__run_id=sample_data.get('run_id'),
-        )
-        this_run_count = this_run.count()
+        variant_obj = sample_variant.variant_instance.variant
 
-        # TODO - we're going to add this last
-        #count how many times the variant is present in previous runs
-        #previous_runs = VariantAnalysis.objects.filter(variant= sample_variant.variant).exclude(run=sample_data.get('run_id'))
-        #previous_runs_count = previous_runs.count()
+        # count how many times variant is present in other samples on the run
+        this_run_count = 0
+        for s in sample_objects:
+            qs = VariantInstance.objects.filter(
+                sample = s,
+                variant = variant_obj,
+            )
+            if qs:
+                this_run_count += 1
 
-        #get the total number of samples on the run TODO - look into this, doesnt look like its working as expected
-        total_runs = VariantAnalysis.objects.filter(sample__worksheet__run__run_id=sample_data.get('run_id'))
-        total_runs_count = total_runs.count()
+        # TODO - we're going to add this last, need to exclude current run??
+        '''#count how many times the variant is present in previous runs
+        previous_runs = VariantInstance.objects.filter(
+            variant = variant_obj
+        ).count()
+        print(previous_runs)'''
 
         # get whether the variant falls within a poly/ known list
         # TODO - will have to handle multiple poly/ known lists in future
-        variant_obj = Variant.objects.get(genomic_37=sample_variant.variant.genomic_37)
         previous_classifications = []
         for l in VariantToVariantList.objects.filter(variant=variant_obj):
             if l.variant_list.name == 'TSO500_known':
@@ -94,6 +106,7 @@ def get_variant_info(sample_data, sample_obj):
         latest_check = variant_checks.latest('pk')
         var_comment_form = VariantCommentForm(pk=latest_check.pk, comment=latest_check.comment)
 
+        # get list of comments for variant
         variant_comments_list = []
         for v in variant_checks:
             if v.comment:
@@ -104,25 +117,25 @@ def get_variant_info(sample_data, sample_obj):
         #Create a variant calls dictionary to pass to analysis-snvs.html
         variant_calls_dict = {
             'pk': sample_variant.pk,
-            'genomic': sample_variant.variant.genomic_37,
-            'gene': sample_variant.variant.gene,
-            'exon': sample_variant.variant.exon,
-            'transcript': sample_variant.variant.transcript,
-            'hgvs_c': sample_variant.variant.hgvs_c,
-            'hgvs_p': sample_variant.variant.hgvs_p,
+            'genomic': variant_obj.genomic_37,
+            'gene': variant_obj.gene,
+            'exon': variant_obj.exon,
+            'transcript': variant_obj.transcript,
+            'hgvs_c': variant_obj.hgvs_c,
+            'hgvs_p': variant_obj.hgvs_p,
             'this_run': {
                 'count': this_run_count, 
-                'total': total_runs_count,
-                'ntc': True,
+                'total': len(sample_objects),
+                'ntc': sample_variant.variant_instance.in_ntc,
             },   
             'previous_runs': {
                 'known': ' | '.join(previous_classifications),
-                'count': '1', #previous_runs_count,
+                'count': '1', #previous_runs,
             },
             'vaf': {
-                'vaf': sample_variant.vaf,
-                'total_count': sample_variant.total_count,
-                'alt_count': sample_variant.alt_count,
+                'vaf': sample_variant.variant_instance.vaf,
+                'total_count': sample_variant.variant_instance.total_count,
+                'alt_count': sample_variant.variant_instance.alt_count,
             },
             'checks': variant_checks_list,
             'latest_check': latest_check,

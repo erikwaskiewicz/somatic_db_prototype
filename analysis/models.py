@@ -39,6 +39,7 @@ class Sample(models.Model):
         ('RNA', 'RNA'),
     )
     sample_id = models.CharField(max_length=50, primary_key=True)
+    sample_name = models.CharField(max_length=200, blank=True, null=True)
     sample_type = models.CharField(max_length=3, choices=TYPE_CHOICES)
 
 
@@ -137,17 +138,29 @@ class Variant(models.Model):
     hgvs_p = models.CharField(max_length=200)
 
 
-class VariantAnalysis(models.Model):
+class VariantInstance(models.Model):
     """
     Sample specific information about a variant
+    Make one of these for all variants within sample, regardless of panel
 
     """
-    sample = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
+    sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
     variant = models.ForeignKey('Variant', on_delete=models.CASCADE)
     vaf = models.IntegerField()
     total_count = models.IntegerField()
     alt_count = models.IntegerField()
+    in_ntc = models.BooleanField()
     manual_upload = models.BooleanField(default=False)
+
+
+class VariantPanelAnalysis(models.Model):
+    """
+    Link instances of variants to a panel analysis
+
+    """
+    sample_analysis = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
+    variant_instance = models.ForeignKey('VariantInstance', on_delete=models.CASCADE)
+    # TODO - add final IGV/ class decision here??
 
     def get_current_check(self):
         return VariantCheck.objects.filter(variant_analysis=self).latest('pk')
@@ -168,7 +181,7 @@ class VariantCheck(models.Model):
         ('N', 'Not analysed'),
         ('F', 'Failed call'),
     )
-    variant_analysis = models.ForeignKey('VariantAnalysis', on_delete=models.CASCADE)
+    variant_analysis = models.ForeignKey('VariantPanelAnalysis', on_delete=models.CASCADE)
     check_object = models.ForeignKey('Check', on_delete=models.CASCADE)
     decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
     comment = models.CharField(max_length=500, blank=True, null=True) # TODO - link out to seperate comment model???
@@ -201,6 +214,7 @@ class VariantToVariantList(models.Model):
 
 class Gene(models.Model):
     """
+    A gene
 
     """
     gene = models.CharField(max_length=50, primary_key=True)
@@ -208,6 +222,7 @@ class Gene(models.Model):
 
 class GeneCoverageAnalysis(models.Model):
     """
+    Average coverage metrics across a gene 
 
     """
     sample = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
@@ -221,6 +236,7 @@ class GeneCoverageAnalysis(models.Model):
 
 class RegionCoverageAnalysis(models.Model):
     """
+    Coverage metrics across a specific region
 
     """
     HOTSPOT_CHOICES = (
@@ -246,6 +262,7 @@ class RegionCoverageAnalysis(models.Model):
 
 class GapsAnalysis(models.Model):
     """
+    Gaps that fall within specific region
 
     """
     gene = models.ForeignKey('GeneCoverageAnalysis', on_delete=models.CASCADE)

@@ -298,10 +298,9 @@ def ajax(request):
         dna_or_rna = sample_obj.sample.sample_type
 
         selections = json.loads(request.POST.get('selections'))
-        print(selections)
 
         for variant in selections:
-            variant_obj = VariantAnalysis.objects.get(pk=variant)
+            variant_obj = VariantPanelAnalysis.objects.get(pk=variant)
             current_check = variant_obj.get_current_check()
             igv_or_vus = current_check.check_object.stage
 

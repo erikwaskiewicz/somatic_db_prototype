@@ -8,6 +8,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
+        # TODO transactions.atomic????
         all_panels = Panel.objects.all()
 
         # make run
@@ -30,8 +31,7 @@ class Command(BaseCommand):
             for s in range(0, random.randrange(1,10)):
                 sample = f'21M{random.randrange(100,5000)}'
                 sample_type = random.choice(['DNA', 'RNA'])
-                # TODO should be get or create - the same sample might have been run before??
-                new_sample = Sample(
+                new_sample = Sample.objects.get_or_create(
                     sample_id=sample,
                     sample_type=sample_type,
                 )
@@ -56,13 +56,12 @@ class Command(BaseCommand):
 
 
                 # make variants and variant checks
-                for v in range(0, random.randrange(1,15)):
+                for v in range(0, random.randrange(1,200)):
                     hgvs_g = f'{random.randrange(1,23)}:{random.randrange(100,5000)}A>G'
-                    # TODO should be get or create
-                    new_var = Variant(
+                    new_var, created = Variant.objects.get_or_create(
                         genomic_37 = hgvs_g,
                         genomic_38 = hgvs_g,
-                        gene = random.choice(['EGFR', 'BRAF', 'KRAS']),
+                        gene = 'EGFR',
                         exon = '1 | 10',
                         transcript = 'NM12345.6',
                         hgvs_c = 'c.12345A>G',
@@ -70,20 +69,28 @@ class Command(BaseCommand):
                     )
                     new_var.save()
 
-                    new_var_analysis = VariantAnalysis(
-                        sample=new_sample_analysis,
+                    new_var_instance = VariantInstance(
+                        sample=new_sample,
                         variant=new_var,
                         vaf=random.randrange(1,100),
                         total_count=random.randrange(1,100),
                         alt_count=random.randrange(1,10),
                     )
-                    new_var_analysis.save()
+                    new_var_instance.save()
 
-                    new_var_check = VariantCheck(
-                        variant_analysis=new_var_analysis,
-                        check_object=new_check,
-                    )
-                    new_var_check.save()
+                    if random.randrange(0,10) < 2:
+                        
+                        new_var_panel_analysis = VariantPanelAnalysis(
+                            sample_analysis = new_sample_analysis,
+                            variant_instance = new_var_instance,
+                        )
+                        new_var_panel_analysis.save()
+
+                        new_var_check = VariantCheck(
+                            variant_analysis=new_var_panel_analysis,
+                            check_object=new_check,
+                        )
+                        new_var_check.save()
 
                 # make coverage data
                 for g in ['BRAF', 'NRAS', 'EGFR']:
@@ -129,6 +136,6 @@ class Command(BaseCommand):
                             percent_cosmic=1,
                         )
                         new_gap_obj.save()
-                    print(g)
+                    #print(g)
 
 
