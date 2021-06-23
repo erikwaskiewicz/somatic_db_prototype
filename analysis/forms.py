@@ -88,3 +88,18 @@ class VariantCommentForm(forms.Form):
         self.fields['comment'].initial = self.comment
         self.fields['pk'].initial = self.pk
         self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-success'))
+
+
+class UpdatePatientName(forms.Form):
+    """
+    """
+    name = forms.CharField()
+
+    def __init__(self, *args, **kwargs):
+        super(UpdatePatientName, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'update-name-form'
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Submit', css_class='btn btn-info w-25')
+        )

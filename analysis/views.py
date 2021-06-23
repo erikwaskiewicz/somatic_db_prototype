@@ -6,10 +6,10 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.utils import timezone
 
-from .forms import SearchForm, NewVariantForm, SubmitForm, VariantCommentForm
+from .forms import SearchForm, NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName
 from .models import *
 from .test_data import dummy_dicts
-from .utils import signoff_check, make_next_check, get_variant_info, get_coverage_data
+from .utils import signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info
 
 import json
     
@@ -126,16 +126,7 @@ def analysis_sheet(request, sample_id):
     """
     # load in data that is common to both RNA and DNA workflows
     sample_obj = SampleAnalysis.objects.get(pk = sample_id)
-
-    sample_data = {
-        'sample_pk': sample_obj.pk,
-        'dna_or_rna': sample_obj.sample.sample_type,
-        'sample_id': sample_obj.sample.sample_id,
-        'worksheet_id': sample_obj.worksheet.ws_id,
-        'panel': sample_obj.panel.panel_name,
-        'run_id': sample_obj.worksheet.run.run_id,
-        'checks': sample_obj.get_checks(),
-    }
+    sample_data = get_sample_info(sample_obj)
 
     # assign to whoever clicked the sample and reload check objects
     current_step_obj = sample_data['checks']['current_check_object']
@@ -151,6 +142,7 @@ def analysis_sheet(request, sample_id):
         'sample_data': sample_data,
         'new_variant_form': NewVariantForm(),
         'submit_form': SubmitForm(),
+        'update_name_form': UpdatePatientName(),
     }
 
     # DNA workflow
@@ -204,6 +196,17 @@ def analysis_sheet(request, sample_id):
     ####################################
     if request.method == 'POST':
 
+        # patient name input form
+        if 'name' in request.POST:
+            update_name_form = UpdatePatientName(request.POST)
+
+            if update_name_form.is_valid():
+                new_name = update_name_form.cleaned_data['name']
+                Sample.objects.filter(pk=sample_obj.sample.pk).update(sample_name=new_name)
+                sample_obj = SampleAnalysis.objects.get(pk = sample_id)
+                context['sample_data'] = get_sample_info(sample_obj)
+
+
         # comments submit button
         if 'comment' in request.POST:
             new_comment = request.POST['comment']
@@ -233,52 +236,56 @@ def analysis_sheet(request, sample_id):
             submit_form = SubmitForm(request.POST)
 
             if submit_form.is_valid():
-                next_step = submit_form.cleaned_data['next_step']
-                current_step = sample_data['checks']['current_status']
+                if sample_data['sample_name'] == None:
+                    context['warning'].append('Did not finialise check - input patient name before continuing')
 
-                if next_step == 'Complete check':
-                    if 'IGV' in current_step:
-                        # if 1st IGV, make 2nd IGV
-                        if current_step == 'IGV check 1':
+                else:
+                    next_step = submit_form.cleaned_data['next_step']
+                    current_step = sample_data['checks']['current_status']
+
+                    if next_step == 'Complete check':
+                        if 'IGV' in current_step:
+                            # if 1st IGV, make 2nd IGV
+                            if current_step == 'IGV check 1':
+                                if signoff_check(request.user, current_step_obj):
+                                    make_next_check(sample_obj, 'IGV')
+                                    return redirect('view_samples', sample_data['worksheet_id'])
+                                else:
+                                    context['warning'].append('Did not finialise check - not all variant have been checked')
+                                
+                            # if 2nd IGV (or 3rd...) make interpretation
+                            else:
+                                if signoff_check(request.user, current_step_obj):
+                                    make_next_check(sample_obj, 'VUS')
+                                    return redirect('view_samples', sample_data['worksheet_id'])
+                                else:
+                                    context['warning'].append('Did not finialise check - not all variant have been checked')
+
+                        # if interpretation, make complete
+                        elif 'Interpretation' in current_step:
+                            if signoff_check(request.user, current_step_obj):
+                                return redirect('view_samples', sample_data['worksheet_id'])
+                            else:
+                                context['warning'].append('Did not finialise check - not all variant have been checked')
+
+
+                    elif next_step == 'Request extra check':
+                        if 'IGV' in current_step:
+                            # make extra IGV check
                             if signoff_check(request.user, current_step_obj):
                                 make_next_check(sample_obj, 'IGV')
                                 return redirect('view_samples', sample_data['worksheet_id'])
                             else:
-                                context['warning'].append('Not all variant have been checked')
-                            
-                        # if 2nd IGV (or 3rd...) make interpretation
-                        else:
-                            if signoff_check(request.user, current_step_obj):
-                                make_next_check(sample_obj, 'VUS')
-                                return redirect('view_samples', sample_data['worksheet_id'])
-                            else:
-                                context['warning'].append('Not all variant have been checked')
+                                context['warning'].append('Did not finialise check - not all variant have been checked')
 
-                    # if interpretation, make complete
-                    elif 'Interpretation' in current_step:
-                        if signoff_check(request.user, current_step_obj):
-                            return redirect('view_samples', sample_data['worksheet_id'])
-                        else:
-                            context['warning'].append('Not all variant have been checked')
+                        # throw error, cant do this yet
+                        elif 'Interpretation' in current_step:
+                            context['warning'].append("Only one interpretation check is carried out within this database, please only select eith 'Complete check' or 'Fail sample'")
+                            # dont redirect - need to keep on current screen
 
-
-                elif next_step == 'Request extra check':
-                    if 'IGV' in current_step:
-                        # make extra IGV check
-                        if signoff_check(request.user, current_step_obj):
-                            make_next_check(sample_obj, 'IGV')
-                            return redirect('view_samples', sample_data['worksheet_id'])
-                        else:
-                            context['warning'].append('Not all variant have been checked')
-
-                    # throw error, cant do this yet
-                    elif 'Interpretation' in current_step:
-                        context['warning'].append("Only one interpretation check is carried out within this database, please only select eith 'Complete check' or 'Fail sample'")
-                        # dont redirect - need to keep on current screen
-
-                elif next_step == 'Fail sample':
-                    signoff_check(request.user, current_step_obj, 'F')
-                    return redirect('view_samples', sample_data['worksheet_id'])
+                    elif next_step == 'Fail sample':
+                        signoff_check(request.user, current_step_obj, 'F')
+                        return redirect('view_samples', sample_data['worksheet_id'])
 
 
     # render the pages

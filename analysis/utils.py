@@ -53,6 +53,23 @@ def make_next_check(sample_obj, next_step):
     return True
 
 
+def get_sample_info(sample_obj):
+    """
+
+    """
+    sample_data = {
+        'sample_pk': sample_obj.pk,
+        'dna_or_rna': sample_obj.sample.sample_type,
+        'sample_id': sample_obj.sample.sample_id,
+        'sample_name': sample_obj.sample.sample_name,
+        'worksheet_id': sample_obj.worksheet.ws_id,
+        'panel': sample_obj.panel.panel_name,
+        'run_id': sample_obj.worksheet.run.run_id,
+        'checks': sample_obj.get_checks(),
+    }
+    return sample_data
+
+
 def get_variant_info(sample_data, sample_obj):
 
     sample_variants = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
