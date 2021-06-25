@@ -29,12 +29,18 @@ class Command(BaseCommand):
 
             # make samples
             for s in range(0, random.randrange(1,10)):
-                sample = f'21M{random.randrange(100,5000)}'
+                sample = f'21M{random.randrange(100,5000000)}'
                 sample_type = random.choice(['DNA', 'RNA'])
-                new_sample = Sample.objects.get_or_create(
-                    sample_id=sample,
-                    sample_type=sample_type,
-                )
+                try:
+                    new_sample = Sample.objects.get(
+                        sample_id=sample,
+                        sample_type=sample_type,
+                    )
+                except:
+                    new_sample = Sample(
+                        sample_id=sample,
+                        sample_type=sample_type,
+                    )
                 new_sample.save()
 
                 # make sample analysis and checks
@@ -75,6 +81,7 @@ class Command(BaseCommand):
                         vaf=random.randrange(1,100),
                         total_count=random.randrange(1,100),
                         alt_count=random.randrange(1,10),
+                        in_ntc=False,
                     )
                     new_var_instance.save()
 
