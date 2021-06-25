@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.utils import timezone
 
-from .forms import SearchForm, NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName
+from .forms import SearchForm, NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm
 from .models import *
 from .test_data import dummy_dicts
 from .utils import signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info
@@ -143,7 +143,8 @@ def analysis_sheet(request, sample_id):
         'new_variant_form': NewVariantForm(),
         'submit_form': SubmitForm(),
         'update_name_form': UpdatePatientName(),
-    }
+        'coverage_check_form': CoverageCheckForm(comment=''),
+    } #TODO pull comment through
 
     # DNA workflow
     if sample_data['dna_or_rna'] == 'DNA':
@@ -208,13 +209,13 @@ def analysis_sheet(request, sample_id):
 
 
         # comments submit button
-        if 'comment' in request.POST:
-            new_comment = request.POST['comment']
+        if 'variant_comment' in request.POST:
+            new_comment = request.POST['variant_comment']
             pk = request.POST['pk']
 
             # update comment
             VariantCheck.objects.filter(pk=request.POST['pk']).update(
-                comment=request.POST['comment'],
+                comment=request.POST['variant_comment'],
                 comment_updated=timezone.now(),
             )
 

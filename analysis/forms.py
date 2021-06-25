@@ -72,7 +72,7 @@ class VariantCommentForm(forms.Form):
     """
 
     """
-    comment = forms.CharField(
+    variant_comment = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 4}),
         required=False,
     )
@@ -85,7 +85,7 @@ class VariantCommentForm(forms.Form):
 
         super(VariantCommentForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.fields['comment'].initial = self.comment
+        self.fields['variant_comment'].initial = self.comment
         self.fields['pk'].initial = self.pk
         self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-success'))
 
@@ -103,3 +103,22 @@ class UpdatePatientName(forms.Form):
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-25')
         )
+
+
+class CoverageCheckForm(forms.Form):
+    """
+    """
+    ntc_checked = forms.BooleanField(required=True)
+    coverage_comment = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 3}),
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+
+        self.comment = kwargs.pop('comment')
+
+        super(CoverageCheckForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.fields['coverage_comment'].initial = self.comment
+        self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-success'))

@@ -173,7 +173,17 @@
 </table>
 
 <br>
+<br>
 
-<p><b>Comments</b></p>
-<p>No comments</p>
-<button type="button" class="btn btn-info">Add comment</button>
+<div class="container">
+  <div class="card">
+    <div class="card-body">
+
+      <h5>Coverage check</h5>
+      <br>
+
+      {% crispy coverage_check_form %}
+
+    </div>
+  </div>
+</div>
