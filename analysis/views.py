@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.utils import timezone
 
-from .forms import SearchForm, NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, CheckPatientName
+from .forms import SearchForm, NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, CheckPatientName, FusionCommentForm
 from .models import *
 from .test_data import dummy_dicts
 from .utils import signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info
@@ -169,9 +169,25 @@ def analysis_sheet(request, sample_id):
             total_runs = FusionAnalysis.objects.filter(sample__worksheet__run__run_id=sample_data.get('run_id'))
             total_runs_count = total_runs.count()
 
+
             # TODO were leaving this til last
             #previous_runs = FusionAnalysis.objects.filter(fusion_genes=fusion_object.fusion_genes).exclude(sample__worksheet__run__run_id=sample_data.get('run_id'))
             #previous_runs_count = previous_runs.count()
+
+
+             # get checks for each variant
+            fusion_checks = FusionCheck.objects.filter(fusion_analysis=fusion_object)
+            fusion_checks_list = [ v.get_decision_display() for v in fusion_checks ]
+            latest_check = fusion_checks.latest('pk')
+            fusion_comment_form = FusionCommentForm(pk=latest_check.pk, comment=latest_check.comment)
+
+            # get list of comments for variant
+            fusion_comments_list = []
+            for v in fusion_checks:
+                if v.comment:
+                    fusion_comments_list.append(
+                        { 'comment': v.comment, 'user': v.check_object.user, 'updated': v.comment_updated, }
+                    )
 
             fusion_calls_dict = {
                 'fusion_genes': fusion_object.fusion_genes.fusion_genes,
@@ -187,6 +203,10 @@ def analysis_sheet(request, sample_id):
                 'previous_runs': {
                     'count': '1',
                 },
+                'checks': fusion_checks_list,
+                'latest_check': "latest check",
+                'comment_form': fusion_comment_form,
+                'comments': fusion_comments_list,
             }
 
             fusion_calls.append(fusion_calls_dict)
@@ -229,6 +249,21 @@ def analysis_sheet(request, sample_id):
 
             # reload variant data
             context['variant_data'] = get_variant_info(sample_data, sample_obj)
+
+
+
+        # fusion comments submit button
+        if 'fusion_comment' in request.POST:
+            new_comment = request.POST['fusion_comment']
+            pk = request.POST['pk']
+
+            # update comment
+            FusionCheck.objects.filter(pk=request.POST['pk']).update(
+                comment=request.POST['fusion_comment'],
+                comment_updated=timezone.now(),
+            )
+
+            # TODO reload variant data
 
 
         # if add new variant form is clicked
@@ -299,8 +334,10 @@ def analysis_sheet(request, sample_id):
 
     # render the pages
     if sample_data['dna_or_rna'] == 'DNA':
+        print(context)
         return render(request, 'analysis/analysis_sheet_dna.html', context)
     if sample_data['dna_or_rna'] == 'RNA':
+        print(context)
         return render(request, 'analysis/analysis_sheet_rna.html', context)
 
     else:

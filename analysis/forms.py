@@ -90,6 +90,29 @@ class VariantCommentForm(forms.Form):
         self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-success'))
 
 
+
+class FusionCommentForm(forms.Form):
+    """
+
+    """
+    fusion_comment = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 4}),
+        required=False,
+    )
+    pk = forms.CharField(widget=forms.HiddenInput())
+
+    def __init__(self, *args, **kwargs):
+
+        self.comment = kwargs.pop('comment')
+        self.pk = kwargs.pop('pk')
+
+        super(FusionCommentForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.fields['fusion_comment'].initial = self.comment
+        self.fields['pk'].initial = self.pk
+        self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-success'))
+
+
 class UpdatePatientName(forms.Form):
     """
     """

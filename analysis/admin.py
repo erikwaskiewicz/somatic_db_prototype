@@ -21,5 +21,6 @@ admin.site.register(RegionCoverageAnalysis)
 admin.site.register(GapsAnalysis)
 admin.site.register(Fusion)
 admin.site.register(FusionAnalysis)
+admin.site.register(FusionCheck)
 
 
