@@ -40,8 +40,10 @@ class Sample(models.Model):
     )
     sample_id = models.CharField(max_length=50, primary_key=True)
     sample_name = models.CharField(max_length=200, blank=True, null=True)
+    sample_name_check=models.BooleanField(default=False)
     sample_type = models.CharField(max_length=3, choices=TYPE_CHOICES)
-
+    total_reads = models.IntegerField()
+    total_reads_ntc= models.IntegerField()
 
 class Panel(models.Model):
     """
@@ -295,3 +297,27 @@ class FusionAnalysis(models.Model):
     fusion_genes = models.ForeignKey('Fusion', on_delete=models.CASCADE)
     split_reads = models.IntegerField()
     spanning_reads = models.IntegerField()
+    in_ntc=models.BooleanField(default=False)
+
+
+
+class FusionCheck(models.Model):
+    """
+    Record the genuine/ artefact check for a fusion analysis
+
+    """
+    DECISION_CHOICES = (
+        ('-', 'Pending'),
+        ('G', 'Genuine'),
+        ('A', 'Artefact'),
+        ('P', 'Poly'),
+        ('W', 'WT'),
+        ('M', 'Miscalled'),
+        ('N', 'Not analysed'),
+        ('F', 'Failed call'),
+    )
+    fusion_analysis = models.ForeignKey('FusionAnalysis', on_delete=models.CASCADE)
+    check_object = models.ForeignKey('Check', on_delete=models.CASCADE)
+    decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
+    comment = models.CharField(max_length=500, blank=True, null=True) # TODO - link out to seperate comment model???
+    comment_updated = models.DateTimeField(blank=True, null=True)

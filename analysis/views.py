@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.utils import timezone
 
-from .forms import SearchForm, NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm
+from .forms import SearchForm, NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, CheckPatientName
 from .models import *
 from .test_data import dummy_dicts
 from .utils import signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info
@@ -143,6 +143,7 @@ def analysis_sheet(request, sample_id):
         'new_variant_form': NewVariantForm(),
         'submit_form': SubmitForm(),
         'update_name_form': UpdatePatientName(),
+        'check_name_form': CheckPatientName(),
         'coverage_check_form': CoverageCheckForm(comment=''),
     } #TODO pull comment through
 
@@ -181,7 +182,7 @@ def analysis_sheet(request, sample_id):
                 'this_run': {
                     'count': this_run_count, 
                     'total': total_runs_count,
-                    'ntc': True,
+                    'ntc': fusion_object.in_ntc,
                 },   
                 'previous_runs': {
                     'count': '1',
@@ -207,6 +208,13 @@ def analysis_sheet(request, sample_id):
                 sample_obj = SampleAnalysis.objects.get(pk = sample_id)
                 context['sample_data'] = get_sample_info(sample_obj)
 
+        #check patient name update button
+        if 'checker_comment' in request.POST:
+            check_name_form = CheckPatientName(request.POST)
+
+            if check_name_form.is_valid():
+                checker_comment = check_name_form.cleaned_data['checker_comment']
+                Sample.objects.filter(pk=sample_obj.sample.pk).update(sample_name_check=True)
 
         # comments submit button
         if 'variant_comment' in request.POST:
@@ -294,6 +302,7 @@ def analysis_sheet(request, sample_id):
         return render(request, 'analysis/analysis_sheet_dna.html', context)
     if sample_data['dna_or_rna'] == 'RNA':
         return render(request, 'analysis/analysis_sheet_rna.html', context)
+
     else:
         raise Http404(f'Sample must be either DNA or RNA, not {sample_data["dna_or_rna"]}')
 

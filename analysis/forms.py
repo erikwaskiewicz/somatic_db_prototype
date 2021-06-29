@@ -105,10 +105,26 @@ class UpdatePatientName(forms.Form):
         )
 
 
+
+class CheckPatientName(forms.Form):
+    """
+    """
+    name_checked = forms.BooleanField(required=True)
+    checker_comment = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 3}),
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+
+        super(CheckPatientName, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-success'))
+
 class CoverageCheckForm(forms.Form):
     """
     """
-    ntc_checked = forms.BooleanField(required=True)
+    ntc_checked = forms.BooleanField(required=True, label="NTC checked")
     coverage_comment = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 3}),
         required=False,

@@ -65,6 +65,8 @@ def get_sample_info(sample_obj):
         'worksheet_id': sample_obj.worksheet.ws_id,
         'panel': sample_obj.panel.panel_name,
         'run_id': sample_obj.worksheet.run.run_id,
+        'total_reads': sample_obj.sample.total_reads,
+        'total_reads_ntc': sample_obj.sample.total_reads_ntc,
         'checks': sample_obj.get_checks(),
     }
     return sample_data
