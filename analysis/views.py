@@ -207,11 +207,13 @@ def analysis_sheet(request, sample_id):
                 'latest_check': "latest check",
                 'comment_form': fusion_comment_form,
                 'comments': fusion_comments_list,
+                
+
             }
 
             fusion_calls.append(fusion_calls_dict)
 
-        context['fusion_data'] = {'fusion_calls': fusion_calls}
+        context['fusion_data'] = {'fusion_calls': fusion_calls, 'check_options': FusionCheck.DECISION_CHOICES, }
 
 
     ###  If any buttons are pressed
@@ -263,7 +265,11 @@ def analysis_sheet(request, sample_id):
                 comment_updated=timezone.now(),
             )
 
-            # TODO reload variant data
+            # TODO reload fusion data
+
+            
+            
+
 
 
         # if add new variant form is clicked
@@ -334,10 +340,8 @@ def analysis_sheet(request, sample_id):
 
     # render the pages
     if sample_data['dna_or_rna'] == 'DNA':
-        print(context)
         return render(request, 'analysis/analysis_sheet_dna.html', context)
     if sample_data['dna_or_rna'] == 'RNA':
-        print(context)
         return render(request, 'analysis/analysis_sheet_rna.html', context)
 
     else:

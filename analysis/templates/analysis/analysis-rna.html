@@ -59,11 +59,27 @@
           {{ v.previous_runs.count }} <span class="fa fa-search"></span>
         </button>
       </td>
+
+      {% if 'IGV' in sample_data.checks.current_status %}
+
       <td>
         {% for check in v.checks %}
           {{ forloop.counter }}: {{ check }}<br>
         {% endfor %}
       </td>
+      <td class=genuine-dropdown>
+        <select name="variant" id="variant">
+          {% for option in fusion_data.check_options %}
+            {% if v.latest_check.decision == option.0 %}
+            <option value="{{ option.0 }}" selected>{{ option.1 }}</option>
+            {% else %}
+            <option value="{{ option.0 }}">{{ option.1 }}</option>
+            {% endif %}
+
+          {% endfor %}
+        </select>
+      </td>
+      {% endif %}
       <td>
         <button type="button" data-toggle="modal" data-target="#comments-modal"
         {% if v.comments %}
@@ -72,14 +88,6 @@
         class="btn btn-light">
         {% endif %}
         {{ v.comments | length }}</button>
-      </td>
-      <td>
-        <select name="variant" id="variant">
-          <option value="artefact">Artefact</option>
-          <option value="genuine">Genuine</option>
-          <option value="genuine">Miscalled - see below</option>
-          <option value="genuine">etc</option>
-        </select>
       </td>
     </tr>
     {% endfor %}
@@ -214,7 +222,10 @@
 </div>
 
 
+
+
 <script>
+    // copy IGV coords to clipboard
     function copyToClipboard(element) {
         var $temp = $("<input>");
         $("body").append($temp);
@@ -222,4 +233,59 @@
         document.execCommand("copy");
         $temp.remove();
     }
+
+    // gather selections from dropdown
+    $(".variants-submit").click(function(){
+      var rows = $("#variants-table").children("tbody").children();
+      var selection_dict = {};
+
+      for (var i=0; i<rows.length; i++){
+        // extract required variables
+        var pk = $(rows[i]).children("td.variant-pk").text();
+        var genuine_selection = $(rows[i]).children("td.genuine-dropdown").children().val();
+        var tier_selection = $(rows[i]).children("td.tier-dropdown").children().val();
+        var actionable_selection = $(rows[i]).children("td.actionable-dropdown").children().val();
+        // compile into dictionary for individual variant
+        var d = {
+          'genuine_dropdown': genuine_selection,
+          'actionable_dropdown': actionable_selection,
+          'tier_dropdown': tier_selection,
+        };
+        // add to dictionary for all variants
+        selection_dict[pk] = d
+      }
+
+      // pass dict to JS form for AJAX POST
+      var formData = new FormData();
+      formData.append('csrfmiddlewaretoken',document.getElementsByName('csrfmiddlewaretoken')[0].value);
+      formData.append('selections', JSON.stringify(selection_dict));
+      formData.append('sample_pk', "{{ sample_data.sample_pk }}");
+
+      $.ajax({
+          url: "{% url 'ajax' %}",
+          type: 'POST',
+          data: formData,
+          contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
+          processData: false, // NEEDED, DON'T OMIT THIS
+          success: function(data) {
+              window.location = "{% url 'analysis_sheet' sample_data.sample_pk %}";
+          },
+          failure: function(data) {
+              alert('Got an error');
+          }
+      });
+    })
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
