@@ -155,13 +155,13 @@ def analysis_sheet(request, sample_id):
     # RNA workflow
     elif sample_data['dna_or_rna'] == 'RNA':
 
-        fusions = FusionAnalysis.objects.filter(sample = sample_obj)
+        fusions = FusionPanelAnalysis.objects.filter(sample_analysis= sample_obj)
 
         fusion_calls=[]
         for fusion_object in fusions:
 
             this_run = FusionAnalysis.objects.filter(
-                fusion_genes=fusion_object.fusion_genes,
+                fusion_genes=fusion_object.fusion_instance.fusion_genes,
                 sample__worksheet__run__run_id=sample_data.get('run_id')
             )
             this_run_count = this_run.count()
@@ -173,7 +173,6 @@ def analysis_sheet(request, sample_id):
             # TODO were leaving this til last
             #previous_runs = FusionAnalysis.objects.filter(fusion_genes=fusion_object.fusion_genes).exclude(sample__worksheet__run__run_id=sample_data.get('run_id'))
             #previous_runs_count = previous_runs.count()
-
 
              # get checks for each variant
             fusion_checks = FusionCheck.objects.filter(fusion_analysis=fusion_object)
@@ -190,15 +189,16 @@ def analysis_sheet(request, sample_id):
                     )
 
             fusion_calls_dict = {
-                'fusion_genes': fusion_object.fusion_genes.fusion_genes,
-                'split_reads': fusion_object.split_reads,
-                'spanning_reads': fusion_object.spanning_reads,
-                'left_breakpoint': fusion_object.fusion_genes.left_breakpoint,
-                'right_breakpoint': fusion_object.fusion_genes.right_breakpoint,
+                'pk': fusion_object.pk,
+                'fusion_genes': fusion_object.fusion_instance.fusion_genes.fusion_genes,
+                'split_reads': fusion_object.fusion_instance.split_reads,
+                'spanning_reads': fusion_object.fusion_instance.spanning_reads,
+                'left_breakpoint': fusion_object.fusion_instance.fusion_genes.left_breakpoint,
+                'right_breakpoint': fusion_object.fusion_instance.fusion_genes.right_breakpoint,
                 'this_run': {
                     'count': this_run_count, 
                     'total': total_runs_count,
-                    'ntc': fusion_object.in_ntc,
+                    'ntc': fusion_object.fusion_instance.in_ntc,
                 },   
                 'previous_runs': {
                     'count': '1',
@@ -297,7 +297,7 @@ def analysis_sheet(request, sample_id):
                         if 'IGV' in current_step:
                             # if 1st IGV, make 2nd IGV
                             if current_step == 'IGV check 1':
-                                if signoff_check(request.user, current_step_obj):
+                                if signoff_check(request.user, current_step_obj, sample_obj):
                                     make_next_check(sample_obj, 'IGV')
                                     return redirect('view_samples', sample_data['worksheet_id'])
                                 else:
@@ -356,19 +356,34 @@ def ajax(request):
         dna_or_rna = sample_obj.sample.sample_type
 
         selections = json.loads(request.POST.get('selections'))
+        print(selections)
 
-        for variant in selections:
-            variant_obj = VariantPanelAnalysis.objects.get(pk=variant)
-            current_check = variant_obj.get_current_check()
-            igv_or_vus = current_check.check_object.stage
+        if (dna_or_rna=="DNA"):
+            for variant in selections:
+                variant_obj = VariantPanelAnalysis.objects.get(pk=variant)
+                current_check = variant_obj.get_current_check()
+                igv_or_vus = current_check.check_object.stage
 
-            if igv_or_vus == 'IGV':
-                new_choice = selections[variant]['genuine_dropdown']
-                current_check.decision = new_choice
-                current_check.save()
-            elif igv_or_vus == 'VUS':
-                actionable_choice = selections[variant]['actionable_dropdown']
-                vus_choice = selections[variant]['tier_dropdown']
+                if igv_or_vus == 'IGV':
+                    new_choice = selections[variant]['genuine_dropdown']
+                    current_check.decision = new_choice
+                    current_check.save()
+                elif igv_or_vus == 'VUS':
+                    actionable_choice = selections[variant]['actionable_dropdown']
+                    vus_choice = selections[variant]['tier_dropdown']
+
+        elif (dna_or_rna=="RNA"):
+            for variant in selections:
+                fusion_obj = FusionPanelAnalysis.objects.get(pk=variant)
+                current_check = fusion_obj.get_current_check()
+                igv_or_vus = current_check.check_object.stage
+                if igv_or_vus == 'IGV':
+                    new_choice = selections[variant]['genuine_dropdown']
+                    current_check.decision = new_choice
+                    current_check.save()
+                elif igv_or_vus == 'VUS':
+                    actionable_choice = selections[variant]['actionable_dropdown']
+                    vus_choice = selections[variant]['tier_dropdown']
 
         # dont think this redirect is doing anything but there needs to be a HTML response
         # actual reidrect is handled inside AJAX call in analysis-snvs.html

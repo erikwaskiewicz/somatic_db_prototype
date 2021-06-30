@@ -22,5 +22,6 @@ admin.site.register(GapsAnalysis)
 admin.site.register(Fusion)
 admin.site.register(FusionAnalysis)
 admin.site.register(FusionCheck)
+admin.site.register(FusionPanelAnalysis)
 
 

@@ -4,16 +4,24 @@ from .forms import SearchForm, NewVariantForm, SubmitForm, VariantCommentForm
 from django.utils import timezone
 
 # TODO make sure that nothing gets saved to db if there's an error -- ? transaction.atomic
-def signoff_check(user, current_step_obj, status='C'):
+def signoff_check(user, current_step_obj, sample_obj, status='C'):
     """
 
     """
     # make sure each variant has a class
-    variant_checks = VariantCheck.objects.filter(check_object=current_step_obj)
-    for v in variant_checks:
-        if v.decision == '-':
-            # this trigers view to render the error on the page
-            return False
+    if (sample_obj.dna_or_rna=="DNA"):
+        variant_checks = VariantCheck.objects.filter(check_object=current_step_obj)
+        for v in variant_checks:
+            if v.decision == '-':
+                # this trigers view to render the error on the page
+                return False
+
+    elif (sample_obj.dna_or_rna=="RNA"):
+        variant_checks = FusionCheck.objects.filter(check_object=current_step_obj)
+        for v in variant_checks:
+            if v.decision == '-':
+                # this trigers view to render the error on the page
+                return False
 
     # signoff current check
     now = timezone.now()
@@ -41,14 +49,24 @@ def make_next_check(sample_obj, next_step):
     # save object
     new_check_obj.save()
 
-    # make check objects for all variants
-    variant_objects = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
-    for v in variant_objects:
-        new_variant_check = VariantCheck(
-            variant_analysis = v,
-            check_object = new_check_obj,
-        )
-        new_variant_check.save()
+    if (sample_obj.dna_or_rna=="DNA"):
+        # make check objects for all variants
+        variant_objects = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
+        for v in variant_objects:
+            new_variant_check = VariantCheck(
+                variant_analysis = v,
+                check_object = new_check_obj,
+            )
+            new_variant_check.save()
+    elif (sample_obj.dna_or_rna=="RNA"):
+        # make check objects for all variants
+        variant_objects = FusionPanelAnalysis.objects.filter(sample_analysis=sample_obj)
+        for v in variant_objects:
+            new_variant_check = FusionCheck(
+                fusion_analysis = v,
+                check_object = new_check_obj,
+            )
+            new_variant_check.save()
 
     return True
 
@@ -75,6 +93,7 @@ def get_sample_info(sample_obj):
 def get_variant_info(sample_data, sample_obj):
 
     sample_variants = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
+    print(sample_variants)
 
     variant_calls=[]
     polys_list=[]

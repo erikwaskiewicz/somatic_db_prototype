@@ -16,7 +16,7 @@
 
 <p><b>Number of reads in NTC:</b> {{ sample_data.total_reads_ntc }} </p>
 
-<table class="table table-striped table-hover">
+<table id="fusions-table" class="table table-striped table-hover">
   <thead>
     <tr>
       <th scope="col">Fusion</th>
@@ -34,7 +34,9 @@
 
     <tbody>
     {% for v in fusion_data.fusion_calls %}
+
     <tr>
+       <td class="variant-pk" style="display:none">{{ v.pk }}</td>
       <td>
         <p style="display:inline" id="igv">{{ v.fusion_genes }} </p><button class="btn btn-sm btn-info" onclick="copyToClipboard('#igv')"><span class="fa fa-copy"></span></button>
       </td>
@@ -236,7 +238,7 @@
 
     // gather selections from dropdown
     $(".variants-submit").click(function(){
-      var rows = $("#variants-table").children("tbody").children();
+      var rows = $("#fusions-table").children("tbody").children();
       var selection_dict = {};
 
       for (var i=0; i<rows.length; i++){

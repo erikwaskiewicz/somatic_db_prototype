@@ -316,8 +316,22 @@ class FusionCheck(models.Model):
         ('N', 'Not analysed'),
         ('F', 'Failed call'),
     )
-    fusion_analysis = models.ForeignKey('FusionAnalysis', on_delete=models.CASCADE)
+    fusion_analysis = models.ForeignKey('FusionPanelAnalysis', on_delete=models.CASCADE)
     check_object = models.ForeignKey('Check', on_delete=models.CASCADE)
     decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
     comment = models.CharField(max_length=500, blank=True, null=True) # TODO - link out to seperate comment model???
     comment_updated = models.DateTimeField(blank=True, null=True)
+
+
+class FusionPanelAnalysis(models.Model):
+    """
+    Link instances of variants to a panel analysis
+
+    """
+    sample_analysis = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
+    fusion_instance = models.ForeignKey('FusionAnalysis', on_delete=models.CASCADE)
+    # TODO - add final IGV/ class decision here??
+
+    def get_current_check(self):
+        return FusionCheck.objects.filter(fusion_analysis=self).latest('pk')
+
