@@ -305,7 +305,7 @@ def analysis_sheet(request, sample_id):
                                 
                             # if 2nd IGV (or 3rd...) make interpretation
                             else:
-                                if signoff_check(request.user, current_step_obj):
+                                if signoff_check(request.user, current_step_obj, sample_obj):
                                     make_next_check(sample_obj, 'VUS')
                                     return redirect('view_samples', sample_data['worksheet_id'])
                                 else:
@@ -313,7 +313,7 @@ def analysis_sheet(request, sample_id):
 
                         # if interpretation, make complete
                         elif 'Interpretation' in current_step:
-                            if signoff_check(request.user, current_step_obj):
+                            if signoff_check(request.user, current_step_obj, sample_obj):
                                 return redirect('view_samples', sample_data['worksheet_id'])
                             else:
                                 context['warning'].append('Did not finialise check - not all variant have been checked')
@@ -322,7 +322,7 @@ def analysis_sheet(request, sample_id):
                     elif next_step == 'Request extra check':
                         if 'IGV' in current_step:
                             # make extra IGV check
-                            if signoff_check(request.user, current_step_obj):
+                            if signoff_check(request.user, current_step_obj, sample_obj):
                                 make_next_check(sample_obj, 'IGV')
                                 return redirect('view_samples', sample_data['worksheet_id'])
                             else:
@@ -334,7 +334,7 @@ def analysis_sheet(request, sample_id):
                             # dont redirect - need to keep on current screen
 
                     elif next_step == 'Fail sample':
-                        signoff_check(request.user, current_step_obj, 'F')
+                        signoff_check(request.user, current_step_obj, 'F', sample_obj)
                         return redirect('view_samples', sample_data['worksheet_id'])
 
 

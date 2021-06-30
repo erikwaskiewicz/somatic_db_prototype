@@ -9,14 +9,14 @@ def signoff_check(user, current_step_obj, sample_obj, status='C'):
 
     """
     # make sure each variant has a class
-    if (sample_obj.dna_or_rna=="DNA"):
+    if (sample_obj.sample.sample_type=="DNA"):
         variant_checks = VariantCheck.objects.filter(check_object=current_step_obj)
         for v in variant_checks:
             if v.decision == '-':
                 # this trigers view to render the error on the page
                 return False
 
-    elif (sample_obj.dna_or_rna=="RNA"):
+    elif (sample_obj.sample.sample_type=="RNA"):
         variant_checks = FusionCheck.objects.filter(check_object=current_step_obj)
         for v in variant_checks:
             if v.decision == '-':
@@ -49,7 +49,7 @@ def make_next_check(sample_obj, next_step):
     # save object
     new_check_obj.save()
 
-    if (sample_obj.dna_or_rna=="DNA"):
+    if (sample_obj.sample.sample_type=="DNA"):
         # make check objects for all variants
         variant_objects = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
         for v in variant_objects:
@@ -58,7 +58,7 @@ def make_next_check(sample_obj, next_step):
                 check_object = new_check_obj,
             )
             new_variant_check.save()
-    elif (sample_obj.dna_or_rna=="RNA"):
+    elif (sample_obj.sample.sample_type=="RNA"):
         # make check objects for all variants
         variant_objects = FusionPanelAnalysis.objects.filter(sample_analysis=sample_obj)
         for v in variant_objects:
