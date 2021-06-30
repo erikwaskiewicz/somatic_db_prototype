@@ -287,7 +287,7 @@ def analysis_sheet(request, sample_id):
 
             if submit_form.is_valid():
                 if sample_data['sample_name'] == None:
-                    context['warning'].append('Did not finialise check - input patient name before continuing')
+                    context['warning'].append('Did not finalise check - input patient name before continuing')
 
                 else:
                     next_step = submit_form.cleaned_data['next_step']
@@ -301,7 +301,7 @@ def analysis_sheet(request, sample_id):
                                     make_next_check(sample_obj, 'IGV')
                                     return redirect('view_samples', sample_data['worksheet_id'])
                                 else:
-                                    context['warning'].append('Did not finialise check - not all variant have been checked')
+                                    context['warning'].append('Did not finalise check - not all variant have been checked')
                                 
                             # if 2nd IGV (or 3rd...) make interpretation
                             else:
@@ -309,14 +309,14 @@ def analysis_sheet(request, sample_id):
                                     make_next_check(sample_obj, 'VUS')
                                     return redirect('view_samples', sample_data['worksheet_id'])
                                 else:
-                                    context['warning'].append('Did not finialise check - not all variant have been checked')
+                                    context['warning'].append('Did not finalise check - not all variant have been checked')
 
                         # if interpretation, make complete
                         elif 'Interpretation' in current_step:
                             if signoff_check(request.user, current_step_obj, sample_obj):
                                 return redirect('view_samples', sample_data['worksheet_id'])
                             else:
-                                context['warning'].append('Did not finialise check - not all variant have been checked')
+                                context['warning'].append('Did not finalise check - not all variant have been checked')
 
 
                     elif next_step == 'Request extra check':
@@ -326,7 +326,7 @@ def analysis_sheet(request, sample_id):
                                 make_next_check(sample_obj, 'IGV')
                                 return redirect('view_samples', sample_data['worksheet_id'])
                             else:
-                                context['warning'].append('Did not finialise check - not all variant have been checked')
+                                context['warning'].append('Did not finalise check - not all variant have been checked')
 
                         # throw error, cant do this yet
                         elif 'Interpretation' in current_step:
