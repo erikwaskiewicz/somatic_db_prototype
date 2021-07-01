@@ -25,10 +25,9 @@
       <th scope="col">Left breakpoint</th>
       <th scope="col">Right breakpoint</th>
       <th scope="col">This run</th>
-      <th scope="col">Previous runs</th>
       <th scope="col">IGV</th>
-      <th><span class="fa fa-comment-alt"></span></th>
       <th scope="col">Action</th>
+      <th><span class="fa fa-comment-alt"></span></th>
     </tr>
   </thead>
 
@@ -52,12 +51,16 @@
        <td>
         {{ v.this_run.count }} of {{ v.this_run.total }} samples<br>Present in NTC: {{ v.this_run.ntc }}
       </td>
-      <td>
+
+<!-- Not using this yet
+
         {{ v.previous_runs.known }}
         <button type="button" class="btn btn-light" data-toggle="modal" data-target="#counts-modal">
           {{ v.previous_runs.count }} <span class="fa fa-search"></span>
         </button>
-      </td>
+
+
+ -->
 
       {% if 'IGV' in sample_data.checks.current_status %}
 
