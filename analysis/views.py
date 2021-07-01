@@ -191,8 +191,7 @@ def analysis_sheet(request, sample_id):
             fusion_calls_dict = {
                 'pk': fusion_object.pk,
                 'fusion_genes': fusion_object.fusion_instance.fusion_genes.fusion_genes,
-                'split_reads': fusion_object.fusion_instance.split_reads,
-                'spanning_reads': fusion_object.fusion_instance.spanning_reads,
+                'fusion_supporting_reads': fusion_object.fusion_instance.fusion_supporting_reads,
                 'left_breakpoint': fusion_object.fusion_instance.fusion_genes.left_breakpoint,
                 'right_breakpoint': fusion_object.fusion_instance.fusion_genes.right_breakpoint,
                 'this_run': {

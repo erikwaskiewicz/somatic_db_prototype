@@ -44,6 +44,7 @@ class Sample(models.Model):
     sample_type = models.CharField(max_length=3, choices=TYPE_CHOICES)
     total_reads = models.IntegerField()
     total_reads_ntc= models.IntegerField()
+    percent_reads_ntc= models.CharField(max_length=200, blank=True, null=True)
 
 class Panel(models.Model):
     """
@@ -295,8 +296,11 @@ class FusionAnalysis(models.Model):
     """
     sample = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
     fusion_genes = models.ForeignKey('Fusion', on_delete=models.CASCADE)
+    fusion_supporting_reads = models.IntegerField()
     split_reads = models.IntegerField()
     spanning_reads = models.IntegerField()
+    fusion_caller= models.CharField(max_length=50)
+    fusion_score= models.CharField(max_length=50)
     in_ntc=models.BooleanField(default=False)
 
 
