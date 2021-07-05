@@ -1,82 +1,123 @@
 {% load crispy_forms_tags %}
 
-<h5>Report</h5>
+
 <button type="button" class="btn btn-success">Download report</button>
 <br>
 <br>
 
-<h5>Variant_results</h5>
-<table id="variants-table" class="table table-striped table-hover">
+<h5>Variants</h5>
+<table class="table table-sm table-striped table-hover">
   <thead>
     <tr>
-      <th style="display:none"></th> <!-- variant PK for JS -->
       <th scope="col">Variant</th>
       <th scope="col">Gene</th>
       <th scope="col">HGVS</th>
       <th scope="col">VAF</th>
-      <th scope="col">This run</th>
-      <!--<th scope="col">Previously seen</th>-->
       <th scope="col">IGV</th>
+      <th scope="col">Class</th>
     </tr>
   </thead>
 
   <tbody>
     {% for v in variant_data.variant_calls %}
 
-    #TODO change this to if final decision=="Genuine" once it has been updated
+    <!--#TODO change this to if final decision=="Genuine" once it has been updated-->
     {% if v.final_decision == "-" %}
     <tr>
       <td class="variant-pk" style="display:none">{{ v.pk }}</td>
-      <td>
-        <p style="display:inline" id="igv">{{ v.genomic }} </p><button class="btn btn-sm btn-info" onclick="copyToClipboard('#igv')"><span class="fa fa-copy"></span></button>
-      </td>
-      <td>
-        {{ v.gene }}<br>{{ v.exon }}
-      </td>
-      <td>
-        {{ v.transcript }}<br>{{ v.hgvs_c }}<br>{{ v.hgvs_p }}
-      </td>
-      <td>
-        {{ v.vaf.vaf }}%<br>{{ v.vaf.alt_count }} of {{ v.vaf.total_count }} reads
-      </td>
-      <td>
-        {{ v.this_run.count }} of {{ v.this_run.total }} samples<br>
-        In NTC: {{ v.this_run.ntc }} {% if v.this_run.ntc == True %}<span class="fa fa-exclamation-triangle" style="color:firebrick"></span>{% endif %}
-      </td>
+      <td><p style="display:inline" id="igv">{{ v.genomic }} </p></td>
+      <td>{{ v.gene }} ({{ v.exon }})</td>
+      <td>{{ v.transcript }} {{ v.hgvs_c }} ({{ v.hgvs_p }})</td>
+      <td>{{ v.vaf.vaf }}%</td>
+      <td>TODO</td>
+      <td>TODO</td>
+    {% endif %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<br>
 
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm">
 
+      <h5>Coverage</h5>
+      <table class="table table-sm table-striped table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Gene</th>
+            <th scope="col">Percent 135X</th>
+            <th scope="col">Percent 270X</th>
+          </tr>
+        </thead>
 
-{% if 'IGV' in sample_data.checks.current_status %}
+        <tbody>
+          {% for gene, values in coverage_data.items %}
+          <tr>
+            <td>{{ gene }}</td>
+            <td>{{ values.percent_135x }}</td>
+            <td>{{ values.percent_270x }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
 
-      <td>
-        {% for check in v.checks %}
-          {{ forloop.counter }}: {{ check }}<br>
-        {% endfor %}
-      </td>
-{% endif %}
-{% endif %}
-{% endfor %}
+    </div>
+    <div class="col-sm">
 
+      <h5>Hotspot gaps 270X</h5>
+      <table class="table table-sm table-striped table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Gap</th>
+            <th scope="col">Percent COSMIC</th>
+          </tr>
+        </thead>
 
+        <tbody>
+          {% for gene, values in coverage_data.items %}
+            {% for gap in values.gaps_270 %}
+            <tr>
+              <td>{{ gene }} {{ gap.hgvs_c }}</td>
+              <td>{{ gap.cosmic }}</td>
+            </tr>
+            {% endfor %}
+          {% endfor %}
+        </tbody>
+      </table>
 
-<h5>Sign off</h5>
+    </div>
+    <div class="col-sm">
 
-{% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail'%}
-<div class="card">
-  <div class="card-body">
+      <h5>Hotspot gaps 135X</h5>
+      <table class="table table-sm table-striped table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Gap</th>
+            <th scope="col">Percent COSMIC</th>
+          </tr>
+        </thead>
 
-    <h5>Finalise check</h5>
-    <br>
+        <tbody>
+          {% for gene, values in coverage_data.items %}
+            {% for gap in values.gaps_135 %}
+            <tr>
+              <td>{{ gene }} {{ gap.hgvs_c }}</td>
+              <td>{{ gap.cosmic }}</td>
+            </tr>
+            {% endfor %}
+          {% endfor %}
+        </tbody>
+      </table>
 
-    {% crispy submit_form %}
-
+    </div>
   </div>
-</div>
-{% endif %}
+</div> 
 <br>
 
 <h5>Checks performed</h5>
-<table class="table table-bordered">
+<table class="table table-sm table-bordered">
   <thead>
     <tr>
       <th></th>
@@ -96,10 +137,11 @@
     {% endfor %}
   </tbody>
 </table>
+<br>
 
-<!--<button type="button" class="btn btn-light" data-toggle="modal" data-target="#audit-modal">View full sample audit trail</button>-->
+<!--<button type="button" class="btn btn-light" data-toggle="modal" data-target="#audit-modal">View full sample audit trail</button>
 
-<!-- Modal -->
+<!-- Modal --
 <div class="modal fade" id="audit-modal" tabindex="-1" role="dialog" aria-labelledby="audit-modalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
@@ -138,4 +180,4 @@
   
       </div>
     </div>
-  </div>
+  </div> -->

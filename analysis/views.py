@@ -266,10 +266,6 @@ def analysis_sheet(request, sample_id):
 
             # TODO reload fusion data
 
-            
-            
-
-
 
         # if add new variant form is clicked
         if 'hgvs_g' in request.POST:
@@ -337,6 +333,7 @@ def analysis_sheet(request, sample_id):
                         signoff_check(request.user, current_step_obj, 'F', sample_obj)
                         return redirect('view_samples', sample_data['worksheet_id'])
 
+    print(context['sample_data']['checks'])
 
     # render the pages
     if sample_data['dna_or_rna'] == 'DNA':
