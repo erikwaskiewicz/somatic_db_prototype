@@ -126,6 +126,8 @@ class Check(models.Model):
     signoff_time = models.DateTimeField(blank=True, null=True)
 
 
+
+
 class Variant(models.Model):
     """
     Variant info that always stays the same
@@ -154,6 +156,7 @@ class VariantInstance(models.Model):
     alt_count = models.IntegerField()
     in_ntc = models.BooleanField()
     manual_upload = models.BooleanField(default=False)
+    final_decision=models.CharField(max_length=200, default='-')
 
 
 class VariantPanelAnalysis(models.Model):

@@ -5,6 +5,60 @@
 <br>
 <br>
 
+<h5>Variant_results</h5>
+<table id="variants-table" class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th style="display:none"></th> <!-- variant PK for JS -->
+      <th scope="col">Variant</th>
+      <th scope="col">Gene</th>
+      <th scope="col">HGVS</th>
+      <th scope="col">VAF</th>
+      <th scope="col">This run</th>
+      <!--<th scope="col">Previously seen</th>-->
+      <th scope="col">IGV</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for v in variant_data.variant_calls %}
+
+    #TODO change this to if final decision=="Genuine" once it has been updated
+    {% if v.final_decision == "-" %}
+    <tr>
+      <td class="variant-pk" style="display:none">{{ v.pk }}</td>
+      <td>
+        <p style="display:inline" id="igv">{{ v.genomic }} </p><button class="btn btn-sm btn-info" onclick="copyToClipboard('#igv')"><span class="fa fa-copy"></span></button>
+      </td>
+      <td>
+        {{ v.gene }}<br>{{ v.exon }}
+      </td>
+      <td>
+        {{ v.transcript }}<br>{{ v.hgvs_c }}<br>{{ v.hgvs_p }}
+      </td>
+      <td>
+        {{ v.vaf.vaf }}%<br>{{ v.vaf.alt_count }} of {{ v.vaf.total_count }} reads
+      </td>
+      <td>
+        {{ v.this_run.count }} of {{ v.this_run.total }} samples<br>
+        In NTC: {{ v.this_run.ntc }} {% if v.this_run.ntc == True %}<span class="fa fa-exclamation-triangle" style="color:firebrick"></span>{% endif %}
+      </td>
+
+
+
+{% if 'IGV' in sample_data.checks.current_status %}
+
+      <td>
+        {% for check in v.checks %}
+          {{ forloop.counter }}: {{ check }}<br>
+        {% endfor %}
+      </td>
+{% endif %}
+{% endif %}
+{% endfor %}
+
+
+
 <h5>Sign off</h5>
 
 {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail'%}
