@@ -305,7 +305,8 @@ def analysis_sheet(request, sample_id):
                             # if 2nd IGV (or 3rd...) make interpretation
                             else:
                                 if signoff_check(request.user, current_step_obj, sample_obj):
-                                    make_next_check(sample_obj, 'VUS')
+                                    if (sample_obj.sample.sample_type=="DNA"):
+                                        make_next_check(sample_obj, 'VUS')
                                     return redirect('view_samples', sample_data['worksheet_id'])
                                 else:
                                     context['warning'].append('Did not finalise check - not all variant have been checked')
