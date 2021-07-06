@@ -57,7 +57,8 @@ class SubmitForm(forms.Form):
         ('Fail sample', 'Fail sample'),
     )
     next_step = forms.ChoiceField(choices=NEXT_STEP_CHOICES)
-    confirm = forms.BooleanField(required=True)
+    patient_demographics = forms.BooleanField(required=True, label="Patient demographics checked")
+    confirm = forms.BooleanField(required=True, label="Confirm check is complete")
 
     def __init__(self, *args, **kwargs):
         super(SubmitForm, self).__init__(*args, **kwargs)
@@ -88,7 +89,6 @@ class VariantCommentForm(forms.Form):
         self.fields['variant_comment'].initial = self.comment
         self.fields['pk'].initial = self.pk
         self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-success'))
-
 
 
 class FusionCommentForm(forms.Form):
@@ -126,7 +126,6 @@ class UpdatePatientName(forms.Form):
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-25')
         )
-
 
 
 class CheckPatientName(forms.Form):
