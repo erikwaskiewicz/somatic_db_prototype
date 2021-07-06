@@ -9,18 +9,15 @@ def signoff_check(user, current_step_obj, sample_obj, status='C'):
 
     """
     # make sure each variant has a class
-    if (sample_obj.sample.sample_type=="DNA"):
+    if sample_obj.sample.sample_type == 'DNA':
         variant_checks = VariantCheck.objects.filter(check_object=current_step_obj)
-        for v in variant_checks:
-            if v.decision == '-':
-                # this trigers view to render the error on the page
-                return False
-
-    elif (sample_obj.sample.sample_type=="RNA"):
+    elif sample_obj.sample.sample_type == 'RNA':
         variant_checks = FusionCheck.objects.filter(check_object=current_step_obj)
+    
+    # this trigers view to render the error on the page, skip this validation for failed samples
+    if status != 'F':
         for v in variant_checks:
             if v.decision == '-':
-                # this trigers view to render the error on the page
                 return False
 
     # signoff current check

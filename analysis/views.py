@@ -149,7 +149,7 @@ def analysis_sheet(request, sample_id):
         'update_name_form': UpdatePatientName(),
         'check_name_form': CheckPatientName(),
         'coverage_check_form': CoverageCheckForm(comment=''),
-    } #TODO pull comment through
+    } #TODO pull coverage comment through and display comments from all checkers
 
     # DNA workflow
     if sample_data['dna_or_rna'] == 'DNA':
@@ -305,18 +305,16 @@ def analysis_sheet(request, sample_id):
                             # if 2nd IGV (or 3rd...) make interpretation
                             else:
                                 if signoff_check(request.user, current_step_obj, sample_obj):
-                                    if (sample_obj.sample.sample_type=="DNA"):
-                                        make_next_check(sample_obj, 'VUS')
                                     return redirect('view_samples', sample_data['worksheet_id'])
                                 else:
                                     context['warning'].append('Did not finalise check - not all variant have been checked')
 
                         # if interpretation, make complete
-                        elif 'Interpretation' in current_step:
-                            if signoff_check(request.user, current_step_obj, sample_obj):
-                                return redirect('view_samples', sample_data['worksheet_id'])
-                            else:
-                                context['warning'].append('Did not finalise check - not all variant have been checked')
+                        #elif 'Interpretation' in current_step:
+                        #    if signoff_check(request.user, current_step_obj, sample_obj):
+                        #        return redirect('view_samples', sample_data['worksheet_id'])
+                        #    else:
+                        #        context['warning'].append('Did not finalise check - not all variant have been checked')
 
 
                     elif next_step == 'Request extra check':
@@ -329,12 +327,12 @@ def analysis_sheet(request, sample_id):
                                 context['warning'].append('Did not finalise check - not all variant have been checked')
 
                         # throw error, cant do this yet
-                        elif 'Interpretation' in current_step:
-                            context['warning'].append("Only one interpretation check is carried out within this database, please only select eith 'Complete check' or 'Fail sample'")
+                        #elif 'Interpretation' in current_step:
+                        #    context['warning'].append("Only one interpretation check is carried out within this database, please only select eith 'Complete check' or 'Fail sample'")
                             # dont redirect - need to keep on current screen
 
                     elif next_step == 'Fail sample':
-                        signoff_check(request.user, current_step_obj, 'F', sample_obj)
+                        signoff_check(request.user, current_step_obj, sample_obj, 'F')
                         return redirect('view_samples', sample_data['worksheet_id'])
 
     print(context['sample_data']['checks'])
