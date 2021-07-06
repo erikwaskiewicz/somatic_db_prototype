@@ -9,27 +9,38 @@
 <table class="table table-sm table-striped table-hover">
   <thead>
     <tr>
-      <th scope="col">Variant</th>
-      <th scope="col">Gene</th>
-      <th scope="col">HGVS</th>
-      <th scope="col">VAF</th>
+      <th scope="col">Fusion</th>
+      <th scope="col">Fusion supporting reads</th>
+      <th scope="col">Left breakpoint</th>
+      <th scope="col">Right breakpoint</th>
       <th scope="col">IGV</th>
     </tr>
   </thead>
 
-  <tbody>
-    {% for v in variant_data.variant_calls %}
 
-    <!--#TODO change this to if final decision=="Genuine" once it has been updated-->
-    {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
+
+  <tbody>
+
+    {% for v in fusion_data.fusion_calls %}
+
     <tr>
-      <td class="variant-pk" style="display:none">{{ v.pk }}</td>
-      <td><p style="display:inline" id="igv">{{ v.genomic }} </p></td>
-      <td>{{ v.gene }} ({{ v.exon }})</td>
-      <td>{{ v.transcript }} {{ v.hgvs_c }} ({{ v.hgvs_p }})</td>
-      <td>{{ v.vaf.vaf }}%</td>
-      <td>{{ v.final_decision }}</td>
-    {% endif %}
+       <td class="variant-pk" style="display:none">{{ v.pk }}</td>
+      <td>
+        <p style="display:inline" id="igv">{{ v.fusion_genes }} </p><button class="btn btn-sm btn-info" onclick="copyToClipboard('#igv')"><span class="fa fa-copy"></span></button>
+      </td>
+      <td>
+        {{ v.fusion_supporting_reads }}
+      </td>
+      <td>
+        {{ v.left_breakpoint }}
+      </td>
+      <td>
+        {{ v.right_breakpoint }}
+      </td>
+      <td>
+        {{ v.final_decision }}
+      </td>
+
     </tr>
     {% endfor %}
   </tbody>
