@@ -4,6 +4,7 @@ from django.http import Http404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 
 from .forms import SearchForm, NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, CheckPatientName, FusionCommentForm
@@ -134,6 +135,9 @@ def analysis_sheet(request, sample_id):
         current_step_obj.user = request.user
         current_step_obj.save()
         sample_data['checks'] = sample_obj.get_checks()
+
+    if current_step_obj.user != request.user:
+        raise PermissionDenied()
         
     # set up context dictionary
     context = {

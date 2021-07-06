@@ -38,7 +38,7 @@
           <td>{{ analysis.checks.assigned_to }}</td>
           <td style="text-align:right">
             {% if analysis.checks.assigned_to == None %}
-              <a class="btn btn-success btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}" role="button">Assign & analyse</a>
+            <a class="btn btn-success btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}" role="button">Assign to me & analyse</a>
             
             {% elif analysis.checks.current_status == 'Complete' %}
             <a class="btn btn-light btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">View</a>
@@ -53,6 +53,20 @@
               </button>
               <div class="dropdown-menu">
                 <a class="dropdown-item" href="{% url 'analysis_sheet' analysis.analysis_id %}">View</a>
+              </div>
+            </div>
+
+            {% elif analysis.checks.assigned_to != request.user %}
+            <div class="btn-group btn-block">
+              <a class="btn btn-light btn-block btn-disabled" href="#" role="button">
+                Assigned to {{ analysis.checks.assigned_to }}
+              </a>
+              <button type="button btn-block" class="btn btn-light dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="#">Reassign</a>
+                <!-- TODO - open a modal that allows you to change user/ unassign user -->
               </div>
             </div>
 
