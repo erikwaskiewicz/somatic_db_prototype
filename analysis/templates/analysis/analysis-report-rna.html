@@ -1,0 +1,104 @@
+{% load crispy_forms_tags %}
+
+
+<button type="button" class="btn btn-success">Download report</button>
+<br>
+<br>
+
+<h5>TODO - Variants</h5>
+<table class="table table-sm table-striped table-hover">
+  <thead>
+    <tr>
+      <th scope="col">Variant</th>
+      <th scope="col">Gene</th>
+      <th scope="col">HGVS</th>
+      <th scope="col">VAF</th>
+      <th scope="col">IGV</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for v in variant_data.variant_calls %}
+
+    <!--#TODO change this to if final decision=="Genuine" once it has been updated-->
+    {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
+    <tr>
+      <td class="variant-pk" style="display:none">{{ v.pk }}</td>
+      <td><p style="display:inline" id="igv">{{ v.genomic }} </p></td>
+      <td>{{ v.gene }} ({{ v.exon }})</td>
+      <td>{{ v.transcript }} {{ v.hgvs_c }} ({{ v.hgvs_p }})</td>
+      <td>{{ v.vaf.vaf }}%</td>
+      <td>{{ v.final_decision }}</td>
+    {% endif %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<br>
+
+
+<h5>Checks performed</h5>
+<table class="table table-sm table-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Stage</th>
+      <th>User</th>
+      <th>Signed off</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for c in sample_data.checks.all_checks %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td>{{ c.get_stage_display }}</td>
+      <td>{{ c.user }}</td>
+      <td>{{ c.signoff_time }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<br>
+
+<!--<button type="button" class="btn btn-light" data-toggle="modal" data-target="#audit-modal">View full sample audit trail</button>
+
+<!-- Modal --
+<div class="modal fade" id="audit-modal" tabindex="-1" role="dialog" aria-labelledby="audit-modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="audit-modalLabel">Audit trail</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+  
+          <div class="input-group col-6">
+            <input type="text" class="form-control" placeholder="Search" aria-label="Search">
+          </div>
+
+          <br>
+  
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th scope="col">Time</th>
+                <th scope="col">User</th>
+                <th scope="col">Change</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>...</td>
+                <td>...</td>
+                <td>...</td>
+              </tr>
+            </tbody>
+          </table>
+  
+        </div>
+  
+      </div>
+    </div>
+  </div> -->

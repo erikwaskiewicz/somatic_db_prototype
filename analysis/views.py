@@ -150,7 +150,11 @@ def analysis_sheet(request, sample_id):
         'submit_form': SubmitForm(),
         'update_name_form': UpdatePatientName(),
         'check_name_form': CheckPatientName(),
-        'coverage_check_form': CoverageCheckForm(comment=''),
+        'coverage_check_form': CoverageCheckForm(
+            pk=current_step_obj.pk, 
+            comment=current_step_obj.coverage_comment,
+            ntc_check=current_step_obj.coverage_ntc_check,
+        ),
     } #TODO pull coverage comment through and display comments from all checkers
 
     # DNA workflow
@@ -250,14 +254,37 @@ def analysis_sheet(request, sample_id):
 
             # update comment
             VariantCheck.objects.filter(pk=request.POST['pk']).update(
-                comment=request.POST['variant_comment'],
+                comment=new_comment,
                 comment_updated=timezone.now(),
             )
 
             # reload variant data
             context['variant_data'] = get_variant_info(sample_data, sample_obj)
 
+        # coverage comments button
+        if 'coverage_comment' in request.POST:
+            new_comment = request.POST['coverage_comment']
+            if request.POST['ntc_checked'] == 'on':
+                ntc_checked = True
+            else:
+                ntc_checked = False
+            pk = request.POST['pk']
 
+            # update comment
+            Check.objects.filter(pk=request.POST['pk']).update(
+                coverage_comment=new_comment,
+                coverage_comment_updated=timezone.now(),
+                coverage_ntc_check=ntc_checked,
+            )
+
+            # reload sample data
+            context['sample_data'] = get_sample_info(sample_obj)
+            current_step_obj = context['sample_data']['checks']['current_check_object']
+            context['coverage_check_form'] = CoverageCheckForm(
+                pk=current_step_obj.pk, 
+                comment=current_step_obj.coverage_comment,
+                ntc_check=current_step_obj.coverage_ntc_check,
+            )
 
         # fusion comments submit button
         if 'fusion_comment' in request.POST:

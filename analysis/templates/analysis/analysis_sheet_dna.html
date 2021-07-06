@@ -73,7 +73,7 @@
 <div class="container" id="details">{% include 'analysis/analysis-info.html' %}</div>
 <div class="container-fluid" id="depth">{% include 'analysis/analysis-depth.html' %}</div>
 <div class="container-fluid" id="snvs">{% include 'analysis/analysis-snvs.html' %}</div>
-<div class="container-fluid" id="report">{% include 'analysis/analysis-report.html' %}</div>
+<div class="container-fluid" id="report">{% include 'analysis/analysis-report-dna.html' %}</div>
 {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail'%}
 <div class="container" id="finalise">{% include 'analysis/analysis-finalise.html' %}</div>
 {% endif %}

@@ -175,15 +175,42 @@
 <br>
 <br>
 
-<div class="container">
-  <div class="card">
-    <div class="card-body">
 
-      <h5>Coverage check</h5>
-      <br>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm">
 
-      {% crispy coverage_check_form %}
+      <h5>Comments</h5>
+      <table class="table table-sm table-striped table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Comment</th>
+            <th scope="col">NTC check</th>
+            <th scope="col">User</th>
+          </tr>
+        </thead>
 
+        <tbody>
+          <tr>
+            <td>TODO</td>
+            <td>TODO</td>
+            <td>TODO</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+    <div class="col-sm">
+      <div class="card">
+        <div class="card-body">
+    
+          <h5>Coverage check</h5>
+          <br>
+    
+          {% crispy coverage_check_form %}
+    
+        </div>
+      </div>
     </div>
   </div>
 </div>

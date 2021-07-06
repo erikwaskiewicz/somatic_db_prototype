@@ -42,6 +42,7 @@ class Sample(models.Model):
     sample_name = models.CharField(max_length=200, blank=True, null=True)
     sample_name_check=models.BooleanField(default=False)
     sample_type = models.CharField(max_length=3, choices=TYPE_CHOICES)
+    # TODO - I think these should be in sampleAnalysis model?
     total_reads = models.IntegerField()
     total_reads_ntc= models.IntegerField()
     percent_reads_ntc= models.CharField(max_length=200, blank=True, null=True)
@@ -123,9 +124,10 @@ class Check(models.Model):
     stage = models.CharField(max_length=3, choices=STAGE_CHOICES)
     status = models.CharField(max_length=1, choices=STATUS_CHOICES)
     user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True)
+    coverage_ntc_check = models.BooleanField(default=False)
+    coverage_comment = models.CharField(max_length=500, blank=True, null=True)
+    coverage_comment_updated = models.DateTimeField(blank=True, null=True)
     signoff_time = models.DateTimeField(blank=True, null=True)
-
-
 
 
 class Variant(models.Model):

@@ -70,7 +70,7 @@
 <!-- load in each section from template -->
 <div class="container" id="details">{% include 'analysis/analysis-info.html' %}</div>
 <div class="container-fluid" id="rna">{% include 'analysis/analysis-rna.html' %}</div>
-<div class="container-fluid" id="report">{% include 'analysis/analysis-report.html' %}</div>
+<div class="container-fluid" id="report">{% include 'analysis/analysis-report-rna.html' %}</div>
 {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail'%}
 <div class="container" id="finalise">{% include 'analysis/analysis-finalise.html' %}</div>
 {% endif %}
