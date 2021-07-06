@@ -129,15 +129,17 @@ def analysis_sheet(request, sample_id):
     sample_obj = SampleAnalysis.objects.get(pk = sample_id)
     sample_data = get_sample_info(sample_obj)
 
-    # assign to whoever clicked the sample and reload check objects
     current_step_obj = sample_data['checks']['current_check_object']
-    if current_step_obj.user == None:
-        current_step_obj.user = request.user
-        current_step_obj.save()
-        sample_data['checks'] = sample_obj.get_checks()
 
-    if current_step_obj.user != request.user:
-        raise PermissionDenied()
+    # assign to whoever clicked the sample and reload check objects
+    if sample_data['checks']['current_status'] not in ['Complete', 'Fail']:
+        if current_step_obj.user == None:
+            current_step_obj.user = request.user
+            current_step_obj.save()
+            sample_data['checks'] = sample_obj.get_checks()
+
+        if current_step_obj.user != request.user:
+            raise PermissionDenied()
         
     # set up context dictionary
     context = {
@@ -355,34 +357,32 @@ def ajax(request):
         dna_or_rna = sample_obj.sample.sample_type
 
         selections = json.loads(request.POST.get('selections'))
-        print(selections)
+        #print(selections)
 
-        if (dna_or_rna=="DNA"):
+        if dna_or_rna == 'DNA':
             for variant in selections:
                 variant_obj = VariantPanelAnalysis.objects.get(pk=variant)
                 current_check = variant_obj.get_current_check()
-                igv_or_vus = current_check.check_object.stage
 
-                if igv_or_vus == 'IGV':
-                    new_choice = selections[variant]['genuine_dropdown']
-                    current_check.decision = new_choice
-                    current_check.save()
-                elif igv_or_vus == 'VUS':
-                    actionable_choice = selections[variant]['actionable_dropdown']
-                    vus_choice = selections[variant]['tier_dropdown']
+                new_choice = selections[variant]['genuine_dropdown']
+                current_check.decision = new_choice
+                current_check.save()
 
-        elif (dna_or_rna=="RNA"):
+                # TODO make more robust - could potentially end up with not analysed labelled as something else if people click multiple times
+                if new_choice != 'N':
+                    variant_instance_obj = variant_obj.variant_instance
+                    variant_instance_obj.final_decision = new_choice
+                    variant_instance_obj.save()
+
+        elif dna_or_rna == 'RNA':
             for variant in selections:
                 fusion_obj = FusionPanelAnalysis.objects.get(pk=variant)
                 current_check = fusion_obj.get_current_check()
-                igv_or_vus = current_check.check_object.stage
-                if igv_or_vus == 'IGV':
-                    new_choice = selections[variant]['genuine_dropdown']
-                    current_check.decision = new_choice
-                    current_check.save()
-                elif igv_or_vus == 'VUS':
-                    actionable_choice = selections[variant]['actionable_dropdown']
-                    vus_choice = selections[variant]['tier_dropdown']
+
+                new_choice = selections[variant]['genuine_dropdown']
+                current_check.decision = new_choice
+                current_check.save()
+                #TODO - as above but for RNA
 
         # dont think this redirect is doing anything but there needs to be a HTML response
         # actual reidrect is handled inside AJAX call in analysis-snvs.html

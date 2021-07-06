@@ -14,7 +14,6 @@
       <th scope="col">HGVS</th>
       <th scope="col">VAF</th>
       <th scope="col">IGV</th>
-      <th scope="col">Class</th>
     </tr>
   </thead>
 
@@ -22,15 +21,14 @@
     {% for v in variant_data.variant_calls %}
 
     <!--#TODO change this to if final decision=="Genuine" once it has been updated-->
-    {% if v.final_decision == "-" %}
+    {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
     <tr>
       <td class="variant-pk" style="display:none">{{ v.pk }}</td>
       <td><p style="display:inline" id="igv">{{ v.genomic }} </p></td>
       <td>{{ v.gene }} ({{ v.exon }})</td>
       <td>{{ v.transcript }} {{ v.hgvs_c }} ({{ v.hgvs_p }})</td>
       <td>{{ v.vaf.vaf }}%</td>
-      <td>TODO</td>
-      <td>TODO</td>
+      <td>{{ v.final_decision }}</td>
     {% endif %}
     </tr>
     {% endfor %}

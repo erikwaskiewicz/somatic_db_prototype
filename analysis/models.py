@@ -149,6 +149,16 @@ class VariantInstance(models.Model):
     Make one of these for all variants within sample, regardless of panel
 
     """
+    DECISION_CHOICES = (
+        ('-', 'Pending'),
+        ('G', 'Genuine'),
+        ('A', 'Artefact'),
+        ('P', 'Poly'),
+        ('W', 'WT'),
+        ('M', 'Miscalled'),
+        ('N', 'Not analysed'),
+        ('F', 'Failed call'),
+    )
     sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
     variant = models.ForeignKey('Variant', on_delete=models.CASCADE)
     vaf = models.IntegerField()
@@ -156,7 +166,7 @@ class VariantInstance(models.Model):
     alt_count = models.IntegerField()
     in_ntc = models.BooleanField()
     manual_upload = models.BooleanField(default=False)
-    final_decision=models.CharField(max_length=200, default='-')
+    final_decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
 
 
 class VariantPanelAnalysis(models.Model):

@@ -13,7 +13,7 @@ def signoff_check(user, current_step_obj, sample_obj, status='C'):
         variant_checks = VariantCheck.objects.filter(check_object=current_step_obj)
     elif sample_obj.sample.sample_type == 'RNA':
         variant_checks = FusionCheck.objects.filter(check_object=current_step_obj)
-    
+
     # this trigers view to render the error on the page, skip this validation for failed samples
     if status != 'F':
         for v in variant_checks:
@@ -46,7 +46,7 @@ def make_next_check(sample_obj, next_step):
     # save object
     new_check_obj.save()
 
-    if (sample_obj.sample.sample_type=="DNA"):
+    if sample_obj.sample.sample_type == 'DNA':
         # make check objects for all variants
         variant_objects = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
         for v in variant_objects:
@@ -55,7 +55,8 @@ def make_next_check(sample_obj, next_step):
                 check_object = new_check_obj,
             )
             new_variant_check.save()
-    elif (sample_obj.sample.sample_type=="RNA"):
+
+    elif sample_obj.sample.sample_type == 'RNA':
         # make check objects for all variants
         variant_objects = FusionPanelAnalysis.objects.filter(sample_analysis=sample_obj)
         for v in variant_objects:
@@ -91,10 +92,10 @@ def get_sample_info(sample_obj):
 def get_variant_info(sample_data, sample_obj):
 
     sample_variants = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
-    print(sample_variants)
+    #print(sample_variants)
 
-    variant_calls=[]
-    polys_list=[]
+    variant_calls = []
+    polys_list = []
 
     # get list of other samples on the run (excluding current sample)
     current_run_obj = sample_obj.worksheet.run
@@ -177,7 +178,7 @@ def get_variant_info(sample_data, sample_obj):
             'latest_check': latest_check,
             'comment_form': var_comment_form,
             'comments': variant_comments_list,
-            'final_decision': sample_variant.variant_instance.final_decision
+            'final_decision': sample_variant.variant_instance.get_final_decision_display()
         }
 
         # add to poly list if appears in the poly variant list, otherwise add to variant calls list
