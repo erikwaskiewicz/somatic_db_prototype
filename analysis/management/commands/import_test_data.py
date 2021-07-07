@@ -31,6 +31,7 @@ class Command(BaseCommand):
             for s in range(0, random.randrange(1,10)):
                 sample = f'21M{random.randrange(100,5000000)}'
                 sample_type = random.choice(['DNA', 'RNA'])
+                total_reads = random.choice([9000001, 8000000])
                 try:
                     new_sample = Sample.objects.get(
                         sample_id=sample,
@@ -40,7 +41,11 @@ class Command(BaseCommand):
                     new_sample = Sample(
                         sample_id=sample,
                         sample_type=sample_type,
+                        total_reads=total_reads,
+                        total_reads_ntc=1,
+                        percent_reads_ntc=int((1 / total_reads)*100),
                     )
+                    #TODO 
                 new_sample.save()
 
                 # make sample analysis and checks
@@ -98,6 +103,39 @@ class Command(BaseCommand):
                             check_object=new_check,
                         )
                         new_var_check.save()
+
+
+                # make fusions
+                new_fusion, created = Fusion.objects.get_or_create(
+                    fusion_genes = 'BCR-ABL',
+                    left_breakpoint = '1:1234',
+                    right_breakpoint = '2:3456',
+                )
+                new_fusion.save()
+
+                new_fusion_instance = FusionAnalysis(
+                    sample=new_sample_analysis,
+                    fusion_genes=new_fusion,
+                    fusion_supporting_reads=30,
+                    split_reads=10,
+                    spanning_reads=20,
+                    fusion_caller='Manta',
+                    fusion_score='100',
+                    in_ntc=False,
+                )
+                new_fusion_instance.save()
+
+                new_fusion_analysis = FusionPanelAnalysis(
+                    sample_analysis = new_sample_analysis,
+                    fusion_instance = new_fusion_instance,
+                )
+                new_fusion_analysis.save()
+
+                new_fusion_check = FusionCheck(
+                    fusion_analysis = new_fusion_analysis,
+                    check_object = new_check,
+                )
+                new_fusion_check.save()
 
                 # make coverage data
                 for g in ['BRAF', 'NRAS', 'EGFR']:

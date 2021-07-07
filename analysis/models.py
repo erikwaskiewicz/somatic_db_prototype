@@ -43,8 +43,8 @@ class Sample(models.Model):
     sample_name_check=models.BooleanField(default=False)
     sample_type = models.CharField(max_length=3, choices=TYPE_CHOICES)
     # TODO - I think these should be in sampleAnalysis model?
-    total_reads = models.IntegerField()
-    total_reads_ntc= models.IntegerField()
+    total_reads = models.IntegerField(blank=True, null=True)
+    total_reads_ntc= models.IntegerField(blank=True, null=True)
     percent_reads_ntc= models.CharField(max_length=200, blank=True, null=True)
 
 class Panel(models.Model):
@@ -137,7 +137,7 @@ class Variant(models.Model):
 
     """
     genomic_37 = models.CharField(max_length=200)
-    genomic_38 = models.CharField(max_length=200)
+    genomic_38 = models.CharField(max_length=200, blank=True, null=True)
     gene = models.CharField(max_length=50)
     exon = models.CharField(max_length=50)
     transcript = models.CharField(max_length=200)

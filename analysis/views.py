@@ -317,7 +317,7 @@ def analysis_sheet(request, sample_id):
             if submit_form.is_valid():
                 if sample_data['sample_name'] == None:
                     context['warning'].append('Did not finalise check - input patient name before continuing')
-                elif current_step_obj.coverage_ntc_check == False:
+                if (sample_data['dna_or_rna'] == 'DNA') and (current_step_obj.coverage_ntc_check == False):
                     context['warning'].append('Did not finalise check - check NTC before continuing')
 
                 else:
