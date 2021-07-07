@@ -300,9 +300,25 @@ class Fusion(models.Model):
     """
 
     """
+
+    DECISION_CHOICES = (
+        ('-', 'Pending'),
+        ('G', 'Genuine'),
+        ('A', 'Artefact'),
+        ('P', 'Poly'),
+        ('W', 'WT'),
+        ('M', 'Miscalled'),
+        ('N', 'Not analysed'),
+        ('F', 'Failed call'),
+    )
+
+
     fusion_genes = models.CharField(max_length=50, primary_key=True)
     left_breakpoint = models.CharField(max_length=50)
     right_breakpoint = models.CharField(max_length=50)
+    final_decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
+
+
 
 
 class FusionAnalysis(models.Model):

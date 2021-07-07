@@ -18,27 +18,19 @@
     </tr>
   </thead>
 
-  <tbody>
-    {% for v in variant_data.variant_calls %}
 
-    <!--#TODO change this to if final decision=="Genuine" once it has been updated-->
-    {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
+
+  <tbody>
+
+    {% for v in fusion_data.fusion_calls %}
+
     <tr>
+      <td>{{ v.fusion_genes }}</td>
+      <td>{{ v.fusion_supporting_reads }}</td>
+      <td>{{ v.left_breakpoint }}</td>
+      <td>{{ v.right_breakpoint }}</td>
+      <td>{{ v.final_decision }}</td>
       <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td>
-        <button type="button" data-toggle="modal" data-target="#comments-modal-{{ v.pk }}"
-        {% if v.comments %}
-        class="btn btn-warning">
-        {% else %}
-        class="btn btn-light">
-        {% endif %}
-        {{ v.comments | length }}</button>
-      </td>
-    {% endif %}
     </tr>
     {% endfor %}
   </tbody>

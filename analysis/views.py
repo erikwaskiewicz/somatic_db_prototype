@@ -210,12 +210,14 @@ def analysis_sheet(request, sample_id):
                     'ntc': fusion_object.fusion_instance.in_ntc,
                 },   
                 'previous_runs': {
+                #TODO- this shouldn't be hardcoded
                     'count': '1',
                 },
                 'checks': fusion_checks_list,
                 'latest_check': "latest check",
                 'comment_form': fusion_comment_form,
                 'comments': fusion_comments_list,
+                'final_decision': fusion_object.fusion_instance.get_final_decision_display()
                 
 
             }
