@@ -14,7 +14,6 @@
       <th scope="col">Left breakpoint</th>
       <th scope="col">Right breakpoint</th>
       <th scope="col">IGV</th>
-      <th scope="col"><span class="fa fa-comment-alt"></span></th>
     </tr>
   </thead>
 
@@ -23,7 +22,7 @@
   <tbody>
 
     {% for v in fusion_data.fusion_calls %}
-
+    {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
     <tr>
       <td>{{ v.fusion_genes }}</td>
       <td>{{ v.fusion_supporting_reads }}</td>
@@ -32,6 +31,7 @@
       <td>{{ v.final_decision }}</td>
       <td></td>
     </tr>
+    {% endif %}
     {% endfor %}
   </tbody>
 </table>

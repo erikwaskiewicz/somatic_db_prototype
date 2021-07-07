@@ -414,7 +414,12 @@ def ajax(request):
                 new_choice = selections[variant]['genuine_dropdown']
                 current_check.decision = new_choice
                 current_check.save()
-                #TODO - as above but for RNA
+
+                # TODO make more robust - could potentially end up with not analysed labelled as something else if people click multiple times
+                if new_choice != 'N':
+                    fusion_obj = fusion_obj.fusion_instance
+                    fusion_obj.final_decision = new_choice
+                    fusion_obj.save()
 
         # dont think this redirect is doing anything but there needs to be a HTML response
         # actual reidrect is handled inside AJAX call in analysis-snvs.html
