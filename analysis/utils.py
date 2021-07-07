@@ -97,15 +97,11 @@ def get_variant_info(sample_data, sample_obj):
     variant_calls = []
     polys_list = []
 
-    # get list of other samples on the run (excluding current sample)
+    # get list of other samples on the run
     current_run_obj = sample_obj.worksheet.run
     current_run_samples = SampleAnalysis.objects.filter(worksheet__run = current_run_obj)
     # remove dups
     sample_objects = set([ s.sample for s in current_run_samples ])
-
-    # remove current sample
-    sample_objects.remove(sample_obj.sample)
-    
 
     for sample_variant in sample_variants:
 
