@@ -300,7 +300,15 @@ class Fusion(models.Model):
     """
 
     """
+    fusion_genes = models.CharField(max_length=50, primary_key=True)
+    left_breakpoint = models.CharField(max_length=50)
+    right_breakpoint = models.CharField(max_length=50)
 
+
+class FusionAnalysis(models.Model):
+    """
+
+    """
     DECISION_CHOICES = (
         ('-', 'Pending'),
         ('G', 'Genuine'),
@@ -311,20 +319,6 @@ class Fusion(models.Model):
         ('N', 'Not analysed'),
         ('F', 'Failed call'),
     )
-
-
-    fusion_genes = models.CharField(max_length=50, primary_key=True)
-    left_breakpoint = models.CharField(max_length=50)
-    right_breakpoint = models.CharField(max_length=50)
-    final_decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
-
-
-
-
-class FusionAnalysis(models.Model):
-    """
-
-    """
     sample = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
     fusion_genes = models.ForeignKey('Fusion', on_delete=models.CASCADE)
     fusion_supporting_reads = models.IntegerField()
@@ -333,7 +327,7 @@ class FusionAnalysis(models.Model):
     fusion_caller= models.CharField(max_length=50)
     fusion_score= models.CharField(max_length=50)
     in_ntc=models.BooleanField(default=False)
-
+    final_decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
 
 
 class FusionCheck(models.Model):
