@@ -11,8 +11,8 @@ class Command(BaseCommand):
 
         # TODO transactions.atomic????
         input_file = '/home/erik/projects/somatic_db/analysis/test_data/ref_sample_colorectal.csv'
-        input_run_id = 'training'
-        input_ws = 'training-set-1'
+        input_run_id = 'training-data-DNA'
+        input_ws = 'DNA-training-1'
         input_sample = '21M00305-1'
         input_sample_type = 'DNA'
         input_panel = 'Colorectal'

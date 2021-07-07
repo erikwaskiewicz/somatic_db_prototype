@@ -126,17 +126,24 @@ def get_variant_info(sample_data, sample_obj):
 
         # get whether the variant falls within a poly/ known list
         # TODO - will have to handle multiple poly/ known lists in future
+        print(variant_obj)
         previous_classifications = []
         for l in VariantToVariantList.objects.filter(variant=variant_obj):
             if l.variant_list.name == 'TSO500_known':
                 previous_classifications.append(l.classification)
             elif l.variant_list.name == 'TSO500_polys':
                 previous_classifications.append('Poly')
+            print(previous_classifications)
+            print(l)
 
         # get checks for each variant
         variant_checks = VariantCheck.objects.filter(variant_analysis=sample_variant)
         variant_checks_list = [ v.get_decision_display() for v in variant_checks ]
         latest_check = variant_checks.latest('pk')
+        # set decision if falls in poly list, otherwise the finilise sample validation will fail
+        if 'Poly' in previous_classifications:
+            latest_check.decision ='P'
+            latest_check.save()
         var_comment_form = VariantCommentForm(pk=latest_check.pk, comment=latest_check.comment)
 
         # get list of comments for variant
@@ -189,6 +196,7 @@ def get_variant_info(sample_data, sample_obj):
         'polys': polys_list,
         'check_options': VariantCheck.DECISION_CHOICES,
     }
+    #print(variant_calls)
 
     return variant_data
 
