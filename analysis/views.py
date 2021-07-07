@@ -264,9 +264,10 @@ def analysis_sheet(request, sample_id):
         # coverage comments button
         if 'coverage_comment' in request.POST:
             new_comment = request.POST['coverage_comment']
-            if request.POST['ntc_checked'] == 'on':
-                ntc_checked = True
-            else:
+            try:
+                if request.POST['ntc_checked'] == 'on':
+                    ntc_checked = True
+            except:
                 ntc_checked = False
             pk = request.POST['pk']
 
@@ -316,6 +317,8 @@ def analysis_sheet(request, sample_id):
             if submit_form.is_valid():
                 if sample_data['sample_name'] == None:
                     context['warning'].append('Did not finalise check - input patient name before continuing')
+                elif current_step_obj.coverage_ntc_check == False:
+                    context['warning'].append('Did not finalise check - check NTC before continuing')
 
                 else:
                     next_step = submit_form.cleaned_data['next_step']

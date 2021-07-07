@@ -21,9 +21,9 @@
     <thead>
       <tr>
         <th scope="col">Sample</th>
+        <th scope="col">Name</th>
         <th scope="col">Referral</th>
         <th scope="col">Worksheet</th>
-        <th scope="col">Run ID</th>
         <th scope="col">Status</th>
         <th scope="col">Assigned to</th>
       </tr>
@@ -32,9 +32,9 @@
       
       <tr>
         <td>{{ sample_data.sample_id }}</td>
+        <td>{{ sample_data.sample_name }}</td>
         <td>{{ sample_data.panel }}</td>
         <td>{{ sample_data.worksheet_id }}</td>
-        <td>{{ sample_data.run_id }}</td>
         <td>{{ sample_data.checks.current_status }}</td>
         <td>{{ sample_data.checks.assigned_to }}</td>
       </tr>
