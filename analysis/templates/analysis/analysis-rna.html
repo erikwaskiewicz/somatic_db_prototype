@@ -95,14 +95,16 @@
     {% endfor %}
   </tbody>
 
-  </table>
+</table>
 
 
-  <!-- button to add new variant in case of miscalled indels -->
+<!-- button to add new variant in case of miscalled indels -->
+{% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail'%}
 <div class="float-right">
   <button type="button" class="btn btn-success variants-submit" id="variants-submit">Update selections</button>
 </div>
 <br>
+{% endif %}
 
 
 {% for v in fusion_data.fusion_calls %}
@@ -195,7 +197,9 @@
         {% endif %}
 
         <!-- comment form here -->
+        {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail'%}
         {% crispy v.comment_form %}
+        {% endif %}
       </div>
 
     </div>

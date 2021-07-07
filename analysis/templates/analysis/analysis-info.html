@@ -12,7 +12,9 @@
       <td><b>Patient name</b></td>
       <td>
         {{ sample_data.sample_name }}
+        {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail'%}
         <button type="button" style="float: right;" class="btn btn-sm btn-warning w-25" data-toggle="modal" data-target="#update-name">Update</button>
+        {% endif %}
       </td>
     </tr>
     <tr>
@@ -32,19 +34,6 @@
 
 <br>
 
-<!---
-<div class="container">
-  <div class="card">
-    <div class="card-body">
-
-      <h5>check name</h5>
-      <br>
-
-      {% crispy check_name_form %}
-
-    </div>
-  </div>
-</div>-->
 
 <!-- Patient name Modal -->
 <div class="modal fade" id="update-name" tabindex="-1" role="dialog" aria-labelledby="update-name-label" aria-hidden="true">

@@ -14,10 +14,6 @@
       <th scope="col">IGV</th>
       {% if 'IGV' in sample_data.checks.current_status %}
       <th scope="col">Action</th>
-      {% elif 'Interpretation' in sample_data.checks.current_status %}
-      <th scope="col">Actionable</th>
-      <th scope="col">AMP tier</th>
-      <th scope="col">Report?</th>
       {% endif %}
       <th><span class="fa fa-comment-alt"></span></th>
       
@@ -53,13 +49,15 @@
         </button>
       </td>-->
 
-      {% if 'IGV' in sample_data.checks.current_status %}
+      
 
       <td>
         {% for check in v.checks %}
           {{ forloop.counter }}: {{ check }}<br>
         {% endfor %}
       </td>
+
+      {% if 'IGV' in sample_data.checks.current_status %}
       <td class=genuine-dropdown>
         <select name="variant" id="variant">
           {% for option in variant_data.check_options %}
@@ -71,50 +69,25 @@
           {% endfor %}
         </select>
       </td>
-    
-    {% elif 'Interpretation' in sample_data.checks.current_status %}
-    <td>Genuine</td>
-    <td>
-      <select name="actionable" id="variant">
-        <option value="actionable-yes">Yes</option>
-        <option value="actionable-no">No</option>
-      </select>
-    </td>
-    <td class=tier-dropdown>
-      <select name="tier" id="variant">
-        <option value="-">None</option>
-        <option value="1A">Tier IA</option>
-        <option value="1B">Tier IB</option>
-        <option value="2C">Tier IIC</option>
-        <option value="2D">Tier IID</option>
-        <option value="3">Tier III - VUS</option>
-        <option value="4">Tier IV - benign</option>
-      </select>
-    </td>
-    <td class=actionable-dropdown>
-      <select name="actionable" id="variant">
-        <option value="Y">Yes</option>
-        <option value="N">No</option>
-      </select>
-    </td>
-
-    {% endif %}
-    <td>
-      <button type="button" data-toggle="modal" data-target="#comments-modal-{{ v.pk }}"
-      {% if v.comments %}
-      class="btn btn-warning">
-      {% else %}
-      class="btn btn-light">
       {% endif %}
-      {{ v.comments | length }}</button>
-    </td>
-  </tr>
+  
+      <td>
+        <button type="button" data-toggle="modal" data-target="#comments-modal-{{ v.pk }}"
+        {% if v.comments %}
+        class="btn btn-warning">
+        {% else %}
+        class="btn btn-light">
+        {% endif %}
+        {{ v.comments | length }}</button>
+      </td>
+    </tr>
     {% endfor %}
   </tbody>
 
 </table>
 
 <!-- button to add new variant in case of miscalled indels -->
+{% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail'%}
 <div class="float-right">
   <button type="button" class="btn btn-light" data-toggle="modal" data-target="#add-variant-modal">Add variant</button>
   <button type="button" class="btn btn-success variants-submit" id="variants-submit">Update selections</button>
@@ -122,7 +95,7 @@
 <br>
 <br>
 <br>
-
+{% endif %}
 
 <!-- poly list -->
 <div id="accordion">
@@ -263,7 +236,9 @@
         {% endif %}
 
         <!-- comment form here -->
+        {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail'%}
         {% crispy v.comment_form %}
+        {% endif %}
       </div>
 
     </div>
