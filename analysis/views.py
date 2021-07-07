@@ -311,6 +311,19 @@ def analysis_sheet(request, sample_id):
                 # TODO need to program function & make more robust
                 print(new_variant_form.cleaned_data)
 
+                #TODO- this needs more work -hardcoded values and table does not update automatically-page needs to be refreshed
+                new_variant_data=new_variant_form.cleaned_data
+                new_variant_object=Variant(hgvs_c=new_variant_data.get("hgvs_g"), hgvs_p=new_variant_data.get("hgvs_p"))
+                new_variant_object.save()
+                new_variant_instance_object=VariantInstance(variant=new_variant_object, sample=sample_obj.sample, vaf=0, total_count=0, alt_count=0, in_ntc=False)
+                new_variant_instance_object.save()
+                new_variant_panel_object=VariantPanelAnalysis(variant_instance=new_variant_instance_object, sample_analysis=sample_obj)
+                new_variant_panel_object.save()
+                new_variant_check_object=VariantCheck(variant_analysis=new_variant_panel_object, check_object=sample_obj.get_checks().get("current_check_object"))
+                new_variant_check_object.save()
+
+
+
 
         # if finalise check submit form is clicked
         if 'next_step' in request.POST:
