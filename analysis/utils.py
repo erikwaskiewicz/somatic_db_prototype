@@ -1,5 +1,5 @@
 from .models import *
-from .forms import SearchForm, NewVariantForm, SubmitForm, VariantCommentForm
+from .forms import SearchForm, NewVariantForm, SubmitForm, VariantCommentForm, FusionCommentForm
 
 from django.utils import timezone
 
@@ -200,6 +200,74 @@ def get_variant_info(sample_data, sample_obj):
     #print(variant_calls)
 
     return variant_data
+
+
+
+def get_fusion_info(sample_data,sample_obj):
+
+    fusions = FusionPanelAnalysis.objects.filter(sample_analysis= sample_obj)
+
+    fusion_calls=[]
+    for fusion_object in fusions:
+
+        this_run = FusionAnalysis.objects.filter(
+            fusion_genes=fusion_object.fusion_instance.fusion_genes,
+            sample__worksheet__run__run_id=sample_data.get('run_id')
+        )
+        this_run_count = this_run.count()
+
+        total_runs = FusionAnalysis.objects.filter(sample__worksheet__run__run_id=sample_data.get('run_id'))
+        total_runs_count = total_runs.count()
+
+
+        # TODO were leaving this til last
+        #previous_runs = FusionAnalysis.objects.filter(fusion_genes=fusion_object.fusion_genes).exclude(sample__worksheet__run__run_id=sample_data.get('run_id'))
+        #previous_runs_count = previous_runs.count()
+
+        # get checks for each variant
+        fusion_checks = FusionCheck.objects.filter(fusion_analysis=fusion_object)
+        fusion_checks_list = [ v.get_decision_display() for v in fusion_checks ]
+        latest_check = fusion_checks.latest('pk')
+        fusion_comment_form = FusionCommentForm(pk=latest_check.pk, comment=latest_check.comment)
+
+        # get list of comments for variant
+        fusion_comments_list = []
+        for v in fusion_checks:
+            if v.comment:
+                fusion_comments_list.append(
+                    { 'comment': v.comment, 'user': v.check_object.user, 'updated': v.comment_updated, }
+                )
+
+        fusion_calls_dict = {
+            'pk': fusion_object.pk,
+            'fusion_genes': fusion_object.fusion_instance.fusion_genes.fusion_genes,
+            'fusion_supporting_reads': fusion_object.fusion_instance.fusion_supporting_reads,
+            'left_breakpoint': fusion_object.fusion_instance.fusion_genes.left_breakpoint,
+            'right_breakpoint': fusion_object.fusion_instance.fusion_genes.right_breakpoint,
+            'this_run': {
+                'count': this_run_count, 
+                'total': total_runs_count,
+                'ntc': fusion_object.fusion_instance.in_ntc,
+            },   
+            'previous_runs': {
+            #TODO- this shouldn't be hardcoded
+                'count': '1',
+            },
+            'checks': fusion_checks_list,
+            'latest_check': "latest check",
+            'comment_form': fusion_comment_form,
+            'comments': fusion_comments_list,
+            'final_decision': fusion_object.fusion_instance.get_final_decision_display()
+                
+
+        }
+
+        fusion_calls.append(fusion_calls_dict)
+
+    fusion_data = {'fusion_calls': fusion_calls, 'check_options': FusionCheck.DECISION_CHOICES, }
+
+    return fusion_data
+
 
 
 def get_coverage_data(sample_obj):
