@@ -25,7 +25,8 @@
     <tr>
       <td class="variant-pk" style="display:none">{{ v.pk }}</td>
       <td>
-        <p style="display:inline" id="igv">{{ v.genomic }} </p><button class="btn btn-sm btn-info" onclick="copyToClipboard('#igv')"><span class="fa fa-copy"></span></button>
+        <p style="display:inline" id="igv">{{ v.genomic }} </p><button class="btn btn-sm btn-info" onclick="copyToClipboard('#igv')"><span class="fa fa-copy"></span></button><br>
+        Manual upload: {{ v.manual_upload}}
       </td>
       <td>
         {{ v.gene }}<br>{{ v.exon }}
@@ -38,8 +39,7 @@
       </td>
       <td>
         {{ v.this_run.count }} of {{ v.this_run.total }} samples<br>
-        In NTC: {{ v.this_run.ntc }} {% if v.this_run.ntc == True %}<span class="fa fa-exclamation-triangle" style="color:firebrick"></span>{% endif %}<br>
-        Manual upload: {{ v.manual_upload}}
+        In NTC: {{ v.this_run.ntc }} {% if v.this_run.ntc == True %}<span class="fa fa-exclamation-triangle" style="color:firebrick"></span>{% endif %}
       </td>
       <td>
         {{ v.previous_runs.known }}
