@@ -38,7 +38,8 @@
       </td>
       <td>
         {{ v.this_run.count }} of {{ v.this_run.total }} samples<br>
-        In NTC: {{ v.this_run.ntc }} {% if v.this_run.ntc == True %}<span class="fa fa-exclamation-triangle" style="color:firebrick"></span>{% endif %}
+        In NTC: {{ v.this_run.ntc }} {% if v.this_run.ntc == True %}<span class="fa fa-exclamation-triangle" style="color:firebrick"></span>{% endif %}<br>
+        Manual upload: {{ v.manual_upload}}
       </td>
       <td>
         {{ v.previous_runs.known }}

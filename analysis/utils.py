@@ -181,7 +181,8 @@ def get_variant_info(sample_data, sample_obj):
             'latest_check': latest_check,
             'comment_form': var_comment_form,
             'comments': variant_comments_list,
-            'final_decision': sample_variant.variant_instance.get_final_decision_display()
+            'final_decision': sample_variant.variant_instance.get_final_decision_display(),
+            'manual_upload': sample_variant.variant_instance.manual_upload,
         }
 
         # add to poly list if appears in the poly variant list, otherwise add to variant calls list

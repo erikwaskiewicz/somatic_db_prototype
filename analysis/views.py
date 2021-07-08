@@ -11,6 +11,10 @@ from .forms import SearchForm, NewVariantForm, SubmitForm, VariantCommentForm, U
 from .models import *
 from .test_data import dummy_dicts
 from .utils import signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info
+from django.template.loader import get_template
+from xhtml2pdf import pisa 
+from django.template import Context
+
 
 import json
     
@@ -227,9 +231,32 @@ def analysis_sheet(request, sample_id):
         context['fusion_data'] = {'fusion_calls': fusion_calls, 'check_options': FusionCheck.DECISION_CHOICES, }
 
 
+
+    if request.method == 'GET':
+        print("YES")
+
+        if 'download' in request.GET:
+
+            template = get_template('analysis/analysis-report-dna.html')
+            html  = template.render(context)
+
+
+
+            file = open('test.pdf', "w+b")
+            pisaStatus = pisa.CreatePDF(html, dest=file, encoding='utf-8')
+
+            file.seek(0)
+            pdf = file.read()
+            file.close() 
+
+
+
+
     ###  If any buttons are pressed
     ####################################
     if request.method == 'POST':
+
+
 
         # patient name input form
         if 'name' in request.POST:
@@ -313,14 +340,16 @@ def analysis_sheet(request, sample_id):
 
                 #TODO- this needs more work -hardcoded values and table does not update automatically-page needs to be refreshed
                 new_variant_data=new_variant_form.cleaned_data
-                new_variant_object=Variant(hgvs_c=new_variant_data.get("hgvs_g"), hgvs_p=new_variant_data.get("hgvs_p"))
+                new_variant_object=Variant(genomic_37=new_variant_data.get("hgvs_g"), hgvs_p=new_variant_data.get("hgvs_p"))
                 new_variant_object.save()
-                new_variant_instance_object=VariantInstance(variant=new_variant_object, sample=sample_obj.sample, vaf=0, total_count=0, alt_count=0, in_ntc=False)
+                new_variant_instance_object=VariantInstance(variant=new_variant_object, sample=sample_obj.sample, vaf=0, total_count=0, alt_count=0, in_ntc=False, manual_upload=True)
                 new_variant_instance_object.save()
                 new_variant_panel_object=VariantPanelAnalysis(variant_instance=new_variant_instance_object, sample_analysis=sample_obj)
                 new_variant_panel_object.save()
                 new_variant_check_object=VariantCheck(variant_analysis=new_variant_panel_object, check_object=sample_obj.get_checks().get("current_check_object"))
                 new_variant_check_object.save()
+
+                context['variant_data'] = get_variant_info(sample_data, sample_obj)
 
 
 
