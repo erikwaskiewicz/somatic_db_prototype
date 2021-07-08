@@ -1,10 +1,15 @@
 {% load crispy_forms_tags %}
 
+
+{% if sample_data.checks.current_status  == 'Complete' %}
+
 <form method="GET">
 <button type="submit" name= "download" id="download" class="btn btn-success">Download report</button>
 </form>
 <br>
 <br>
+
+{% endif %}
 
 <h5>Variants</h5>
 <table class="table table-sm table-striped table-hover">

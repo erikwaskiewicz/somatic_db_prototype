@@ -174,7 +174,6 @@ def analysis_sheet(request, sample_id):
 
 
     if request.method == 'GET':
-        print("YES")
 
         if 'download' in request.GET:
 
@@ -279,7 +278,6 @@ def analysis_sheet(request, sample_id):
 
             if new_variant_form.is_valid():
                 # TODO need to program function & make more robust
-                print(new_variant_form.cleaned_data)
 
                 #TODO- this needs more work -hardcoded values and table does not update automatically-page needs to be refreshed
                 new_variant_data=new_variant_form.cleaned_data
@@ -354,10 +352,10 @@ def analysis_sheet(request, sample_id):
                         signoff_check(request.user, current_step_obj, sample_obj, 'F')
                         return redirect('view_samples', sample_data['worksheet_id'])
 
-    print(context['sample_data']['checks'])
 
     # render the pages
     if sample_data['dna_or_rna'] == 'DNA':
+        print(context)
         return render(request, 'analysis/analysis_sheet_dna.html', context)
     if sample_data['dna_or_rna'] == 'RNA':
         return render(request, 'analysis/analysis_sheet_rna.html', context)
