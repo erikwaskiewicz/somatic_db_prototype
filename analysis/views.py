@@ -309,6 +309,7 @@ def analysis_sheet(request, sample_id):
                 if (sample_data['dna_or_rna'] == 'DNA') and (current_step_obj.coverage_ntc_check == False):
                     context['warning'].append('Did not finalise check - check NTC before continuing')
 
+                #prevent checker from choosing complete check if the last two classifications of any of the variants don't match
                 next_step = submit_form.cleaned_data['next_step']
                 current_step = sample_data['checks']['current_status']
 
@@ -317,9 +318,11 @@ def analysis_sheet(request, sample_id):
                     variants_match="yes"
                     variant_calls_dict=get_variant_info(sample_data, sample_obj)
                     variant_calls=variant_calls_dict.get('variant_calls')
+                    #loop through all the variants and get the classifications
                     for variant in variant_calls:
                         variant_data=variant.get('checks')
                         if (len(variant_data) >1):
+                            #make a list of the last two classifications
                             last2=variant_data[-2:]
                             if last2[0]!=last2[1]:
                                 variants_match="no"
