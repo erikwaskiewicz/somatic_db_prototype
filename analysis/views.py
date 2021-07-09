@@ -159,12 +159,15 @@ def analysis_sheet(request, sample_id):
             comment=current_step_obj.coverage_comment,
             ntc_check=current_step_obj.coverage_ntc_check,
         ),
+
     } #TODO pull coverage comment through and display comments from all checkers
 
     # DNA workflow
     if sample_data['dna_or_rna'] == 'DNA':
         context['variant_data'] = get_variant_info(sample_data, sample_obj)
         context['coverage_data'] = get_coverage_data(sample_obj)
+
+
 
     # RNA workflow
     elif sample_data['dna_or_rna'] == 'RNA':
@@ -302,8 +305,26 @@ def analysis_sheet(request, sample_id):
             if submit_form.is_valid():
                 if sample_data['sample_name'] == None:
                     context['warning'].append('Did not finalise check - input patient name before continuing')
+
                 if (sample_data['dna_or_rna'] == 'DNA') and (current_step_obj.coverage_ntc_check == False):
                     context['warning'].append('Did not finalise check - check NTC before continuing')
+
+                next_step = submit_form.cleaned_data['next_step']
+                current_step = sample_data['checks']['current_status']
+
+                if next_step == 'Complete check':
+
+                    variants_match="yes"
+                    variant_calls_dict=get_variant_info(sample_data, sample_obj)
+                    variant_calls=variant_calls_dict.get('variant_calls')
+                    for variant in variant_calls:
+                        variant_data=variant.get('checks')
+                        if (len(variant_data) >1):
+                            last2=variant_data[-2:]
+                            if last2[0]!=last2[1]:
+                                variants_match="no"
+                    if variants_match=="no":
+                        context['warning'].append('Needs another check')
 
                 else:
                     next_step = submit_form.cleaned_data['next_step']
@@ -355,7 +376,6 @@ def analysis_sheet(request, sample_id):
 
     # render the pages
     if sample_data['dna_or_rna'] == 'DNA':
-        print(context)
         return render(request, 'analysis/analysis_sheet_dna.html', context)
     if sample_data['dna_or_rna'] == 'RNA':
         return render(request, 'analysis/analysis_sheet_rna.html', context)
