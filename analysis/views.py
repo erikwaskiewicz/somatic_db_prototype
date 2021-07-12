@@ -301,21 +301,10 @@ def analysis_sheet(request, sample_id):
         # if finalise check submit form is clicked
         if 'next_step' in request.POST:
             submit_form = SubmitForm(request.POST)
-
+            variants_match="yes"
             if submit_form.is_valid():
-                if sample_data['sample_name'] == None:
-                    context['warning'].append('Did not finalise check - input patient name before continuing')
-
-                if (sample_data['dna_or_rna'] == 'DNA') and (current_step_obj.coverage_ntc_check == False):
-                    context['warning'].append('Did not finalise check - check NTC before continuing')
-
-                #prevent checker from choosing complete check if the last two classifications of any of the variants don't match
                 next_step = submit_form.cleaned_data['next_step']
-                current_step = sample_data['checks']['current_status']
-
-                if next_step == 'Complete check':
-
-                    variants_match="yes"
+                if (sample_data['dna_or_rna'] == 'DNA'):
                     variant_calls_dict=get_variant_info(sample_data, sample_obj)
                     variant_calls=variant_calls_dict.get('variant_calls')
                     #loop through all the variants and get the classifications
@@ -326,14 +315,48 @@ def analysis_sheet(request, sample_id):
                             last2=variant_data[-2:]
                             if last2[0]!=last2[1]:
                                 variants_match="no"
-                    if variants_match=="no":
-                        context['warning'].append('Needs another check')
+
+
+                if (sample_data['dna_or_rna'] == 'RNA'):
+                        fusion_match="yes"
+                        fusion_calls_dict=get_fusion_info(sample_data, sample_obj)
+                        fusion_calls=fusion_calls_dict.get('fusion_calls')
+
+                        #loop through all the variants and get the classifications
+                        for fusion in fusion_calls:
+                            fusion_data=fusion.get('checks')
+                            if (len(fusion_data) >1):
+                                #make a list of the last two classifications
+                                last2=fusion_data[-2:]
+                                if last2[0]!=last2[1]:
+                                    fusion_match="no"
+
+
+
+
+
+                if sample_data['sample_name'] == None:
+                    context['warning'].append('Did not finalise check - input patient name before continuing')
+
+                elif (sample_data['dna_or_rna'] == 'DNA') and (current_step_obj.coverage_ntc_check == False):
+                    context['warning'].append('Did not finalise check - check NTC before continuing')
+
+
+                elif (sample_data['dna_or_rna'] == 'DNA' and next_step == 'Complete check' and variants_match=="no"):
+                    context['warning'].append('Needs another check')
+
+
+                elif (sample_data['dna_or_rna'] == 'RNA' and next_step == 'Complete check' and fusion_match=="no"):
+                    context['warning'].append('Needs another check')
+
+
 
                 else:
                     next_step = submit_form.cleaned_data['next_step']
                     current_step = sample_data['checks']['current_status']
 
                     if next_step == 'Complete check':
+
                         if 'IGV' in current_step:
                             # if 1st IGV, make 2nd IGV
                             if current_step == 'IGV check 1':
@@ -345,6 +368,7 @@ def analysis_sheet(request, sample_id):
                                 
                             # if 2nd IGV (or 3rd...) make interpretation
                             else:
+
                                 if signoff_check(request.user, current_step_obj, sample_obj):
                                     return redirect('view_samples', sample_data['worksheet_id'])
                                 else:
@@ -367,9 +391,9 @@ def analysis_sheet(request, sample_id):
                             else:
                                 context['warning'].append('Did not finalise check - not all variant have been checked')
 
-                        # throw error, cant do this yet
-                        #elif 'Interpretation' in current_step:
-                        #    context['warning'].append("Only one interpretation check is carried out within this database, please only select eith 'Complete check' or 'Fail sample'")
+                            # throw error, cant do this yet
+                            #elif 'Interpretation' in current_step:
+                            #    context['warning'].append("Only one interpretation check is carried out within this database, please only select eith 'Complete check' or 'Fail sample'")
                             # dont redirect - need to keep on current screen
 
                     elif next_step == 'Fail sample':
