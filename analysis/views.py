@@ -93,7 +93,18 @@ def view_samples(request, worksheet_id):
     sample_dict = {}
     for s in samples:
         sample_id = s.sample.sample_id
+        checks=s.get_checks()
+        all_checks=checks.get('all_checks')
+        length=len(all_checks)
+        current_check=all_checks[length-1]
+        if (length>1):
+            last_check=all_checks[length-2]
+            last_check_status=last_check.status
+        else:
+            last_check_status="N/A"
+
         if sample_id not in sample_dict.keys():
+
             sample_dict[sample_id] = {
                 'sample_id': sample_id,
                 'dna_rna': s.sample.sample_type,
@@ -102,6 +113,8 @@ def view_samples(request, worksheet_id):
                         'analysis_id': s.pk,
                         'panel': s.panel.panel_name,
                         'checks': s.get_checks(),
+                        'last_check': last_check_status,
+                        'current_check': current_check.status
                     }
                 ]
             }
@@ -111,8 +124,12 @@ def view_samples(request, worksheet_id):
                     'analysis_id': s.pk,
                     'panel': s.panel.panel_name,
                     'checks': s.get_checks(),
+                    'last_check': last_check_status
                 }
             )
+
+
+
 
     context = {
         'worksheet': worksheet_id,
@@ -161,6 +178,8 @@ def analysis_sheet(request, sample_id):
         ),
 
     } #TODO pull coverage comment through and display comments from all checkers
+
+
 
     # DNA workflow
     if sample_data['dna_or_rna'] == 'DNA':
@@ -334,7 +353,6 @@ def analysis_sheet(request, sample_id):
 
 
 
-
                 if sample_data['sample_name'] == None:
                     context['warning'].append('Did not finalise check - input patient name before continuing')
 
@@ -396,9 +414,32 @@ def analysis_sheet(request, sample_id):
                             #    context['warning'].append("Only one interpretation check is carried out within this database, please only select eith 'Complete check' or 'Fail sample'")
                             # dont redirect - need to keep on current screen
 
+
+
+
                     elif next_step == 'Fail sample':
-                        signoff_check(request.user, current_step_obj, sample_obj, 'F')
-                        return redirect('view_samples', sample_data['worksheet_id'])
+
+                        sample_data=context.get('sample_data')
+                        checks=sample_data.get('checks')
+                        check_objects=checks.get('all_checks')
+                        length=len(check_objects)
+                        if (length>1):
+                            last_check=check_objects[length-2]
+                            last_check_status=last_check.status
+                        else: 
+                            last_check_status="N/A"
+
+                        #if the status of last check was F complete check otherwise go to another igv check
+
+                        # if 1st IGV, make 2nd IGV
+                        if last_check_status== 'F':
+                            output=signoff_check(request.user, current_step_obj, sample_obj, 'F')
+                            return redirect('view_samples', sample_data['worksheet_id'])
+                        else:
+                            if signoff_check(request.user, current_step_obj, sample_obj, 'F'):
+                                make_next_check(sample_obj, 'IGV')
+                                return redirect('view_samples', sample_data['worksheet_id'])
+
 
 
     # render the pages

@@ -20,6 +20,7 @@ def signoff_check(user, current_step_obj, sample_obj, status='C'):
             if v.decision == '-':
                 return False
 
+
     # signoff current check
     now = timezone.now()
     current_step_obj.user = user
