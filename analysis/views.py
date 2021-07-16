@@ -332,8 +332,9 @@ def analysis_sheet(request, sample_id):
                         if (len(variant_data) >1):
                             #make a list of the last two classifications
                             last2=variant_data[-2:]
-                            if last2[0]!=last2[1]:
-                                variants_match="no"
+                            if last2[1]!="Not analysed":
+                                if last2[0]!=last2[1]:
+                                    variants_match="no"
 
 
                 if (sample_data['dna_or_rna'] == 'RNA'):
