@@ -199,7 +199,7 @@ def analysis_sheet(request, sample_id):
 
         if 'download' in request.GET:
 
-            template = get_template('analysis/analysis-report-dna.html')
+            template = get_template('analysis/download_dna_report.html')
             html  = template.render(context)
 
 
