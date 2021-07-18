@@ -25,33 +25,27 @@
     <tr>
       <td class="variant-pk" style="display:none">{{ v.pk }}</td>
       <td>
-        <p style="display:inline" id="igv">{{ v.genomic }} </p><button class="btn btn-sm btn-info" onclick="copyToClipboard('#igv')"><span class="fa fa-copy"></span></button><br>
-        Manual upload: {{ v.manual_upload}}
+        <p style="display:inline" >{{ v.genomic }}</p><p style="display:none" id="igv">{{ v.igv_coords }}</p>
+        <button class="btn btn-sm btn-info" onclick="copyToClipboard('#igv')"><span class="fa fa-copy"></span></button>
+        {% if v.manual_upload %}
+        <button class="btn btn-sm btn-warning"><b>Manual</b></button>
+        {% endif %}
       </td>
-      <td>
-        {{ v.gene }}<br>{{ v.exon }}
-      </td>
-      <td>
-        {{ v.hgvs_c }}<br>{{ v.hgvs_p }}
-      </td>
-      <td>
-        {{ v.vaf.vaf }}%<br>{{ v.vaf.alt_count }} of {{ v.vaf.total_count }} reads
-      </td>
+      <td>{{ v.gene }}<br>{{ v.exon }}</td>
+      <td>{{ v.hgvs_c }}<br>{{ v.hgvs_p }}</td>
+      <td>{{ v.vaf.vaf }}%<br>{{ v.vaf.alt_count }} of {{ v.vaf.total_count }} reads</td>
       <td>
         {{ v.this_run.count }} of {{ v.this_run.total }} samples<br>
-        In NTC: {{ v.this_run.ntc }} {% if v.this_run.ntc == True %}<span class="fa fa-exclamation-triangle" style="color:firebrick"></span>{% endif %}
-      </td>
-      <td>
-        {{ v.previous_runs.known }}
-      </td>
-      <!--<td>
-        <button type="button" class="btn btn-light" data-toggle="modal" data-target="#counts-modal">
-          {{ v.previous_runs.count }} <span class="fa fa-search"></span>
-        </button>
-      </td>-->
 
-      
+        {% if v.this_run.ntc %}
+        <b>Present in NTC</b> <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
 
+        {% else %}
+        Not in NTC
+
+        {% endif %}
+      </td>
+      <td>{{ v.previous_runs.known }}</td>
       <td>
         {% for check in v.checks %}
           {{ forloop.counter }}: {{ check }}<br>
@@ -69,6 +63,10 @@
             {% endif %}
           {% endfor %}
         </select>
+
+        {% if v.latest_check.decision == '-'  or not v.latest_checks_agree %}
+        <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
+        {% endif %}
       </td>
       {% endif %}
   
@@ -88,7 +86,7 @@
 </table>
 
 <!-- button to add new variant in case of miscalled indels -->
-{% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail'%}
+{% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail' %}
 <div class="float-right">
   <button type="button" class="btn btn-light" data-toggle="modal" data-target="#add-variant-modal">Add variant</button>
   <button type="button" class="btn btn-success variants-submit" id="variants-submit">Update selections</button>
@@ -237,9 +235,12 @@
         {% endif %}
 
         <!-- comment form here -->
-        {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail'%}
+        {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail' %}
         {% crispy v.comment_form %}
         {% endif %}
+
+        <br>
+        <p>Variant ID: {{ v.pk }}</p>
       </div>
 
     </div>

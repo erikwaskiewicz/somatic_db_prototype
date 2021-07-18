@@ -56,13 +56,17 @@
     <li class="nav-item">
       <a class="nav-link section-button" href="#snvs" data-target="snvs">SNVs & indels</a>
     </li>
-    <li class="nav-item">
-      <a class="nav-link section-button" href="#report" data-target="report">Report summary</a>
-    </li>
-    {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail'%}
+
+    {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail' %}
     <li class="nav-item">
       <a class="nav-link section-button" href="#finalise" data-target="finalise">Finalise</a>
     </li>
+
+    {% else %}
+    <li class="nav-item">
+      <a class="nav-link section-button" href="#report" data-target="report">Report summary</a>
+    </li>
+
     {% endif %}
   </ul>
 </div>
@@ -73,9 +77,13 @@
 <div class="container" id="details">{% include 'analysis/analysis-info.html' %}</div>
 <div class="container-fluid" id="depth">{% include 'analysis/analysis-depth.html' %}</div>
 <div class="container-fluid" id="snvs">{% include 'analysis/analysis-snvs.html' %}</div>
-<div class="container-fluid" id="report">{% include 'analysis/analysis-report-dna.html' %}</div>
-{% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail'%}
+
+{% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail' %}
 <div class="container" id="finalise">{% include 'analysis/analysis-finalise.html' %}</div>
+
+{% else %}
+<div class="container-fluid" id="report">{% include 'analysis/analysis-report-dna.html' %}</div>
+
 {% endif %}
 
 

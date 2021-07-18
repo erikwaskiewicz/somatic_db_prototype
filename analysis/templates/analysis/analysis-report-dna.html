@@ -1,7 +1,11 @@
 {% load crispy_forms_tags %}
+<div class="alert alert-danger">
+  <strong>Warning!</strong> This sample has failed.
+</div>
 
+{% if sample_data.checks.current_status  == 'Fail' %}
 
-{% if sample_data.checks.current_status  == 'Complete' %}
+{% endif %}
 
 <form method="GET">
 <button type="submit" name= "download" id="download" class="btn btn-success">Download report</button>
@@ -9,7 +13,7 @@
 <br>
 <br>
 
-{% endif %}
+
 
 <h5>Variants</h5>
 <table class="table table-sm table-striped table-hover">

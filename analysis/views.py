@@ -186,7 +186,8 @@ def analysis_sheet(request, sample_id):
         context['variant_data'] = get_variant_info(sample_data, sample_obj)
         context['coverage_data'] = get_coverage_data(sample_obj)
 
-
+        print(context['sample_data']['checks']['current_check_object'])
+        print(context['sample_data']['checks']['all_checks'])
 
     # RNA workflow
     elif sample_data['dna_or_rna'] == 'RNA':
@@ -320,126 +321,108 @@ def analysis_sheet(request, sample_id):
         # if finalise check submit form is clicked
         if 'next_step' in request.POST:
             submit_form = SubmitForm(request.POST)
-            variants_match="yes"
+
             if submit_form.is_valid():
                 next_step = submit_form.cleaned_data['next_step']
-                if (sample_data['dna_or_rna'] == 'DNA'):
-                    variant_calls_dict=get_variant_info(sample_data, sample_obj)
-                    variant_calls=variant_calls_dict.get('variant_calls')
-                    #loop through all the variants and get the classifications
-                    for variant in variant_calls:
-                        variant_data=variant.get('checks')
-                        if (len(variant_data) >1):
-                            #make a list of the last two classifications
-                            last2=variant_data[-2:]
-                            if last2[1]!="Not analysed":
-                                if last2[0]!=last2[1]:
-                                    variants_match="no"
-
-
-                if (sample_data['dna_or_rna'] == 'RNA'):
-                        fusion_match="yes"
-                        fusion_calls_dict=get_fusion_info(sample_data, sample_obj)
-                        fusion_calls=fusion_calls_dict.get('fusion_calls')
-
-                        #loop through all the variants and get the classifications
-                        for fusion in fusion_calls:
-                            fusion_data=fusion.get('checks')
-                            if (len(fusion_data) >1):
-                                #make a list of the last two classifications
-                                last2=fusion_data[-2:]
-                                if last2[0]!=last2[1]:
-                                    fusion_match="no"
-
-
-
-
+                current_step = sample_data['checks']['current_status']
+                
                 if sample_data['sample_name'] == None:
                     context['warning'].append('Did not finalise check - input patient name before continuing')
 
-                elif (sample_data['dna_or_rna'] == 'DNA') and (current_step_obj.coverage_ntc_check == False) and (next_step != "Fail sample"):
+                if (sample_data['dna_or_rna'] == 'DNA') and (current_step_obj.coverage_ntc_check == False) and (next_step != "Fail sample"):
                     context['warning'].append('Did not finalise check - check NTC before continuing')
 
+                
 
-                elif (sample_data['dna_or_rna'] == 'DNA' and next_step == 'Complete check' and variants_match=="no"):
-                    context['warning'].append('Needs another check')
-
-
-                elif (sample_data['dna_or_rna'] == 'RNA' and next_step == 'Complete check' and fusion_match=="no"):
-                    context['warning'].append('Needs another check')
+                if next_step == 'Complete check':
 
 
-
-                else:
-                    next_step = submit_form.cleaned_data['next_step']
-                    current_step = sample_data['checks']['current_status']
-
-                    if next_step == 'Complete check':
-
-                        if 'IGV' in current_step:
-                            # if 1st IGV, make 2nd IGV
-                            if current_step == 'IGV check 1':
-                                if signoff_check(request.user, current_step_obj, sample_obj):
-                                    make_next_check(sample_obj, 'IGV')
-                                    return redirect('view_samples', sample_data['worksheet_id'])
-                                else:
-                                    context['warning'].append('Did not finalise check - not all variant have been checked')
-                                
-                            # if 2nd IGV (or 3rd...) make interpretation
-                            else:
-
-                                if signoff_check(request.user, current_step_obj, sample_obj):
-                                    return redirect('view_samples', sample_data['worksheet_id'])
-                                else:
-                                    context['warning'].append('Did not finalise check - not all variant have been checked')
-
-                        # if interpretation, make complete
-                        #elif 'Interpretation' in current_step:
-                        #    if signoff_check(request.user, current_step_obj, sample_obj):
-                        #        return redirect('view_samples', sample_data['worksheet_id'])
-                        #    else:
-                        #        context['warning'].append('Did not finalise check - not all variant have been checked')
-
-
-                    elif next_step == 'Request extra check':
-                        if 'IGV' in current_step:
-                            # make extra IGV check
-                            if signoff_check(request.user, current_step_obj, sample_obj):
-                                make_next_check(sample_obj, 'IGV')
-                                return redirect('view_samples', sample_data['worksheet_id'])
-                            else:
-                                context['warning'].append('Did not finalise check - not all variant have been checked')
-
-                            # throw error, cant do this yet
-                            #elif 'Interpretation' in current_step:
-                            #    context['warning'].append("Only one interpretation check is carried out within this database, please only select eith 'Complete check' or 'Fail sample'")
-                            # dont redirect - need to keep on current screen
-
-
-
-
-                    elif next_step == 'Fail sample':
-
-                        sample_data=context.get('sample_data')
-                        checks=sample_data.get('checks')
-                        check_objects=checks.get('all_checks')
-                        length=len(check_objects)
-                        if (length>1):
-                            last_check=check_objects[length-2]
-                            last_check_status=last_check.status
-                        else: 
-                            last_check_status="N/A"
-
-                        #if the status of last check was F complete check otherwise go to another igv check
-
-                        # if 1st IGV, make 2nd IGV
-                        if last_check_status== 'F':
-                            output=signoff_check(request.user, current_step_obj, sample_obj, 'F')
+                    # if 1st IGV, make 2nd IGV
+                    if current_step == 'IGV check 1':
+                        if signoff_check(request.user, current_step_obj, sample_obj):
+                            make_next_check(sample_obj, 'IGV')
                             return redirect('view_samples', sample_data['worksheet_id'])
                         else:
-                            if signoff_check(request.user, current_step_obj, sample_obj, 'F'):
-                                make_next_check(sample_obj, 'IGV')
-                                return redirect('view_samples', sample_data['worksheet_id'])
+                            context['warning'].append('Did not finalise check - not all variant have been checked')
+                        
+                    # if 2nd IGV (or 3rd...)
+                    else:
+                        # Check whether the last two checkers disagree
+                        variants_match = True
+                        non_matching_variants = []
+
+                        if sample_data['dna_or_rna'] == 'DNA':
+                            for variant in context['variant_data']['variant_calls']:
+                                if not variant['latest_checks_agree']:
+                                    variants_match = False
+                                    non_matching_variants.append(variant['genomic'])
+
+                        elif sample_data['dna_or_rna'] == 'RNA':
+                            fusion_calls_dict = get_fusion_info(sample_data, sample_obj)
+                            fusion_calls = fusion_calls_dict.get('fusion_calls')
+    
+                            for fusion in fusion_calls:
+                                fusion_data = fusion.get('checks')
+                                if len(fusion_data) > 1:
+                                    #make a list of the last two classifications
+                                    last2 = fusion_data[-2:]
+                                    if last2[0] != last2[1]:
+                                        variants_match = False
+                                        non_matching_variants.append(variant['genomic']) # TODO - not sure what this is called in fusion dict
+
+                        if not variants_match:
+                            warning_text = ', '.join(non_matching_variants)
+                            context['warning'].append(f'Did not finalise check - the last two checkers dont agree for the following variants: {warning_text}')
+                        
+                        elif signoff_check(request.user, current_step_obj, sample_obj):
+                            return redirect('view_samples', sample_data['worksheet_id'])
+                        else:
+                            context['warning'].append('Did not finalise check - not all variant have been checked')
+
+                            # TODO - error if there aren't at least two classifications per variant?
+
+
+                elif next_step == 'Request extra check':
+
+                    # make extra IGV check
+                    if signoff_check(request.user, current_step_obj, sample_obj):
+                        make_next_check(sample_obj, 'IGV')
+                        return redirect('view_samples', sample_data['worksheet_id'])
+                    else:
+                        context['warning'].append('Did not finalise check - not all variant have been checked')
+
+
+                elif next_step == 'Fail sample':
+
+                    sample_data=context.get('sample_data')
+                    checks=sample_data.get('checks')
+                    check_objects=checks.get('all_checks')
+                    length=len(check_objects)
+                    if (length>1):
+                        last_check=check_objects[length-2]
+                        last_check_status=last_check.status
+                    else: 
+                        last_check_status="N/A"
+
+                    print(last_check_status)
+                    print(current_step)
+                    print(context['sample_data']['checks']['current_check_object'])
+                    print(context['sample_data']['checks']['all_checks'])
+                    
+
+                    # TODO if the status of last check was F complete check otherwise go to another igv check
+                    # TODO other checks on fails???
+
+                    # if failed 1st check, make 2nd check 
+                    if current_step == 'IGV check 1':
+                        signoff_check(request.user, current_step_obj, sample_obj, 'F')
+                        make_next_check(sample_obj, 'IGV')
+                        return redirect('view_samples', sample_data['worksheet_id'])
+
+                    # otherwise sign off and make sample failed
+                    else:
+                        signoff_check(request.user, current_step_obj, sample_obj, 'F')
+                        return redirect('view_samples', sample_data['worksheet_id'])
 
 
 
@@ -461,7 +444,6 @@ def ajax(request):
         dna_or_rna = sample_obj.sample.sample_type
 
         selections = json.loads(request.POST.get('selections'))
-        #print(selections)
 
         if dna_or_rna == 'DNA':
             for variant in selections:

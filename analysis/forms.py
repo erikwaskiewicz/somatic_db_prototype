@@ -36,7 +36,12 @@ class NewVariantForm(forms.Form):
     """
     """
     hgvs_g = forms.CharField()
+    hgvs_c = forms.CharField()
     hgvs_p = forms.CharField()
+    gene = forms.CharField()
+    exon = forms.CharField(required=False)
+    alt = forms.IntegerField()
+    ref = forms.IntegerField()
 
     def __init__(self, *args, **kwargs):
         super(NewVariantForm, self).__init__(*args, **kwargs)
@@ -57,9 +62,14 @@ class SubmitForm(forms.Form):
         ('Request extra check', 'Request extra check'),
         ('Fail sample', 'Fail sample'),
     )
-    next_step = forms.ChoiceField(choices=NEXT_STEP_CHOICES)
     patient_demographics = forms.BooleanField(required=True, label="Patient demographics checked")
+    submit_comment = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 4}),
+        required=False,
+    )
+    next_step = forms.ChoiceField(choices=NEXT_STEP_CHOICES)
     confirm = forms.BooleanField(required=True, label="Confirm check is complete")
+
 
     def __init__(self, *args, **kwargs):
         super(SubmitForm, self).__init__(*args, **kwargs)

@@ -47,6 +47,7 @@ class Sample(models.Model):
     total_reads_ntc= models.IntegerField(blank=True, null=True)
     percent_reads_ntc= models.CharField(max_length=200, blank=True, null=True)
 
+
 class Panel(models.Model):
     """
     A virtual panel
@@ -71,26 +72,26 @@ class SampleAnalysis(models.Model):
         """
         Get all associated checks and work out the status
         TODO - make this a bit better
+        TODO - this is getting called twice when samples page is loaded
         """
         all_checks = Check.objects.filter(analysis = self).order_by('pk')
         igv_checks = all_checks.filter(stage='IGV')
-        vus_checks = all_checks.filter(stage='VUS')
 
         current_status = 'Complete'
-        assigned_to = 'N/A'
+        assigned_to = None
         current_check_object = all_checks.latest('pk')
-
-        for n, c in enumerate(vus_checks):
-            if c.status == 'P':
-                current_status = f'{c.get_stage_display()}'
-                assigned_to = c.user
-                current_check_object = c
 
         for n, c in enumerate(igv_checks):
             if c.status == 'P':
                 current_status = f'{c.get_stage_display()} {n+1}'
                 assigned_to = c.user
                 current_check_object = c
+
+        num_fails = [ c for c in igv_checks if c.status == 'F' ]
+        if len(num_fails) == 1:
+            current_status = 'Fail - 2nd check required'
+        elif len(num_fails) > 1:
+            current_status = 'Fail'
                 
         return {
             'current_status': current_status,

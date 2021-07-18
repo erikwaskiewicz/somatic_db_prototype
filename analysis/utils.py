@@ -93,7 +93,6 @@ def get_sample_info(sample_obj):
 def get_variant_info(sample_data, sample_obj):
 
     sample_variants = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
-    #print(sample_variants)
 
     variant_calls = []
     polys_list = []
@@ -127,20 +126,30 @@ def get_variant_info(sample_data, sample_obj):
 
         # get whether the variant falls within a poly/ known list
         # TODO - will have to handle multiple poly/ known lists in future
-        print(variant_obj)
         previous_classifications = []
         for l in VariantToVariantList.objects.filter(variant=variant_obj):
             if l.variant_list.name == 'TSO500_known':
                 previous_classifications.append(l.classification)
             elif l.variant_list.name == 'TSO500_polys':
                 previous_classifications.append('Poly')
-            print(previous_classifications)
-            print(l)
 
         # get checks for each variant
         variant_checks = VariantCheck.objects.filter(variant_analysis=sample_variant)
         variant_checks_list = [ v.get_decision_display() for v in variant_checks ]
         latest_check = variant_checks.latest('pk')
+
+        # do the last two checks agree?
+        last_two_checks_agree = True
+        if len(variant_checks_list) > 1:
+
+            last2 = variant_checks_list[-2:]
+            # skip check if not analysed
+            if last2[1] != 'Not analysed':
+                if last2[0] != last2[1]:
+                    last_two_checks_agree = False
+
+        
+
         # set decision if falls in poly list, otherwise the finilise sample validation will fail
         if 'Poly' in previous_classifications:
             latest_check.decision ='P'
@@ -159,6 +168,7 @@ def get_variant_info(sample_data, sample_obj):
         variant_calls_dict = {
             'pk': sample_variant.pk,
             'genomic': variant_obj.genomic_37,
+            'igv_coords': variant_obj.genomic_37.strip('ACGT>'),
             'gene': variant_obj.gene,
             'exon': variant_obj.exon,
             'transcript': variant_obj.transcript,
@@ -180,6 +190,7 @@ def get_variant_info(sample_data, sample_obj):
             },
             'checks': variant_checks_list,
             'latest_check': latest_check,
+            'latest_checks_agree': last_two_checks_agree,
             'comment_form': var_comment_form,
             'comments': variant_comments_list,
             'final_decision': sample_variant.variant_instance.get_final_decision_display(),
@@ -198,7 +209,6 @@ def get_variant_info(sample_data, sample_obj):
         'polys': polys_list,
         'check_options': VariantCheck.DECISION_CHOICES,
     }
-    #print(variant_calls)
 
     return variant_data
 
@@ -290,7 +300,6 @@ def get_coverage_data(sample_obj):
                 'percent_ntc': region.percent_ntc,
             }
             regions.append(regions_dict)
-        #print(regions)
 
         # Create a dictionary of gaps in the sample for the given gene
         gaps_270 = []

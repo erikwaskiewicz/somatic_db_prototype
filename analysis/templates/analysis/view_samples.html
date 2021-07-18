@@ -37,12 +37,11 @@
           <td>{{ analysis.checks.current_status }}</td>
           <td>{{ analysis.checks.assigned_to }}</td>
           <td style="text-align:right">
-            {% if analysis.checks.assigned_to == None %}
-            <a class="btn btn-success btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}" role="button">Assign to me & analyse</a>
+            
 
 
-            {% elif analysis.current_check == 'F' %}
-              {% if analysis.last_check == 'F' %}
+            {% if 'Fail' in analysis.checks.current_status %}
+              {% if analysis.checks.current_status == 'Fail' %}
               <div class="btn-group btn-block">
               <a class="btn btn-danger btn-block" href="" role="button">
                 Fail
@@ -53,12 +52,16 @@
               <div class="dropdown-menu">
                 <a class="dropdown-item" href="{% url 'analysis_sheet' analysis.analysis_id %}">View</a>
               </div>
+
+              {% elif analysis.checks.current_status == 'Fail - 2nd check required' %}
+              <a class="btn btn-warning btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}" role="button">Failed (check required)</a>
               {% endif %}
 
 
+            {% elif analysis.checks.assigned_to == None %}
+            <a class="btn btn-success btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}" role="button">Assign to me & analyse</a>
 
 
-            
             {% elif analysis.checks.current_status == 'Complete' %}
             <a class="btn btn-light btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">View</a>
 
