@@ -283,16 +283,23 @@ def analysis_sheet(request, sample_id):
         # fusion comments submit button
         if 'fusion_comment' in request.POST:
             new_comment = request.POST['fusion_comment']
+            hgvs = request.POST['hgvs']
             pk = request.POST['pk']
 
             # update comment
-            FusionCheck.objects.filter(pk=request.POST['pk']).update(
-                comment=request.POST['fusion_comment'],
-                comment_updated=timezone.now(),
-            )
+            fusion_check_obj = FusionCheck.objects.get(pk=request.POST['pk'])
+            fusion_check_obj.comment=request.POST['fusion_comment']
+            fusion_check_obj.comment_updated=timezone.now()
 
-            # TODO reload fusion data
-                        # reload variant data
+            # update fusion HGVS
+            fusion_instance = fusion_check_obj.fusion_analysis.fusion_instance
+            fusion_instance.hgvs = hgvs
+
+            # save objects to database
+            fusion_check_obj.save()
+            fusion_instance.save()
+            
+            # reload variant data
             context['fusion_data'] = get_fusion_info(sample_data, sample_obj)
 
 
@@ -317,6 +324,7 @@ def analysis_sheet(request, sample_id):
                 context['variant_data'] = get_variant_info(sample_data, sample_obj)
 
 
+        # overall sample comments form
         if 'sample_comment' in request.POST:
             new_comment = request.POST['sample_comment']
             try:
@@ -358,7 +366,8 @@ def analysis_sheet(request, sample_id):
                 if (sample_data['dna_or_rna'] == 'DNA') and (current_step_obj.coverage_ntc_check == False) and (next_step != "Fail sample"):
                     context['warning'].append('Did not finalise check - check NTC before continuing')
 
-                
+                if current_step_obj.patient_info_check == False:
+                    context['warning'].append('Did not finalise check - check patient demographics before continuing')
 
                 if next_step == 'Complete check':
 

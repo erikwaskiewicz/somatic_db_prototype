@@ -17,6 +17,7 @@
   <thead>
     <tr>
       <th scope="col">Fusion</th>
+      <th scope="col">HGVS</th>
       <th scope="col">Fusion supporting reads</th>
       <th scope="col">Left breakpoint</th>
       <th scope="col">Right breakpoint</th>
@@ -32,6 +33,7 @@
     {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
     <tr>
       <td>{{ v.fusion_genes }}</td>
+      <td>{{ v.fusion_hgvs }}</td>
       <td>{{ v.fusion_supporting_reads }}</td>
       <td>{{ v.left_breakpoint }}</td>
       <td>{{ v.right_breakpoint }}</td>
@@ -49,19 +51,20 @@
 <table class="table table-sm table-bordered">
   <thead>
     <tr>
-      <th></th>
-      <th>Stage</th>
+      <th>Check</th>
       <th>User</th>
-      <th>Signed off</th>
+      <th>Patient info check</th>
+      <th>Comments</th>
+      
     </tr>
   </thead>
   <tbody>
     {% for c in sample_data.checks.all_checks %}
     <tr>
       <td>{{ forloop.counter }}</td>
-      <td>{{ c.get_stage_display }}</td>
-      <td>{{ c.user }}</td>
-      <td>{{ c.signoff_time }}</td>
+      <td>{{ c.user }}<br>{{ c.signoff_time }}</td>
+      <td>{{ c.patient_info_check }}</td>
+      <td>{{ c.overall_comment | wordwrap:100 | linebreaksbr }}</td>
     </tr>
     {% endfor %}
   </tbody>

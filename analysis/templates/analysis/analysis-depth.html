@@ -192,7 +192,7 @@
         {% for check in sample_data.checks.all_checks %}
         <tbody>
           <tr>
-            <td>{{ check.coverage_comment }}</td>
+            <td>{{ check.coverage_comment | wordwrap:70 | linebreaksbr }}</td>
             <td>{{ check.coverage_ntc_check }}</td>
             <td>{{ check.user }}<br>{{ check.coverage_comment_updated }}</td>
           </tr>

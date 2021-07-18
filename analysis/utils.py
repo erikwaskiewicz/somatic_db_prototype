@@ -247,7 +247,10 @@ def get_fusion_info(sample_data,sample_obj):
                 if last2[0] != last2[1]:
                     last_two_checks_agree = False
 
-        fusion_comment_form = FusionCommentForm(pk=latest_check.pk, comment=latest_check.comment)
+        fusion_comment_form = FusionCommentForm(
+            pk=latest_check.pk, 
+            hgvs= fusion_object.fusion_instance.hgvs, 
+            comment=latest_check.comment)
 
         # get list of comments for variant
         fusion_comments_list = []
@@ -260,6 +263,7 @@ def get_fusion_info(sample_data,sample_obj):
         fusion_calls_dict = {
             'pk': fusion_object.pk,
             'fusion_genes': fusion_object.fusion_instance.fusion_genes.fusion_genes,
+            'fusion_hgvs': fusion_object.fusion_instance.hgvs,
             'fusion_supporting_reads': fusion_object.fusion_instance.fusion_supporting_reads,
             'left_breakpoint': fusion_object.fusion_instance.fusion_genes.left_breakpoint,
             'right_breakpoint': fusion_object.fusion_instance.fusion_genes.right_breakpoint,

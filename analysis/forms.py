@@ -128,6 +128,8 @@ class FusionCommentForm(forms.Form):
     """
     hgvs = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 1}),
+        required=False,
+        label="HGVS"
     )
     fusion_comment = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 4}),
@@ -138,11 +140,13 @@ class FusionCommentForm(forms.Form):
     def __init__(self, *args, **kwargs):
 
         self.comment = kwargs.pop('comment')
+        self.hgvs = kwargs.pop('hgvs')
         self.pk = kwargs.pop('pk')
 
         super(FusionCommentForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.fields['fusion_comment'].initial = self.comment
+        self.fields['hgvs'].initial = self.hgvs
         self.fields['pk'].initial = self.pk
         self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-success'))
 
