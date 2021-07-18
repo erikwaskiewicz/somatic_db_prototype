@@ -62,11 +62,6 @@ class SubmitForm(forms.Form):
         ('Request extra check', 'Request extra check'),
         ('Fail sample', 'Fail sample'),
     )
-    patient_demographics = forms.BooleanField(required=True, label="Patient demographics checked")
-    submit_comment = forms.CharField(
-        widget=forms.Textarea(attrs={'rows': 4}),
-        required=False,
-    )
     next_step = forms.ChoiceField(choices=NEXT_STEP_CHOICES)
     confirm = forms.BooleanField(required=True, label="Confirm check is complete")
 
@@ -78,6 +73,31 @@ class SubmitForm(forms.Form):
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-100')
         )
+
+
+class SampleCommentForm(forms.Form):
+    """
+    """
+    sample_comment = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 4}),
+        required=False,
+        label='General sample comments:'
+    )
+    patient_demographics = forms.BooleanField(required=False, label="Patient demographics checked")
+    pk = forms.CharField(widget=forms.HiddenInput())
+
+    def __init__(self, *args, **kwargs):
+        self.comment = kwargs.pop('comment')
+        self.info_check = kwargs.pop('info_check')
+        self.pk = kwargs.pop('pk')
+
+        super(SampleCommentForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.fields['sample_comment'].initial = self.comment
+        self.fields['patient_demographics'].initial = self.info_check
+        self.fields['pk'].initial = self.pk
+        self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-success'))
+
 
 
 class VariantCommentForm(forms.Form):
@@ -106,6 +126,9 @@ class FusionCommentForm(forms.Form):
     """
 
     """
+    hgvs = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 1}),
+    )
     fusion_comment = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 4}),
         required=False,

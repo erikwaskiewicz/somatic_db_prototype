@@ -1,10 +1,10 @@
 {% load crispy_forms_tags %}
+
+
+{% if sample_data.checks.current_status  == 'Fail' %}
 <div class="alert alert-danger">
   <strong>Warning!</strong> This sample has failed.
 </div>
-
-{% if sample_data.checks.current_status  == 'Fail' %}
-
 {% endif %}
 
 <form method="GET">

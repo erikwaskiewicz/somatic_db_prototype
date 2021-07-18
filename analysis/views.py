@@ -7,7 +7,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 
-from .forms import SearchForm, NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, CheckPatientName, FusionCommentForm
+from .forms import SearchForm, NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, CheckPatientName, FusionCommentForm, SampleCommentForm
 from .models import *
 from .test_data import dummy_dicts
 from .utils import signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info
@@ -171,23 +171,24 @@ def analysis_sheet(request, sample_id):
         'submit_form': SubmitForm(),
         'update_name_form': UpdatePatientName(),
         'check_name_form': CheckPatientName(),
+        'sample_comment_form': SampleCommentForm(
+            comment=current_step_obj.overall_comment,
+            info_check=current_step_obj.patient_info_check,
+            pk=current_step_obj.pk, 
+        ),
         'coverage_check_form': CoverageCheckForm(
             pk=current_step_obj.pk, 
             comment=current_step_obj.coverage_comment,
             ntc_check=current_step_obj.coverage_ntc_check,
         ),
 
-    } #TODO pull coverage comment through and display comments from all checkers
-
+    }
 
 
     # DNA workflow
     if sample_data['dna_or_rna'] == 'DNA':
         context['variant_data'] = get_variant_info(sample_data, sample_obj)
         context['coverage_data'] = get_coverage_data(sample_obj)
-
-        print(context['sample_data']['checks']['current_check_object'])
-        print(context['sample_data']['checks']['all_checks'])
 
     # RNA workflow
     elif sample_data['dna_or_rna'] == 'RNA':
@@ -316,6 +317,31 @@ def analysis_sheet(request, sample_id):
                 context['variant_data'] = get_variant_info(sample_data, sample_obj)
 
 
+        if 'sample_comment' in request.POST:
+            new_comment = request.POST['sample_comment']
+            try:
+                if request.POST['patient_demographics'] == 'on':
+                    info_check = True
+            except:
+                info_check = False
+            pk = request.POST['pk']
+
+            # update comment
+            Check.objects.filter(pk=pk).update(
+                overall_comment=new_comment,
+                overall_comment_updated=timezone.now(),
+                patient_info_check=info_check,
+            )
+
+            # reload sample data
+            context['sample_data'] = get_sample_info(sample_obj)
+            current_step_obj = context['sample_data']['checks']['current_check_object']
+            context['sample_comment_form'] = SampleCommentForm(
+                comment=current_step_obj.overall_comment,
+                info_check=current_step_obj.patient_info_check,
+                pk=current_step_obj.pk, 
+            )
+
 
 
         # if finalise check submit form is clicked
@@ -358,17 +384,10 @@ def analysis_sheet(request, sample_id):
                                     non_matching_variants.append(variant['genomic'])
 
                         elif sample_data['dna_or_rna'] == 'RNA':
-                            fusion_calls_dict = get_fusion_info(sample_data, sample_obj)
-                            fusion_calls = fusion_calls_dict.get('fusion_calls')
-    
-                            for fusion in fusion_calls:
-                                fusion_data = fusion.get('checks')
-                                if len(fusion_data) > 1:
-                                    #make a list of the last two classifications
-                                    last2 = fusion_data[-2:]
-                                    if last2[0] != last2[1]:
-                                        variants_match = False
-                                        non_matching_variants.append(variant['genomic']) # TODO - not sure what this is called in fusion dict
+                            for fusion in context['fusion_data']['fusion_calls']:
+                                if not fusion['latest_checks_agree']:
+                                    variants_match = False
+                                    non_matching_variants.append(fusion['fusion_genes'])
 
                         if not variants_match:
                             warning_text = ', '.join(non_matching_variants)
@@ -377,7 +396,7 @@ def analysis_sheet(request, sample_id):
                         elif signoff_check(request.user, current_step_obj, sample_obj):
                             return redirect('view_samples', sample_data['worksheet_id'])
                         else:
-                            context['warning'].append('Did not finalise check - not all variant have been checked')
+                            context['warning'].append('Did not finalise check - not all variants have been checked')
 
                             # TODO - error if there aren't at least two classifications per variant?
 
@@ -389,7 +408,7 @@ def analysis_sheet(request, sample_id):
                         make_next_check(sample_obj, 'IGV')
                         return redirect('view_samples', sample_data['worksheet_id'])
                     else:
-                        context['warning'].append('Did not finalise check - not all variant have been checked')
+                        context['warning'].append('Did not finalise check - not all variants have been checked')
 
 
                 elif next_step == 'Fail sample':

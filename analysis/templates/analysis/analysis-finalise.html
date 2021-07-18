@@ -1,19 +1,43 @@
 {% load crispy_forms_tags %}
 
 <!-- this tab is only rendered if there are still checks to perform -->
-<h5>Sign off</h5>
 
-<div class="card">
-  <div class="card-body">
 
-    <h5>Finalise check</h5>
-    <br>
+<h5>Comments</h5>
+<table class="table table-sm table-striped table-hover">
+  <thead>
+    <tr>
+      <th scope="col"></th>
+      <th scope="col">Comment</th>
+      <th scope="col">Patient info check</th>
+      <th scope="col">User</th>
+    </tr>
+  </thead>
+  {% for check in sample_data.checks.all_checks %}
+  <tbody>
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td>{{ check.overall_comment | wordwrap:80 | linebreaksbr}}</td>
+      <td>{{ check.patient_info_check }}</td>
+      <td>{{ check.user }}<br>{{ check.overall_comment_updated }}</td>
+    </tr>
+  </tbody>
+  {% endfor %}
+</table>
 
-    {% crispy submit_form %}
-
-  </div>
+<div class="card-body">
+  {% crispy sample_comment_form %}
 </div>
 
+
 <br>
 <br>
+<div class="card-body bg-light">
+
+  <h5>Finalise check</h5>
+  <br>
+
+  {% crispy submit_form %}
+
+</div>
 

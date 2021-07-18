@@ -1,10 +1,16 @@
 {% load crispy_forms_tags %}
 
-{% if sample_data.checks.current_status  == 'Complete' %}
+{% if sample_data.checks.current_status  == 'Fail' %}
+<div class="alert alert-danger">
+  <strong>Warning!</strong> This sample has failed.
+</div>
+{% endif %}
+
+
 <button type="button" class="btn btn-success">Download report</button>
 <br>
 <br>
-{% endif %}
+
 
 <h5>Variants</h5>
 <table class="table table-sm table-striped table-hover">

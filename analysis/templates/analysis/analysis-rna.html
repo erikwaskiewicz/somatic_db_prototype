@@ -21,12 +21,15 @@
   <thead>
     <tr>
       <th scope="col">Fusion</th>
+      <th scope="col">HGVS</th>
       <th scope="col">Fusion supporting reads</th>
       <th scope="col">Left breakpoint</th>
       <th scope="col">Right breakpoint</th>
       <th scope="col">This run</th>
       <th scope="col">IGV</th>
+      {% if 'IGV' in sample_data.checks.current_status %}
       <th scope="col">Action</th>
+      {% endif %}
       <th><span class="fa fa-comment-alt"></span></th>
     </tr>
   </thead>
@@ -35,40 +38,32 @@
     {% for v in fusion_data.fusion_calls %}
 
     <tr>
-       <td class="variant-pk" style="display:none">{{ v.pk }}</td>
+      <td class="variant-pk" style="display:none">{{ v.pk }}</td>
       <td>
         <p style="display:inline" id="igv">{{ v.fusion_genes }} </p><button class="btn btn-sm btn-info" onclick="copyToClipboard('#igv')"><span class="fa fa-copy"></span></button>
       </td>
+      <td></td>
+      <td>{{ v.fusion_supporting_reads }}</td>
+      <td>{{ v.left_breakpoint }}</td>
+      <td>{{ v.right_breakpoint }}</td>
       <td>
-        {{ v.fusion_supporting_reads }}
+        {{ v.this_run.count }} of {{ v.this_run.total }} samples<br>
+        
+        {% if v.this_run.ntc %}
+        <b>Present in NTC</b> <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
+
+        {% else %}
+        Not in NTC
+
+        {% endif %}
       </td>
-      <td>
-        {{ v.left_breakpoint }}
-      </td>
-      <td>
-        {{ v.right_breakpoint }}
-      </td>
-       <td>
-        {{ v.this_run.count }} of {{ v.this_run.total }} samples<br>Present in NTC: {{ v.this_run.ntc }}
-      </td>
-
-<!-- Not using this yet
-
-        {{ v.previous_runs.known }}
-        <button type="button" class="btn btn-light" data-toggle="modal" data-target="#counts-modal">
-          {{ v.previous_runs.count }} <span class="fa fa-search"></span>
-        </button>
-
-
- -->
-
-      {% if 'IGV' in sample_data.checks.current_status %}
-
       <td>
         {% for check in v.checks %}
           {{ forloop.counter }}: {{ check }}<br>
         {% endfor %}
       </td>
+
+      {% if 'IGV' in sample_data.checks.current_status %}
       <td class=genuine-dropdown>
         <select name="variant" id="variant">
           {% for option in fusion_data.check_options %}
@@ -77,11 +72,15 @@
             {% else %}
             <option value="{{ option.0 }}">{{ option.1 }}</option>
             {% endif %}
-
           {% endfor %}
         </select>
+
+        {% if v.latest_check.decision == '-'  or not v.latest_checks_agree %}
+        <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
+        {% endif %}
       </td>
       {% endif %}
+
       <td>
         <button type="button" data-toggle="modal" data-target="#comments-modal"
         {% if v.comments %}
@@ -99,7 +98,7 @@
 
 
 <!-- button to add new variant in case of miscalled indels -->
-{% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail'%}
+{% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail' %}
 <div class="float-right">
   <button type="button" class="btn btn-success variants-submit" id="variants-submit">Update selections</button>
 </div>
@@ -200,6 +199,9 @@
         {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail'%}
         {% crispy v.comment_form %}
         {% endif %}
+
+        <br>
+        <p>Variant ID: {{ v.pk }}</p>
       </div>
 
     </div>

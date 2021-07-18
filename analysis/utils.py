@@ -148,8 +148,6 @@ def get_variant_info(sample_data, sample_obj):
                 if last2[0] != last2[1]:
                     last_two_checks_agree = False
 
-        
-
         # set decision if falls in poly list, otherwise the finilise sample validation will fail
         if 'Poly' in previous_classifications:
             latest_check.decision ='P'
@@ -239,6 +237,16 @@ def get_fusion_info(sample_data,sample_obj):
         fusion_checks = FusionCheck.objects.filter(fusion_analysis=fusion_object)
         fusion_checks_list = [ v.get_decision_display() for v in fusion_checks ]
         latest_check = fusion_checks.latest('pk')
+
+                # do the last two checks agree?
+        last_two_checks_agree = True
+        if len(fusion_checks_list) > 1:
+            last2 = fusion_checks_list[-2:]
+            # skip check if not analysed
+            if last2[1] != 'Not analysed':
+                if last2[0] != last2[1]:
+                    last_two_checks_agree = False
+
         fusion_comment_form = FusionCommentForm(pk=latest_check.pk, comment=latest_check.comment)
 
         # get list of comments for variant
@@ -265,7 +273,8 @@ def get_fusion_info(sample_data,sample_obj):
                 'count': '1',
             },
             'checks': fusion_checks_list,
-            'latest_check': "latest check",
+            'latest_check': latest_check,
+            'latest_checks_agree': last_two_checks_agree,
             'comment_form': fusion_comment_form,
             'comments': fusion_comments_list,
             'final_decision': fusion_object.fusion_instance.get_final_decision_display()

@@ -54,13 +54,17 @@
     <li class="nav-item">
       <a class="nav-link section-button" href="#rna" data-target="rna">RNA</a>
     </li>
-    <li class="nav-item">
-      <a class="nav-link section-button" href="#report" data-target="report">Report</a>
-    </li>
-    {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail'%}
+
+    {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail' %}
     <li class="nav-item">
       <a class="nav-link section-button" href="#finalise" data-target="finalise">Finalise</a>
     </li>
+
+    {% else %}
+    <li class="nav-item">
+      <a class="nav-link section-button" href="#report" data-target="report">Report</a>
+    </li>
+
     {% endif %}
   </ul>
 </div>
@@ -70,9 +74,13 @@
 <!-- load in each section from template -->
 <div class="container" id="details">{% include 'analysis/analysis-info.html' %}</div>
 <div class="container-fluid" id="rna">{% include 'analysis/analysis-rna.html' %}</div>
-<div class="container-fluid" id="report">{% include 'analysis/analysis-report-rna.html' %}</div>
-{% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail'%}
+
+{% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail' %}
 <div class="container" id="finalise">{% include 'analysis/analysis-finalise.html' %}</div>
+
+{% else %}
+<div class="container-fluid" id="report">{% include 'analysis/analysis-report-rna.html' %}</div>
+
 {% endif %}
 
 
