@@ -1,22 +1,54 @@
 from django.shortcuts import render, redirect
-from django.http import Http404
-
+from django.http import Http404, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import PermissionDenied
 from django.utils import timezone
+from django.template.loader import get_template
+from django.template import Context
 
 from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm
 from .models import *
 from .test_data import dummy_dicts
 from .utils import signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info
-from django.template.loader import get_template
-from xhtml2pdf import pisa 
-from django.template import Context
-
 
 import json
+import os
+
+from xhtml2pdf import pisa 
+
+def link_callback(uri, rel):
+    """
+    Convert HTML URIs to absolute system paths so xhtml2pdf can access those
+    resources 
+    taken straight from https://xhtml2pdf.readthedocs.io/en/latest/usage.html#using-xhtml2pdf-in-django
+    """
+    result = finders.find(uri)
+    if result:
+            if not isinstance(result, (list, tuple)):
+                    result = [result]
+            result = list(os.path.realpath(path) for path in result)
+            path=result[0]
+    else:
+            sUrl = settings.STATIC_URL        # Typically /static/
+            sRoot = settings.STATIC_ROOT      # Typically /home/userX/project_static/
+            mUrl = settings.MEDIA_URL         # Typically /media/
+            mRoot = settings.MEDIA_ROOT       # Typically /home/userX/project_static/media/
+
+            if uri.startswith(mUrl):
+                    path = os.path.join(mRoot, uri.replace(mUrl, ""))
+            elif uri.startswith(sUrl):
+                    path = os.path.join(sRoot, uri.replace(sUrl, ""))
+            else:
+                    return uri
+
+    # make sure that file exists
+    if not os.path.isfile(path):
+            raise Exception(
+                    'media URI must start with %s or %s' % (sUrl, mUrl)
+            )
+    return path
     
 
 def signup(request):
@@ -201,22 +233,24 @@ def analysis_sheet(request, sample_id):
 
         
 
-
+    # download PDF reports
     if request.method == 'GET':
 
         if 'download' in request.GET:
+            # Create a Django response object, and specify content_type as pdf
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="report.pdf"'
 
+            # find the template and render it.
             template = get_template('analysis/download_dna_report.html')
-            html  = template.render(context)
+            html = template.render(context)
 
+            # create a pdf
+            pisa_status = pisa.CreatePDF(
+                html, dest=response, link_callback=link_callback
+            )
 
-
-            file = open('test.pdf', "w+b")
-            pisaStatus = pisa.CreatePDF(html, dest=file, encoding='utf-8')
-
-            file.seek(0)
-            pdf = file.read()
-            file.close() 
+            return response
 
 
 
