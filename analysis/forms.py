@@ -8,7 +8,7 @@ class UnassignForm(forms.Form):
     """
     Search bar for home page
     """
-    unassign = forms.CharField(widget=forms.HiddenInput(), required=False)   #widget=forms.HiddenInput(), 
+    unassign = forms.CharField(widget=forms.HiddenInput(), required=False)
 
     def __init__(self, *args, **kwargs):
         super(UnassignForm, self).__init__(*args, **kwargs)

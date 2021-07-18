@@ -45,7 +45,6 @@ class Command(BaseCommand):
                         total_reads_ntc=1,
                         percent_reads_ntc=int((1 / total_reads)*100),
                     )
-                    #TODO 
                 new_sample.save()
 
                 # make sample analysis and checks

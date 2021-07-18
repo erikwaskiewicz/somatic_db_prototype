@@ -117,13 +117,6 @@ def get_variant_info(sample_data, sample_obj):
             if qs:
                 this_run_count += 1
 
-        # TODO - we're going to add this last, need to exclude current run??
-        '''#count how many times the variant is present in previous runs
-        previous_runs = VariantInstance.objects.filter(
-            variant = variant_obj
-        ).count()
-        print(previous_runs)'''
-
         # get whether the variant falls within a poly/ known list
         # TODO - will have to handle multiple poly/ known lists in future
         previous_classifications = []
@@ -228,11 +221,6 @@ def get_fusion_info(sample_data,sample_obj):
         total_runs = FusionAnalysis.objects.filter(sample__worksheet__run__run_id=sample_data.get('run_id'))
         total_runs_count = total_runs.count()
 
-
-        # TODO were leaving this til last
-        #previous_runs = FusionAnalysis.objects.filter(fusion_genes=fusion_object.fusion_genes).exclude(sample__worksheet__run__run_id=sample_data.get('run_id'))
-        #previous_runs_count = previous_runs.count()
-
         # get checks for each variant
         fusion_checks = FusionCheck.objects.filter(fusion_analysis=fusion_object)
         fusion_checks_list = [ v.get_decision_display() for v in fusion_checks ]
@@ -272,10 +260,6 @@ def get_fusion_info(sample_data,sample_obj):
                 'total': total_runs_count,
                 'ntc': fusion_object.fusion_instance.in_ntc,
             },   
-            'previous_runs': {
-            #TODO- this shouldn't be hardcoded
-                'count': '1',
-            },
             'checks': fusion_checks_list,
             'latest_check': latest_check,
             'latest_checks_agree': last_two_checks_agree,

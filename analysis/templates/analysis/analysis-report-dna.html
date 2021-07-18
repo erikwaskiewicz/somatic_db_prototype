@@ -1,19 +1,39 @@
 {% load crispy_forms_tags %}
 
-
 {% if sample_data.checks.current_status  == 'Fail' %}
 <div class="alert alert-danger">
-  <strong>Warning!</strong> This sample has failed.
+  <div class="container">
+    <div class="row">
+      <div class="col-8">
+        <strong>Warning!</strong> This sample has failed.
+      </div>
+      <div class="col-4">
+        <form method="GET">
+          <button type="submit" name="download-dna" id="download" class="btn btn-danger w-100">Download report</button>
+        </form>
+      </div>
+    </div>
+  </div>  
 </div>
+
+{% else %}
+<div class="alert alert-success">
+  <div class="container">
+    <div class="row">
+      <div class="col-8">
+        <strong>Success!</strong> This sample has completed analysis.
+      </div>
+      <div class="col-4">
+        <form method="GET">
+          <button type="submit" name="download-dna" id="download" class="btn btn-success w-100">Download report</button>
+        </form>
+      </div>
+    </div>
+  </div>  
+</div>
+
 {% endif %}
-
-<form method="GET">
-<button type="submit" name= "download" id="download" class="btn btn-success">Download report</button>
-</form>
 <br>
-<br>
-
-
 
 <h5>Variants</h5>
 <table class="table table-sm table-striped table-hover">

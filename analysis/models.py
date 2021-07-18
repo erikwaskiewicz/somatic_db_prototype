@@ -200,7 +200,7 @@ class VariantCheck(models.Model):
     variant_analysis = models.ForeignKey('VariantPanelAnalysis', on_delete=models.CASCADE)
     check_object = models.ForeignKey('Check', on_delete=models.CASCADE)
     decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
-    comment = models.CharField(max_length=500, blank=True, null=True) # TODO - link out to seperate comment model???
+    comment = models.CharField(max_length=500, blank=True, null=True)
     comment_updated = models.DateTimeField(blank=True, null=True)
 
 
@@ -347,7 +347,7 @@ class FusionCheck(models.Model):
     fusion_analysis = models.ForeignKey('FusionPanelAnalysis', on_delete=models.CASCADE)
     check_object = models.ForeignKey('Check', on_delete=models.CASCADE)
     decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
-    comment = models.CharField(max_length=500, blank=True, null=True) # TODO - link out to seperate comment model???
+    comment = models.CharField(max_length=500, blank=True, null=True)
     comment_updated = models.DateTimeField(blank=True, null=True)
 
 
