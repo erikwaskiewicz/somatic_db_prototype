@@ -142,6 +142,11 @@ class Variant(models.Model):
     hgvs_c = models.CharField(max_length=200)
     hgvs_p = models.CharField(max_length=200)
 
+    # TODO
+    #class Meta:
+    #    constraints = [
+    #        models.UniqueConstraint(fields=['genomic_37'], name='unique variant')
+    #    ]
 
 class VariantInstance(models.Model):
     """

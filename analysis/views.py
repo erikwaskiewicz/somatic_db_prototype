@@ -10,7 +10,6 @@ from django.template import Context
 
 from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm
 from .models import *
-from .test_data import dummy_dicts
 from .utils import signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info
 
 import json
@@ -121,52 +120,36 @@ def view_samples(request, worksheet_id):
     for the sample
     """
     samples = SampleAnalysis.objects.filter(worksheet = worksheet_id)
+
+    # adds a record for each panel analysis - i.e. if a sample has two panels
+    # it will have two records
     sample_dict = {}
     for s in samples:
         sample_id = s.sample.sample_id
-        checks=s.get_checks()
-        all_checks=checks.get('all_checks')
-        length=len(all_checks)
-        current_check=all_checks[length-1]
-        if (length>1):
-            last_check=all_checks[length-2]
-            last_check_status=last_check.status
-        else:
-            last_check_status="N/A"
 
+        # if there haven't been any panels for the sample yet, add new sample to dict
         if sample_id not in sample_dict.keys():
 
             sample_dict[sample_id] = {
                 'sample_id': sample_id,
                 'dna_rna': s.sample.sample_type,
-                'panels': [
-                    {
-                        'analysis_id': s.pk,
-                        'panel': s.panel.panel_name,
-                        'checks': s.get_checks(),
-                        'last_check': last_check_status,
-                        'current_check': current_check.status
-                    }
-                ]
-            }
-        else:
-            sample_dict[sample_id]['panels'].append(
-                {
+                'panels': [{
                     'analysis_id': s.pk,
                     'panel': s.panel.panel_name,
                     'checks': s.get_checks(),
-                    'last_check': last_check_status
+                }]
+            }
+
+        # if there are already panels for sample, add new panel to sample record
+        else:
+            sample_dict[sample_id]['panels'].append({
+                    'analysis_id': s.pk,
+                    'panel': s.panel.panel_name,
+                    'checks': s.get_checks(),
                 }
             )
 
-
-    context = {
-        'worksheet': worksheet_id,
-        'samples': sample_dict,
-        'unassign_form': UnassignForm(),
-    }
-
-
+    # if unassign modal button is pressed
     if request.method == 'POST':
         if 'unassign' in request.POST:
             unassign_form = UnassignForm(request.POST)
@@ -174,6 +157,14 @@ def view_samples(request, worksheet_id):
                 sample_pk = unassign_form.cleaned_data['unassign']
                 print(sample_pk)
                 # TODO unassign check
+
+    
+    # render context
+    context = {
+        'worksheet': worksheet_id,
+        'samples': sample_dict,
+        'unassign_form': UnassignForm(),
+    }
 
     return render(request, 'analysis/view_samples.html', context)
 
@@ -356,19 +347,37 @@ def analysis_sheet(request, sample_id):
             new_variant_form = NewVariantForm(request.POST)
 
             if new_variant_form.is_valid():
-                # TODO need to program function & make more robust
+                # TODO- this needs more work -hardcoded values and table does not update automatically-page needs to be refreshed
+                new_variant_data = new_variant_form.cleaned_data
 
-                #TODO- this needs more work -hardcoded values and table does not update automatically-page needs to be refreshed
-                new_variant_data=new_variant_form.cleaned_data
-                new_variant_object=Variant(genomic_37=new_variant_data.get("hgvs_g"), hgvs_p=new_variant_data.get("hgvs_p"))
+                # TODO use get or create so we dont have two copoes of the same variant
+                new_variant_object = Variant(
+                    genomic_37=new_variant_data.get("hgvs_g"), 
+                    hgvs_p=new_variant_data.get("hgvs_p"),
+                )
                 new_variant_object.save()
-                new_variant_instance_object=VariantInstance(variant=new_variant_object, sample=sample_obj.sample, vaf=0, total_count=0, alt_count=0, in_ntc=False, manual_upload=True)
+                new_variant_instance_object = VariantInstance(
+                    variant=new_variant_object, 
+                    sample=sample_obj.sample, 
+                    vaf=0, 
+                    total_count=0, 
+                    alt_count=0, 
+                    in_ntc=False, 
+                    manual_upload=True,
+                )
                 new_variant_instance_object.save()
-                new_variant_panel_object=VariantPanelAnalysis(variant_instance=new_variant_instance_object, sample_analysis=sample_obj)
+                new_variant_panel_object = VariantPanelAnalysis(
+                    variant_instance=new_variant_instance_object, 
+                    sample_analysis=sample_obj
+                )
                 new_variant_panel_object.save()
-                new_variant_check_object=VariantCheck(variant_analysis=new_variant_panel_object, check_object=sample_obj.get_checks().get("current_check_object"))
+                new_variant_check_object = VariantCheck(
+                    variant_analysis=new_variant_panel_object, 
+                    check_object=sample_obj.get_checks().get("current_check_object")
+                )
                 new_variant_check_object.save()
 
+                # reload context
                 context['variant_data'] = get_variant_info(sample_data, sample_obj)
 
 
@@ -470,24 +479,7 @@ def analysis_sheet(request, sample_id):
 
                 elif next_step == 'Fail sample':
 
-                    sample_data=context.get('sample_data')
-                    checks=sample_data.get('checks')
-                    check_objects=checks.get('all_checks')
-                    length=len(check_objects)
-                    if (length>1):
-                        last_check=check_objects[length-2]
-                        last_check_status=last_check.status
-                    else: 
-                        last_check_status="N/A"
-
-                    print(last_check_status)
-                    print(current_step)
-                    print(context['sample_data']['checks']['current_check_object'])
-                    print(context['sample_data']['checks']['all_checks'])
-                    
-
-                    # TODO if the status of last check was F complete check otherwise go to another igv check
-                    # TODO other checks on fails???
+                    # TODO other checks on fails??? - will only count total fails, not two in a row/ mixture of fails and passes
 
                     # if failed 1st check, make 2nd check 
                     if current_step == 'IGV check 1':
@@ -513,6 +505,9 @@ def analysis_sheet(request, sample_id):
 
 
 def ajax(request):
+    """
+    Handles the submission of the genuine/ artefact etc dropdown box
+    """
     if request.is_ajax():
 
         sample_pk = request.POST.get('sample_pk')
