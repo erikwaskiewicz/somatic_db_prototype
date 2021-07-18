@@ -7,7 +7,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 
-from .forms import SearchForm, NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, CheckPatientName, FusionCommentForm, SampleCommentForm
+from .forms import SearchForm, NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, CheckPatientName, FusionCommentForm, SampleCommentForm, UnassignForm
 from .models import *
 from .test_data import dummy_dicts
 from .utils import signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info
@@ -129,13 +129,21 @@ def view_samples(request, worksheet_id):
             )
 
 
-
-
     context = {
         'worksheet': worksheet_id,
         'samples': sample_dict,
         'search_form': SearchForm(),
+        'unassign_form': UnassignForm(),
     }
+
+
+    if request.method == 'POST':
+        if 'unassign' in request.POST:
+            unassign_form = UnassignForm(request.POST)
+            if unassign_form.is_valid():
+                sample_pk = unassign_form.cleaned_data['unassign']
+                print(sample_pk)
+                # TODO unassign check
 
     return render(request, 'analysis/view_samples.html', context)
 

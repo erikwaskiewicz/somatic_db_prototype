@@ -32,6 +32,21 @@ class SearchForm(forms.Form):
         )
 
 
+class UnassignForm(forms.Form):
+    """
+    Search bar for home page
+    """
+    unassign = forms.CharField(widget=forms.HiddenInput(), required=False)   #widget=forms.HiddenInput(), 
+
+    def __init__(self, *args, **kwargs):
+        super(UnassignForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', "I'm sure", css_class='btn btn-danger w-100')
+        )
+
+
 class NewVariantForm(forms.Form):
     """
     """

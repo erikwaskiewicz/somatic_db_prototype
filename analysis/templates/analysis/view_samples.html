@@ -31,7 +31,7 @@
       {% for sample, sample_info in samples.items %}
         {% for analysis in sample_info.panels %}
         <tr>
-          <td>{{ sample}}</td>
+          <td>{{ sample }}</td>
           <td>{{ sample_info.dna_rna }}</td>
           <td>{{ analysis.panel }}</td>
           <td>{{ analysis.checks.current_status }}</td>
@@ -43,40 +43,26 @@
 
             {% elif 'Fail' in analysis.checks.current_status %}
               {% if analysis.checks.current_status == 'Fail' %}
-              <div class="btn-group btn-block">
-              <a class="btn btn-danger btn-block" href="" role="button">
-                Fail
-              </a>
-              <button type="button btn-block" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="sr-only">Toggle Dropdown</span>
-              </button>
-              <div class="dropdown-menu">
-                <a class="dropdown-item" href="{% url 'analysis_sheet' analysis.analysis_id %}">View</a>
-              </div>
+              <a class="btn btn-danger btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">Fail</a>
 
               {% elif analysis.checks.current_status == 'Fail - 2nd check required' %}
-              <a class="btn btn-warning btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}" role="button">Failed (check required)</a>
-              {% endif %}
+              <a class="btn btn-warning btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}" role="button">Fail (check required)</a>
 
+              {% endif %}
 
             {% elif analysis.checks.assigned_to == None %}
             <a class="btn btn-success btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}" role="button">Assign to me & analyse</a>
 
-
-            
-
-
             {% elif analysis.checks.assigned_to != request.user %}
             <div class="btn-group btn-block">
-              <a class="btn btn-light btn-block btn-disabled" href="#" role="button">
-                Assigned to {{ analysis.checks.assigned_to }}
-              </a>
+              <a class="btn btn-light btn-block btn-disabled" href="#" role="button">Assigned to {{ analysis.checks.assigned_to }}</a>
               <button type="button btn-block" class="btn btn-light dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
               <div class="dropdown-menu">
-                <a class="dropdown-item" href="#">Reassign</a>
-                <!-- TODO - open a modal that allows you to change user/ unassign user -->
+                <a class="dropdown-item" data-toggle="modal" data-target="#unassign-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.assigned_to }}" data-status="{{ analysis.checks.current_status }}">
+                  Unassign
+                </a>
               </div>
             </div>
 
@@ -89,11 +75,12 @@
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
               <div class="dropdown-menu">
-                <a class="dropdown-item" href="#">Reassign</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Change analysis</a>
+                <a class="dropdown-item" data-toggle="modal" data-target="#unassign-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.assigned_to }}" data-status="{{ analysis.checks.current_status }}">
+                  Unassign
+                </a>
               </div>
             </div>
+
             {% endif %}
           </td>
         </tr>
@@ -105,6 +92,54 @@
   <br>
 
 </div>
+
+
+<!-- Unassign modal -->
+<div class="modal fade" id="unassign-modal" tabindex="-1" role="dialog" aria-labelledby="unassign-modal-label" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="unassign-modal-label">Unassign analysis</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger">
+          <strong>Warning!</strong> Are you sure you want to continue?<br>
+          Unassigning a user will reset any decisions and comments from the current check 
+        </div>
+
+        <table class="table table-sm table-striped table-hover">
+          <tbody>        
+            <tr>
+              <th>Sample</td>
+              <td class="modal-sample"></td>
+            </tr>
+            <tr>
+              <th>Panel</td>
+              <td class="modal-panel"></td>
+            </tr>
+            <tr>
+              <th>Current check</td>
+              <td class="modal-status"></td>
+            </tr>
+            <tr>
+              <th>Assigned to</td>
+              <td class="modal-assigned"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        {% crispy unassign_form %}
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 
 <script>
     $(document).ready( function() {
@@ -133,6 +168,27 @@
             },
         });
     } );
+
+    // pull analysis PK into the unnassign modal
+    $('#unassign-modal').on('show.bs.modal', function (event) {
+        // extract variables from button tags
+        var button = $(event.relatedTarget);
+        var pk = button.data('pk');
+        var sample = button.data('sample');
+        var panel = button.data('panel');
+        var status = button.data('status');
+        var assigned = button.data('user');
+        var modal = $(this);
+
+        // fill out table of sample details
+        modal.find('.modal-sample').text(sample);
+        modal.find('.modal-panel').text(panel);
+        modal.find('.modal-status').text(status);
+        modal.find('.modal-assigned').text(assigned);
+
+        // put sample PK into hidden form so that it can be passed to backend
+        document.getElementById ('id_unassign').value = pk;
+    })
 </script>
 
 {% endblock %}
