@@ -1,5 +1,5 @@
 from .models import *
-from .forms import SearchForm, NewVariantForm, SubmitForm, VariantCommentForm, FusionCommentForm
+from .forms import NewVariantForm, SubmitForm, VariantCommentForm, FusionCommentForm
 
 from django.utils import timezone
 

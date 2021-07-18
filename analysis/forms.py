@@ -4,34 +4,6 @@ from crispy_forms.layout import Layout, Submit
 from crispy_forms.bootstrap import Field, FieldWithButtons, StrictButton
 
 
-class SearchForm(forms.Form):
-    """
-    Search bar for home page
-    """
-    search_text = forms.CharField()
-
-    def __init__(self, *args, **kwargs):
-        super(SearchForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_id = 'search-form'
-        self.helper.form_show_labels = False
-        self.helper.form_method = 'POST'
-        self.helper.layout = Layout(
-            FieldWithButtons(
-                Field(
-                    'search_text', 
-                    placeholder='Start typing a sample or worksheet ID...'
-                ), 
-                StrictButton(
-                    '<span class="fa fa-search"></span>', 
-                    css_class='btn-secondary', 
-                    type='submit', 
-                    name='home-search-form'
-                )
-            )
-        )
-
-
 class UnassignForm(forms.Form):
     """
     Search bar for home page
@@ -179,23 +151,6 @@ class UpdatePatientName(forms.Form):
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-25')
         )
-
-
-class CheckPatientName(forms.Form):
-    """
-    """
-    name_checked = forms.BooleanField(required=True)
-    checker_comment = forms.CharField(
-        widget=forms.Textarea(attrs={'rows': 3}),
-        required=False,
-    )
-
-    def __init__(self, *args, **kwargs):
-
-        super(CheckPatientName, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-success'))
-
 
 
 class CoverageCheckForm(forms.Form):

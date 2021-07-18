@@ -7,7 +7,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 
-from .forms import SearchForm, NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, CheckPatientName, FusionCommentForm, SampleCommentForm, UnassignForm
+from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm
 from .models import *
 from .test_data import dummy_dicts
 from .utils import signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info
@@ -77,7 +77,6 @@ def view_worksheets(request):
 
     context = {
         'worksheets': ws_list,
-        'search_form': SearchForm(),
     }
 
     return render(request, 'analysis/view_worksheets.html', context)
@@ -132,7 +131,6 @@ def view_samples(request, worksheet_id):
     context = {
         'worksheet': worksheet_id,
         'samples': sample_dict,
-        'search_form': SearchForm(),
         'unassign_form': UnassignForm(),
     }
 
@@ -178,7 +176,6 @@ def analysis_sheet(request, sample_id):
         'new_variant_form': NewVariantForm(),
         'submit_form': SubmitForm(),
         'update_name_form': UpdatePatientName(),
-        'check_name_form': CheckPatientName(),
         'sample_comment_form': SampleCommentForm(
             comment=current_step_obj.overall_comment,
             info_check=current_step_obj.patient_info_check,
@@ -239,14 +236,6 @@ def analysis_sheet(request, sample_id):
                 Sample.objects.filter(pk=sample_obj.sample.pk).update(sample_name=new_name)
                 sample_obj = SampleAnalysis.objects.get(pk = sample_id)
                 context['sample_data'] = get_sample_info(sample_obj)
-
-        #check patient name update button
-        if 'checker_comment' in request.POST:
-            check_name_form = CheckPatientName(request.POST)
-
-            if check_name_form.is_valid():
-                checker_comment = check_name_form.cleaned_data['checker_comment']
-                Sample.objects.filter(pk=sample_obj.sample.pk).update(sample_name_check=True)
 
         # comments submit button
         if 'variant_comment' in request.POST:
