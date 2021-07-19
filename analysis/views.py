@@ -426,72 +426,72 @@ def analysis_sheet(request, sample_id):
                 if current_step_obj.patient_info_check == False:
                     context['warning'].append('Did not finalise check - check patient demographics before continuing')
 
-                if next_step == 'Complete check':
+                # only enter this loop if there are no warnings so far, otherwise the warnings above get skipped
+                if len(context['warning']) == 0:
+                    if next_step == 'Complete check':
+
+                        # if 1st IGV, make 2nd IGV
+                        if current_step == 'IGV check 1':
+                            if signoff_check(request.user, current_step_obj, sample_obj):
+                                make_next_check(sample_obj, 'IGV')
+                                return redirect('view_samples', sample_data['worksheet_id'])
+                            else:
+                                context['warning'].append('Did not finalise check - not all variant have been checked')
+                            
+                        # if 2nd IGV (or 3rd...)
+                        else:
+                            # Check whether the last two checkers disagree
+                            variants_match = True
+                            non_matching_variants = []
+
+                            if sample_data['dna_or_rna'] == 'DNA':
+                                for variant in context['variant_data']['variant_calls']:
+                                    if not variant['latest_checks_agree']:
+                                        variants_match = False
+                                        non_matching_variants.append(variant['genomic'])
+
+                            elif sample_data['dna_or_rna'] == 'RNA':
+                                for fusion in context['fusion_data']['fusion_calls']:
+                                    if not fusion['latest_checks_agree']:
+                                        variants_match = False
+                                        non_matching_variants.append(fusion['fusion_genes'])
+
+                            if not variants_match:
+                                warning_text = ', '.join(non_matching_variants)
+                                context['warning'].append(f'Did not finalise check - the last two checkers dont agree for the following variants: {warning_text}')
+                            
+                            elif signoff_check(request.user, current_step_obj, sample_obj):
+                                return redirect('view_samples', sample_data['worksheet_id'])
+                            else:
+                                context['warning'].append('Did not finalise check - not all variants have been checked')
+
+                                # TODO - error if there aren't at least two classifications per variant?
 
 
-                    # if 1st IGV, make 2nd IGV
-                    if current_step == 'IGV check 1':
+                    elif next_step == 'Request extra check':
+
+                        # make extra IGV check
                         if signoff_check(request.user, current_step_obj, sample_obj):
                             make_next_check(sample_obj, 'IGV')
                             return redirect('view_samples', sample_data['worksheet_id'])
                         else:
-                            context['warning'].append('Did not finalise check - not all variant have been checked')
-                        
-                    # if 2nd IGV (or 3rd...)
-                    else:
-                        # Check whether the last two checkers disagree
-                        variants_match = True
-                        non_matching_variants = []
-
-                        if sample_data['dna_or_rna'] == 'DNA':
-                            for variant in context['variant_data']['variant_calls']:
-                                if not variant['latest_checks_agree']:
-                                    variants_match = False
-                                    non_matching_variants.append(variant['genomic'])
-
-                        elif sample_data['dna_or_rna'] == 'RNA':
-                            for fusion in context['fusion_data']['fusion_calls']:
-                                if not fusion['latest_checks_agree']:
-                                    variants_match = False
-                                    non_matching_variants.append(fusion['fusion_genes'])
-
-                        if not variants_match:
-                            warning_text = ', '.join(non_matching_variants)
-                            context['warning'].append(f'Did not finalise check - the last two checkers dont agree for the following variants: {warning_text}')
-                        
-                        elif signoff_check(request.user, current_step_obj, sample_obj):
-                            return redirect('view_samples', sample_data['worksheet_id'])
-                        else:
                             context['warning'].append('Did not finalise check - not all variants have been checked')
 
-                            # TODO - error if there aren't at least two classifications per variant?
 
+                    elif next_step == 'Fail sample':
 
-                elif next_step == 'Request extra check':
+                        # TODO other checks on fails??? - will only count total fails, not two in a row/ mixture of fails and passes
 
-                    # make extra IGV check
-                    if signoff_check(request.user, current_step_obj, sample_obj):
-                        make_next_check(sample_obj, 'IGV')
-                        return redirect('view_samples', sample_data['worksheet_id'])
-                    else:
-                        context['warning'].append('Did not finalise check - not all variants have been checked')
+                        # if failed 1st check, make 2nd check 
+                        if current_step == 'IGV check 1':
+                            signoff_check(request.user, current_step_obj, sample_obj, 'F')
+                            make_next_check(sample_obj, 'IGV')
+                            return redirect('view_samples', sample_data['worksheet_id'])
 
-
-                elif next_step == 'Fail sample':
-
-                    # TODO other checks on fails??? - will only count total fails, not two in a row/ mixture of fails and passes
-
-                    # if failed 1st check, make 2nd check 
-                    if current_step == 'IGV check 1':
-                        signoff_check(request.user, current_step_obj, sample_obj, 'F')
-                        make_next_check(sample_obj, 'IGV')
-                        return redirect('view_samples', sample_data['worksheet_id'])
-
-                    # otherwise sign off and make sample failed
-                    else:
-                        signoff_check(request.user, current_step_obj, sample_obj, 'F')
-                        return redirect('view_samples', sample_data['worksheet_id'])
-
+                        # otherwise sign off and make sample failed
+                        else:
+                            signoff_check(request.user, current_step_obj, sample_obj, 'F')
+                            return redirect('view_samples', sample_data['worksheet_id'])
 
 
     # render the pages
