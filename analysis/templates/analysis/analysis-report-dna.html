@@ -45,6 +45,7 @@
       <th scope="col">HGVSp</th>
       <th scope="col">VAF</th>
       <th scope="col">IGV</th>
+      <th scope="col">Comments</th>
     </tr>
   </thead>
 
@@ -60,6 +61,11 @@
       <td>{{ v.hgvs_p }}</td>
       <td>{{ v.vaf.vaf }}%</td>
       <td>{{ v.final_decision }}</td>
+      <td>
+      {% for c in v.comments %}
+        {{ c.user }}-{{ c.comment }}<br>
+      {% endfor %}
+      </td>
     </tr>
     {% endif %}
 
