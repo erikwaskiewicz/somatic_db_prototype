@@ -27,8 +27,8 @@ class NewVariantForm(forms.Form):
     hgvs_p = forms.CharField()
     gene = forms.CharField()
     exon = forms.CharField(required=False)
-    alt = forms.IntegerField()
-    ref = forms.IntegerField()
+    alt_reads = forms.IntegerField()
+    total_reads = forms.IntegerField()
 
     def __init__(self, *args, **kwargs):
         super(NewVariantForm, self).__init__(*args, **kwargs)
@@ -38,7 +38,6 @@ class NewVariantForm(forms.Form):
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-25')
         )
-
 
 
 class SubmitForm(forms.Form):

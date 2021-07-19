@@ -120,6 +120,7 @@ def view_samples(request, worksheet_id):
     for the sample
     """
     samples = SampleAnalysis.objects.filter(worksheet = worksheet_id)
+    unassign_form = UnassignForm()
 
     # adds a record for each panel analysis - i.e. if a sample has two panels
     # it will have two records
@@ -163,7 +164,7 @@ def view_samples(request, worksheet_id):
     context = {
         'worksheet': worksheet_id,
         'samples': sample_dict,
-        'unassign_form': UnassignForm(),
+        'unassign_form': unassign_form,
     }
 
     return render(request, 'analysis/view_samples.html', context)
@@ -350,6 +351,9 @@ def analysis_sheet(request, sample_id):
                 # TODO- this needs more work -hardcoded values and table does not update automatically-page needs to be refreshed
                 new_variant_data = new_variant_form.cleaned_data
 
+                vaf = int((new_variant_data['alt_reads'] / new_variant_data['total_reads']) * 100)
+                print(vaf)
+
                 # TODO use get or create so we dont have two copoes of the same variant
                 new_variant_object = Variant(
                     genomic_37=new_variant_data.get("hgvs_g"), 
@@ -359,9 +363,9 @@ def analysis_sheet(request, sample_id):
                 new_variant_instance_object = VariantInstance(
                     variant=new_variant_object, 
                     sample=sample_obj.sample, 
-                    vaf=0, 
-                    total_count=0, 
-                    alt_count=0, 
+                    vaf=vaf, 
+                    total_count=new_variant_data['total_reads'], 
+                    alt_count=new_variant_data['alt_reads'], 
                     in_ntc=False, 
                     manual_upload=True,
                 )
