@@ -109,6 +109,11 @@
       <td>{{ v.transcript }} {{ v.hgvs_c }} ({{ v.hgvs_p }})</td>
       <td>{{ v.vaf.vaf }}%</td>
       <td>{{ v.final_decision }}</td>
+      <td>
+      {% for c in v.comments %}
+        {{ c.user }}-{{ c.comment }}<br>
+      {% endfor %}
+      </td>
     {% endif %}
     </tr>
     {% endfor %}
