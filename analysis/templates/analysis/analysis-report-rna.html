@@ -47,11 +47,6 @@
       <th scope="col">Right breakpoint</th>
       <th scope="col">IGV</th>
       <th scope="col">Comments</th>
-      <td>
-      {% for c in v.comments %}
-        {{ c.user }}-{{ c.comment }}<br>
-      {% endfor %}
-      </td>
     </tr>
   </thead>
 
@@ -68,6 +63,11 @@
       <td>{{ v.left_breakpoint }}</td>
       <td>{{ v.right_breakpoint }}</td>
       <td>{{ v.final_decision }}</td>
+      <td>
+      {% for c in v.comments %}
+        {{ c.user }}-{{ c.comment }}<br>
+      {% endfor %}
+      </td>
       <td></td>
     </tr>
     {% endif %}
