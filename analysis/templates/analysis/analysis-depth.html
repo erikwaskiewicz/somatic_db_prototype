@@ -74,7 +74,13 @@
               {% for r in v.regions %}
                 <tr>
                   <td>{{ r.hgvs_c }}</td>
-                  <td>Hotspot</td>
+                  <td>
+                    {% if r.hotspot_or_genescreen == 'Hotspot' %}
+                    <button class="btn btn-sm btn-warning">Hotspot</button>
+                    {% elif r.hotspot_or_genescreen == 'Genescreen' %}
+                    <button class="btn btn-sm btn-info">Genescreen</button>
+                    {% endif %}
+                  </td>
                   <td>{{ r.average_coverage }}</td>
                   <td>
                     {{ r.percent_135x}}
@@ -106,7 +112,7 @@
             </table>
             <br>
             
-            <p><b>Gaps 270X</b></p>
+            <p><b>Hotspot gaps at 270X</b></p>
             {% if v.gaps_270 %}
             <table class="table table-hover table-bordered">
               <thead>
@@ -129,13 +135,13 @@
 
             {% else %}
             <div class="alert alert-success">
-              No gaps at 270X
+              No hotspot gaps at 270X
             </div>
             
             {% endif %}
 
 
-            <p><b>Gaps 135X</b></p>
+            <p><b>Hotspot gaps at 135X</b></p>
             {% if v.gaps_135 %}
             <table class="table table-hover table-bordered">
               <thead>
@@ -158,7 +164,7 @@
 
             {% else %}
             <div class="alert alert-success">
-              No gaps at 135X
+              No hotspot gaps at 135X
             </div>
 
             {% endif %}

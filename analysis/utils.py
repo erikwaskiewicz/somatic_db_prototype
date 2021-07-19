@@ -291,6 +291,7 @@ def get_coverage_data(sample_obj):
             regions_dict = {
                 'hgvs_c': region.hgvs_c,
                 'average_coverage': region.average_coverage,
+                'hotspot_or_genescreen': region.get_hotspot_display(),
                 'percent_135x': region.percent_135x,
                 'percent_270x': region.percent_270x,
                 'ntc_coverage': region.ntc_coverage,
