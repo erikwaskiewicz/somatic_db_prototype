@@ -20,14 +20,14 @@
       <td>{{ region }}<br><br></td>
       <td>{{ v.av_coverage }}</td>
       <td>
-        {{ v.percent_270x }}
-        {% if v.percent_270x != 100 %}
+        {{ v.percent_135x }}
+        {% if v.percent_135x != 100 %}
         <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
         {% endif %}
       </td>
       <td>
-        {{ v.percent_135x }}
-        {% if v.percent_135x != 100 %}
+        {{ v.percent_270x }}
+        {% if v.percent_270x != 100 %}
         <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
         {% endif %}
       </td>
