@@ -132,7 +132,7 @@ class Variant(models.Model):
     """
     Variant info that always stays the same
     TODO - ?extract gene/ exon etc into own model
-
+    TODO - drop transcript field - its in HGVSc/p
     """
     genomic_37 = models.CharField(max_length=200)
     genomic_38 = models.CharField(max_length=200, blank=True, null=True)

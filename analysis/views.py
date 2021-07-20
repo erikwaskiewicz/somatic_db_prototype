@@ -349,15 +349,20 @@ def analysis_sheet(request, sample_id):
 
             if new_variant_form.is_valid():
                 # TODO- this needs more work -hardcoded values and table does not update automatically-page needs to be refreshed
+                # TODO - hvs_c, gene and exon aren't pulled in
                 new_variant_data = new_variant_form.cleaned_data
 
                 vaf = int((new_variant_data['alt_reads'] / new_variant_data['total_reads']) * 100)
-                print(vaf)
 
                 # TODO use get or create so we dont have two copoes of the same variant
                 new_variant_object = Variant(
-                    genomic_37=new_variant_data.get("hgvs_g"), 
-                    hgvs_p=new_variant_data.get("hgvs_p"),
+                    genomic_37=new_variant_data['hgvs_g'],
+                    genomic_38 = None,
+                    gene = new_variant_data['gene'],
+                    exon = new_variant_data['exon'],
+                    transcript = '-',
+                    hgvs_c = new_variant_data['hgvs_c'],
+                    hgvs_p=new_variant_data['hgvs_p'],
                 )
                 new_variant_object.save()
                 new_variant_instance_object = VariantInstance(
@@ -366,7 +371,7 @@ def analysis_sheet(request, sample_id):
                     vaf=vaf, 
                     total_count=new_variant_data['total_reads'], 
                     alt_count=new_variant_data['alt_reads'], 
-                    in_ntc=False, 
+                    in_ntc=new_variant_data['in_ntc'], 
                     manual_upload=True,
                 )
                 new_variant_instance_object.save()
@@ -377,7 +382,7 @@ def analysis_sheet(request, sample_id):
                 new_variant_panel_object.save()
                 new_variant_check_object = VariantCheck(
                     variant_analysis=new_variant_panel_object, 
-                    check_object=sample_obj.get_checks().get("current_check_object")
+                    check_object=sample_obj.get_checks().get('current_check_object')
                 )
                 new_variant_check_object.save()
 
