@@ -82,7 +82,7 @@
       {% endif %}
 
       <td>
-        <button type="button" data-toggle="modal" data-target="#comments-modal"
+        <button type="button" data-toggle="modal" data-target="#comments-modal-{{ v.pk }}"
         {% if v.comments %}
         class="btn btn-warning">
         {% else %}
@@ -109,7 +109,7 @@
 {% for v in fusion_data.fusion_calls %}
 
 <!-- Comments Modal -->
-<div class="modal fade" id="comments-modal" tabindex="-1" role="dialog" aria-labelledby="comments-modal-label" aria-hidden="true">
+<div class="modal fade" id="comments-modal-{{ v.pk }}" tabindex="-1" role="dialog" aria-labelledby="comments-modal-label" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -159,26 +159,6 @@
   </div>
 </div>
 {% endfor %}
-
-<!-- Add variant modal -->
-<div class="modal fade" id="add-variant-modal" tabindex="-1" role="dialog" aria-labelledby="add-variant-modalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="add-variant-modalLabel">Add new variant</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-
-        {% crispy new_variant_form %}
-
-      </div>
-
-    </div>
-  </div>
-</div>
 
 
 
