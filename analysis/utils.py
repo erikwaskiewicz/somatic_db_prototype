@@ -3,6 +3,111 @@ from .forms import NewVariantForm, SubmitForm, VariantCommentForm, FusionComment
 
 from django.utils import timezone
 
+
+def link_callback(uri, rel):
+    """
+    Convert HTML URIs to absolute system paths so xhtml2pdf can access those
+    resources 
+    taken straight from https://xhtml2pdf.readthedocs.io/en/latest/usage.html#using-xhtml2pdf-in-django
+    """
+    result = finders.find(uri)
+    if result:
+            if not isinstance(result, (list, tuple)):
+                    result = [result]
+            result = list(os.path.realpath(path) for path in result)
+            path=result[0]
+    else:
+            sUrl = settings.STATIC_URL        # Typically /static/
+            sRoot = settings.STATIC_ROOT      # Typically /home/userX/project_static/
+            mUrl = settings.MEDIA_URL         # Typically /media/
+            mRoot = settings.MEDIA_ROOT       # Typically /home/userX/project_static/media/
+
+            if uri.startswith(mUrl):
+                    path = os.path.join(mRoot, uri.replace(mUrl, ""))
+            elif uri.startswith(sUrl):
+                    path = os.path.join(sRoot, uri.replace(sUrl, ""))
+            else:
+                    return uri
+
+    # make sure that file exists
+    if not os.path.isfile(path):
+            raise Exception(
+                    'media URI must start with %s or %s' % (sUrl, mUrl)
+            )
+    return path
+
+    
+def get_samples(samples):
+    """
+    """
+    # adds a record for each panel analysis - i.e. if a sample has two panels
+    # it will have two records
+    sample_dict = {}
+    for s in samples:
+        sample_id = s.sample.sample_id
+
+        # if there haven't been any panels for the sample yet, add new sample to dict
+        if sample_id not in sample_dict.keys():
+
+            sample_dict[sample_id] = {
+                'sample_id': sample_id,
+                'dna_rna': s.sample.sample_type,
+                'panels': [{
+                    'analysis_id': s.pk,
+                    'panel': s.panel.panel_name,
+                    'checks': s.get_checks(),
+                }]
+            }
+
+        # if there are already panels for sample, add new panel to sample record
+        else:
+            sample_dict[sample_id]['panels'].append({
+                    'analysis_id': s.pk,
+                    'panel': s.panel.panel_name,
+                    'checks': s.get_checks(),
+                }
+            )
+
+    return sample_dict
+
+
+def unassign_check(sample_analysis_obj):
+    """
+    TODO - transcactions.atomic
+    """
+    # get latest check  
+    latest_check = sample_analysis_obj.get_checks()['current_check_object']
+
+    # reset check
+    latest_check.user = None
+    latest_check.coverage_ntc_check = False
+    latest_check.coverage_comment = ''
+    latest_check.coverage_comment_updated = None
+    latest_check.patient_info_check = False
+    latest_check.overall_comment = ''
+    latest_check.overall_comment_updated = None
+    latest_check.signoff_time = None
+    latest_check.save()
+    
+    # get dna variant checks and reset
+    variant_checks = VariantCheck.objects.filter(check_object=latest_check)
+    for c in variant_checks:
+        c.decision = '-'
+        c.comment = ''
+        c.comment_updated = None
+        c.save()
+
+    # get rna variant checks and reset
+    fusion_checks = FusionCheck.objects.filter(check_object=latest_check)
+    for c in fusion_checks:
+        c.decision = '-'
+        c.comment = ''
+        c.comment_updated = None
+        c.save()
+
+    return True
+
+
 # TODO make sure that nothing gets saved to db if there's an error -- ? transaction.atomic
 def signoff_check(user, current_step_obj, sample_obj, status='C'):
     """

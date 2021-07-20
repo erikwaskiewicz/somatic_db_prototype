@@ -10,44 +10,12 @@ from django.template import Context
 
 from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm
 from .models import *
-from .utils import signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info
+from .utils import link_callback, get_samples, unassign_check, signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info
 
 import json
 import os
 
 from xhtml2pdf import pisa 
-
-def link_callback(uri, rel):
-    """
-    Convert HTML URIs to absolute system paths so xhtml2pdf can access those
-    resources 
-    taken straight from https://xhtml2pdf.readthedocs.io/en/latest/usage.html#using-xhtml2pdf-in-django
-    """
-    result = finders.find(uri)
-    if result:
-            if not isinstance(result, (list, tuple)):
-                    result = [result]
-            result = list(os.path.realpath(path) for path in result)
-            path=result[0]
-    else:
-            sUrl = settings.STATIC_URL        # Typically /static/
-            sRoot = settings.STATIC_ROOT      # Typically /home/userX/project_static/
-            mUrl = settings.MEDIA_URL         # Typically /media/
-            mRoot = settings.MEDIA_ROOT       # Typically /home/userX/project_static/media/
-
-            if uri.startswith(mUrl):
-                    path = os.path.join(mRoot, uri.replace(mUrl, ""))
-            elif uri.startswith(sUrl):
-                    path = os.path.join(sRoot, uri.replace(sUrl, ""))
-            else:
-                    return uri
-
-    # make sure that file exists
-    if not os.path.isfile(path):
-            raise Exception(
-                    'media URI must start with %s or %s' % (sUrl, mUrl)
-            )
-    return path
     
 
 def signup(request):
@@ -120,51 +88,30 @@ def view_samples(request, worksheet_id):
     for the sample
     """
     samples = SampleAnalysis.objects.filter(worksheet = worksheet_id)
-    unassign_form = UnassignForm()
-
-    # adds a record for each panel analysis - i.e. if a sample has two panels
-    # it will have two records
-    sample_dict = {}
-    for s in samples:
-        sample_id = s.sample.sample_id
-
-        # if there haven't been any panels for the sample yet, add new sample to dict
-        if sample_id not in sample_dict.keys():
-
-            sample_dict[sample_id] = {
-                'sample_id': sample_id,
-                'dna_rna': s.sample.sample_type,
-                'panels': [{
-                    'analysis_id': s.pk,
-                    'panel': s.panel.panel_name,
-                    'checks': s.get_checks(),
-                }]
-            }
-
-        # if there are already panels for sample, add new panel to sample record
-        else:
-            sample_dict[sample_id]['panels'].append({
-                    'analysis_id': s.pk,
-                    'panel': s.panel.panel_name,
-                    'checks': s.get_checks(),
-                }
-            )
+    sample_dict = get_samples(samples)
 
     # if unassign modal button is pressed
     if request.method == 'POST':
         if 'unassign' in request.POST:
             unassign_form = UnassignForm(request.POST)
             if unassign_form.is_valid():
+                # get sample analysis pk from form
                 sample_pk = unassign_form.cleaned_data['unassign']
-                print(sample_pk)
-                # TODO unassign check
+                sample_analysis_obj = SampleAnalysis.objects.get(pk=sample_pk)
+
+                # get latest check and reset
+                unassign_check(sample_analysis_obj)
+
+                # reload context
+                samples = SampleAnalysis.objects.filter(worksheet = worksheet_id)
+                sample_dict = get_samples(samples)
 
     
     # render context
     context = {
         'worksheet': worksheet_id,
         'samples': sample_dict,
-        'unassign_form': unassign_form,
+        'unassign_form': UnassignForm(),
     }
 
     return render(request, 'analysis/view_samples.html', context)
