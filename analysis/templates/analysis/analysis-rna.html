@@ -1,21 +1,29 @@
 {% load crispy_forms_tags %}
+{% load humanize %}
 
+<div class="container">
+  <div class="row">
+    <div class="col-6">
+      {% if sample_data.total_reads >= 9000000 %}
+      <div class="alert alert-success">
+    
+      {% else %}
+      <div class="alert alert-danger">
+      
+      {% endif %}
+        <p><b>Number of reads in sample:</b> {{ sample_data.total_reads | intcomma }} </p>
+      </div>
 
-{% if sample_data.total_reads  >= 9000000 %}
-    <div class="alert alert-success w-25">
-    <p><b>Number of reads:</b> {{ sample_data.total_reads }} </p>
     </div>
-    <br>
-{% else %}
-    <div class="alert alert-danger w-25">
-    <p><b>Number of reads</b> {{ sample_data.total_reads }} </p>
+    <div class="col-6">
+      <div class="alert alert-secondary">
+        <p><b>Number of reads in NTC:</b> {{ sample_data.total_reads_ntc | intcomma }}  ({{ sample_data.percent_reads_ntc }}%)</p>
+      </div>
     </div>
-    <br>
+  </div>
+</div>
+<br>
 
-{% endif %}
-
-<p><b>Number of reads in NTC:</b> {{ sample_data.total_reads_ntc }} </p>
-<p><b>Percentage of reads in NTC:</b> {{ sample_data.percent_reads_ntc }} </p>
 
 <table id="fusions-table" class="table table-striped table-hover">
   <thead>
