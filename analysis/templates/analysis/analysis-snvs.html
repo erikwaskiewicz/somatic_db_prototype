@@ -25,8 +25,8 @@
     <tr>
       <td class="variant-pk" style="display:none">{{ v.pk }}</td>
       <td>
-        <p style="display:inline" >{{ v.genomic }}</p><p style="display:none" id="igv">{{ v.igv_coords }}</p>
-        <button class="btn btn-sm btn-info" onclick="copyToClipboard('#igv')"><span class="fa fa-copy"></span></button>
+        <p style="display:inline" >{{ v.genomic }}</p><p style="display:none" id="igv-{{ v.pk }}">{{ v.igv_coords }}</p>
+        <button class="btn btn-sm btn-info" onclick="copyToClipboard('#igv-{{ v.pk }}')"><span class="fa fa-copy"></span></button>
         {% if v.manual_upload %}
         <button class="btn btn-sm btn-warning"><b>Manual</b></button>
         {% endif %}

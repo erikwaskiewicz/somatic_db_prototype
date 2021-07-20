@@ -25,7 +25,7 @@
       <th scope="col">Fusion supporting reads</th>
       <th scope="col">Left breakpoint</th>
       <th scope="col">Right breakpoint</th>
-      <th scope="col">This run</th>
+      <th scope="col">NTC</th>
       <th scope="col">IGV</th>
       {% if 'IGV' in sample_data.checks.current_status %}
       <th scope="col">Action</th>
@@ -40,14 +40,14 @@
     <tr>
       <td class="variant-pk" style="display:none">{{ v.pk }}</td>
       <td>
-        <p style="display:inline" id="igv">{{ v.fusion_genes }} </p><button class="btn btn-sm btn-info" onclick="copyToClipboard('#igv')"><span class="fa fa-copy"></span></button>
+        <p style="display:inline" id="igv-{{ v.pk }}">{{ v.fusion_genes }} </p><button class="btn btn-sm btn-info" onclick="copyToClipboard('#igv-{{ v.pk }}')"><span class="fa fa-copy"></span></button>
       </td>
       <td>{{ v.fusion_hgvs }}</td>
       <td>{{ v.fusion_supporting_reads }}</td>
       <td>{{ v.left_breakpoint }}</td>
       <td>{{ v.right_breakpoint }}</td>
       <td>
-        {{ v.this_run.count }} of {{ v.this_run.total }} samples<br>
+        <!--{{ v.this_run.count }} of {{ v.this_run.total }} samples<br>-->
         
         {% if v.this_run.ntc %}
         <b>Present in NTC</b> <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
@@ -235,16 +235,3 @@
       });
     })
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
