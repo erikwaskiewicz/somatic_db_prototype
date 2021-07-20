@@ -83,6 +83,7 @@
         <thead>
           <tr>
             <th scope="col">Gene</th>
+            <th scope="col">Average coverage</th>
             <th scope="col">Percent 135X</th>
             <th scope="col">Percent 270X</th>
           </tr>
@@ -92,6 +93,7 @@
           {% for gene, values in coverage_data.items %}
           <tr>
             <td>{{ gene }}</td>
+            <td>{{ values.av_coverage }}</td>
             <td>{{ values.percent_135x }}</td>
             <td>{{ values.percent_270x }}</td>
           </tr>
@@ -115,8 +117,8 @@
           {% for gene, values in coverage_data.items %}
             {% for gap in values.gaps_270 %}
             <tr>
-              <td>{{ gene }} {{ gap.hgvs_c }}</td>
-              <td>{{ gap.cosmic }}</td>
+              <td>{{ gap.hgvs_c }}</td>
+              <td>N/A</td>
             </tr>
             {% endfor %}
           {% endfor %}
@@ -139,8 +141,8 @@
           {% for gene, values in coverage_data.items %}
             {% for gap in values.gaps_135 %}
             <tr>
-              <td>{{ gene }} {{ gap.hgvs_c }}</td>
-              <td>{{ gap.cosmic }}</td>
+              <td>{{ gap.hgvs_c }}</td>
+              <td>N/A</td>
             </tr>
             {% endfor %}
           {% endfor %}

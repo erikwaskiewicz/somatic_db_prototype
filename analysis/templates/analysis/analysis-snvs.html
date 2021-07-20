@@ -8,7 +8,7 @@
       <th scope="col">Gene</th>
       <th scope="col">HGVS</th>
       <th scope="col">VAF</th>
-      <th scope="col">This run</th>
+      <th scope="col">NTC</th>
       <th scope="col">Previously classed</th>
       <!--<th scope="col">Previously seen</th>-->
       <th scope="col">IGV</th>
@@ -35,7 +35,7 @@
       <td>{{ v.hgvs_c }}<br>{{ v.hgvs_p }}</td>
       <td>{{ v.vaf.vaf }}%<br>{{ v.vaf.alt_count }} of {{ v.vaf.total_count }} reads</td>
       <td>
-        {{ v.this_run.count }} of {{ v.this_run.total }} samples<br>
+        <!--{{ v.this_run.count }} of {{ v.this_run.total }} samples<br>-->
 
         {% if v.this_run.ntc %}
         <b>Present in NTC</b> <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
