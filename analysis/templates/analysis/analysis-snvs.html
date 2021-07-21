@@ -101,7 +101,13 @@
   <div class="card">
     <div class="card-header" id="heading-polys">
       <h5 class="mb-0">
+        {% if variant_data.polys %}
+        <button class="btn btn-warning" data-toggle="collapse" data-target="#polys" aria-expanded="true" aria-controls="polys">
+
+        {% else %}
         <button class="btn btn-light" data-toggle="collapse" data-target="#polys" aria-expanded="true" aria-controls="polys">
+
+        {% endif %}
           <span class="fa fa-search"></span> Known polys - {{ variant_data.polys | length }}
         </button>
       </h5>
@@ -123,7 +129,7 @@
             {% for p in variant_data.polys %}
             <tr>
               <td>
-                {{ p.genomic }} <a href="#" class="badge badge-info">IGV</a>
+                {{ p.genomic }}
               </td>
               <td>
                 {{ p.gene }}<br>{{ p.exon }}
