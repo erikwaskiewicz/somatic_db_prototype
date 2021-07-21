@@ -19,6 +19,13 @@
       background-color: #D3D3D3;
       border-bottom: 2px solid #000;
     }
+    .alert {
+      padding: 10px;
+      background-color: #f44336; /* Red */
+      color: white;
+      margin-bottom: 5px;
+      text-align: center; 
+    }
   </style>
 </head>
 
@@ -26,6 +33,14 @@
 
   <h1>TSO500 RNA report for {{ sample_data.sample_id }}</h1>
 
+  {% if sample_data.checks.current_status  == 'Fail' %}
+  <div class="alert">
+    <h2><b>This sample has failed QC</b></h2>
+  </div> 
+  <br>
+  {% endif %}
+
+  <h2>Patient details</h2>
   <table>
     <thead>
       <tr>
@@ -46,7 +61,6 @@
   </table>
   <br>
   <br>
-
 
   <h2>Variants</h2>
   <table class="table table-sm table-striped table-hover">
