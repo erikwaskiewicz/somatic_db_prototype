@@ -1,272 +1,188 @@
-
-
-
+{% load static %}
 
 <head>
-    <style>
-        h1 {
-          font-size: 20px;
-        }
+  <style>
+    h1 {  font-size: 20px;  }
+    h2 {  font-size: 15px;  }
 
-        h2 {
-          font-size: 15px;
-        }
+    table th,
+    table td {
+      padding:3px;
+      vertical-align: top;
+      border-top: 1px solid #000;
+      border-bottom: 1px solid #000;
+      text-align: left;
 
+    }
 
-
-        table th,
-        table td {
-            padding:3px;
-            vertical-align: top;
-            border-top: 1px solid #000;
-            border-bottom: 1px solid #000;
-            text-align: center;
-            width: 25%;
-        }
-
-        table thead th {
-            vertical-align: bottom;
-            background-color: #D3D3D3;
-            border-bottom: 2px solid #000;
-        }
-
-
-
-
-
-    </style>
+    table thead th {
+      vertical-align: bottom;
+      background-color: #D3D3D3;
+      border-bottom: 2px solid #000;
+    }
+  </style>
 </head>
-
-
-
-
-<div class="container">
-    <div class="card">
-        <div class="card-header">
-            <h1>Report for {{ sample_data.sample_id }}</h1>
-        </div>
-
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Patient name</th>
-                <th>Worksheet</th>
-                <th>Panel</th>
-                <th>RunID</th>
-            </tr>
-            </thead>
-            <tbody>
-    <!--#TODO change this to if final decision=="Genuine" once it has been updated-->
-
-    <tr>
-      <td>{{ sample_data.sample_name }}</td>
-      <td>{{ sample_data.worksheet_id }}</td>
-      <td>{{ sample_data.panel }}</td>
-      <td>{{ sample_data.run_id }}</td>
-
-    </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-</body>
-
-
-
-
-
-
 
 <body>
 
-<div class="container">
-    <div class="card">
-        <div class="card-header">
-            <h2>Variants</h2>
-        </div>
+  <h1>TSO500 report for {{ sample_data.sample_id }}</h1>
 
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Variant</th>
-                <th>Gene</th>
-                <th>HGVS</th>
-                <th>VAF</th>
-                <th>IGV</th>
-                <th>Comments</th>
-            </tr>
-            </thead>
-            <tbody>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 25%">Patient name</th>
+        <th style="width: 20%">Worksheet</th>
+        <th style="width: 20%">Panel</th>
+        <th style="width: 35%">Run ID</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{ sample_data.sample_name }}</td>
+        <td>{{ sample_data.worksheet_id }}</td>
+        <td>{{ sample_data.panel }}</td>
+        <td>{{ sample_data.run_id }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <br>
+  <br>
+
+
+  <h2>Variants</h2>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th style="width: 20%">Variant</th>
+        <th style="width: 15%">Gene</th>
+        <th style="width: 20%">HGVS</th>
+        <th style="width: 5%">VAF</th>
+        <th style="width: 10%">IGV</th>
+        <th style="width: 30%">Comments</th>
+      </tr>
+    </thead>
+    <tbody>
     {% for v in variant_data.variant_calls %}
 
-    <!--#TODO change this to if final decision=="Genuine" once it has been updated-->
-    {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
-    <tr>
-      <td class="variant-pk" style="display:none">{{ v.pk }}</td>
-      <td><p style="display:inline" id="igv">{{ v.genomic }} </p></td>
-      <td>{{ v.gene }} ({{ v.exon }})</td>
-      <td>{{ v.transcript }} {{ v.hgvs_c }} ({{ v.hgvs_p }})</td>
-      <td>{{ v.vaf.vaf }}%</td>
-      <td>{{ v.final_decision }}</td>
-      <td>
-      {% for c in v.comments %}
-        {{ c.user }}-{{ c.comment }}<br>
-      {% endfor %}
-      </td>
-    {% endif %}
-    </tr>
+      {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
+      <tr>
+        <td>{{ v.genomic }}</td>
+        <td>{{ v.gene }} ({{ v.exon }})</td>
+        <td>{{ v.hgvs_c }} ({{ v.hgvs_p }})</td>
+        <td>{{ v.vaf.vaf }}%</td>
+        <td>{{ v.final_decision }}</td>
+        <td>
+        {% for c in v.comments %}
+          <i>{{ c.user }}:</i><br>{{ c.comment | wordwrap:50 | linebreaksbr }}<br>
+        {% endfor %}
+        </td>
+      </tr>
+      {% endif %}
+      
+      
     {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
+    </tbody>
+  </table>
+  <br>
+  <br>
+
+
+  <h2>Coverage</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Gene</th>
+        <th>Percent 135X</th>
+        <th>Percent 270X</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for gene, values in coverage_data.items %}
+      <tr>
+        <td>{{ gene }}</td>
+        <td>{{ values.percent_135x }}</td>
+        <td>{{ values.percent_270x }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <br>
+  <br>
+
+
+  <h2>Hotspot gaps</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 100%">Hotspot gap at 270X</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for gene, values in coverage_data.items %}
+        {% for gap in values.gaps_270 %}
+        <tr>
+          <td>{{ gap.hgvs_c }}</td>
+        </tr>
+        {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
+  <br>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 100%">Hotspot gaps at 135X</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for gene, values in coverage_data.items %}
+        {% for gap in values.gaps_135 %}
+        <tr>
+          <td>{{ gap.hgvs_c }}</td>
+        </tr>
+        {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
+  <br>
+  <br>
+
+  <h2>Checks performed</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 10%">Check</th>
+        <th style="width: 20%">User</th>
+        <th style="width: 10%">Patient info check</th>
+        <th style="width: 10%">NTC check</th>
+        <th style="width: 50%">Comments</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for c in sample_data.checks.all_checks %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ c.user }}<br>{{ c.signoff_time }}</td>
+        <td>{{ c.patient_info_check }}</td>
+        <td>{{ c.coverage_ntc_check }}</td>
+        <td>
+          <i>Coverage:</i> {{ c.coverage_comment | wordwrap:50 | linebreaksbr }}<br>
+          <i>Overall:</i> {{ c.overall_comment | wordwrap:50 | linebreaksbr }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+
+  </table>
+
+  <p>PDF report generated {% now "jS F Y H:i" %}</p>
 
 </body>
-
-
-
-
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-sm">
-
-      <h2>Coverage</h2>
-      <table class="table2">
-        <thead>
-          <tr>
-            <th scope="col">Gene</th>
-            <th scope="col">Percent 135X</th>
-            <th scope="col">Percent 270X</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {% for gene, values in coverage_data.items %}
-          <tr>
-            <td>{{ gene }}</td>
-            <td>{{ values.percent_135x }}</td>
-            <td>{{ values.percent_270x }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-
-    </div>
-    <div class="col-sm">
-
-      <h2>Hotspot gaps 270X</h2>
-      <table class="table table-sm table-striped table-hover">
-        <thead>
-          <tr>
-            <th scope="col">Gap</th>
-            <th scope="col">Percent COSMIC</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {% for gene, values in coverage_data.items %}
-            {% for gap in values.gaps_270 %}
-            <tr>
-              <td>{{ gene }} {{ gap.hgvs_c }}</td>
-              <td>{{ gap.cosmic }}</td>
-            </tr>
-            {% endfor %}
-          {% endfor %}
-        </tbody>
-      </table>
-
-    </div>
-    <div class="col-sm">
-
-      <h2>Hotspot gaps 135X</h2>
-      <table class="table table-sm table-striped table-hover">
-        <thead>
-          <tr>
-            <th scope="col">Gap</th>
-            <th scope="col">Percent COSMIC</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {% for gene, values in coverage_data.items %}
-            {% for gap in values.gaps_135 %}
-            <tr>
-              <td>{{ gene }} {{ gap.hgvs_c }}</td>
-              <td>{{ gap.cosmic }}</td>
-            </tr>
-            {% endfor %}
-          {% endfor %}
-        </tbody>
-      </table>
-
-    </div>
-  </div>
-</div> 
-<br>
-
-<h2>Checks performed</h2>
-<table class="table table-sm table-bordered">
-  <thead>
-    <tr>
-      <th></th>
-      <th>Stage</th>
-      <th>User</th>
-      <th>Signed off</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for c in sample_data.checks.all_checks %}
-    <tr>
-      <td>{{ forloop.counter }}</td>
-      <td>{{ c.get_stage_display }}</td>
-      <td>{{ c.user }}</td>
-      <td>{{ c.signoff_time }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-<br>
-
-<!--<button type="button" class="btn btn-light" data-toggle="modal" data-target="#audit-modal">View full sample audit trail</button>
-
-<!-- Modal --
-<div class="modal fade" id="audit-modal" tabindex="-1" role="dialog" aria-labelledby="audit-modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="audit-modalLabel">Audit trail</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-  
-          <div class="input-group col-6">
-            <input type="text" class="form-control" placeholder="Search" aria-label="Search">
-          </div>
-
-          <br>
-  
-          <table class="table table-bordered">
-            <thead>
-              <tr>
-                <th scope="col">Time</th>
-                <th scope="col">User</th>
-                <th scope="col">Change</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>...</td>
-                <td>...</td>
-                <td>...</td>
-              </tr>
-            </tbody>
-          </table>
-  
-        </div>
-  
-      </div>
-    </div>
-  </div> -->
