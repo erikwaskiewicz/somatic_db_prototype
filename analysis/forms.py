@@ -147,6 +147,9 @@ class UpdatePatientName(forms.Form):
     def __init__(self, *args, **kwargs):
         super(UpdatePatientName, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.fields['name'].widget.attrs.update({
+            'autocomplete': 'off'
+        })
         self.helper.form_id = 'update-name-form'
         self.helper.form_method = 'POST'
         self.helper.add_input(
