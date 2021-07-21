@@ -67,8 +67,8 @@
     <thead>
       <tr>
         <th style="width: 20%">Variant</th>
-        <th style="width: 15%">Gene</th>
-        <th style="width: 20%">HGVS</th>
+        <th style="width: 10%">Gene</th>
+        <th style="width: 25%">HGVS</th>
         <th style="width: 5%">VAF</th>
         <th style="width: 10%">IGV</th>
         <th style="width: 30%">Comments</th>
@@ -79,7 +79,7 @@
 
       {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
       <tr>
-        <td>{{ v.genomic }}</td>
+        <td>{{ v.genomic | truncatechars:20 }}</td>
         <td>{{ v.gene }} ({{ v.exon }})</td>
         <td>{{ v.hgvs_c }} ({{ v.hgvs_p }})</td>
         <td>{{ v.vaf.vaf }}%</td>
@@ -194,7 +194,7 @@
   </table>
   <br>
   
-  <p>View report in somatic variant database: <a href="http://127.0.0.1:8000/analysis/{{ sample_data.sample_pk }}#report" target="_blank">http://127.0.0.1:8000/analysis/{{ sample_data.sample_pk }}#report</a></p>
+  <p>View report in somatic variant database: <a href="http://10.59.210.247:8000/analysis/{{ sample_data.sample_pk }}#report" target="_blank">http://10.59.210.247:8000/analysis/{{ sample_data.sample_pk }}#report</a></p>
   <p>PDF report generated {% now "jS F Y H:i" %}</p>
 
 </body>
