@@ -1,177 +1,139 @@
-
+{% load humanize %}
 
 <head>
-    <style>
-        h1 {
-          font-size: 20px;
-        }
+  <style>
+    h1 {  font-size: 20px;  }
+    h2 {  font-size: 15px;  }
 
-        h2 {
-          font-size: 15px;
-        }
+    table th,
+    table td {
+      padding:3px;
+      vertical-align: top;
+      border-top: 1px solid #000;
+      border-bottom: 1px solid #000;
+      text-align: left;
+    }
 
-
-
-        table th,
-        table td {
-            padding:3px;
-            vertical-align: top;
-            border-top: 1px solid #000;
-            border-bottom: 1px solid #000;
-            text-align: center;
-            width: 25%;
-        }
-
-        table thead th {
-            vertical-align: bottom;
-            background-color: #D3D3D3;
-            border-bottom: 2px solid #000;
-        }
-
-
-
-
-
-    </style>
+    table thead th {
+      vertical-align: bottom;
+      background-color: #D3D3D3;
+      border-bottom: 2px solid #000;
+    }
+  </style>
 </head>
 
+<body>
 
-<div class="container">
-    <div class="card">
-        <div class="card-header">
-            <h1>Report for {{ sample_data.sample_id }}</h1>
-        </div>
+  <h1>TSO500 RNA report for {{ sample_data.sample_id }}</h1>
 
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Patient name</th>
-                <th>Worksheet</th>
-                <th>Panel</th>
-                <th>RunID</th>
-            </tr>
-            </thead>
-            <tbody>
-    <!--#TODO change this to if final decision=="Genuine" once it has been updated-->
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 25%">Patient name</th>
+        <th style="width: 20%">Worksheet</th>
+        <th style="width: 20%">Panel</th>
+        <th style="width: 35%">Run ID</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{ sample_data.sample_name }}</td>
+        <td>{{ sample_data.worksheet_id }}</td>
+        <td>{{ sample_data.panel }}</td>
+        <td>{{ sample_data.run_id }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <br>
+  <br>
 
-    <tr>
-      <td>{{ sample_data.sample_name }}</td>
-      <td>{{ sample_data.worksheet_id }}</td>
-      <td>{{ sample_data.panel }}</td>
-      <td>{{ sample_data.run_id }}</td>
 
-    </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+  <h2>Variants</h2>
+  <table class="table table-sm table-striped table-hover">
+    <thead>
+      <tr>
+        <th style="width: 10%">Fusion</th>
+        <th style="width: 10%">Fusion supporting reads</th>
+        <th style="width: 20%">Left breakpoint</th>
+        <th style="width: 20%">Right breakpoint</th>
+        <th style="width: 10%">IGV</th>
+        <th style="width: 30%">Comments</th>
+      </tr>
+    </thead>
+
+    <tbody>
+    {% for v in fusion_data.fusion_calls %}
+      {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
+      <tr>
+        <td>{{ v.fusion_genes }}</td>
+        <td>{{ v.fusion_supporting_reads }}</td>
+        <td>{{ v.left_breakpoint }}</td>
+        <td>{{ v.right_breakpoint }}</td>
+        <td>{{ v.final_decision }}</td>
+        <td>
+          {% for c in v.comments %}
+          <i>{{ c.user }}: </i>{{ c.comment | wordwrap:50 | linebreaksbr }}<br><br>
+          {% endfor %}
+        </td>
+      </tr>
+      {% endif %}
+    {% endfor %}
+    </tbody>
+  </table>
+  <br>
+  <br>
+
+
+  <h2>Coverage</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Number of reads in sample</th>
+        <th>Number of reads in NTC</th>
+        <th>Percent NTC</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>{{ sample_data.total_reads | intcomma }}</td>
+        <td>{{ sample_data.total_reads_ntc | intcomma }}</td>
+        <td>{{ sample_data.percent_reads_ntc }}%</td>
+      </tr>
+    </tbody>
+  </table>
+  <br>
+  <br>
+
+
+  <h2>Checks performed</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 10%">Check</th>
+        <th style="width: 20%">User</th>
+        <th style="width: 10%">Patient info check</th>
+        <th style="width: 10%">NTC check</th>
+        <th style="width: 50%">Comments</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for c in sample_data.checks.all_checks %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ c.user }}<br>{{ c.signoff_time }}</td>
+        <td>{{ c.patient_info_check }}</td>
+        <td>{{ c.coverage_ntc_check }}</td>
+        <td>
+          {{ c.overall_comment | wordwrap:50 | linebreaksbr }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+
+  </table>
+
+  <p>PDF report generated {% now "jS F Y H:i" %}</p>
 
 </body>
-
-
-
-
-
-
-<h5>Variants</h5>
-<table class="table table-sm table-striped table-hover">
-  <thead>
-    <tr>
-      <th scope="col">Fusion</th>
-      <th scope="col">Fusion supporting reads</th>
-      <th scope="col">Left breakpoint</th>
-      <th scope="col">Right breakpoint</th>
-      <th scope="col">IGV</th>
-      <th scope="col">Comments</th>
-    </tr>
-  </thead>
-
-
-
-  <tbody>
-
-    {% for v in fusion_data.fusion_calls %}
-    {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
-    <tr>
-      <td>{{ v.fusion_genes }}</td>
-      <td>{{ v.fusion_supporting_reads }}</td>
-      <td>{{ v.left_breakpoint }}</td>
-      <td>{{ v.right_breakpoint }}</td>
-      <td>{{ v.final_decision }}</td>
-      <td>
-      {% for c in v.comments %}
-        {{ c.user }}-{{ c.comment }}<br>
-      {% endfor %}
-      </td>
-    {% endif %}
-    {% endfor %}
-  </tbody>
-</table>
-<br>
-
-
-<h5>Checks performed</h5>
-<table class="table table-sm table-bordered">
-  <thead>
-    <tr>
-      <th></th>
-      <th>Stage</th>
-      <th>User</th>
-      <th>Signed off</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for c in sample_data.checks.all_checks %}
-    <tr>
-      <td>{{ forloop.counter }}</td>
-      <td>{{ c.get_stage_display }}</td>
-      <td>{{ c.user }}</td>
-      <td>{{ c.signoff_time }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-<br>
-
-<!--<button type="button" class="btn btn-light" data-toggle="modal" data-target="#audit-modal">View full sample audit trail</button>
-
-<!-- Modal --
-<div class="modal fade" id="audit-modal" tabindex="-1" role="dialog" aria-labelledby="audit-modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="audit-modalLabel">Audit trail</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-  
-          <div class="input-group col-6">
-            <input type="text" class="form-control" placeholder="Search" aria-label="Search">
-          </div>
-
-          <br>
-  
-          <table class="table table-bordered">
-            <thead>
-              <tr>
-                <th scope="col">Time</th>
-                <th scope="col">User</th>
-                <th scope="col">Change</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>...</td>
-                <td>...</td>
-                <td>...</td>
-              </tr>
-            </tbody>
-          </table>
-  
-        </div>
-  
-      </div>
-    </div>
-  </div> -->
