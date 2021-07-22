@@ -26,9 +26,9 @@ class NewVariantForm(forms.Form):
     hgvs_c = forms.CharField(label='HGVS c.')
     hgvs_p = forms.CharField(label='HGVS p.')
     gene = forms.CharField()
-    exon = forms.CharField(required=False, label='Exon (in the format 1 | 5, for exon one of five)')
-    alt_reads = forms.IntegerField()
-    total_reads = forms.IntegerField()
+    exon = forms.CharField(required=False, label='Exon')
+    alt_reads = forms.IntegerField(label='Number of reads supporting variant')
+    total_reads = forms.IntegerField(label='Total depth')
     in_ntc = forms.BooleanField(required=False, label="Variant seen in NTC?")
 
 
@@ -36,6 +36,11 @@ class NewVariantForm(forms.Form):
         super(NewVariantForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_id = 'new-variant-form'
+        self.fields['hgvs_g'].widget.attrs['placeholder'] = 'e.g. 7:140453136A>T'
+        self.fields['hgvs_c'].widget.attrs['placeholder'] = 'e.g. NM_004333.4:c.1799T>A'
+        self.fields['hgvs_p'].widget.attrs['placeholder'] = 'e.g. NP_004324.2:p.(Val600Glu)'
+        self.fields['gene'].widget.attrs['placeholder'] = 'e.g. BRAF'
+        self.fields['exon'].widget.attrs['placeholder'] = 'e.g. 15 | 18 (for exon 15 of 18)'
         self.helper.form_method = 'POST'
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-25')
