@@ -315,7 +315,7 @@ def get_fusion_info(sample_data,sample_obj):
 
     fusions = FusionPanelAnalysis.objects.filter(sample_analysis= sample_obj)
 
-    fusion_calls=[]
+    fusion_calls = []
     for fusion_object in fusions:
 
         this_run = FusionAnalysis.objects.filter(
@@ -332,7 +332,7 @@ def get_fusion_info(sample_data,sample_obj):
         fusion_checks_list = [ v.get_decision_display() for v in fusion_checks ]
         latest_check = fusion_checks.latest('pk')
 
-                # do the last two checks agree?
+        # do the last two checks agree?
         last_two_checks_agree = True
         if len(fusion_checks_list) > 1:
             last2 = fusion_checks_list[-2:]
@@ -344,7 +344,8 @@ def get_fusion_info(sample_data,sample_obj):
         fusion_comment_form = FusionCommentForm(
             pk=latest_check.pk, 
             hgvs= fusion_object.fusion_instance.hgvs, 
-            comment=latest_check.comment)
+            comment=latest_check.comment
+        )
 
         # get list of comments for variant
         fusion_comments_list = []
@@ -354,6 +355,11 @@ def get_fusion_info(sample_data,sample_obj):
                     { 'comment': v.comment, 'user': v.check_object.user, 'updated': v.comment_updated, }
                 )
 
+        if fusion_object.fusion_instance.fusion_caller == 'Splice':
+            reference_reads = fusion_object.fusion_instance.ref_reads_1
+        elif fusion_object.fusion_instance.fusion_caller == 'Fusion':
+            reference_reads = f'{fusion_object.fusion_instance.ref_reads_1} | {fusion_object.fusion_instance.ref_reads_2}'
+
         fusion_calls_dict = {
             'pk': fusion_object.pk,
             'fusion_instance_pk': fusion_object.fusion_instance.pk,
@@ -362,6 +368,7 @@ def get_fusion_info(sample_data,sample_obj):
             'fusion_supporting_reads': fusion_object.fusion_instance.fusion_supporting_reads,
             'left_breakpoint': fusion_object.fusion_instance.fusion_genes.left_breakpoint,
             'right_breakpoint': fusion_object.fusion_instance.fusion_genes.right_breakpoint,
+            'reference_reads': reference_reads,
             'this_run': {
                 'count': this_run_count, 
                 'total': total_runs_count,

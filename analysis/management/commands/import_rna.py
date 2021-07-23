@@ -6,6 +6,7 @@ from analysis.models import *
 
 import os
 import csv
+import yaml
 
 
 class Command(BaseCommand):
@@ -39,16 +40,20 @@ class Command(BaseCommand):
         # hard coded variables
         dna_or_rna = 'RNA'
         assay = 'TSO500'
-        #panel_folder = '/home/erik/Desktop/somatic_db/TSO500_panel_bed_files/variant_calling'
-        #panel_bed_file = f'{panel_folder}/{panel}.bed' 
+        panels_file = '/home/erik/Desktop/somatic_db/rna_panels.yaml'
 
         # check that inputs are valid
         if not os.path.isfile(fusions_file):
             raise IOError(f'{fusions_file} file does not exist')
         #if not os.path.isfile(coverage_file):
         #    raise IOError(f'{coverage_file} file does not exist')
-        #if not os.path.isfile(panel_bed_file):
-        #    raise IOError(f'{panel_bed_file} file does not exist')
+        if not os.path.isfile(panels_file):
+            raise IOError(f'{panels_file} file does not exist')
+
+        # load in virtual panel
+        with open(panels_file) as f:
+            referrals = yaml.load(f, Loader=yaml.FullLoader)
+        virtual_panel = referrals[panel]
 
 
         # get panel object
@@ -102,11 +107,22 @@ class Command(BaseCommand):
             reader = csv.DictReader(f, delimiter=',')
             for f in reader:
 
-                # make fusions
+                # format fusion field and filter panel
+                in_panel = False
+                
                 if f['type'] == 'Splice':
                     fusion = f"{f['fusion']} {f['exons']}"
-                else:
+
+                    if f['fusion'] in virtual_panel['splicing']:
+                        in_panel = True
+
+
+                elif f['type'] == 'Fusion':
                     fusion = f['fusion']
+
+                    for g in virtual_panel['fusions']:
+                        if g in fusion:
+                            in_panel = True
 
                 new_fusion, created = Fusion.objects.get_or_create(
                     fusion_genes = fusion,
@@ -114,30 +130,34 @@ class Command(BaseCommand):
                     right_breakpoint = f['right_breakpoint'],
                 )
 
-                # TODO fusion_ref_1, fusion_ref_2
-                new_fusion_instance = FusionAnalysis(
-                    sample = new_sample_analysis,
-                    fusion_genes = new_fusion,
-                    fusion_supporting_reads = f['fusion_supporting_reads'],
-                    ref_reads_1 = f['reference_reads_1'],
-                    split_reads = f['split_reads'],
-                    spanning_reads = f['spanning_reads'],
-                    fusion_caller = f['type'],
-                    fusion_score = f['fusion_score'],
-                    in_ntc = f['in_ntc'],
-                )
-                if f['type'] == 'Fusion':
-                    new_fusion_instance.ref_reads_2 = f['reference_reads_2']
-                new_fusion_instance.save()
 
-                new_fusion_analysis = FusionPanelAnalysis(
-                    sample_analysis = new_sample_analysis,
-                    fusion_instance = new_fusion_instance,
-                )
-                new_fusion_analysis.save()
+                # make fusions
+                if in_panel:
+                    print(fusion)
+                    new_fusion_instance = FusionAnalysis(
+                        sample = new_sample_analysis,
+                        fusion_genes = new_fusion,
+                        fusion_supporting_reads = f['fusion_supporting_reads'],
+                        ref_reads_1 = f['reference_reads_1'],
+                        split_reads = f['split_reads'],
+                        spanning_reads = f['spanning_reads'],
+                        fusion_caller = f['type'],
+                        fusion_score = f['fusion_score'],
+                        in_ntc = f['in_ntc'],
+                    )
+                    # splice variants only have one reference value, fusions have two (one per gene)
+                    if f['type'] == 'Fusion':
+                        new_fusion_instance.ref_reads_2 = f['reference_reads_2']
+                    new_fusion_instance.save()
 
-                new_fusion_check = FusionCheck(
-                    fusion_analysis = new_fusion_analysis,
-                    check_object = new_check,
-                )
-                new_fusion_check.save()
+                    new_fusion_analysis = FusionPanelAnalysis(
+                        sample_analysis = new_sample_analysis,
+                        fusion_instance = new_fusion_instance,
+                    )
+                    new_fusion_analysis.save()
+
+                    new_fusion_check = FusionCheck(
+                        fusion_analysis = new_fusion_analysis,
+                        check_object = new_check,
+                    )
+                    new_fusion_check.save()
