@@ -263,6 +263,7 @@ def get_variant_info(sample_data, sample_obj):
         #Create a variant calls dictionary to pass to analysis-snvs.html
         variant_calls_dict = {
             'pk': sample_variant.pk,
+            'variant_instance_pk': sample_variant.variant_instance.pk,
             'genomic': variant_obj.genomic_37,
             'igv_coords': variant_obj.genomic_37.strip('ACGT>'),
             'gene': variant_obj.gene,
@@ -355,6 +356,7 @@ def get_fusion_info(sample_data,sample_obj):
 
         fusion_calls_dict = {
             'pk': fusion_object.pk,
+            'fusion_instance_pk': fusion_object.fusion_instance.pk,
             'fusion_genes': fusion_object.fusion_instance.fusion_genes.fusion_genes,
             'fusion_hgvs': fusion_object.fusion_instance.hgvs,
             'fusion_supporting_reads': fusion_object.fusion_instance.fusion_supporting_reads,

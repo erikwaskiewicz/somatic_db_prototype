@@ -101,17 +101,30 @@
     </tr>
     {% endfor %}
   </tbody>
-
 </table>
 
 
-<!-- button to add new variant in case of miscalled indels -->
-{% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail' %}
-<div class="float-right">
-  <button type="button" class="btn btn-success variants-submit" id="variants-submit">Update selections</button>
+<!-- display buttons if there are calls, message if there are none -->
+{% if fusion_data.fusion_calls %}
+
+  <!-- button to add new variant in case of miscalled indels -->
+  {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail' %}
+  <div class="float-right">
+    <button type="button" class="btn btn-success variants-submit" id="variants-submit">Update selections</button>
+  </div>
+  <br>
+  {% endif %}
+
+{% else %}
+
+<!-- message that there are no fusions in sample -->
+<div class="alert alert-info">
+  No calls in this sample
 </div>
-<br>
+  
 {% endif %}
+
+
 
 
 {% for v in fusion_data.fusion_calls %}
@@ -160,7 +173,7 @@
         {% endif %}
 
         <br>
-        <p>Variant ID: {{ v.pk }}</p>
+        <p>Variant ID: {{ v.fusion_instance_pk }}</p>
       </div>
 
     </div>
