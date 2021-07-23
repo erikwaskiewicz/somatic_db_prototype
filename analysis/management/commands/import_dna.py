@@ -4,9 +4,9 @@ from django.db import transaction
 
 from analysis.models import *
 
+import os
 import csv
 import json
-import os
 import pybedtools
 
 
@@ -35,7 +35,7 @@ class Command(BaseCommand):
         sample = options['sample'][0]
         panel = options['panel'][0]
 
-        # ahard coded variables
+        # hard coded variables
         dna_or_rna = 'DNA'
         assay = 'TSO500'
         panel_folder = '/home/erik/Desktop/somatic_db/TSO500_panel_bed_files/variant_calling'
@@ -94,12 +94,6 @@ class Command(BaseCommand):
 
             for v in reader:
 
-                # convert ntc - TODO get Kal to change script
-                if v['in_ntc'] == 'FALSE':
-                    in_ntc = False
-                elif v['in_ntc'] == 'TRUE':
-                    in_ntc = True
-
                 # format pos, chr, ref etc as genomic coords
                 genomic_coords = f"{v['chr'].strip('chr')}:{v['pos']}{v['ref']}>{v['alt']}"
 
@@ -128,14 +122,14 @@ class Command(BaseCommand):
                 if len(panel_bed.intersect(variant_bed_region)) > 0:
                     print(v)
 
-                    # make new instance of variant
+                    # make new instance of variant - TODO add gene/ transcript + NTC data
                     new_var_instance = VariantInstance(
                         sample=new_sample,
                         variant=new_var,
                         vaf=vaf,
                         total_count=v['depth'],
                         alt_count=v['alt_reads'],
-                        in_ntc=in_ntc,
+                        in_ntc=v['in_ntc'],
                     )
                     new_var_instance.save()
 

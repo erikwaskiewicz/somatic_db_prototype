@@ -323,6 +323,8 @@ class FusionAnalysis(models.Model):
     fusion_genes = models.ForeignKey('Fusion', on_delete=models.CASCADE)
     hgvs = models.CharField(max_length=400, blank=True)
     fusion_supporting_reads = models.IntegerField()
+    ref_reads_1 = models.IntegerField()
+    ref_reads_2 = models.IntegerField(blank=True, null=True) # will be blank if splice variant
     split_reads = models.IntegerField()
     spanning_reads = models.IntegerField()
     fusion_caller = models.CharField(max_length=50)

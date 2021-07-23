@@ -1,0 +1,143 @@
+
+from django.core.management.base import BaseCommand, CommandError
+from django.db import transaction
+
+from analysis.models import *
+
+import os
+import csv
+
+
+class Command(BaseCommand):
+    help = "Import a RNA run"
+
+    def add_arguments(self, parser):
+        parser.add_argument('--run', nargs=1, type=str, required=True, help='Run ID')
+        parser.add_argument('--worksheet', nargs=1, type=str, required=True, help='Worksheet')
+        parser.add_argument('--sample', nargs=1, type=str, required=True, help='Sample ID')
+        parser.add_argument('--panel', nargs=1, type=str, required=True, help='Name of virtual panel applied')
+        parser.add_argument('--fusions', nargs=1, type=str, required=True, help='Path to variants CSV file')
+        parser.add_argument('--coverage', nargs=1, type=str, required=True, help='Path to coverage JSON file')
+
+
+    @transaction.atomic
+    def handle(self, *args, **options):
+
+        # extract variables from argparse
+        fusions_file = options['fusions'][0]
+        #coverage_file = options['coverage'][0]
+        run_id = options['run'][0]
+        ws = options['worksheet'][0]
+        sample = options['sample'][0]
+        panel = options['panel'][0]
+
+        # TODO temporary - input coverage values as comma seperated list
+        total_cov, ntc_cov = options['coverage'][0].split(',')
+        percent_reads_ntc=int((int(ntc_cov) / int(total_cov))*100)
+
+
+        # hard coded variables
+        dna_or_rna = 'RNA'
+        assay = 'TSO500'
+        #panel_folder = '/home/erik/Desktop/somatic_db/TSO500_panel_bed_files/variant_calling'
+        #panel_bed_file = f'{panel_folder}/{panel}.bed' 
+
+        # check that inputs are valid
+        if not os.path.isfile(fusions_file):
+            raise IOError(f'{fusions_file} file does not exist')
+        #if not os.path.isfile(coverage_file):
+        #    raise IOError(f'{coverage_file} file does not exist')
+        #if not os.path.isfile(panel_bed_file):
+        #    raise IOError(f'{panel_bed_file} file does not exist')
+
+
+        # get panel object
+        panel_obj = Panel.objects.get(panel_name=panel)
+
+        # make run
+        new_run, created = Run.objects.get_or_create(run_id=run_id)
+
+        # make ws
+        new_ws = Worksheet(
+            ws_id=ws,
+            run=new_run,
+            assay=assay,
+        )
+        new_ws.save()
+
+        # make samples TODO - move num reads to sample analysis
+        try:
+            new_sample = Sample.objects.get(
+                sample_id=sample,
+                sample_type=dna_or_rna,
+            )
+        except:
+            new_sample = Sample(
+                sample_id=sample,
+                sample_type=dna_or_rna,
+                total_reads=total_cov,
+                total_reads_ntc=ntc_cov,
+                percent_reads_ntc=percent_reads_ntc,
+            )
+        new_sample.save()
+
+        # make sample analysis and checks
+        new_sample_analysis = SampleAnalysis(
+            worksheet=new_ws,
+            sample=new_sample,
+            panel=panel_obj,
+        )
+        new_sample_analysis.save()
+
+        new_check = Check(
+            analysis=new_sample_analysis,
+            stage='IGV',
+            status='P',
+        )
+        new_check.save()
+
+
+
+        with open(fusions_file) as f:
+            reader = csv.DictReader(f, delimiter=',')
+            for f in reader:
+
+                # make fusions
+                if f['type'] == 'Splice':
+                    fusion = f"{f['fusion']} {f['exons']}"
+                else:
+                    fusion = f['fusion']
+
+                new_fusion, created = Fusion.objects.get_or_create(
+                    fusion_genes = fusion,
+                    left_breakpoint = f['left_breakpoint'],
+                    right_breakpoint = f['right_breakpoint'],
+                )
+
+                # TODO fusion_ref_1, fusion_ref_2
+                new_fusion_instance = FusionAnalysis(
+                    sample = new_sample_analysis,
+                    fusion_genes = new_fusion,
+                    fusion_supporting_reads = f['fusion_supporting_reads'],
+                    ref_reads_1 = f['reference_reads_1'],
+                    split_reads = f['split_reads'],
+                    spanning_reads = f['spanning_reads'],
+                    fusion_caller = f['type'],
+                    fusion_score = f['fusion_score'],
+                    in_ntc = f['in_ntc'],
+                )
+                if f['type'] == 'Fusion':
+                    new_fusion_instance.ref_reads_2 = f['reference_reads_2']
+                new_fusion_instance.save()
+
+                new_fusion_analysis = FusionPanelAnalysis(
+                    sample_analysis = new_sample_analysis,
+                    fusion_instance = new_fusion_instance,
+                )
+                new_fusion_analysis.save()
+
+                new_fusion_check = FusionCheck(
+                    fusion_analysis = new_fusion_analysis,
+                    check_object = new_check,
+                )
+                new_fusion_check.save()
