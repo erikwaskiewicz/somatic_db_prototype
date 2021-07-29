@@ -1,3 +1,4 @@
+from auditlog.registry import auditlog
 from django.db import models
 
 # Create your models here.
@@ -10,6 +11,7 @@ class Run(models.Model):
 
     def __str__(self):
         return self.run_id
+
 
 class Worksheet(models.Model):
     """
@@ -360,3 +362,25 @@ class FusionPanelAnalysis(models.Model):
 
     def get_current_check(self):
         return FusionCheck.objects.filter(fusion_analysis=self).latest('pk')
+
+
+auditlog.register(Run)
+auditlog.register(Worksheet)
+auditlog.register(Sample)
+auditlog.register(Panel)
+auditlog.register(SampleAnalysis)
+auditlog.register(Check)
+auditlog.register(Variant)
+auditlog.register(VariantInstance)
+auditlog.register(VariantPanelAnalysis)
+auditlog.register(VariantCheck)
+auditlog.register(VariantList)
+auditlog.register(VariantToVariantList)
+auditlog.register(Gene)
+auditlog.register(GeneCoverageAnalysis)
+auditlog.register(RegionCoverageAnalysis)
+auditlog.register(GapsAnalysis)
+auditlog.register(Fusion)
+auditlog.register(FusionAnalysis)
+auditlog.register(FusionCheck)
+auditlog.register(FusionPanelAnalysis)
