@@ -317,14 +317,15 @@ def get_fusion_info(sample_data,sample_obj):
     fusion_calls = []
     for fusion_object in fusions:
 
-        this_run = FusionAnalysis.objects.filter(
-            fusion_genes=fusion_object.fusion_instance.fusion_genes,
-            sample__worksheet__run__run_id=sample_data.get('run_id')
-        )
-        this_run_count = this_run.count()
+        # TODO this is only needed for seeing variants in other runs - removed to speed up DB
+        #this_run = FusionAnalysis.objects.filter(
+        #    fusion_genes=fusion_object.fusion_instance.fusion_genes,
+        #    sample__worksheet__run__run_id=sample_data.get('run_id')
+        #)
+        #this_run_count = this_run.count()
 
-        total_runs = FusionAnalysis.objects.filter(sample__worksheet__run__run_id=sample_data.get('run_id'))
-        total_runs_count = total_runs.count()
+        #total_runs = FusionAnalysis.objects.filter(sample__worksheet__run__run_id=sample_data.get('run_id'))
+        #total_runs_count = total_runs.count()
 
         # get checks for each variant
         fusion_checks = FusionCheck.objects.filter(fusion_analysis=fusion_object)
@@ -354,10 +355,11 @@ def get_fusion_info(sample_data,sample_obj):
                     { 'comment': v.comment, 'user': v.check_object.user, 'updated': v.comment_updated, }
                 )
 
-        if fusion_object.fusion_instance.fusion_caller == 'Splice':
-            reference_reads = fusion_object.fusion_instance.ref_reads_1
-        elif fusion_object.fusion_instance.fusion_caller == 'Fusion':
-            reference_reads = f'{fusion_object.fusion_instance.ref_reads_1} | {fusion_object.fusion_instance.ref_reads_2}'
+        # TODO this is only needed if they want to see the number of reference reads
+        #if fusion_object.fusion_instance.fusion_caller == 'Splice':
+        #    reference_reads = fusion_object.fusion_instance.ref_reads_1
+        #elif fusion_object.fusion_instance.fusion_caller == 'Fusion':
+        #    reference_reads = f'{fusion_object.fusion_instance.ref_reads_1} | {fusion_object.fusion_instance.ref_reads_2}'
 
         fusion_calls_dict = {
             'pk': fusion_object.pk,
@@ -367,10 +369,10 @@ def get_fusion_info(sample_data,sample_obj):
             'fusion_supporting_reads': fusion_object.fusion_instance.fusion_supporting_reads,
             'left_breakpoint': fusion_object.fusion_instance.fusion_genes.left_breakpoint,
             'right_breakpoint': fusion_object.fusion_instance.fusion_genes.right_breakpoint,
-            'reference_reads': reference_reads,
+            #'reference_reads': reference_reads,
             'this_run': {
-                'count': this_run_count, 
-                'total': total_runs_count,
+                #'count': this_run_count, 
+                #'total': total_runs_count,
                 'ntc': fusion_object.fusion_instance.in_ntc,
             },   
             'checks': fusion_checks_list,
