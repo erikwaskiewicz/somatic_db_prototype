@@ -261,7 +261,7 @@ class RegionCoverageAnalysis(models.Model):
         ('G', 'Genescreen'),
     )
     gene = models.ForeignKey('GeneCoverageAnalysis', on_delete=models.CASCADE)
-    hgvs_c = models.CharField(max_length=50)
+    hgvs_c = models.CharField(max_length=200)
     chr_start = models.CharField(max_length=50)
     pos_start = models.IntegerField()
     chr_end = models.CharField(max_length=50)
@@ -283,7 +283,7 @@ class GapsAnalysis(models.Model):
 
     """
     gene = models.ForeignKey('GeneCoverageAnalysis', on_delete=models.CASCADE)
-    hgvs_c = models.CharField(max_length=50)
+    hgvs_c = models.CharField(max_length=200)
     chr_start = models.CharField(max_length=50)
     pos_start = models.IntegerField()
     chr_end = models.CharField(max_length=50)
