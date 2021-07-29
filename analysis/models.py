@@ -132,13 +132,12 @@ class Variant(models.Model):
     """
     Variant info that always stays the same
     TODO - ?extract gene/ exon etc into own model
-    TODO - drop transcript field - its in HGVSc/p
     """
     genomic_37 = models.CharField(max_length=200)
     genomic_38 = models.CharField(max_length=200, blank=True, null=True)
     gene = models.CharField(max_length=50)
     exon = models.CharField(max_length=50)
-    transcript = models.CharField(max_length=200)
+    #transcript = models.CharField(max_length=200)
     hgvs_c = models.CharField(max_length=200)
     hgvs_p = models.CharField(max_length=200)
 
@@ -291,7 +290,7 @@ class GapsAnalysis(models.Model):
     chr_end = models.CharField(max_length=50)
     pos_end = models.IntegerField()
     coverage_cutoff = models.IntegerField()
-    percent_cosmic = models.IntegerField()
+    percent_cosmic = models.IntegerField(blank=True, null=True)
 
     def genomic(self):
         return f'{self.chr_start}:{self.pos_start}_{self.chr_end}:{self.pos_end}'

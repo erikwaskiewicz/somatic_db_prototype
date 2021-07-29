@@ -268,7 +268,6 @@ def get_variant_info(sample_data, sample_obj):
             'igv_coords': variant_obj.genomic_37.strip('ACGT>'),
             'gene': variant_obj.gene,
             'exon': variant_obj.exon,
-            'transcript': variant_obj.transcript,
             'hgvs_c': variant_obj.hgvs_c,
             'hgvs_p': variant_obj.hgvs_p,
             'this_run': {

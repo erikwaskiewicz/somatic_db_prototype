@@ -100,14 +100,12 @@ class Command(BaseCommand):
                 # convert vaf to percentage
                 vaf = int(float(v['vaf']) * 100)
 
-                # TODO - get rid of transcript
                 # variant object is created for all variants across whole panel
                 new_var, created = Variant.objects.get_or_create(
                     genomic_37 = genomic_coords,
                     genomic_38 = None,
                     gene = v['gene'],
                     exon = v['exon'],
-                    transcript = '-',
                     hgvs_c = v['hgvs_c'],
                     hgvs_p = v['hgvs_p'],
                 )
@@ -213,7 +211,6 @@ class Command(BaseCommand):
                     chr_end=gap[0],
                     pos_end=gap[2],
                     coverage_cutoff=135,
-                    percent_cosmic=gap[4],
                 )
                 new_gap_obj.save()
 
@@ -227,6 +224,5 @@ class Command(BaseCommand):
                     chr_end=gap[0],
                     pos_end=gap[2],
                     coverage_cutoff=270,
-                    percent_cosmic=gap[4],
                 )
                 new_gap_obj.save()
