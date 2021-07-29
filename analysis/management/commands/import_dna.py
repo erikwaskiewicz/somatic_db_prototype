@@ -50,7 +50,7 @@ class Command(BaseCommand):
             raise IOError(f'{panel_bed_file} file does not exist')
 
         # get panel object TODO - add error if doesnt exist
-        panel_obj = Panel.objects.get(panel_name=panel)
+        panel_obj = Panel.objects.get(panel_name=panel, dna_or_rna='DNA')
 
         # open bed file object
         panel_bed = pybedtools.BedTool(panel_bed_file)
@@ -66,7 +66,7 @@ class Command(BaseCommand):
         )
         new_ws.save()
 
-        # make samples TODO - total reads etc should be in sample analysis model
+        # make samples
         new_sample, created = Sample.objects.get_or_create(
             sample_id=sample,
             sample_type=dna_or_rna,
@@ -88,7 +88,7 @@ class Command(BaseCommand):
         new_check.save()
 
 
-        # make variants and variant checks TODO - move gene/ transcript etc to instance model - could end up with same genomic coords twice
+        # make variants and variant checks
         with open(variants_file) as f:
             reader = csv.DictReader(f, delimiter='\t')
 
@@ -104,10 +104,6 @@ class Command(BaseCommand):
                 new_var, created = Variant.objects.get_or_create(
                     genomic_37 = genomic_coords,
                     genomic_38 = None,
-                    gene = v['gene'],
-                    exon = v['exon'],
-                    hgvs_c = v['hgvs_c'],
-                    hgvs_p = v['hgvs_p'],
                 )
 
                 ## check if variant is within the virtual panel
@@ -120,14 +116,18 @@ class Command(BaseCommand):
                 if len(panel_bed.intersect(variant_bed_region)) > 0:
                     print(v)
 
-                    # make new instance of variant - TODO add gene/ transcript + NTC data
+                    # make new instance of variant
                     new_var_instance = VariantInstance(
-                        sample=new_sample,
-                        variant=new_var,
-                        vaf=vaf,
-                        total_count=v['depth'],
-                        alt_count=v['alt_reads'],
-                        in_ntc=v['in_ntc'],
+                        sample = new_sample,
+                        variant = new_var,
+                        gene = v['gene'],
+                        exon = v['exon'],
+                        hgvs_c = v['hgvs_c'],
+                        hgvs_p = v['hgvs_p'],
+                        vaf = vaf,
+                        total_count = v['depth'],
+                        alt_count = v['alt_reads'],
+                        in_ntc = v['in_ntc'],
                     )
                     new_var_instance.save()
 
@@ -202,6 +202,7 @@ class Command(BaseCommand):
                 )
                 new_regions_obj.save()
         
+            # TODO - add cosmic to this when integrated into pipeline
             for gap in values['gaps_135']:
                 new_gap_obj = GapsAnalysis(
                     gene=new_gene_coverage_obj,

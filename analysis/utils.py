@@ -187,9 +187,9 @@ def get_sample_info(sample_obj):
         'worksheet_id': sample_obj.worksheet.ws_id,
         'panel': sample_obj.panel.panel_name,
         'run_id': sample_obj.worksheet.run.run_id,
-        'total_reads': sample_obj.sample.total_reads,
-        'total_reads_ntc': sample_obj.sample.total_reads_ntc,
-        'percent_reads_ntc': sample_obj.sample.percent_reads_ntc,
+        'total_reads': sample_obj.total_reads,
+        'total_reads_ntc': sample_obj.total_reads_ntc,
+        'percent_reads_ntc': sample_obj.percent_reads_ntc,
         'checks': sample_obj.get_checks(),
     }
     return sample_data
@@ -266,10 +266,10 @@ def get_variant_info(sample_data, sample_obj):
             'variant_instance_pk': sample_variant.variant_instance.pk,
             'genomic': variant_obj.genomic_37,
             'igv_coords': variant_obj.genomic_37.strip('ACGT>'),
-            'gene': variant_obj.gene,
-            'exon': variant_obj.exon,
-            'hgvs_c': variant_obj.hgvs_c,
-            'hgvs_p': variant_obj.hgvs_p,
+            'gene': sample_variant.variant_instance.gene,
+            'exon': sample_variant.variant_instance.exon,
+            'hgvs_c': sample_variant.variant_instance.hgvs_c,
+            'hgvs_p': sample_variant.variant_instance.hgvs_p,
             'this_run': {
                 'count': this_run_count, 
                 'total': len(sample_objects),

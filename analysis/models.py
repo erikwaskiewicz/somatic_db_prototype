@@ -42,10 +42,6 @@ class Sample(models.Model):
     sample_name = models.CharField(max_length=200, blank=True, null=True)
     sample_name_check=models.BooleanField(default=False)
     sample_type = models.CharField(max_length=3, choices=TYPE_CHOICES)
-    # TODO - I think these should be in sampleAnalysis model?
-    total_reads = models.IntegerField(blank=True, null=True)
-    total_reads_ntc= models.IntegerField(blank=True, null=True)
-    percent_reads_ntc= models.CharField(max_length=200, blank=True, null=True)
 
 
 class Panel(models.Model):
@@ -55,7 +51,12 @@ class Panel(models.Model):
     e.g. path to BED, ?panel version number
 
     """
-    panel_name = models.CharField(max_length=50, primary_key=True)
+    TYPE_CHOICES = (
+        ('DNA', 'DNA'),
+        ('RNA', 'RNA'),
+    )
+    panel_name = models.CharField(max_length=50)
+    dna_or_rna = models.CharField(max_length=3, choices=TYPE_CHOICES)
 
 
 class SampleAnalysis(models.Model):
@@ -67,6 +68,9 @@ class SampleAnalysis(models.Model):
     worksheet = models.ForeignKey('Worksheet', on_delete=models.CASCADE)
     sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
     panel = models.ForeignKey('Panel', on_delete=models.CASCADE)
+    total_reads = models.IntegerField(blank=True, null=True)
+    total_reads_ntc= models.IntegerField(blank=True, null=True)
+    percent_reads_ntc= models.CharField(max_length=200, blank=True, null=True)
 
     def get_checks(self):
         """
@@ -131,21 +135,11 @@ class Check(models.Model):
 class Variant(models.Model):
     """
     Variant info that always stays the same
-    TODO - ?extract gene/ exon etc into own model
-    """
-    genomic_37 = models.CharField(max_length=200)
-    genomic_38 = models.CharField(max_length=200, blank=True, null=True)
-    gene = models.CharField(max_length=50)
-    exon = models.CharField(max_length=50)
-    #transcript = models.CharField(max_length=200)
-    hgvs_c = models.CharField(max_length=200)
-    hgvs_p = models.CharField(max_length=200)
 
-    # TODO
-    #class Meta:
-    #    constraints = [
-    #        models.UniqueConstraint(fields=['genomic_37'], name='unique variant')
-    #    ]
+    """
+    genomic_37 = models.CharField(max_length=200, unique=True)
+    genomic_38 = models.CharField(max_length=200, blank=True, null=True)
+
 
 class VariantInstance(models.Model):
     """
@@ -164,6 +158,10 @@ class VariantInstance(models.Model):
     )
     sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
     variant = models.ForeignKey('Variant', on_delete=models.CASCADE)
+    gene = models.CharField(max_length=50)
+    exon = models.CharField(max_length=50)
+    hgvs_c = models.CharField(max_length=200)
+    hgvs_p = models.CharField(max_length=200)
     vaf = models.IntegerField()
     total_count = models.IntegerField()
     alt_count = models.IntegerField()
@@ -179,7 +177,6 @@ class VariantPanelAnalysis(models.Model):
     """
     sample_analysis = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
     variant_instance = models.ForeignKey('VariantInstance', on_delete=models.CASCADE)
-    # TODO - add final IGV/ class decision here??
 
     def get_current_check(self):
         return VariantCheck.objects.filter(variant_analysis=self).latest('pk')
@@ -360,8 +357,6 @@ class FusionPanelAnalysis(models.Model):
     """
     sample_analysis = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
     fusion_instance = models.ForeignKey('FusionAnalysis', on_delete=models.CASCADE)
-    # TODO - add final IGV/ class decision here??
 
     def get_current_check(self):
         return FusionCheck.objects.filter(fusion_analysis=self).latest('pk')
-
