@@ -2,6 +2,8 @@ from .models import *
 from .forms import NewVariantForm, SubmitForm, VariantCommentForm, FusionCommentForm
 
 from django.utils import timezone
+from django.db import transaction
+
 
 
 def link_callback(uri, rel):
@@ -71,9 +73,10 @@ def get_samples(samples):
     return sample_dict
 
 
+@transaction.atomic
 def unassign_check(sample_analysis_obj):
     """
-    TODO - transcactions.atomic
+
     """
     # get latest check  
     latest_check = sample_analysis_obj.get_checks()['current_check_object']
@@ -108,7 +111,7 @@ def unassign_check(sample_analysis_obj):
     return True
 
 
-# TODO make sure that nothing gets saved to db if there's an error -- ? transaction.atomic
+@transaction.atomic
 def signoff_check(user, current_step_obj, sample_obj, status='C'):
     """
 
@@ -266,7 +269,7 @@ def get_variant_info(sample_data, sample_obj):
             'pk': sample_variant.pk,
             'variant_instance_pk': sample_variant.variant_instance.pk,
             'genomic': variant_obj.genomic_37,
-            'igv_coords': variant_obj.genomic_37.strip('ACGT>'), #TODO
+            'igv_coords': variant_obj.genomic_37.strip('ACGT>'), #TODO what about dels?
             'gene': sample_variant.variant_instance.gene,
             'exon': sample_variant.variant_instance.exon,
             'hgvs_c': sample_variant.variant_instance.hgvs_c,

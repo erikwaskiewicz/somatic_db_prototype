@@ -38,7 +38,7 @@ def signup(request):
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
-            #user.is_active = False TODO - uncomment this when we go live
+            user.is_active = False
             user.save()
 
             return redirect('home')
@@ -295,31 +295,28 @@ def analysis_sheet(request, sample_id):
             new_variant_form = NewVariantForm(request.POST)
 
             if new_variant_form.is_valid():
-                # TODO- this needs more work -hardcoded values and table does not update automatically-page needs to be refreshed
-                # TODO - hvs_c, gene and exon aren't pulled in
+
                 new_variant_data = new_variant_form.cleaned_data
 
                 vaf = int((new_variant_data['alt_reads'] / new_variant_data['total_reads']) * 100)
 
-                # TODO use get or create so we dont have two copoes of the same variant
-                new_variant_object = Variant(
-                    genomic_37=new_variant_data['hgvs_g'],
+                new_variant_object, created = Variant.objects.get_or_create(
+                    genomic_37 = new_variant_data['hgvs_g'],
                     genomic_38 = None,
-                    gene = new_variant_data['gene'],
-                    exon = new_variant_data['exon'],
-                    transcript = '-',
-                    hgvs_c = new_variant_data['hgvs_c'],
-                    hgvs_p=new_variant_data['hgvs_p'],
                 )
                 new_variant_object.save()
                 new_variant_instance_object = VariantInstance(
-                    variant=new_variant_object, 
-                    sample=sample_obj.sample, 
-                    vaf=vaf, 
-                    total_count=new_variant_data['total_reads'], 
-                    alt_count=new_variant_data['alt_reads'], 
-                    in_ntc=new_variant_data['in_ntc'], 
-                    manual_upload=True,
+                    variant = new_variant_object,
+                    gene = new_variant_data['gene'],
+                    exon = new_variant_data['exon'],
+                    hgvs_c = new_variant_data['hgvs_c'],
+                    hgvs_p = new_variant_data['hgvs_p'],
+                    sample = sample_obj.sample, 
+                    vaf = vaf, 
+                    total_count = new_variant_data['total_reads'], 
+                    alt_count = new_variant_data['alt_reads'], 
+                    in_ntc = new_variant_data['in_ntc'], 
+                    manual_upload = True,
                 )
                 new_variant_instance_object.save()
                 new_variant_panel_object = VariantPanelAnalysis(

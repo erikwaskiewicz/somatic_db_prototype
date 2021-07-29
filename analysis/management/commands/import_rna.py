@@ -57,7 +57,7 @@ class Command(BaseCommand):
 
 
         # get panel object
-        panel_obj = Panel.objects.get(panel_name=panel)
+        panel_obj = Panel.objects.get(panel_name=panel, dna_or_rna=dna_or_rna)
 
         # make run
         new_run, created = Run.objects.get_or_create(run_id=run_id)
@@ -70,27 +70,20 @@ class Command(BaseCommand):
         )
         new_ws.save()
 
-        # make samples TODO - move num reads to sample analysis
-        try:
-            new_sample = Sample.objects.get(
-                sample_id=sample,
-                sample_type=dna_or_rna,
-            )
-        except:
-            new_sample = Sample(
-                sample_id=sample,
-                sample_type=dna_or_rna,
-                total_reads=total_cov,
-                total_reads_ntc=ntc_cov,
-                percent_reads_ntc=percent_reads_ntc,
-            )
-        new_sample.save()
+        # make samples
+        new_sample, created = Sample.objects.get_or_create(
+            sample_id=sample,
+            sample_type=dna_or_rna,
+        )
 
         # make sample analysis and checks
         new_sample_analysis = SampleAnalysis(
             worksheet=new_ws,
             sample=new_sample,
             panel=panel_obj,
+            total_reads=total_cov,
+            total_reads_ntc=ntc_cov,
+            percent_reads_ntc=percent_reads_ntc,
         )
         new_sample_analysis.save()
 
