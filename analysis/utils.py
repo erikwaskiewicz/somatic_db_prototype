@@ -202,25 +202,26 @@ def get_variant_info(sample_data, sample_obj):
     variant_calls = []
     polys_list = []
 
+    # TODO this bit isnt used yet - removed to speed up db
     # get list of other samples on the run
-    current_run_obj = sample_obj.worksheet.run
-    current_run_samples = SampleAnalysis.objects.filter(worksheet__run = current_run_obj)
+    #current_run_obj = sample_obj.worksheet.run
+    #current_run_samples = SampleAnalysis.objects.filter(worksheet__run = current_run_obj)
     # remove dups
-    sample_objects = set([ s.sample for s in current_run_samples ])
+    #sample_objects = set([ s.sample for s in current_run_samples ])
 
     for sample_variant in sample_variants:
 
         variant_obj = sample_variant.variant_instance.variant
 
         # count how many times variant is present in other samples on the run
-        this_run_count = 0
-        for s in sample_objects:
-            qs = VariantInstance.objects.filter(
-                sample = s,
-                variant = variant_obj,
-            )
-            if qs:
-                this_run_count += 1
+        #this_run_count = 0
+        #for s in sample_objects:
+        #    qs = VariantInstance.objects.filter(
+        #        sample = s,
+        #        variant = variant_obj,
+        #    )
+        #    if qs:
+        #        this_run_count += 1
 
         # get whether the variant falls within a poly/ known list
         # TODO - will have to handle multiple poly/ known lists in future
@@ -265,14 +266,14 @@ def get_variant_info(sample_data, sample_obj):
             'pk': sample_variant.pk,
             'variant_instance_pk': sample_variant.variant_instance.pk,
             'genomic': variant_obj.genomic_37,
-            'igv_coords': variant_obj.genomic_37.strip('ACGT>'),
+            'igv_coords': variant_obj.genomic_37.strip('ACGT>'), #TODO
             'gene': sample_variant.variant_instance.gene,
             'exon': sample_variant.variant_instance.exon,
             'hgvs_c': sample_variant.variant_instance.hgvs_c,
             'hgvs_p': sample_variant.variant_instance.hgvs_p,
             'this_run': {
-                'count': this_run_count, 
-                'total': len(sample_objects),
+                #'count': this_run_count, 
+                #'total': len(sample_objects),
                 'ntc': sample_variant.variant_instance.in_ntc,
             },   
             'previous_runs': {
