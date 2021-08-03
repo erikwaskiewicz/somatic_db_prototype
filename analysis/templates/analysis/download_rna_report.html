@@ -71,9 +71,9 @@
   <table>
     <thead>
       <tr>
-        <th style="width: 10%">Fusion</th>
-        <th style="width: 10%">Fusion supporting reads</th>
-        <th style="width: 15%">Breakpoints</th>
+        <th style="width: 15%">Fusion</th>
+        <th style="width: 7%">Fusion supporting reads</th>
+        <th style="width: 12%">Breakpoints</th>
         <th style="width: 25%">HGVS</th>
         <th style="width: 10%">IGV</th>
         <th style="width: 30%">Comments</th>
@@ -87,7 +87,14 @@
         <td>{{ v.fusion_genes }}</td>
         <td>{{ v.fusion_supporting_reads }}</td>
         <td>{{ v.left_breakpoint }}<br>{{ v.right_breakpoint }}</td>
-        <td>{{ v.fusion_hgvs }}</td>
+        <td>
+          <!-- loop required because bug in xhtml will collpase whole column if hgvs is None -->
+          {% if v.fusion_hgvs %}
+          {{ v.fusion_hgvs }}
+          {% else %}
+          N/A
+          {% endif %}
+        </td>
         <td>{{ v.final_decision }}</td>
         <td>
           {% for c in v.comments %}
