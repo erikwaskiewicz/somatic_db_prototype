@@ -134,15 +134,15 @@ class Command(BaseCommand):
                         fusion_genes = new_fusion,
                         fusion_supporting_reads = f['fusion_supporting_reads'],
                         ref_reads_1 = f['reference_reads_1'],
-                        split_reads = 0,
-                        spanning_reads = 0,
                         fusion_caller = f['type'],
-                        fusion_score = 0,
                         in_ntc = f['in_ntc'],
                     )
                     # splice variants only have one reference value, fusions have two (one per gene)
                     if f['type'] == 'Fusion':
                         new_fusion_instance.ref_reads_2 = f['reference_reads_2']
+                        new_fusion_instance.fusion_score = f['fusion_score']
+                        new_fusion_instance.split_reads = f['split_reads']
+                        new_fusion_instance.spanning_reads = f['spanning_reads']
                     new_fusion_instance.save()
 
                     new_fusion_analysis = FusionPanelAnalysis(
