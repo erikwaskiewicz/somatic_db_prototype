@@ -1,0 +1,59 @@
+Colorectal:
+  fusions:
+    - NTRK1
+    - NTRK2
+    - NTRK3
+GIST:
+  fusions:
+    - NTRK1
+    - NTRK2
+    - NTRK3
+Glioma:
+  fusions:
+    - BRAF
+    - NTRK1
+    - NTRK2
+    - NTRK3
+  splicing:
+    - EGFR
+Lung:
+  fusions:
+    - ALK
+    - RET
+    - ROS1
+    - NTRK1
+    - NTRK2
+    - NTRK3
+  splicing:
+    - EGFR
+    - MET
+Melanoma:
+  fusions:
+    - NTRK1
+    - NTRK2
+    - NTRK3
+NTRK:
+  fusions:
+    - NTRK1
+    - NTRK2
+    - NTRK3
+Thyroid:
+  fusions:
+    - RET
+    - NTRK1
+    - NTRK2
+    - NTRK3
+  splicing:
+    - EGFR
+Tumour:
+  fusions:
+    - ALK
+    - BRAF
+    - RET
+    - ROS1
+    - NTRK1
+    - NTRK2
+    - NTRK3
+  splicing:
+    - EGFR
+    - MET

@@ -38,7 +38,7 @@ class Command(BaseCommand):
         # hard coded variables
         dna_or_rna = 'DNA'
         assay = 'TSO500'
-        panel_folder = '/home/erik/Desktop/somatic_db/TSO500_panel_bed_files/variant_calling'
+        panel_folder = '/home/ew/somatic_db/roi/variant_calling'
         panel_bed_file = f'{panel_folder}/{panel}.bed' 
 
         # check that inputs are valid

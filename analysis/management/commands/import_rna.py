@@ -40,7 +40,7 @@ class Command(BaseCommand):
         # hard coded variables
         dna_or_rna = 'RNA'
         assay = 'TSO500'
-        panels_file = '/home/erik/Desktop/somatic_db/rna_panels.yaml'
+        panels_file = '/home/ew/somatic_db/roi/rna_panels.yaml'
 
         # check that inputs are valid
         if not os.path.isfile(fusions_file):
@@ -106,8 +106,9 @@ class Command(BaseCommand):
                 if f['type'] == 'Splice':
                     fusion = f"{f['fusion']} {f['exons']}"
 
-                    if f['fusion'] in virtual_panel['splicing']:
-                        in_panel = True
+                    if 'splicing' in virtual_panel.keys():
+                        if f['fusion'] in virtual_panel['splicing']:
+                            in_panel = True
 
 
                 elif f['type'] == 'Fusion':
@@ -127,15 +128,16 @@ class Command(BaseCommand):
                 # make fusions
                 if in_panel:
                     print(fusion)
+                    #TODO change hard coded variables - they should be optional
                     new_fusion_instance = FusionAnalysis(
                         sample = new_sample_analysis,
                         fusion_genes = new_fusion,
                         fusion_supporting_reads = f['fusion_supporting_reads'],
                         ref_reads_1 = f['reference_reads_1'],
-                        split_reads = f['split_reads'],
-                        spanning_reads = f['spanning_reads'],
+                        split_reads = 0,
+                        spanning_reads = 0,
                         fusion_caller = f['type'],
-                        fusion_score = f['fusion_score'],
+                        fusion_score = 0,
                         in_ntc = f['in_ntc'],
                     )
                     # splice variants only have one reference value, fusions have two (one per gene)
