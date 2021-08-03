@@ -323,10 +323,10 @@ class FusionAnalysis(models.Model):
     fusion_supporting_reads = models.IntegerField()
     ref_reads_1 = models.IntegerField()
     ref_reads_2 = models.IntegerField(blank=True, null=True) # will be blank if splice variant
-    split_reads = models.IntegerField()
-    spanning_reads = models.IntegerField()
+    split_reads = models.IntegerField(blank=True, null=True)
+    spanning_reads = models.IntegerField(blank=True, null=True)
     fusion_caller = models.CharField(max_length=50)
-    fusion_score = models.CharField(max_length=50)
+    fusion_score = models.CharField(max_length=50, blank=True, null=True)
     in_ntc = models.BooleanField(default=False)
     final_decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
 
