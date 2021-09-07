@@ -159,7 +159,7 @@ class TestViews(TestCase):
 		self.assertEqual((sample_info_RNA_5.get('checks')).get('current_status'), 'IGV check 1')
 		self.assertEqual((sample_info_RNA_5.get('checks')).get('assigned_to'), None)
 
-		#RNA Thyroid
+		#RNA NTRK
 		sample_6=samples_RNA[6]
 		sample_info_RNA_6=get_sample_info(sample_6)
 		self.assertEqual(sample_info_RNA_6.get('dna_or_rna'), 'RNA')
@@ -466,8 +466,8 @@ class TestViews(TestCase):
 
 		#Colorectal
 		panel_obj = Panel.objects.filter(panel_name="Colorectal", dna_or_rna="DNA")
-		tumour_panel=panel_obj[0]
-		panel_pk=tumour_panel.pk
+		colorectal_panel=panel_obj[0]
+		panel_pk=colorectal_panel.pk
 
 		samples = SampleAnalysis.objects.filter(sample_id="21M00305-control", panel=panel_pk)
 
@@ -516,8 +516,8 @@ class TestViews(TestCase):
 
 		#Thyroid
 		panel_obj = Panel.objects.filter(panel_name="Thyroid", dna_or_rna="DNA")
-		tumour_panel=panel_obj[0]
-		panel_pk=tumour_panel.pk
+		thyroid_panel=panel_obj[0]
+		panel_pk=thyroid_panel.pk
 
 		samples = SampleAnalysis.objects.filter(sample_id="21M00305-control", panel=panel_pk)
 
@@ -789,8 +789,8 @@ class TestViews(TestCase):
 
 		# Thyroid
 		panel_obj = Panel.objects.filter(panel_name="Thyroid", dna_or_rna="RNA")
-		GIST_panel=panel_obj[0]
-		panel_pk=GIST_panel.pk
+		thyroid_panel=panel_obj[0]
+		panel_pk=thyroid_panel.pk
 		sample_obj = SampleAnalysis.objects.filter(sample_id="21M81042-control",panel=panel_pk)
 		sample=sample_obj[0]
 		sample_data=get_sample_info(sample)
