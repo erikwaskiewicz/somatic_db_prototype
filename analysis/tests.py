@@ -58,6 +58,8 @@ class TestViews(TestCase):
 
 	def test_get_sample_info(self):
 
+		#DNA
+		#DNA Tumour
 		panel_obj = Panel.objects.filter(panel_name="Tumour", dna_or_rna="DNA")
 		tumour_panel=panel_obj[0]
 		panel_pk=tumour_panel.pk
@@ -77,100 +79,263 @@ class TestViews(TestCase):
 			self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
 
 
+		#DNA Lung
+		panel_obj = Panel.objects.filter(panel_name="Lung", dna_or_rna="DNA")
+		lung_panel=panel_obj[0]
+		panel_pk=lung_panel.pk
+
+		sample_obj = SampleAnalysis.objects.filter(panel=panel_pk)
+		for sample in sample_obj:
+
+			sample_info=get_sample_info(sample)
+			self.assertEqual(sample_info.get('dna_or_rna'), 'DNA')
+			self.assertEqual(sample_info.get('sample_id'), '21M00305-control')
+			self.assertEqual(sample_info.get('worksheet_id'), 'w3')
+			self.assertEqual(sample_info.get('panel'), 'Lung')
+			self.assertEqual(sample_info.get('run_id'), 'run')
+			self.assertEqual(sample_info.get('total_reads'), None)
+			self.assertEqual(sample_info.get('total_reads_ntc'), None)
+			self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
+			self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
+
+		#DNA Glioma
+		panel_obj = Panel.objects.filter(panel_name="Glioma", dna_or_rna="DNA")
+		glioma_panel=panel_obj[0]
+		panel_pk=glioma_panel.pk
+
+		sample_obj = SampleAnalysis.objects.filter(panel=panel_pk)
+		for sample in sample_obj:
+
+			sample_info=get_sample_info(sample)
+			self.assertEqual(sample_info.get('dna_or_rna'), 'DNA')
+			self.assertEqual(sample_info.get('sample_id'), '21M00305-control')
+			self.assertEqual(sample_info.get('worksheet_id'), 'w3')
+			self.assertEqual(sample_info.get('panel'), 'Glioma')
+			self.assertEqual(sample_info.get('run_id'), 'run')
+			self.assertEqual(sample_info.get('total_reads'), None)
+			self.assertEqual(sample_info.get('total_reads_ntc'), None)
+			self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
+			self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
+
+		#DNA Thyroid
+		panel_obj = Panel.objects.filter(panel_name="Thyroid", dna_or_rna="DNA")
+		thyroid_panel=panel_obj[0]
+		panel_pk=thyroid_panel.pk
+
+		sample_obj = SampleAnalysis.objects.filter(panel=panel_pk)
+		for sample in sample_obj:
+
+			sample_info=get_sample_info(sample)
+			self.assertEqual(sample_info.get('dna_or_rna'), 'DNA')
+			self.assertEqual(sample_info.get('sample_id'), '21M00305-control')
+			self.assertEqual(sample_info.get('worksheet_id'), 'w3')
+			self.assertEqual(sample_info.get('panel'), 'Thyroid')
+			self.assertEqual(sample_info.get('run_id'), 'run')
+			self.assertEqual(sample_info.get('total_reads'), None)
+			self.assertEqual(sample_info.get('total_reads_ntc'), None)
+			self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
+			self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
+
+
+		#DNA GIST
+		panel_obj = Panel.objects.filter(panel_name="GIST", dna_or_rna="DNA")
+		gist_panel=panel_obj[0]
+		panel_pk=gist_panel.pk
+
+		sample_obj = SampleAnalysis.objects.filter(panel=panel_pk)
+		for sample in sample_obj:
+
+			sample_info=get_sample_info(sample)
+			self.assertEqual(sample_info.get('dna_or_rna'), 'DNA')
+			self.assertEqual(sample_info.get('sample_id'), '21M00305-control')
+			self.assertEqual(sample_info.get('worksheet_id'), 'w3')
+			self.assertEqual(sample_info.get('panel'), 'GIST')
+			self.assertEqual(sample_info.get('run_id'), 'run')
+			self.assertEqual(sample_info.get('total_reads'), None)
+			self.assertEqual(sample_info.get('total_reads_ntc'), None)
+			self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
+			self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
+
+		#DNA Melanoma
+		panel_obj = Panel.objects.filter(panel_name="Melanoma", dna_or_rna="DNA")
+		melanoma_panel=panel_obj[0]
+		panel_pk=melanoma_panel.pk
+
+		sample_obj = SampleAnalysis.objects.filter(panel=panel_pk)
+		for sample in sample_obj:
+
+			sample_info=get_sample_info(sample)
+			self.assertEqual(sample_info.get('dna_or_rna'), 'DNA')
+			self.assertEqual(sample_info.get('sample_id'), '21M00305-control')
+			self.assertEqual(sample_info.get('worksheet_id'), 'w3')
+			self.assertEqual(sample_info.get('panel'), 'Melanoma')
+			self.assertEqual(sample_info.get('run_id'), 'run')
+			self.assertEqual(sample_info.get('total_reads'), None)
+			self.assertEqual(sample_info.get('total_reads_ntc'), None)
+			self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
+			self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
+
+		#DNA Colorectal
+		panel_obj = Panel.objects.filter(panel_name="Colorectal", dna_or_rna="DNA")
+		colorectal_panel=panel_obj[0]
+		panel_pk=colorectal_panel.pk
+
+		sample_obj = SampleAnalysis.objects.filter(panel=panel_pk)
+		for sample in sample_obj:
+
+			sample_info=get_sample_info(sample)
+			self.assertEqual(sample_info.get('dna_or_rna'), 'DNA')
+			self.assertEqual(sample_info.get('sample_id'), '21M00305-control')
+			self.assertEqual(sample_info.get('worksheet_id'), 'w3')
+			self.assertEqual(sample_info.get('panel'), 'Colorectal')
+			self.assertEqual(sample_info.get('run_id'), 'run')
+			self.assertEqual(sample_info.get('total_reads'), None)
+			self.assertEqual(sample_info.get('total_reads_ntc'), None)
+			self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
+			self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
+
+
+
+		#RNA
+
 		#RNA Tumour
-		samples_RNA = SampleAnalysis.objects.filter(sample_id="21M81042-control")
-		sample_0=samples_RNA[0]
+		panel_obj = Panel.objects.filter(panel_name="Tumour", dna_or_rna="RNA")
+		tumour_panel=panel_obj[0]
+		panel_pk=tumour_panel.pk
 
-		sample_info_RNA_0=get_sample_info(sample_0)
-		self.assertEqual(sample_info_RNA_0.get('dna_or_rna'), 'RNA')
-		self.assertEqual(sample_info_RNA_0.get('sample_id'), '21M81042-control')
-		self.assertEqual(sample_info_RNA_0.get('worksheet_id'), 'w2')
-		self.assertEqual(sample_info_RNA_0.get('panel'), 'Tumour')
-		self.assertEqual(sample_info_RNA_0.get('run_id'), 'run')
-		self.assertEqual(sample_info_RNA_0.get('total_reads'), 9000004)
-		self.assertEqual(sample_info_RNA_0.get('total_reads_ntc'), 596)
-		self.assertEqual((sample_info_RNA_0.get('checks')).get('current_status'), 'IGV check 1')
-		self.assertEqual((sample_info_RNA_0.get('checks')).get('assigned_to'), None)
+		sample_obj = SampleAnalysis.objects.filter(sample_id="21M81042-control",panel=panel_pk)
+		for sample in sample_obj:
 
+			sample_info=get_sample_info(sample)
+			self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
+			self.assertEqual(sample_info.get('sample_id'), '21M81042-control')
+			self.assertEqual(sample_info.get('worksheet_id'), 'w2')
+			self.assertEqual(sample_info.get('panel'), 'Tumour')
+			self.assertEqual(sample_info.get('run_id'), 'run')
+			self.assertEqual(sample_info.get('total_reads'), 9000004)
+			self.assertEqual(sample_info.get('total_reads_ntc'), 596)
+			self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
+			self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
+
+		
 		#RNA Glioma
-		sample_1=samples_RNA[1]
-		sample_info_RNA_1=get_sample_info(sample_1)
-		self.assertEqual(sample_info_RNA_1.get('dna_or_rna'), 'RNA')
-		self.assertEqual(sample_info_RNA_1.get('sample_id'), '21M81042-control')
-		self.assertEqual(sample_info_RNA_1.get('worksheet_id'), 'w2')
-		self.assertEqual(sample_info_RNA_1.get('panel'), 'Glioma')
-		self.assertEqual(sample_info_RNA_1.get('run_id'), 'run')
-		self.assertEqual(sample_info_RNA_1.get('total_reads'), 23875300)
-		self.assertEqual(sample_info_RNA_1.get('total_reads_ntc'), 6170)
-		self.assertEqual((sample_info_RNA_1.get('checks')).get('current_status'), 'IGV check 1')
-		self.assertEqual((sample_info_RNA_1.get('checks')).get('assigned_to'), None)
+		panel_obj = Panel.objects.filter(panel_name="Glioma", dna_or_rna="RNA")
+		glioma_panel=panel_obj[0]
+		panel_pk=glioma_panel.pk
+
+		sample_obj = SampleAnalysis.objects.filter(sample_id="21M81042-control",panel=panel_pk)
+		for sample in sample_obj:
+
+			sample_info=get_sample_info(sample)
+			self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
+			self.assertEqual(sample_info.get('sample_id'), '21M81042-control')
+			self.assertEqual(sample_info.get('worksheet_id'), 'w2')
+			self.assertEqual(sample_info.get('panel'), 'Glioma')
+			self.assertEqual(sample_info.get('run_id'), 'run')
+			self.assertEqual(sample_info.get('total_reads'), 23875300)
+			self.assertEqual(sample_info.get('total_reads_ntc'), 6170)
+			self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
+			self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
 
 
 		#RNA GIST
-		sample_2=samples_RNA[2]
-		sample_info_RNA_2=get_sample_info(sample_2)
-		self.assertEqual(sample_info_RNA_2.get('dna_or_rna'), 'RNA')
-		self.assertEqual(sample_info_RNA_2.get('sample_id'), '21M81042-control')
-		self.assertEqual(sample_info_RNA_2.get('worksheet_id'), 'w2')
-		self.assertEqual(sample_info_RNA_2.get('panel'), 'GIST')
-		self.assertEqual(sample_info_RNA_2.get('run_id'), 'run')
-		self.assertEqual(sample_info_RNA_2.get('total_reads'), 69576959)
-		self.assertEqual(sample_info_RNA_2.get('total_reads_ntc'), 765)
-		self.assertEqual((sample_info_RNA_2.get('checks')).get('current_status'), 'IGV check 1')
-		self.assertEqual((sample_info_RNA_2.get('checks')).get('assigned_to'), None)
+		panel_obj = Panel.objects.filter(panel_name="GIST", dna_or_rna="RNA")
+		glioma_panel=panel_obj[0]
+		panel_pk=glioma_panel.pk
+
+		sample_obj = SampleAnalysis.objects.filter(sample_id="21M81042-control",panel=panel_pk)
+		for sample in sample_obj:
+
+			sample_info=get_sample_info(sample)
+			self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
+			self.assertEqual(sample_info.get('sample_id'), '21M81042-control')
+			self.assertEqual(sample_info.get('worksheet_id'), 'w2')
+			self.assertEqual(sample_info.get('panel'), 'GIST')
+			self.assertEqual(sample_info.get('run_id'), 'run')
+			self.assertEqual(sample_info.get('total_reads'), 69576959)
+			self.assertEqual(sample_info.get('total_reads_ntc'), 765)
+			self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
+			self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
 
 
 		#RNA Melanoma
-		sample_3=samples_RNA[3]
-		sample_info_RNA_3=get_sample_info(sample_3)
-		self.assertEqual(sample_info_RNA_3.get('dna_or_rna'), 'RNA')
-		self.assertEqual(sample_info_RNA_3.get('sample_id'), '21M81042-control')
-		self.assertEqual(sample_info_RNA_3.get('worksheet_id'), 'w2')
-		self.assertEqual(sample_info_RNA_3.get('panel'), 'Melanoma')
-		self.assertEqual(sample_info_RNA_3.get('run_id'), 'run')
-		self.assertEqual(sample_info_RNA_3.get('total_reads'), 34444)
-		self.assertEqual(sample_info_RNA_3.get('total_reads_ntc'), 6170)
-		self.assertEqual((sample_info_RNA_3.get('checks')).get('current_status'), 'IGV check 1')
-		self.assertEqual((sample_info_RNA_3.get('checks')).get('assigned_to'), None)
+		panel_obj = Panel.objects.filter(panel_name="Melanoma", dna_or_rna="RNA")
+		melanoma_panel=panel_obj[0]
+		panel_pk=melanoma_panel.pk
+
+		sample_obj = SampleAnalysis.objects.filter(sample_id="21M81042-control",panel=panel_pk)
+		for sample in sample_obj:
+
+			sample_info=get_sample_info(sample)
+			self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
+			self.assertEqual(sample_info.get('sample_id'), '21M81042-control')
+			self.assertEqual(sample_info.get('worksheet_id'), 'w2')
+			self.assertEqual(sample_info.get('panel'), 'Melanoma')
+			self.assertEqual(sample_info.get('run_id'), 'run')
+			self.assertEqual(sample_info.get('total_reads'), 34444)
+			self.assertEqual(sample_info.get('total_reads_ntc'), 6170)
+			self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
+			self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
 
 		#RNA Lung
-		sample_4=samples_RNA[4]
-		sample_info_RNA_4=get_sample_info(sample_4)
-		self.assertEqual(sample_info_RNA_4.get('dna_or_rna'), 'RNA')
-		self.assertEqual(sample_info_RNA_4.get('sample_id'), '21M81042-control')
-		self.assertEqual(sample_info_RNA_4.get('worksheet_id'), 'w2')
-		self.assertEqual(sample_info_RNA_4.get('panel'), 'Lung')
-		self.assertEqual(sample_info_RNA_4.get('run_id'), 'run')
-		self.assertEqual(sample_info_RNA_4.get('total_reads'), 8795879)
-		self.assertEqual(sample_info_RNA_4.get('total_reads_ntc'), 34)
-		self.assertEqual((sample_info_RNA_4.get('checks')).get('current_status'), 'IGV check 1')
-		self.assertEqual((sample_info_RNA_4.get('checks')).get('assigned_to'), None)
+		panel_obj = Panel.objects.filter(panel_name="Lung", dna_or_rna="RNA")
+		lung_panel=panel_obj[0]
+		panel_pk=lung_panel.pk
+
+		sample_obj = SampleAnalysis.objects.filter(sample_id="21M81042-control",panel=panel_pk)
+		for sample in sample_obj:
+
+			sample_info=get_sample_info(sample)
+			self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
+			self.assertEqual(sample_info.get('sample_id'), '21M81042-control')
+			self.assertEqual(sample_info.get('worksheet_id'), 'w2')
+			self.assertEqual(sample_info.get('panel'), 'Lung')
+			self.assertEqual(sample_info.get('run_id'), 'run')
+			self.assertEqual(sample_info.get('total_reads'), 8795879)
+			self.assertEqual(sample_info.get('total_reads_ntc'), 34)
+			self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
+			self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
 
 		#RNA Thyroid
-		sample_5=samples_RNA[5]
-		sample_info_RNA_5=get_sample_info(sample_5)
-		self.assertEqual(sample_info_RNA_5.get('dna_or_rna'), 'RNA')
-		self.assertEqual(sample_info_RNA_5.get('sample_id'), '21M81042-control')
-		self.assertEqual(sample_info_RNA_5.get('worksheet_id'), 'w2')
-		self.assertEqual(sample_info_RNA_5.get('panel'), 'Thyroid')
-		self.assertEqual(sample_info_RNA_5.get('run_id'), 'run')
-		self.assertEqual(sample_info_RNA_5.get('total_reads'), 6000)
-		self.assertEqual(sample_info_RNA_5.get('total_reads_ntc'), 170)
-		self.assertEqual((sample_info_RNA_5.get('checks')).get('current_status'), 'IGV check 1')
-		self.assertEqual((sample_info_RNA_5.get('checks')).get('assigned_to'), None)
+
+		panel_obj = Panel.objects.filter(panel_name="Thyroid", dna_or_rna="RNA")
+		thyroid_panel=panel_obj[0]
+		panel_pk=thyroid_panel.pk
+
+		sample_obj = SampleAnalysis.objects.filter(sample_id="21M81042-control",panel=panel_pk)
+		for sample in sample_obj:
+
+			sample_info=get_sample_info(sample)
+			self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
+			self.assertEqual(sample_info.get('sample_id'), '21M81042-control')
+			self.assertEqual(sample_info.get('worksheet_id'), 'w2')
+			self.assertEqual(sample_info.get('panel'), 'Thyroid')
+			self.assertEqual(sample_info.get('run_id'), 'run')
+			self.assertEqual(sample_info.get('total_reads'), 6000)
+			self.assertEqual(sample_info.get('total_reads_ntc'), 170)
+			self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
+			self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
+
 
 		#RNA NTRK
-		sample_6=samples_RNA[6]
-		sample_info_RNA_6=get_sample_info(sample_6)
-		self.assertEqual(sample_info_RNA_6.get('dna_or_rna'), 'RNA')
-		self.assertEqual(sample_info_RNA_6.get('sample_id'), '21M81042-control')
-		self.assertEqual(sample_info_RNA_6.get('worksheet_id'), 'w2')
-		self.assertEqual(sample_info_RNA_6.get('panel'), 'NTRK')
-		self.assertEqual(sample_info_RNA_6.get('run_id'), 'run')
-		self.assertEqual(sample_info_RNA_6.get('total_reads'), 1070560)
-		self.assertEqual(sample_info_RNA_6.get('total_reads_ntc'), 14)
-		self.assertEqual((sample_info_RNA_6.get('checks')).get('current_status'), 'IGV check 1')
-		self.assertEqual((sample_info_RNA_6.get('checks')).get('assigned_to'), None)
+
+		panel_obj = Panel.objects.filter(panel_name="NTRK", dna_or_rna="RNA")
+		ntrk_panel=panel_obj[0]
+		panel_pk=ntrk_panel.pk
+
+		sample_obj = SampleAnalysis.objects.filter(sample_id="21M81042-control",panel=panel_pk)
+		for sample in sample_obj:
+
+			sample_info=get_sample_info(sample)
+			self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
+			self.assertEqual(sample_info.get('sample_id'), '21M81042-control')
+			self.assertEqual(sample_info.get('worksheet_id'), 'w2')
+			self.assertEqual(sample_info.get('panel'), 'NTRK')
+			self.assertEqual(sample_info.get('run_id'), 'run')
+			self.assertEqual(sample_info.get('total_reads'), 1070560)
+			self.assertEqual(sample_info.get('total_reads_ntc'), 14)
+			self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
+			self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
 
 
 
