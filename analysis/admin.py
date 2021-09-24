@@ -7,7 +7,11 @@ admin.site.register(Worksheet)
 admin.site.register(Sample)
 admin.site.register(Panel)
 admin.site.register(SampleAnalysis)
-admin.site.register(Check)
+
+class CheckAdmin(admin.ModelAdmin):
+    list_display = ('id', 'analysis', 'status', 'user')
+admin.site.register(Check, CheckAdmin)
+
 admin.site.register(Variant)
 admin.site.register(VariantInstance)
 admin.site.register(VariantPanelAnalysis)
