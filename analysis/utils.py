@@ -236,7 +236,7 @@ def get_variant_info(sample_data, sample_obj):
                 previous_classifications.append('Poly')
 
         # get checks for each variant
-        variant_checks = VariantCheck.objects.filter(variant_analysis=sample_variant)
+        variant_checks = VariantCheck.objects.filter(variant_analysis=sample_variant).order_by('pk')
         variant_checks_list = [ v.get_decision_display() for v in variant_checks ]
         latest_check = variant_checks.latest('pk')
 
