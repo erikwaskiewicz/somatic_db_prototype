@@ -98,7 +98,13 @@ class Command(BaseCommand):
                 genomic_coords = f"{v['chr'].strip('chr')}:{v['pos']}{v['ref']}>{v['alt']}"
 
                 # convert vaf to percentage
-                vaf = int(float(v['vaf']) * 100)
+                vaf = round(float(v['vaf']) * 100, 1)
+
+                # TODO VAF being inputted as an int, this should be changed to a float but needs model changes
+                vaf_float = float(v['vaf']) * 100
+
+                # boolean whether or not VAF is above threshold
+                above_vaf_threshold = (vaf_float >= 1.4)
 
                 # variant object is created for all variants across whole panel
                 new_var, created = Variant.objects.get_or_create(
@@ -111,9 +117,12 @@ class Command(BaseCommand):
                 # format variant pos as a line of bed file 
                 variant_as_bed=f"{v['chr'].strip('chr')}\t{int(v['pos']) -1}\t{v['pos']}"
                 variant_bed_region = pybedtools.BedTool(variant_as_bed, from_string=True)
-                
-                # if variant and panel beds overlap, enter loop
-                if len(panel_bed.intersect(variant_bed_region)) > 0:
+
+                # boolean if variant overlaps with panel
+                overlaps_panel = len(panel_bed.intersect(variant_bed_region)) > 0
+
+                # if both booleans true, enter loop
+                if overlaps_panel and above_vaf_threshold:
                     print(v)
 
                     # make new instance of variant
