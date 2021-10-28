@@ -64,15 +64,30 @@ def view_worksheets(request):
     Displays all worksheets and links to the page to show all samples 
     within the worksheet
     """
-    worksheets = Worksheet.objects.all()
-    ws_list = []
+    worksheets = Worksheet.objects.all().order_by('-ws_id')
+
+    # Two seperate lists so that diagnostics runs appear first
+    diagnostics_ws_list = []
+    other_ws_list = []
+
     for w in worksheets:
-        ws_list.append({
-            'worksheet_id': w.ws_id,
-            'run_id': w.run.run_id,
-            'assay': w.assay,
-            'status': w.get_status(),
-        })
+        # if first two characters are digits, add to diagnostics list, otherwise add to other list
+        if w.ws_id[0:2].isdigit():
+            diagnostics_ws_list.append({
+                'worksheet_id': w.ws_id,
+                'run_id': w.run.run_id,
+                'assay': w.assay,
+                'status': w.get_status(),
+            })
+        else:
+            other_ws_list.append({
+                'worksheet_id': w.ws_id,
+                'run_id': w.run.run_id,
+                'assay': w.assay,
+                'status': w.get_status(),
+            })
+
+    ws_list = diagnostics_ws_list + other_ws_list
 
     context = {
         'worksheets': ws_list,
