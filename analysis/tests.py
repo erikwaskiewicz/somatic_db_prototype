@@ -1,49 +1,54 @@
-#import os
-#os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'somatic_variant_db.settings')
-
-import django
-django.setup()
-
 from django.test import TestCase
 from analysis.utils import *
 
 
 class TestViews(TestCase):
+	"""
+	Test ability to navigate through the different pages of the database
 
-	# test data
+	"""
+
+	# load in test data
 	fixtures = ['dna_test_1.json']
+
+	def setUp(self):
+		''' Runs before each test '''
+		self.client.login(username='test', password='hello123')
 
 
 	def test_signup(self):
+		''' Access signup page '''
 		self.client.logout()
 		response = self.client.get('/signup', follow=True)
-		self.assertEqual(response.status_code,200)
+		self.assertEqual(response.status_code, 200)
 
 
 	def test_login(self):
+		''' Access login page '''
 		self.client.logout()
 		response = self.client.get('/login', follow=True)
-		self.assertEqual(response.status_code,200)
-
-
-	def set_up(self):
-		self.client.login(username='test', password= 'hello123')
-		# TODO
+		self.assertEqual(response.status_code, 200)
 
 
 	def test_view_worksheets(self):
+		''' Access worksheets page '''
 		response = self.client.get('/worksheets', follow=True)
-		self.assertEqual(response.status_code,200)
+		self.assertEqual(response.status_code, 200)
 
 
 	def test_logout(self):
+		''' Access logout page '''
 		response = self.client.get('/logout', follow=True)
-		self.assertEqual(response.status_code,200)
+		self.assertEqual(response.status_code, 200)
 
 
 class TestDna(TestCase):
+	"""
+	Load in DNA control sample with each virtual panel applied, test that data is as expected
 
-	# test data
+	"""
+
+	# load in test data
 	fixtures = ['dna_test_1.json']
 
 
@@ -300,7 +305,7 @@ class TestDna(TestCase):
 		self.assertEqual(variant_12.get('exon'), '5/11')
 		self.assertEqual(variant_12.get('hgvs_c'), 'NM_000546.5:c.511G>T')
 		self.assertEqual(variant_12.get('hgvs_p'), 'NP_000537.3:p.(Glu171Ter)')
-		self.assertEqual((variant_12.get('vaf').get('vaf')), 16)  # TODO - had to change this - rounding in database?
+		self.assertEqual((variant_12.get('vaf').get('vaf')), 16)
 		self.assertEqual((variant_12.get('vaf').get('total_count')), 1460)
 		self.assertEqual((variant_12.get('vaf').get('alt_count')), 233)
 		self.assertEqual(variant_12.get('checks'), ['Pending'])
@@ -1028,7 +1033,6 @@ class TestDna(TestCase):
 
 
 
-	'''
 
 class TestRna(TestCase):
 
@@ -1037,548 +1041,561 @@ class TestRna(TestCase):
 
 
 	def test_get_samples(self):
+		'''
+		Pull correct sample info from worksheet
 
-		#samples = SampleAnalysis.objects.filter(worksheet = 'rna_ws_1')
-		#samples_dict= get_samples(samples)
-		#self.assertEqual(list(samples_dict.keys()), ['rna_test_1'])
-		#sample=samples_dict.get('rna_test_1')
-		#self.assertEqual(sample.get('dna_rna'), 'RNA')
+		'''
+		samples = SampleAnalysis.objects.filter(worksheet = 'rna_ws_1')
+		samples_dict = get_samples(samples)
+
+		self.assertEqual(list(samples_dict.keys()), ['rna_test_1'])
+
+		sample = samples_dict.get('rna_test_1')
+		self.assertEqual(sample.get('dna_rna'), 'RNA')
 
 
-	def test_get_sample_info_rna(self):
-		#RNA
+	def test_get_sample_info_rna_tumour(self):
+		'''
+		Check sample info for tumour panel
 
-		#RNA Tumour
-		panel_obj = Panel.objects.filter(panel_name='Tumour', dna_or_rna='RNA')
-		tumour_panel=panel_obj[0]
-		panel_pk=tumour_panel.pk
+		'''
+		panel_obj = Panel.objects.get(panel_name='Tumour', dna_or_rna='RNA')
+		sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1', panel=panel_obj)
 
-		sample_obj = SampleAnalysis.objects.filter(sample_id='rna_test_1',panel=panel_pk)
-		for sample in sample_obj:
+		sample_info = get_sample_info(sample_obj)
 
-			sample_info=get_sample_info(sample)
-			self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
-			self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
-			self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
-			self.assertEqual(sample_info.get('panel'), 'Tumour')
-			self.assertEqual(sample_info.get('run_id'), 'run_1')
-			self.assertEqual(sample_info.get('total_reads'), 9000004)
-			self.assertEqual(sample_info.get('total_reads_ntc'), 596)
-			self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
-			self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
+		self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
+		self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
+		self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
+		self.assertEqual(sample_info.get('panel'), 'Tumour')
+		self.assertEqual(sample_info.get('run_id'), 'run_1')
+		self.assertEqual(sample_info.get('total_reads'), 9000004)
+		self.assertEqual(sample_info.get('total_reads_ntc'), 596)
+		self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
+		self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
 
 		
-		#RNA Glioma
-		panel_obj = Panel.objects.filter(panel_name='Glioma', dna_or_rna='RNA')
-		glioma_panel=panel_obj[0]
-		panel_pk=glioma_panel.pk
+	def test_get_sample_info_rna_glioma(self):
+		'''
+		Check sample info for glioma panel 
 
-		sample_obj = SampleAnalysis.objects.filter(sample_id='rna_test_1',panel=panel_pk)
-		for sample in sample_obj:
+		'''
+		panel_obj = Panel.objects.get(panel_name='Glioma', dna_or_rna='RNA')
+		sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1', panel=panel_obj)
 
-			sample_info=get_sample_info(sample)
-			self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
-			self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
-			self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
-			self.assertEqual(sample_info.get('panel'), 'Glioma')
-			self.assertEqual(sample_info.get('run_id'), 'run_1')
-			self.assertEqual(sample_info.get('total_reads'), 23875300)
-			self.assertEqual(sample_info.get('total_reads_ntc'), 6170)
-			self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
-			self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
-
-
-		#RNA GIST
-		panel_obj = Panel.objects.filter(panel_name='GIST', dna_or_rna='RNA')
-		gist_panel=panel_obj[0]
-		panel_pk=gist_panel.pk
-
-		sample_obj = SampleAnalysis.objects.filter(sample_id='rna_test_1',panel=panel_pk)
-		for sample in sample_obj:
-
-			sample_info=get_sample_info(sample)
-			self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
-			self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
-			self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
-			self.assertEqual(sample_info.get('panel'), 'GIST')
-			self.assertEqual(sample_info.get('run_id'), 'run_1')
-			self.assertEqual(sample_info.get('total_reads'), 69576959)
-			self.assertEqual(sample_info.get('total_reads_ntc'), 765)
-			self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
-			self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
+		sample_info = get_sample_info(sample_obj)
+		
+		self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
+		self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
+		self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
+		self.assertEqual(sample_info.get('panel'), 'Glioma')
+		self.assertEqual(sample_info.get('run_id'), 'run_1')
+		self.assertEqual(sample_info.get('total_reads'), 23875300)
+		self.assertEqual(sample_info.get('total_reads_ntc'), 6170)
+		self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
+		self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
 
 
-		#RNA Melanoma
-		panel_obj = Panel.objects.filter(panel_name='Melanoma', dna_or_rna='RNA')
-		melanoma_panel=panel_obj[0]
-		panel_pk=melanoma_panel.pk
+	def test_get_sample_info_rna_gist(self):
+		'''
+		Check sample info for gist panel
 
-		sample_obj = SampleAnalysis.objects.filter(sample_id='rna_test_1',panel=panel_pk)
-		for sample in sample_obj:
+		'''
+		panel_obj = Panel.objects.get(panel_name='GIST', dna_or_rna='RNA')
+		sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1', panel=panel_obj)
 
-			sample_info=get_sample_info(sample)
-			self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
-			self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
-			self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
-			self.assertEqual(sample_info.get('panel'), 'Melanoma')
-			self.assertEqual(sample_info.get('run_id'), 'run_1')
-			self.assertEqual(sample_info.get('total_reads'), 34444)
-			self.assertEqual(sample_info.get('total_reads_ntc'), 6170)
-			self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
-			self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
+		sample_info = get_sample_info(sample_obj)
 
-		#RNA Lung
-		panel_obj = Panel.objects.filter(panel_name='Lung', dna_or_rna='RNA')
-		lung_panel=panel_obj[0]
-		panel_pk=lung_panel.pk
-
-		sample_obj = SampleAnalysis.objects.filter(sample_id='rna_test_1',panel=panel_pk)
-		for sample in sample_obj:
-
-			sample_info=get_sample_info(sample)
-			self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
-			self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
-			self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
-			self.assertEqual(sample_info.get('panel'), 'Lung')
-			self.assertEqual(sample_info.get('run_id'), 'run_1')
-			self.assertEqual(sample_info.get('total_reads'), 8795879)
-			self.assertEqual(sample_info.get('total_reads_ntc'), 34)
-			self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
-			self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
-
-		#RNA Thyroid
-		panel_obj = Panel.objects.filter(panel_name='Thyroid', dna_or_rna='RNA')
-		thyroid_panel=panel_obj[0]
-		panel_pk=thyroid_panel.pk
-
-		sample_obj = SampleAnalysis.objects.filter(sample_id='rna_test_1',panel=panel_pk)
-		for sample in sample_obj:
-
-			sample_info=get_sample_info(sample)
-			self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
-			self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
-			self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
-			self.assertEqual(sample_info.get('panel'), 'Thyroid')
-			self.assertEqual(sample_info.get('run_id'), 'run_1')
-			self.assertEqual(sample_info.get('total_reads'), 6000)
-			self.assertEqual(sample_info.get('total_reads_ntc'), 170)
-			self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
-			self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
+		self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
+		self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
+		self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
+		self.assertEqual(sample_info.get('panel'), 'GIST')
+		self.assertEqual(sample_info.get('run_id'), 'run_1')
+		self.assertEqual(sample_info.get('total_reads'), 69576959)
+		self.assertEqual(sample_info.get('total_reads_ntc'), 765)
+		self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
+		self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
 
 
-		#RNA NTRK
-		panel_obj = Panel.objects.filter(panel_name='NTRK', dna_or_rna='RNA')
-		ntrk_panel=panel_obj[0]
-		panel_pk=ntrk_panel.pk
+	def test_get_sample_info_rna_melanoma(self):
+		'''
+		Check sample info for melanoma panel
 
-		sample_obj = SampleAnalysis.objects.filter(sample_id='rna_test_1',panel=panel_pk)
-		for sample in sample_obj:
+		'''
+		panel_obj = Panel.objects.get(panel_name='Melanoma', dna_or_rna='RNA')
+		sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1', panel=panel_obj)
 
-			sample_info=get_sample_info(sample)
-			self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
-			self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
-			self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
-			self.assertEqual(sample_info.get('panel'), 'NTRK')
-			self.assertEqual(sample_info.get('run_id'), 'run_1')
-			self.assertEqual(sample_info.get('total_reads'), 1070560)
-			self.assertEqual(sample_info.get('total_reads_ntc'), 14)
-			self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
-			self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
-
-		#RNA Colorectal
-		panel_obj = Panel.objects.filter(panel_name='Colorectal', dna_or_rna='RNA')
-		colorectal_panel=panel_obj[0]
-		panel_pk=colorectal_panel.pk
-
-		sample_obj = SampleAnalysis.objects.filter(sample_id='rna_test_1',panel=panel_pk)
-		for sample in sample_obj:
-
-			sample_info=get_sample_info(sample)
-			self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
-			self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
-			self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
-			self.assertEqual(sample_info.get('panel'), 'Colorectal')
-			self.assertEqual(sample_info.get('run_id'), 'run_1')
-			self.assertEqual(sample_info.get('total_reads'), 67794769)
-			self.assertEqual(sample_info.get('total_reads_ntc'), 49674)
-			self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
-			self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
+		sample_info = get_sample_info(sample_obj)
+		
+		self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
+		self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
+		self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
+		self.assertEqual(sample_info.get('panel'), 'Melanoma')
+		self.assertEqual(sample_info.get('run_id'), 'run_1')
+		self.assertEqual(sample_info.get('total_reads'), 34444)
+		self.assertEqual(sample_info.get('total_reads_ntc'), 6170)
+		self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
+		self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
 
 
-	def test_get_fusion_info(self):
+	def test_get_sample_info_rna_lung(self):
+		'''
+		Check sample info for lung panel
 
-		#Tumour
-		panel_obj = Panel.objects.filter(panel_name='Tumour', dna_or_rna='RNA')
-		tumour_panel=panel_obj[0]
-		panel_pk=tumour_panel.pk
-		sample_obj = SampleAnalysis.objects.filter(sample_id='rna_test_1',panel=panel_pk)
-		sample=sample_obj[0]
-		sample_data=get_sample_info(sample)
-		fusion_data=get_fusion_info(sample_data, sample)
-		fusion_calls=fusion_data.get('fusion_calls')
+		'''
+		panel_obj = Panel.objects.get(panel_name='Lung', dna_or_rna='RNA')
+		sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1', panel=panel_obj)
 
-		fusion_0=fusion_calls[0]
+		sample_info = get_sample_info(sample_obj)
+
+		self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
+		self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
+		self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
+		self.assertEqual(sample_info.get('panel'), 'Lung')
+		self.assertEqual(sample_info.get('run_id'), 'run_1')
+		self.assertEqual(sample_info.get('total_reads'), 8795879)
+		self.assertEqual(sample_info.get('total_reads_ntc'), 34)
+		self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
+		self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
+
+
+	def test_get_sample_info_rna_thyroid(self):
+		'''
+		Check sample info for thyroid panel
+
+		'''
+		panel_obj = Panel.objects.get(panel_name='Thyroid', dna_or_rna='RNA')
+		sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1', panel=panel_obj)
+
+		sample_info = get_sample_info(sample_obj)
+
+		self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
+		self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
+		self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
+		self.assertEqual(sample_info.get('panel'), 'Thyroid')
+		self.assertEqual(sample_info.get('run_id'), 'run_1')
+		self.assertEqual(sample_info.get('total_reads'), 6000)
+		self.assertEqual(sample_info.get('total_reads_ntc'), 170)
+		self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
+		self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
+
+
+	def test_get_sample_info_rna_ntrk(self):
+		'''
+		Check sample info for ntrk panel
+
+		'''
+		panel_obj = Panel.objects.get(panel_name='NTRK', dna_or_rna='RNA')
+		sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1', panel=panel_obj)
+
+		sample_info = get_sample_info(sample_obj)
+
+		self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
+		self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
+		self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
+		self.assertEqual(sample_info.get('panel'), 'NTRK')
+		self.assertEqual(sample_info.get('run_id'), 'run_1')
+		self.assertEqual(sample_info.get('total_reads'), 1070560)
+		self.assertEqual(sample_info.get('total_reads_ntc'), 14)
+		self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
+		self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
+
+
+	def test_get_sample_info_rna_colorectal(self):
+		'''
+		Check sample info for colorectal panel
+
+		'''
+		panel_obj = Panel.objects.get(panel_name='Colorectal', dna_or_rna='RNA')
+		sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1', panel=panel_obj)
+
+		sample_info = get_sample_info(sample_obj)
+
+		self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
+		self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
+		self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
+		self.assertEqual(sample_info.get('panel'), 'Colorectal')
+		self.assertEqual(sample_info.get('run_id'), 'run_1')
+		self.assertEqual(sample_info.get('total_reads'), 67794769)
+		self.assertEqual(sample_info.get('total_reads_ntc'), 49674)
+		self.assertEqual((sample_info.get('checks')).get('current_status'), 'IGV check 1')
+		self.assertEqual((sample_info.get('checks')).get('assigned_to'), None)
+
+
+	def test_get_fusion_info_tumour(self):
+		'''
+		Check correct calls are present in tumour panel
+
+		'''
+		panel_obj = Panel.objects.get(panel_name='Tumour', dna_or_rna='RNA')
+		sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1',panel=panel_obj)
+
+		sample_data = get_sample_info(sample_obj)
+		fusion_data = get_fusion_info(sample_data, sample_obj)
+		fusion_calls = fusion_data.get('fusion_calls')
+
+		fusion_0 = fusion_calls[0]
 		self.assertEqual(fusion_0.get('fusion_genes'), 'TPM3-NTRK1')
 		self.assertEqual(fusion_0.get('left_breakpoint'), 'chr1:154142876')
 		self.assertEqual(fusion_0.get('right_breakpoint'), 'chr1:156844361')
 
-		fusion_1=fusion_calls[1]
+		fusion_1 = fusion_calls[1]
 		self.assertEqual(fusion_1.get('fusion_genes'), 'LMNA-NTRK1')
 		self.assertEqual(fusion_1.get('left_breakpoint'), 'chr1:156100562')
 		self.assertEqual(fusion_1.get('right_breakpoint'), 'chr1:156844696')
 
-		fusion_2=fusion_calls[2]
+		fusion_2 = fusion_calls[2]
 		self.assertEqual(fusion_2.get('fusion_genes'), 'SLC45A3-BRAF')
 		self.assertEqual(fusion_2.get('left_breakpoint'), 'chr1:205649521')
 		self.assertEqual(fusion_2.get('right_breakpoint'), 'chr7:140494266')
 
-		fusion_3=fusion_calls[3]
+		fusion_3 = fusion_calls[3]
 		self.assertEqual(fusion_3.get('fusion_genes'), 'EML4-ALK')
 		self.assertEqual(fusion_3.get('left_breakpoint'), 'chr2:42522654')
 		self.assertEqual(fusion_3.get('right_breakpoint'), 'chr2:29446394')
 
-		fusion_4=fusion_calls[4]
+		fusion_4 = fusion_calls[4]
 		self.assertEqual(fusion_4.get('fusion_genes'), 'TFG-NTRK1')
 		self.assertEqual(fusion_4.get('left_breakpoint'), 'chr3:100451513')
 		self.assertEqual(fusion_4.get('right_breakpoint'), 'chr1:156844360')
 
-		fusion_5=fusion_calls[5]
+		fusion_5 = fusion_calls[5]
 		self.assertEqual(fusion_5.get('fusion_genes'), 'SLC34A2-ROS1;GOPC')
 		self.assertEqual(fusion_5.get('left_breakpoint'), 'chr4:25665950')
 		self.assertEqual(fusion_5.get('right_breakpoint'), 'chr6:117645578')
 
-		fusion_6=fusion_calls[6]
+		fusion_6 = fusion_calls[6]
 		self.assertEqual(fusion_6.get('fusion_genes'), 'CD74-ROS1;GOPC')
 		self.assertEqual(fusion_6.get('left_breakpoint'), 'chr5:149784243')
 		self.assertEqual(fusion_6.get('right_breakpoint'), 'chr6:117645578')
 
-		fusion_7=fusion_calls[7]
+		fusion_7 = fusion_calls[7]
 		self.assertEqual(fusion_7.get('fusion_genes'), 'KIF5B-RET')
 		self.assertEqual(fusion_7.get('left_breakpoint'), 'chr10:32306071')
 		self.assertEqual(fusion_7.get('right_breakpoint'), 'chr10:43609927')
 
-		fusion_8=fusion_calls[8]
+		fusion_8 = fusion_calls[8]
 		self.assertEqual(fusion_8.get('fusion_genes'), 'NCOA4-RET')
 		self.assertEqual(fusion_8.get('left_breakpoint'), 'chr10:51582937')
 		self.assertEqual(fusion_8.get('right_breakpoint'), 'chr10:43612030')
 
-		fusion_9=fusion_calls[9]
+		fusion_9 = fusion_calls[9]
 		self.assertEqual(fusion_9.get('fusion_genes'), 'CCDC6-RET')
 		self.assertEqual(fusion_9.get('left_breakpoint'), 'chr10:61665879')
 		self.assertEqual(fusion_9.get('right_breakpoint'), 'chr10:43612032')
 
-		fusion_10=fusion_calls[10]
+		fusion_10 = fusion_calls[10]
 		self.assertEqual(fusion_10.get('fusion_genes'), 'ETV6-NTRK3')
 		self.assertEqual(fusion_10.get('left_breakpoint'), 'chr12:12022900')
 		self.assertEqual(fusion_10.get('right_breakpoint'), 'chr15:88483984')
 
-		fusion_11=fusion_calls[11]
+		fusion_11 = fusion_calls[11]
 		self.assertEqual(fusion_11.get('fusion_genes'), 'EGFR 2-7/28')
 		self.assertEqual(fusion_11.get('left_breakpoint'), 'chr7:55087058')
 		self.assertEqual(fusion_11.get('right_breakpoint'), 'chr7:55223522')
 
-		fusion_12=fusion_calls[12]
+		fusion_12 = fusion_calls[12]
 		self.assertEqual(fusion_12.get('fusion_genes'), 'MET 14/21')
 		self.assertEqual(fusion_12.get('left_breakpoint'), 'chr7:116411708')
 		self.assertEqual(fusion_12.get('right_breakpoint'), 'chr7:116414934')
 
 
-		#Glioma
-		panel_obj = Panel.objects.filter(panel_name='Glioma', dna_or_rna='RNA')
-		glioma_panel=panel_obj[0]
-		panel_pk=glioma_panel.pk
-		sample_obj = SampleAnalysis.objects.filter(sample_id='rna_test_1',panel=panel_pk)
-		sample=sample_obj[0]
-		sample_data=get_sample_info(sample)
+	def test_get_fusion_info_glioma(self):
+		'''
+		Check correct calls are present in glioma panel
 
-		fusion_data=get_fusion_info(sample_data, sample)
-		fusion_calls=fusion_data.get('fusion_calls')
+		'''
+		panel_obj = Panel.objects.get(panel_name='Glioma', dna_or_rna='RNA')
+		sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1',panel=panel_obj)
 
-		fusion_0=fusion_calls[0]
+		sample_data = get_sample_info(sample_obj)
+		fusion_data = get_fusion_info(sample_data, sample_obj)
+		fusion_calls = fusion_data.get('fusion_calls')
+
+		fusion_0 = fusion_calls[0]
 		self.assertEqual(fusion_0.get('fusion_genes'), 'TPM3-NTRK1')
 		self.assertEqual(fusion_0.get('left_breakpoint'), 'chr1:154142876')
 		self.assertEqual(fusion_0.get('right_breakpoint'), 'chr1:156844361')
 
-		fusion_1=fusion_calls[1]
+		fusion_1 = fusion_calls[1]
 		self.assertEqual(fusion_1.get('fusion_genes'), 'LMNA-NTRK1')
 		self.assertEqual(fusion_1.get('left_breakpoint'), 'chr1:156100562')
 		self.assertEqual(fusion_1.get('right_breakpoint'), 'chr1:156844696')
 
-		fusion_2=fusion_calls[2]
+		fusion_2 = fusion_calls[2]
 		self.assertEqual(fusion_2.get('fusion_genes'), 'SLC45A3-BRAF')
 		self.assertEqual(fusion_2.get('left_breakpoint'), 'chr1:205649521')
 		self.assertEqual(fusion_2.get('right_breakpoint'), 'chr7:140494266')
 
-		fusion_3=fusion_calls[3]
+		fusion_3 = fusion_calls[3]
 		self.assertEqual(fusion_3.get('fusion_genes'), 'TFG-NTRK1')
 		self.assertEqual(fusion_3.get('left_breakpoint'), 'chr3:100451513')
 		self.assertEqual(fusion_3.get('right_breakpoint'), 'chr1:156844360')
 
-		fusion_4=fusion_calls[4]
+		fusion_4 = fusion_calls[4]
 		self.assertEqual(fusion_4.get('fusion_genes'), 'ETV6-NTRK3')
 		self.assertEqual(fusion_4.get('left_breakpoint'), 'chr12:12022900')
 		self.assertEqual(fusion_4.get('right_breakpoint'), 'chr15:88483984')
 
-		fusion_5=fusion_calls[5]
+		fusion_5 = fusion_calls[5]
 		self.assertEqual(fusion_5.get('fusion_genes'), 'EGFR 2-7/28')
 		self.assertEqual(fusion_5.get('left_breakpoint'), 'chr7:55087058')
 		self.assertEqual(fusion_5.get('right_breakpoint'), 'chr7:55223522')
 
 
-		#Melanoma
-		panel_obj = Panel.objects.filter(panel_name='Melanoma', dna_or_rna='RNA')
-		melanoma_panel=panel_obj[0]
-		panel_pk=melanoma_panel.pk
-		sample_obj = SampleAnalysis.objects.filter(sample_id='rna_test_1',panel=panel_pk)
-		sample=sample_obj[0]
-		sample_data=get_sample_info(sample)
+	def test_get_fusion_info_melanoma(self):
+		'''
+		Check correct calls are present in melanoma panel
 
-		fusion_data=get_fusion_info(sample_data, sample)
-		fusion_calls=fusion_data.get('fusion_calls')
+		'''
+		panel_obj = Panel.objects.get(panel_name='Melanoma', dna_or_rna='RNA')
+		sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1',panel=panel_obj)
 
-		fusion_0=fusion_calls[0]
+		sample_data = get_sample_info(sample_obj)
+		fusion_data = get_fusion_info(sample_data, sample_obj)
+		fusion_calls = fusion_data.get('fusion_calls')
+
+		fusion_0 = fusion_calls[0]
 		self.assertEqual(fusion_0.get('fusion_genes'), 'TPM3-NTRK1')
 		self.assertEqual(fusion_0.get('left_breakpoint'), 'chr1:154142876')
 		self.assertEqual(fusion_0.get('right_breakpoint'), 'chr1:156844361')
 
-		fusion_1=fusion_calls[1]
+		fusion_1 = fusion_calls[1]
 		self.assertEqual(fusion_1.get('fusion_genes'), 'LMNA-NTRK1')
 		self.assertEqual(fusion_1.get('left_breakpoint'), 'chr1:156100562')
 		self.assertEqual(fusion_1.get('right_breakpoint'), 'chr1:156844696')
 
-		fusion_2=fusion_calls[2]
+		fusion_2 = fusion_calls[2]
 		self.assertEqual(fusion_2.get('fusion_genes'), 'TFG-NTRK1')
 		self.assertEqual(fusion_2.get('left_breakpoint'), 'chr3:100451513')
 		self.assertEqual(fusion_2.get('right_breakpoint'), 'chr1:156844360')
 
-		fusion_3=fusion_calls[3]
-		self.assertEqual(fusion_3.get('fusion_genes'), 'ETV6-NTRK3')
-		self.assertEqual(fusion_3.get('left_breakpoint'), 'chr12:12022900')
-		self.assertEqual(fusion_3.get('right_breakpoint'), 'chr15:88483984')
-
-		# NTRK
-		panel_obj = Panel.objects.filter(panel_name='NTRK', dna_or_rna='RNA')
-		NTRK_panel=panel_obj[0]
-		panel_pk=NTRK_panel.pk
-		sample_obj = SampleAnalysis.objects.filter(sample_id='rna_test_1',panel=panel_pk)
-		sample=sample_obj[0]
-		sample_data=get_sample_info(sample)
-
-		fusion_data=get_fusion_info(sample_data, sample)
-		fusion_calls=fusion_data.get('fusion_calls')
-
-		fusion_0=fusion_calls[0]
-		self.assertEqual(fusion_0.get('fusion_genes'), 'TPM3-NTRK1')
-		self.assertEqual(fusion_0.get('left_breakpoint'), 'chr1:154142876')
-		self.assertEqual(fusion_0.get('right_breakpoint'), 'chr1:156844361')
-
-		fusion_1=fusion_calls[1]
-		self.assertEqual(fusion_1.get('fusion_genes'), 'LMNA-NTRK1')
-		self.assertEqual(fusion_1.get('left_breakpoint'), 'chr1:156100562')
-		self.assertEqual(fusion_1.get('right_breakpoint'), 'chr1:156844696')
-
-		fusion_2=fusion_calls[2]
-		self.assertEqual(fusion_2.get('fusion_genes'), 'TFG-NTRK1')
-		self.assertEqual(fusion_2.get('left_breakpoint'), 'chr3:100451513')
-		self.assertEqual(fusion_2.get('right_breakpoint'), 'chr1:156844360')
-
-		fusion_3=fusion_calls[3]
+		fusion_3 = fusion_calls[3]
 		self.assertEqual(fusion_3.get('fusion_genes'), 'ETV6-NTRK3')
 		self.assertEqual(fusion_3.get('left_breakpoint'), 'chr12:12022900')
 		self.assertEqual(fusion_3.get('right_breakpoint'), 'chr15:88483984')
 
 
-		# GIST
-		panel_obj = Panel.objects.filter(panel_name='GIST', dna_or_rna='RNA')
-		GIST_panel=panel_obj[0]
-		panel_pk=GIST_panel.pk
-		sample_obj = SampleAnalysis.objects.filter(sample_id='rna_test_1',panel=panel_pk)
-		sample=sample_obj[0]
-		sample_data=get_sample_info(sample)
+	def test_get_fusion_info_ntrk(self):
+		'''
+		Check correct calls are present in ntrk panel
 
-		fusion_data=get_fusion_info(sample_data, sample)
-		fusion_calls=fusion_data.get('fusion_calls')
+		'''
+		panel_obj = Panel.objects.get(panel_name='NTRK', dna_or_rna='RNA')
+		sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1',panel=panel_obj)
 
+		sample_data = get_sample_info(sample_obj)
+		fusion_data = get_fusion_info(sample_data, sample_obj)
+		fusion_calls = fusion_data.get('fusion_calls')
 
-		fusion_0=fusion_calls[0]
+		fusion_0 = fusion_calls[0]
 		self.assertEqual(fusion_0.get('fusion_genes'), 'TPM3-NTRK1')
 		self.assertEqual(fusion_0.get('left_breakpoint'), 'chr1:154142876')
 		self.assertEqual(fusion_0.get('right_breakpoint'), 'chr1:156844361')
 
-		fusion_1=fusion_calls[1]
+		fusion_1 = fusion_calls[1]
 		self.assertEqual(fusion_1.get('fusion_genes'), 'LMNA-NTRK1')
 		self.assertEqual(fusion_1.get('left_breakpoint'), 'chr1:156100562')
 		self.assertEqual(fusion_1.get('right_breakpoint'), 'chr1:156844696')
 
-		fusion_2=fusion_calls[2]
+		fusion_2 = fusion_calls[2]
 		self.assertEqual(fusion_2.get('fusion_genes'), 'TFG-NTRK1')
 		self.assertEqual(fusion_2.get('left_breakpoint'), 'chr3:100451513')
 		self.assertEqual(fusion_2.get('right_breakpoint'), 'chr1:156844360')
 
-
-		fusion_3=fusion_calls[3]
+		fusion_3 = fusion_calls[3]
 		self.assertEqual(fusion_3.get('fusion_genes'), 'ETV6-NTRK3')
 		self.assertEqual(fusion_3.get('left_breakpoint'), 'chr12:12022900')
 		self.assertEqual(fusion_3.get('right_breakpoint'), 'chr15:88483984')
 
-		# Thyroid
-		panel_obj = Panel.objects.filter(panel_name='Thyroid', dna_or_rna='RNA')
-		thyroid_panel=panel_obj[0]
-		panel_pk=thyroid_panel.pk
-		sample_obj = SampleAnalysis.objects.filter(sample_id='rna_test_1',panel=panel_pk)
-		sample=sample_obj[0]
-		sample_data=get_sample_info(sample)
 
-		fusion_data=get_fusion_info(sample_data, sample)
-		fusion_calls=fusion_data.get('fusion_calls')
+	def test_get_fusion_info_gist(self):
+		'''
+		Check correct calls are present in GIST panel
 
-		fusion_0=fusion_calls[0]
+		'''
+		panel_obj = Panel.objects.get(panel_name='GIST', dna_or_rna='RNA')
+		sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1',panel=panel_obj)
+
+		sample_data = get_sample_info(sample_obj)
+		fusion_data = get_fusion_info(sample_data, sample_obj)
+		fusion_calls = fusion_data.get('fusion_calls')
+
+		fusion_0 = fusion_calls[0]
 		self.assertEqual(fusion_0.get('fusion_genes'), 'TPM3-NTRK1')
 		self.assertEqual(fusion_0.get('left_breakpoint'), 'chr1:154142876')
 		self.assertEqual(fusion_0.get('right_breakpoint'), 'chr1:156844361')
 
-		fusion_1=fusion_calls[1]
+		fusion_1 = fusion_calls[1]
 		self.assertEqual(fusion_1.get('fusion_genes'), 'LMNA-NTRK1')
 		self.assertEqual(fusion_1.get('left_breakpoint'), 'chr1:156100562')
 		self.assertEqual(fusion_1.get('right_breakpoint'), 'chr1:156844696')
 
-		fusion_2=fusion_calls[2]
+		fusion_2 = fusion_calls[2]
 		self.assertEqual(fusion_2.get('fusion_genes'), 'TFG-NTRK1')
 		self.assertEqual(fusion_2.get('left_breakpoint'), 'chr3:100451513')
 		self.assertEqual(fusion_2.get('right_breakpoint'), 'chr1:156844360')
 
-		fusion_3=fusion_calls[3]
+		fusion_3 = fusion_calls[3]
+		self.assertEqual(fusion_3.get('fusion_genes'), 'ETV6-NTRK3')
+		self.assertEqual(fusion_3.get('left_breakpoint'), 'chr12:12022900')
+		self.assertEqual(fusion_3.get('right_breakpoint'), 'chr15:88483984')
+
+
+	def test_get_fusion_info_thyroid(self):
+		'''
+		Check correct calls are present in thyroid panel
+
+		'''
+		panel_obj = Panel.objects.get(panel_name='Thyroid', dna_or_rna='RNA')
+		sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1',panel=panel_obj)
+
+		sample_data = get_sample_info(sample_obj)
+		fusion_data = get_fusion_info(sample_data, sample_obj)
+		fusion_calls = fusion_data.get('fusion_calls')
+
+		fusion_0 = fusion_calls[0]
+		self.assertEqual(fusion_0.get('fusion_genes'), 'TPM3-NTRK1')
+		self.assertEqual(fusion_0.get('left_breakpoint'), 'chr1:154142876')
+		self.assertEqual(fusion_0.get('right_breakpoint'), 'chr1:156844361')
+
+		fusion_1 = fusion_calls[1]
+		self.assertEqual(fusion_1.get('fusion_genes'), 'LMNA-NTRK1')
+		self.assertEqual(fusion_1.get('left_breakpoint'), 'chr1:156100562')
+		self.assertEqual(fusion_1.get('right_breakpoint'), 'chr1:156844696')
+
+		fusion_2 = fusion_calls[2]
+		self.assertEqual(fusion_2.get('fusion_genes'), 'TFG-NTRK1')
+		self.assertEqual(fusion_2.get('left_breakpoint'), 'chr3:100451513')
+		self.assertEqual(fusion_2.get('right_breakpoint'), 'chr1:156844360')
+
+		fusion_3 = fusion_calls[3]
 		self.assertEqual(fusion_3.get('fusion_genes'), 'KIF5B-RET')
 		self.assertEqual(fusion_3.get('left_breakpoint'), 'chr10:32306071')
 		self.assertEqual(fusion_3.get('right_breakpoint'), 'chr10:43609927')
 
-		fusion_4=fusion_calls[4]
+		fusion_4 = fusion_calls[4]
 		self.assertEqual(fusion_4.get('fusion_genes'), 'NCOA4-RET')
 		self.assertEqual(fusion_4.get('left_breakpoint'), 'chr10:51582937')
 		self.assertEqual(fusion_4.get('right_breakpoint'), 'chr10:43612030')
 
-		fusion_5=fusion_calls[5]
+		fusion_5 = fusion_calls[5]
 		self.assertEqual(fusion_5.get('fusion_genes'), 'CCDC6-RET')
 		self.assertEqual(fusion_5.get('left_breakpoint'), 'chr10:61665879')
 		self.assertEqual(fusion_5.get('right_breakpoint'), 'chr10:43612032')
 
-		fusion_6=fusion_calls[6]
+		fusion_6 = fusion_calls[6]
 		self.assertEqual(fusion_6.get('fusion_genes'), 'ETV6-NTRK3')
 		self.assertEqual(fusion_6.get('left_breakpoint'), 'chr12:12022900')
 		self.assertEqual(fusion_6.get('right_breakpoint'), 'chr15:88483984')
 
-		fusion_7=fusion_calls[7]
+		fusion_7 = fusion_calls[7]
 		self.assertEqual(fusion_7.get('fusion_genes'), 'EGFR 2-7/28')
 		self.assertEqual(fusion_7.get('left_breakpoint'), 'chr7:55087058')
 		self.assertEqual(fusion_7.get('right_breakpoint'), 'chr7:55223522')
 
 
-		# Lung
-		panel_obj = Panel.objects.filter(panel_name='Lung', dna_or_rna='RNA')
-		Lung_panel=panel_obj[0]
-		panel_pk=Lung_panel.pk
-		sample_obj = SampleAnalysis.objects.filter(sample_id='rna_test_1',panel=panel_pk)
-		sample=sample_obj[0]
-		sample_data=get_sample_info(sample)
+	def test_get_fusion_info_lung(self):
+		'''
+		Check correct calls are present in lung panel
 
-		fusion_data=get_fusion_info(sample_data, sample)
-		fusion_calls=fusion_data.get('fusion_calls')
+		'''
+		panel_obj = Panel.objects.get(panel_name='Lung', dna_or_rna='RNA')
+		sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1',panel=panel_obj)
 
+		sample_data = get_sample_info(sample_obj)
+		fusion_data = get_fusion_info(sample_data, sample_obj)
+		fusion_calls = fusion_data.get('fusion_calls')
 
-		fusion_0=fusion_calls[0]
+		fusion_0 = fusion_calls[0]
 		self.assertEqual(fusion_0.get('fusion_genes'), 'TPM3-NTRK1')
 		self.assertEqual(fusion_0.get('left_breakpoint'), 'chr1:154142876')
 		self.assertEqual(fusion_0.get('right_breakpoint'), 'chr1:156844361')
 
-		fusion_1=fusion_calls[1]
+		fusion_1 = fusion_calls[1]
 		self.assertEqual(fusion_1.get('fusion_genes'), 'LMNA-NTRK1')
 		self.assertEqual(fusion_1.get('left_breakpoint'), 'chr1:156100562')
 		self.assertEqual(fusion_1.get('right_breakpoint'), 'chr1:156844696')
 
-		fusion_2=fusion_calls[2]
+		fusion_2 = fusion_calls[2]
 		self.assertEqual(fusion_2.get('fusion_genes'), 'EML4-ALK')
 		self.assertEqual(fusion_2.get('left_breakpoint'), 'chr2:42522654')
 		self.assertEqual(fusion_2.get('right_breakpoint'), 'chr2:29446394')
 
-
-		fusion_3=fusion_calls[3]
+		fusion_3 = fusion_calls[3]
 		self.assertEqual(fusion_3.get('fusion_genes'), 'TFG-NTRK1')
 		self.assertEqual(fusion_3.get('left_breakpoint'), 'chr3:100451513')
 		self.assertEqual(fusion_3.get('right_breakpoint'), 'chr1:156844360')
 
-
-		fusion_4=fusion_calls[4]
+		fusion_4 = fusion_calls[4]
 		self.assertEqual(fusion_4.get('fusion_genes'), 'SLC34A2-ROS1;GOPC')
 		self.assertEqual(fusion_4.get('left_breakpoint'), 'chr4:25665950')
 		self.assertEqual(fusion_4.get('right_breakpoint'), 'chr6:117645578')
 
-
-		fusion_5=fusion_calls[5]
+		fusion_5 = fusion_calls[5]
 		self.assertEqual(fusion_5.get('fusion_genes'), 'CD74-ROS1;GOPC')
 		self.assertEqual(fusion_5.get('left_breakpoint'), 'chr5:149784243')
 		self.assertEqual(fusion_5.get('right_breakpoint'), 'chr6:117645578')
 
-		fusion_6=fusion_calls[6]
+		fusion_6 = fusion_calls[6]
 		self.assertEqual(fusion_6.get('fusion_genes'), 'KIF5B-RET')
 		self.assertEqual(fusion_6.get('left_breakpoint'), 'chr10:32306071')
 		self.assertEqual(fusion_6.get('right_breakpoint'), 'chr10:43609927')
 
-		fusion_7=fusion_calls[7]
+		fusion_7 = fusion_calls[7]
 		self.assertEqual(fusion_7.get('fusion_genes'), 'NCOA4-RET')
 		self.assertEqual(fusion_7.get('left_breakpoint'), 'chr10:51582937')
 		self.assertEqual(fusion_7.get('right_breakpoint'), 'chr10:43612030')
 
-		fusion_8=fusion_calls[8]
+		fusion_8 = fusion_calls[8]
 		self.assertEqual(fusion_8.get('fusion_genes'), 'CCDC6-RET')
 		self.assertEqual(fusion_8.get('left_breakpoint'), 'chr10:61665879')
 		self.assertEqual(fusion_8.get('right_breakpoint'), 'chr10:43612032')
 
-		fusion_9=fusion_calls[9]
+		fusion_9 = fusion_calls[9]
 		self.assertEqual(fusion_9.get('fusion_genes'), 'ETV6-NTRK3')
 		self.assertEqual(fusion_9.get('left_breakpoint'), 'chr12:12022900')
 		self.assertEqual(fusion_9.get('right_breakpoint'), 'chr15:88483984')
 
-		fusion_10=fusion_calls[10]
+		fusion_10 = fusion_calls[10]
 		self.assertEqual(fusion_10.get('fusion_genes'), 'EGFR 2-7/28')
 		self.assertEqual(fusion_10.get('left_breakpoint'), 'chr7:55087058')
 		self.assertEqual(fusion_10.get('right_breakpoint'), 'chr7:55223522')
 
-		fusion_11=fusion_calls[11]
+		fusion_11 = fusion_calls[11]
 		self.assertEqual(fusion_11.get('fusion_genes'), 'MET 14/21')
 		self.assertEqual(fusion_11.get('left_breakpoint'), 'chr7:116411708')
 		self.assertEqual(fusion_11.get('right_breakpoint'), 'chr7:116414934')
 
-		# Colorectal
-		panel_obj = Panel.objects.filter(panel_name='Colorectal', dna_or_rna='RNA')
-		Lung_panel=panel_obj[0]
-		panel_pk=Lung_panel.pk
-		sample_obj = SampleAnalysis.objects.filter(sample_id='rna_test_1',panel=panel_pk)
-		sample=sample_obj[0]
-		sample_data=get_sample_info(sample)
 
-		fusion_data=get_fusion_info(sample_data, sample)
-		fusion_calls=fusion_data.get('fusion_calls')
+	def test_get_fusion_info_colorectal(self):
+		'''
+		Check correct calls are present in colorectal panel
 
+		'''
+		panel_obj = Panel.objects.get(panel_name='Colorectal', dna_or_rna='RNA')
+		sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1',panel=panel_obj)
 
-		fusion_0=fusion_calls[0]
+		sample_data = get_sample_info(sample_obj)
+		fusion_data = get_fusion_info(sample_data, sample_obj)
+		fusion_calls = fusion_data.get('fusion_calls')
+
+		fusion_0 = fusion_calls[0]
 		self.assertEqual(fusion_0.get('fusion_genes'), 'TPM3-NTRK1')
 		self.assertEqual(fusion_0.get('left_breakpoint'), 'chr1:154142876')
 		self.assertEqual(fusion_0.get('right_breakpoint'), 'chr1:156844361')
 
-		fusion_1=fusion_calls[1]
+		fusion_1 = fusion_calls[1]
 		self.assertEqual(fusion_1.get('fusion_genes'), 'LMNA-NTRK1')
 		self.assertEqual(fusion_1.get('left_breakpoint'), 'chr1:156100562')
 		self.assertEqual(fusion_1.get('right_breakpoint'), 'chr1:156844696')
 
-		fusion_2=fusion_calls[2]
+		fusion_2 = fusion_calls[2]
 		self.assertEqual(fusion_2.get('fusion_genes'), 'TFG-NTRK1')
 		self.assertEqual(fusion_2.get('left_breakpoint'), 'chr3:100451513')
 		self.assertEqual(fusion_2.get('right_breakpoint'), 'chr1:156844360')
 
-		fusion_3=fusion_calls[3]
+		fusion_3 = fusion_calls[3]
 		self.assertEqual(fusion_3.get('fusion_genes'), 'ETV6-NTRK3')
 		self.assertEqual(fusion_3.get('left_breakpoint'), 'chr12:12022900')
 		self.assertEqual(fusion_3.get('right_breakpoint'), 'chr15:88483984')
-
-
-	'''
