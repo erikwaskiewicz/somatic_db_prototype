@@ -14,3 +14,9 @@ ALTER ROLE somatic_variant_db_user SET timezone TO 'Europe/London';
 
 GRANT ALL PRIVILEGES ON DATABASE somatic_variant_db TO somatic_variant_db_user;
 ```
+
+
+
+### Running unit tests
+
+To run unit tests, activate the conda environment and run: `python manage.py test -v2`
