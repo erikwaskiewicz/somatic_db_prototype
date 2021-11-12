@@ -116,12 +116,13 @@ def signoff_check(user, current_step_obj, sample_obj, status='C'):
     """
 
     """
-    # make sure each variant has a class
+    # get all variant checks for the sample
     if sample_obj.sample.sample_type == 'DNA':
         variant_checks = VariantCheck.objects.filter(check_object=current_step_obj)
     elif sample_obj.sample.sample_type == 'RNA':
         variant_checks = FusionCheck.objects.filter(check_object=current_step_obj)
 
+    # make sure that none of the variant checks are still pending
     # this trigers view to render the error on the page, skip this validation for failed samples
     if status != 'F':
         for v in variant_checks:
@@ -281,7 +282,7 @@ def get_variant_info(sample_data, sample_obj):
             },   
             'previous_runs': {
                 'known': ' | '.join(previous_classifications),
-                'count': '1', #previous_runs,
+                'count': 'N/A', #previous_runs,
             },
             'vaf': {
                 'vaf': sample_variant.variant_instance.vaf,
