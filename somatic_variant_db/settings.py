@@ -26,7 +26,7 @@ SECRET_KEY = 'm#4qhi$dr8)i$ed1)yfuc68ebtuwfo+5mlyy7rtbf7%l-a%kq)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '.pythonanywhere.com']
+ALLOWED_HOSTS = ['127.0.0.1', '10.59.210.247', '.pythonanywhere.com']
 
 
 # Application definition
@@ -38,8 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'analysis',
     'crispy_forms',
+    'auditlog',
 ]
 
 MIDDLEWARE = [
@@ -50,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'auditlog.middleware.AuditlogMiddleware',
 ]
 
 ROOT_URLCONF = 'somatic_variant_db.urls'
@@ -76,21 +79,32 @@ WSGI_APPLICATION = 'somatic_variant_db.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DB_PASSWORD_FILE = 'password.txt'
-with open(DB_PASSWORD_FILE) as f:
-    db_password = f.readline().strip()
 
+DB_INSTANCE = 'local'
+if DB_INSTANCE == 'local':
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'somatic_variant_db',
-        'USER': 'somatic_variant_db_user',
-        'PASSWORD': db_password,
-        'HOST': 'localhost',
-        'PORT': '',
+	DATABASES = {
+		'default': {
+		'ENGINE': 'django.db.backends.sqlite3',
+		'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+ 		}
+	}
+
+else:
+    DB_PASSWORD_FILE = 'password.txt'
+    with open(DB_PASSWORD_FILE) as f:
+        db_password = f.readline().strip()
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'somatic_variant_db',
+            'USER': 'somatic_variant_db_user',
+            'PASSWORD': db_password,
+            'HOST': 'localhost',
+            'PORT': '',
+        }
     }
-}
 
 
 # Password validation

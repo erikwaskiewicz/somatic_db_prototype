@@ -1,0 +1,14 @@
+gene	chr	pos	ref	alt	vaf	depth	hgvs_p	hgvs_c	consequence	exon	alt_reads	in_ntc
+KRAS	chr12	25368462	C	T	1	688	NM_033360.3:c.483G>A(p.(Arg161=))	NM_033360.3:c.483G>A	synonymous_variant	5/6	688	False
+KRAS	chr12	25398281	C	T	0.0505	930	NP_203524.1:p.(Gly13Asp)	NM_033360.3:c.38G>A	missense_variant	2/6	47	False
+EGFR	chr7	55214348	C	T	0.4428	1380	NM_005228.4:c.474C>T(p.(Asn158=))	NM_005228.4:c.474C>T	synonymous_variant	4/28	611	False
+EGFR	chr7	55229255	G	A	0.1223	1407	NP_005219.2:p.(Arg521Lys)	NM_005228.4:c.1562G>A	missense_variant	13/28	172	False
+EGFR	chr7	55233089	C	T	0.1401	1520	NM_005228.4:c.1839C>T(p.(Ala613=))	NM_005228.4:c.1839C>T	synonymous_variant	15/28	213	False
+EGFR	chr7	55238874	T	A	0.2669	1098	NM_005228.4:c.1887T>A(p.(Thr629=))	NM_005228.4:c.1887T>A	synonymous_variant	16/28	293	False
+EGFR	chr7	55241707	G	A	0.0503	1214	NP_005219.2:p.(Gly719Ser)	NM_005228.4:c.2155G>A	missense_variant	18/28	61	False
+EGFR	chr7	55242464	AGGAATTAAGAGAAGC	A	0.0581	1360	NP_005219.2:p.(Glu746_Ala750del)	NM_005228.4:c.2235_2249del	inframe_deletion	19/28	79	False
+EGFR	chr7	55248998	A	ATGGCCAGCG	0.0249	1448	NP_005219.2:p.(Ala767_Val769dup)	NM_005228.4:c.2300_2308dup	inframe_insertion	20/28	36	False
+EGFR	chr7	55249063	G	A	0.3493	1506	NM_005228.4:c.2361G>A(p.(Gln787=))	NM_005228.4:c.2361G>A	synonymous_variant	20/28	526	False
+EGFR	chr7	55266417	T	C	0.8716	1067	NM_005228.4:c.2709T>C(p.(Thr903=))	NM_005228.4:c.2709T>C	synonymous_variant	23/28	930	False
+EGFR	chr7	55268916	C	T	0.0326	1472	NM_005228.4:c.2982C>T(p.(Asp994=))	NM_005228.4:c.2982C>T	synonymous_variant	25/28	48	False
+EGFR	chr7	55268980	T	C	0.0375	1254	NP_005219.2:p.(Tyr1016His)	NM_005228.4:c.3046T>C	missense_variant	25/28	47	False

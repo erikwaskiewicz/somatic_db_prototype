@@ -20,9 +20,9 @@
     <thead>
       <tr>
         <th scope="col">Sample</th>
+        <th scope="col">Name</th>
         <th scope="col">Referral</th>
         <th scope="col">Worksheet</th>
-        <th scope="col">Run ID</th>
         <th scope="col">Status</th>
         <th scope="col">Assigned to</th>
       </tr>
@@ -31,11 +31,11 @@
       
       <tr>
         <td>{{ sample_data.sample_id }}</td>
+        <td>{{ sample_data.sample_name }}</td>
         <td>{{ sample_data.panel }}</td>
         <td>{{ sample_data.worksheet_id }}</td>
-        <td>{{ sample_data.run_id }}</td>
-        <td>{{ sample_data.status }}</td>
-        <td>{{ sample_data.assigned_to }}</td>
+        <td>{{ sample_data.checks.current_status }}</td>
+        <td>{{ sample_data.checks.assigned_to }}</td>
       </tr>
 
     </tbody>
@@ -56,9 +56,18 @@
     <li class="nav-item">
       <a class="nav-link section-button" href="#snvs" data-target="snvs">SNVs & indels</a>
     </li>
+
+    {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail' %}
     <li class="nav-item">
-      <a class="nav-link section-button" href="#report" data-target="report">Report</a>
+      <a class="nav-link section-button" href="#finalise" data-target="finalise">Finalise</a>
     </li>
+
+    {% else %}
+    <li class="nav-item">
+      <a class="nav-link section-button" href="#report" data-target="report">Report summary</a>
+    </li>
+
+    {% endif %}
   </ul>
 </div>
 <br>
@@ -68,7 +77,14 @@
 <div class="container" id="details">{% include 'analysis/analysis-info.html' %}</div>
 <div class="container-fluid" id="depth">{% include 'analysis/analysis-depth.html' %}</div>
 <div class="container-fluid" id="snvs">{% include 'analysis/analysis-snvs.html' %}</div>
-<div class="container" id="report">{% include 'analysis/analysis-report.html' %}</div>
+
+{% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail' %}
+<div class="container" id="finalise">{% include 'analysis/analysis-finalise.html' %}</div>
+
+{% else %}
+<div class="container-fluid" id="report">{% include 'analysis/analysis-report-dna.html' %}</div>
+
+{% endif %}
 
 
 

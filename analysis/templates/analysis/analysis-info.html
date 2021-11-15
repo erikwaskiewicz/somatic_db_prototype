@@ -9,78 +9,48 @@
       <td class="col-8">{{ sample_data.sample_id }}</td>
     </tr>
     <tr>
+      <td><b>Patient name</b></td>
+      <td>
+        {{ sample_data.sample_name }}
+        {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail'%}
+        <button type="button" style="float: right;" class="btn btn-sm btn-warning w-25" data-toggle="modal" data-target="#update-name">Update</button>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
       <td><b>Worksheet</b></td>
       <td>{{ sample_data.worksheet_id }}</td>
-    </tr><tr>
-      <td><b>TAT</b></td>
-      <td>...</td>
     </tr>
-    </tr><tr>
-      <td><b>% tumour</b></td>
-      <td>...</td>
+    <tr>
+      <td><b>Panel</b></td>
+      <td>{{ sample_data.panel }}</td>
+    </tr>
+    <tr>
+      <td><b>Run ID</b></td>
+      <td>{{ sample_data.run_id }}</td>
     </tr>
   </tbody>
 </table>
 
 <br>
 
-<h5>Audit trail</h5>
-<table class="table table-bordered">
-  <tbody>
-    <tr>
-      <td class="col-4"><b>First IGV check</b></td>
-      <td class="col-8">...</td>
-    </tr>
-    <tr>
-      <td><b>Second IGV check</b></td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <td><b>First ??interpretation</b></td>
-      <td>...</td>
-    </tr>
-  </tbody>
-</table>
 
-<button type="button" class="btn btn-light" data-toggle="modal" data-target="#audit-modal">View full sample audit trail</button>
-
-<!-- Modal -->
-<div class="modal fade" id="audit-modal" tabindex="-1" role="dialog" aria-labelledby="audit-modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="audit-modalLabel">Audit trail</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-  
-          <div class="input-group col-6">
-            <input type="text" class="form-control" placeholder="Search" aria-label="Search">
-          </div>
-
-          <br>
-  
-          <table class="table table-bordered">
-            <thead>
-              <tr>
-                <th scope="col">Time</th>
-                <th scope="col">User</th>
-                <th scope="col">Change</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>...</td>
-                <td>...</td>
-                <td>...</td>
-              </tr>
-            </tbody>
-          </table>
-  
-        </div>
-  
+<!-- Patient name Modal -->
+<div class="modal fade" id="update-name" tabindex="-1" role="dialog" aria-labelledby="update-name-label" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="update-name-label">Update patient name</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
+      <div class="modal-body">
+
+        {% crispy update_name_form %}
+
+      </div>
+
     </div>
   </div>
+</div>

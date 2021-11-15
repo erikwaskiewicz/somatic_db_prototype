@@ -1,0 +1,165 @@
+{% load humanize %}
+
+<head>
+  <style>
+    @page {
+      size: letter landscape;
+      margin: 2cm;
+    }
+
+    h1 {  font-size: 20px;  }
+    h2 {  font-size: 15px;  }
+
+    table th,
+    table td {
+      padding:3px;
+      vertical-align: top;
+      border-top: 1px solid #000;
+      border-bottom: 1px solid #000;
+      text-align: left;
+    }
+
+    table thead th {
+      vertical-align: bottom;
+      background-color: #D3D3D3;
+      border-bottom: 2px solid #000;
+    }
+    .alert {
+      padding: 10px;
+      background-color: #f44336; /* Red */
+      color: white;
+      margin-bottom: 5px;
+      text-align: center; 
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>TSO500 RNA report for {{ sample_data.sample_id }}</h1>
+
+  {% if sample_data.checks.current_status  == 'Fail' %}
+  <div class="alert">
+    <h2><b>This sample has failed QC</b></h2>
+  </div> 
+  <br>
+  {% endif %}
+
+  <h2>Patient details</h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 25%">Patient name</th>
+        <th style="width: 20%">Worksheet</th>
+        <th style="width: 20%">Panel</th>
+        <th style="width: 35%">Run ID</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{ sample_data.sample_name }}</td>
+        <td>{{ sample_data.worksheet_id }}</td>
+        <td>{{ sample_data.panel }}</td>
+        <td>{{ sample_data.run_id }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <br>
+  <br>
+
+  <h2>Variants</h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 15%">Fusion</th>
+        <th style="width: 7%">Fusion supporting reads</th>
+        <th style="width: 12%">Breakpoints</th>
+        <th style="width: 25%">HGVS</th>
+        <th style="width: 10%">IGV</th>
+        <th style="width: 30%">Comments</th>
+      </tr>
+    </thead>
+
+    <tbody>
+    {% for v in fusion_data.fusion_calls %}
+      {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
+      <tr>
+        <td>{{ v.fusion_genes }}</td>
+        <td>{{ v.fusion_supporting_reads }}</td>
+        <td>{{ v.left_breakpoint }}<br>{{ v.right_breakpoint }}</td>
+        <td>
+          <!-- loop required because bug in xhtml will collpase whole column if hgvs is None -->
+          {% if v.fusion_hgvs %}
+          {{ v.fusion_hgvs }}
+          {% else %}
+          N/A
+          {% endif %}
+        </td>
+        <td>{{ v.final_decision }}</td>
+        <td>
+          {% for c in v.comments %}
+          <i>{{ c.user }}: </i>{{ c.comment | wordwrap:50 | linebreaksbr }}<br>
+          {% endfor %}
+        </td>
+      </tr>
+      {% endif %}
+    {% endfor %}
+    </tbody>
+  </table>
+  <br>
+  <br>
+
+
+  <h2>Coverage</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Number of reads in sample</th>
+        <th>Number of reads in NTC</th>
+        <th>Percent NTC</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>{{ sample_data.total_reads | intcomma }}</td>
+        <td>{{ sample_data.total_reads_ntc | intcomma }}</td>
+        <td>{{ sample_data.percent_reads_ntc }}%</td>
+      </tr>
+    </tbody>
+  </table>
+  <br>
+  <br>
+
+
+  <h2>Checks performed</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 10%">Check</th>
+        <th style="width: 20%">User</th>
+        <th style="width: 10%">Patient info check</th>
+        <th style="width: 60%">Comments</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for c in sample_data.checks.all_checks %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ c.user }}<br>{{ c.signoff_time }}</td>
+        <td>{{ c.patient_info_check }}</td>
+        <td>
+          {{ c.overall_comment | wordwrap:50 | linebreaksbr }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+
+  </table>
+  <br>
+
+  <p>View report in somatic variant database: <a href="http://10.59.210.247:8000/analysis/{{ sample_data.sample_pk }}#report" target="_blank">http://10.59.210.247:8000/analysis/{{ sample_data.sample_pk }}#report</a></p>
+  <p>PDF report generated {% now "jS F Y H:i" %}</p>
+
+</body>

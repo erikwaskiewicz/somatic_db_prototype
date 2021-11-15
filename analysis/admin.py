@@ -1,3 +1,31 @@
 from django.contrib import admin
+from .models import *
 
-# Register your models here.
+
+admin.site.register(Run)
+admin.site.register(Worksheet)
+admin.site.register(Sample)
+admin.site.register(Panel)
+admin.site.register(SampleAnalysis)
+
+class CheckAdmin(admin.ModelAdmin):
+    list_display = ('id', 'analysis', 'status', 'user')
+admin.site.register(Check, CheckAdmin)
+
+admin.site.register(Variant)
+admin.site.register(VariantInstance)
+admin.site.register(VariantPanelAnalysis)
+admin.site.register(VariantList)
+admin.site.register(VariantToVariantList)
+admin.site.register(VariantCheck)
+
+admin.site.register(Gene)
+admin.site.register(GeneCoverageAnalysis)
+admin.site.register(RegionCoverageAnalysis)
+admin.site.register(GapsAnalysis)
+admin.site.register(Fusion)
+admin.site.register(FusionAnalysis)
+admin.site.register(FusionCheck)
+admin.site.register(FusionPanelAnalysis)
+
+
