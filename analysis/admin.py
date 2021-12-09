@@ -51,13 +51,36 @@ admin.site.register(VariantCheck, VariantCheckAdmin)
 
 admin.site.register(Gene)
 
+class GeneCoverageAnalysisAdmin(admin.ModelAdmin):
+    list_display = ( 'id', 'sample', 'gene' )
+admin.site.register(GeneCoverageAnalysis, GeneCoverageAnalysisAdmin )
 
-admin.site.register(GeneCoverageAnalysis)
-admin.site.register(RegionCoverageAnalysis)
-admin.site.register(GapsAnalysis)
-admin.site.register(Fusion)
-admin.site.register(FusionAnalysis)
-admin.site.register(FusionCheck)
-admin.site.register(FusionPanelAnalysis)
+class RegionCoverageAnalysisAdmin(admin.ModelAdmin):
+    list_display = ( 'id', 'gene', 'hgvs_c' )
+admin.site.register(RegionCoverageAnalysis, RegionCoverageAnalysisAdmin)
+
+
+class GapAnalysisAdmin(admin.ModelAdmin):
+    list_display = ( 'id', 'gene', 'hgvs_c' )
+admin.site.register(GapsAnalysis, GapAnalysisAdmin)
+
+
+class FusionAdmin(admin.ModelAdmin):
+    list_display = ( 'id', 'fusion_genes' )
+admin.site.register(Fusion, FusionAdmin )
+
+
+class FusionAnalysisAdmin(admin.ModelAdmin):
+    list_display = ( 'sample', 'fusion_genes' )
+admin.site.register(FusionAnalysis, FusionAnalysisAdmin)
+
+
+class FusionCheckAdmin(admin.ModelAdmin):
+    list_display = ( 'fusion_analysis', 'check_object' , 'decision')
+admin.site.register(FusionCheck, FusionCheckAdmin)
+
+class FusionPanelAnalysisAdmin(admin.ModelAdmin):
+    list_display = ( 'sample_analysis', 'fusion_instance' )
+admin.site.register(FusionPanelAnalysis, FusionPanelAnalysisAdmin)
 
 
