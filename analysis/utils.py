@@ -279,6 +279,7 @@ def get_variant_info(sample_data, sample_obj):
                 #'count': this_run_count, 
                 #'total': len(sample_objects),
                 'ntc': sample_variant.variant_instance.in_ntc,
+                'alt_count_ntc': sample_variant.variant_instance.alt_count_ntc,
             },   
             'previous_runs': {
                 'known': ' | '.join(previous_classifications),

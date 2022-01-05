@@ -168,6 +168,9 @@ class VariantInstance(models.Model):
     total_count = models.IntegerField()
     alt_count = models.IntegerField()
     in_ntc = models.BooleanField()
+
+    #is there a way to make this an integerfield but make it optional? If in_ntc is no then this won't have a value, but I don't want to set default as zero
+    alt_count_ntc=models.CharField(default="N/A", max_length=50)
     manual_upload = models.BooleanField(default=False)
     final_decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
 
