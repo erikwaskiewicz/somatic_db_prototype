@@ -3,6 +3,10 @@ from django.db import models
 
 import decimal
 
+# set decimal module to always round down to 2 decimal places
+decimal.getcontext().prec = 2
+decimal.getcontext().rounding = decimal.ROUND_DOWN
+
 
 # Create your models here.
 class Run(models.Model):
@@ -167,7 +171,6 @@ class VariantInstance(models.Model):
     exon = models.CharField(max_length=50)
     hgvs_c = models.CharField(max_length=200)
     hgvs_p = models.CharField(max_length=200)
-    vaf = models.IntegerField()
     total_count = models.IntegerField()
     alt_count = models.IntegerField()
     in_ntc = models.BooleanField()
@@ -175,6 +178,17 @@ class VariantInstance(models.Model):
     alt_count_ntc = models.IntegerField(blank=True, null=True)
     manual_upload = models.BooleanField(default=False)
     final_decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
+
+    def vaf(self):
+        """
+        calculate VAF of variant from total and alt read counts
+        VAF is always displayed to two decimal places
+
+        """
+        vaf = decimal.Decimal(self.alt_count / self.total_count) * 100
+        vaf_rounded = vaf.quantize(decimal.Decimal('.01'))
+
+        return vaf_rounded
 
     def vaf_ntc(self):
         """
@@ -184,11 +198,10 @@ class VariantInstance(models.Model):
         """
         if self.in_ntc:
             vaf = decimal.Decimal(self.alt_count_ntc / self.total_count_ntc) * 100
-            vaf_rounded = vaf.quantize(decimal.Decimal('0.01'), rounding=decimal.ROUND_DOWN)
+            vaf_rounded = vaf.quantize(decimal.Decimal('.01'))
+            return vaf_rounded
         else:
-            vaf = None
-
-        return vaf
+            return None
 
 
 class VariantPanelAnalysis(models.Model):
