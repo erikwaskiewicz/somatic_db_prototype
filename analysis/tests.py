@@ -1031,6 +1031,77 @@ class TestDna(TestCase):
 		self.assertEqual(KRAS_coverage.get('percent_ntc'), 0)
 
 
+class TestNTCCalls(TestCase):
+	"""
+	Load in DNA control sample with NTC contamination spiked in, test that 
+	NTC variants are called correctly and at correct VAFs
+
+	"""
+
+	# load in test data
+	fixtures = ['dna_test_1.json']
+
+	# dictionary of expected data for comparison later on
+	model_data = {
+		'7:55241707G>A': {
+			'in_ntc': True,
+			'ntc_total': 1,
+			'ntc_alt': 1,
+			'ntc_vaf': Decimal('100.00'),
+		},
+		'7:55242464AGGAATTAAGAGAAGC>A': {
+			'in_ntc': False,
+			'ntc_total': None,
+			'ntc_alt': None,
+			'ntc_vaf': None,
+		},
+		'7:55248998A>ATGGCCAGCG': {
+			'in_ntc': False,
+			'ntc_total': None,
+			'ntc_alt': None,
+			'ntc_vaf': None,
+		},
+		'7:55249063G>A': {
+			'in_ntc': False,
+			'ntc_total': None,
+			'ntc_alt': None,
+			'ntc_vaf': None,
+		},
+		'7:140453136A>T': {
+			'in_ntc': True,
+			'ntc_total': 4,
+			'ntc_alt': 1,
+			'ntc_vaf': Decimal('25.00'),
+		},
+		'12:25398281C>T': {
+			'in_ntc': True,
+			'ntc_total': 1015,
+			'ntc_alt': 281,
+			'ntc_vaf': Decimal('27.68'),
+		},
+	}
+
+	def test_ntc_calls(self):
+		'''
+		Check a subset of variant calls with fake NTC contamination
+
+		'''
+		# load sample objects
+		panel_obj = Panel.objects.get(panel_name='Lung', dna_or_rna='DNA')
+
+		sample = SampleAnalysis.objects.get(sample_id='dna_test_2', panel=panel_obj)
+		sample_data = get_sample_info(sample)
+
+		variant_calls = get_variant_info(sample_data, sample)['variant_calls']
+
+		# loop through each call and compare to expected answer dict
+		for v in variant_calls:
+			model_answers = self.model_data[ v['genomic'] ]
+
+			self.assertEqual(v['this_run']['ntc'], model_answers['in_ntc'])
+			self.assertEqual(v['this_run']['alt_count_ntc'], model_answers['ntc_alt'])
+			self.assertEqual(v['this_run']['total_count_ntc'], model_answers['ntc_total'])
+			self.assertEqual(v['this_run']['vaf_ntc'], model_answers['ntc_vaf'])
 
 
 class TestRna(TestCase):
