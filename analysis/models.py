@@ -3,10 +3,6 @@ from django.db import models
 
 import decimal
 
-# set decimal module to always round down to 2 decimal places
-decimal.getcontext().prec = 2
-decimal.getcontext().rounding = decimal.ROUND_DOWN
-
 
 # Create your models here.
 class Run(models.Model):
@@ -186,7 +182,7 @@ class VariantInstance(models.Model):
 
         """
         vaf = decimal.Decimal(self.alt_count / self.total_count) * 100
-        vaf_rounded = vaf.quantize(decimal.Decimal('.01'))
+        vaf_rounded = vaf.quantize(decimal.Decimal('.01'), rounding = decimal.ROUND_DOWN)
 
         return vaf_rounded
 
@@ -198,7 +194,7 @@ class VariantInstance(models.Model):
         """
         if self.in_ntc:
             vaf = decimal.Decimal(self.alt_count_ntc / self.total_count_ntc) * 100
-            vaf_rounded = vaf.quantize(decimal.Decimal('.01'))
+            vaf_rounded = vaf.quantize(decimal.Decimal('.01'), rounding = decimal.ROUND_DOWN)
             return vaf_rounded
         else:
             return None
