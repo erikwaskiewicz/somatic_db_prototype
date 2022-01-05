@@ -280,6 +280,8 @@ def get_variant_info(sample_data, sample_obj):
                 #'total': len(sample_objects),
                 'ntc': sample_variant.variant_instance.in_ntc,
                 'alt_count_ntc': sample_variant.variant_instance.alt_count_ntc,
+                'total_count_ntc': sample_variant.variant_instance.total_count_ntc,
+                'vaf_ntc': sample_variant.variant_instance.vaf_ntc,
             },   
             'previous_runs': {
                 'known': ' | '.join(previous_classifications),

@@ -1,6 +1,9 @@
 from auditlog.registry import auditlog
 from django.db import models
 
+import decimal
+
+
 # Create your models here.
 class Run(models.Model):
     """
@@ -168,11 +171,24 @@ class VariantInstance(models.Model):
     total_count = models.IntegerField()
     alt_count = models.IntegerField()
     in_ntc = models.BooleanField()
-
-    #is there a way to make this an integerfield but make it optional? If in_ntc is no then this won't have a value, but I don't want to set default as zero
-    alt_count_ntc=models.CharField(default="N/A", max_length=50)
+    total_count_ntc = models.IntegerField(blank=True, null=True)
+    alt_count_ntc = models.IntegerField(blank=True, null=True)
     manual_upload = models.BooleanField(default=False)
     final_decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
+
+    def vaf_ntc(self):
+        """
+        calculate VAF of NTC variant if its seen in NTC, otherwise return None
+        VAF is always displayed to two decimal places
+
+        """
+        if self.in_ntc:
+            vaf = decimal.Decimal(self.alt_count_ntc / self.total_count_ntc) * 100
+            vaf_rounded = vaf.quantize(decimal.Decimal('0.01'), rounding=decimal.ROUND_DOWN)
+        else:
+            vaf = None
+
+        return vaf
 
 
 class VariantPanelAnalysis(models.Model):
