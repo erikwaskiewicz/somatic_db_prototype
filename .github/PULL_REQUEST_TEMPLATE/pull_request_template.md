@@ -26,7 +26,7 @@ ________________________________________________________________________________
 
 ___________________________________________________________________________________________________________________________________________
 ## Checklist
-< Place an X in the appropriate boxes >
+< Place an X in the appropriate boxes, if not applicable state N/A >
 
 - [ ] Is the test data easily accesible?  
 - [ ] Has the pipeline/software been run end to end by the tester?
@@ -35,9 +35,9 @@ ________________________________________________________________________________
 - [ ] Are all relevant doccuments updated e.g. SOP, ReadME, Pull request 
 
 Additional checklist for pipeline updates (if applicable)
-- [ ] Has the pipeline version in the variables file been updated e.g. development > master
-- [ ] If the changes plausibly affect the sensitivity or other key performance metrics have these been tested and results recorded?
+- [ ] Is the sensitivity or other key performance metrics unaffected by the changes? 
 - [ ] If the environment changes has this been deployed and tested in place?
+- [ ] Has the pipeline version in the variables file been updated e.g. development > master
 
 
 
