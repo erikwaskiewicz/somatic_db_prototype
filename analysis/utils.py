@@ -454,3 +454,116 @@ def get_coverage_data(sample_obj):
         coverage_data[gene_coverage_obj.gene.gene] = gene_dict
         
     return coverage_data
+
+
+def myeloid_add_to_dict(input_dict, anno):
+    """
+    Create a dictionary from the output in the create_myeloid_coverage_summary function in the 
+    format:
+
+        gene: {
+            transcript: [regions]
+        }...
+    """
+
+    # extract gene, exon and reference sequence from the input annotation
+    gene_and_ref, exon = anno.split(':')
+    exon = exon.replace('_', ' ')
+    gene = gene_and_ref.split('(')[0]
+    ref = gene_and_ref.split('(')[1]. split('(')[0]
+
+    # if the gene is already in the dictionary
+    if gene in input_dict.keys():
+
+        # if the transcript is already in the dictionary, append to list
+        if ref in input_dict[gene].keys():
+            input_dict[gene][ref].append(exon)
+
+        # otherwise make a new list for that transcript
+        else:
+            input_dict[gene][ref] == [exon]
+
+    # if the gene isnt in the dict yet, add to dict
+    else:
+        input_dict[gene] = {ref: [exon]}
+
+    return input_dict
+
+
+def myeloid_format_output(input_dict):
+    """
+    Format the output of the dictionary created in the create_myeloid_coverage_summary function 
+    into a sentence suitable for reporting
+
+    """
+
+    # a list of transcripts that aren't primary transcripts, these will be added after the gene in brackets
+    # (primary transcripts aren't included)
+    alt_transcripts = ['NM_153759.3', 'NM_001122607.1']
+
+    # list to store output
+    out_list = []
+
+    # loop through each transcript within each gene
+    for gene, values in sorted(input_dict.items()):
+        for transcript, regions in values.items():
+
+            # concatenate all exons within the gene in numerical order
+            all_regions = ', '.join(sorted(regions))
+
+            # add to the output list. if the transcript isnt a primary transcript, add the transcript ID in brackets after the gene name
+            if transcript in alt_transcripts:
+                out_list.append(f'{gene} ({transcript}) {all_regions}')
+            else:
+                out_list.append(f'{gene} {all_regions}')
+
+    # format the output list as a sentence. If empty then return N/A
+    if len(out_list) == 0:
+        formatted_output = 'N/A'
+    else:
+        formatted_output = '; '.join(out_list) + '.'
+
+    return formatted_output
+
+
+def create_myeloid_coverage_summary(sample_obj):
+    """
+    Pull all regions (i.e. exons or hotspots) from all genes and format into a coverage summary sentence
+    for copying into the report
+
+    """
+
+    # create empty dicts for storing output
+    regions_with_zero = {}
+    regions_with_less_270 = {}
+
+    # get all gene coverage objects
+    gene_coverage_analysis_obj = GeneCoverageAnalysis.objects.filter(sample=sample_obj)
+
+    # loop through each region within each gene
+    for gene_coverage_obj in gene_coverage_analysis_obj:
+        coverage_regions_analysis_obj = RegionCoverageAnalysis.objects.filter(gene=gene_coverage_obj)
+        for region_obj in coverage_regions_analysis_obj:
+
+            # pull out the average coverage and HGVS annotations
+            cov = region_obj.average_coverage
+            anno = region_obj.hgvs_c
+
+            # only enter loop if coverage is less than 270X
+            if cov < 270:
+
+                # if no coverage at all
+                if cov == 0:
+                    myeloid_add_to_dict(regions_with_zero, anno)
+
+                # if coverage is between 0-270X
+                else:
+                    myeloid_add_to_dict(regions_with_less_270, anno)
+
+    # reformat as a sentence for output and add to output dictionary
+    myeloid_coverage_summary = {
+            'summary_0x': myeloid_format_output(regions_with_zero),
+            'summary_270x': myeloid_format_output(regions_with_less_270),
+        }
+
+    return myeloid_coverage_summary
