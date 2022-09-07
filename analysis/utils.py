@@ -402,7 +402,7 @@ def get_fusion_info(sample_data,sample_obj):
 def get_coverage_data(sample_obj):
     #create a coverage dictionary
     coverage_data = {}
-    gene_coverage_analysis_obj = GeneCoverageAnalysis.objects.filter(sample=sample_obj)
+    gene_coverage_analysis_obj = GeneCoverageAnalysis.objects.filter(sample=sample_obj).order_by('gene')
 
     for gene_coverage_obj in gene_coverage_analysis_obj:
 
