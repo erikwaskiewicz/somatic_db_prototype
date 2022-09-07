@@ -172,16 +172,13 @@ def analysis_sheet(request, sample_id):
             comment=current_step_obj.coverage_comment,
             ntc_check=current_step_obj.coverage_ntc_check,
         ),
-
     }
 
     # pull out coverage summary for myeloid, otherwise return false
-    myeloid_referrals = ['myeloid', 'cll', 'mpn', 'Lung'] # TODO - remove lung, just for testing
-    if sample_data['panel'] in myeloid_referrals:
+    if sample_data['is_myeloid_referral']:
         myeloid_coverage_summary = create_myeloid_coverage_summary(sample_obj)
     else:
         myeloid_coverage_summary = False
-
 
     # DNA workflow
     if sample_data['dna_or_rna'] == 'DNA':

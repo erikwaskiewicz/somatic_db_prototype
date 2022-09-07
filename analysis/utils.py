@@ -190,6 +190,7 @@ def get_sample_info(sample_obj):
         'sample_name': sample_obj.sample.sample_name,
         'worksheet_id': sample_obj.worksheet.ws_id,
         'panel': sample_obj.panel.panel_name,
+        'is_myeloid_referral': sample_obj.panel.show_myeloid_gaps_summary,
         'run_id': sample_obj.worksheet.run.run_id,
         'total_reads': sample_obj.total_reads,
         'total_reads_ntc': sample_obj.total_reads_ntc,

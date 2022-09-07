@@ -42,7 +42,7 @@ class Sample(models.Model):
     )
     sample_id = models.CharField(max_length=50, primary_key=True)
     sample_name = models.CharField(max_length=200, blank=True, null=True)
-    sample_name_check=models.BooleanField(default=False)
+    sample_name_check = models.BooleanField(default=False)
     sample_type = models.CharField(max_length=3, choices=TYPE_CHOICES)
 
 
@@ -59,6 +59,7 @@ class Panel(models.Model):
     )
     panel_name = models.CharField(max_length=50)
     dna_or_rna = models.CharField(max_length=3, choices=TYPE_CHOICES)
+    show_myeloid_gaps_summary = models.BooleanField(default=False)
 
 
 class SampleAnalysis(models.Model):
@@ -71,8 +72,8 @@ class SampleAnalysis(models.Model):
     sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
     panel = models.ForeignKey('Panel', on_delete=models.CASCADE)
     total_reads = models.IntegerField(blank=True, null=True)
-    total_reads_ntc= models.IntegerField(blank=True, null=True)
-    percent_reads_ntc= models.CharField(max_length=200, blank=True, null=True)
+    total_reads_ntc = models.IntegerField(blank=True, null=True)
+    percent_reads_ntc = models.CharField(max_length=200, blank=True, null=True)
 
     def get_checks(self):
         """
