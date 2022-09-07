@@ -127,7 +127,23 @@
   <br>
   <br>
 
+  {% if myeloid_coverage_summary %}
+  <h2>Gaps summary</h2>
 
+  <table>
+    <tbody>
+      <tr>
+        <td style="width: 25%"><b>Regions with 0% coverage</b></td>
+        <td style="width: 75%">{{ myeloid_coverage_summary.summary_0x }}</td>
+      </tr>
+      <tr>
+        <td><b>Regions with less than 270X depth</b></td>
+        <td>{{ myeloid_coverage_summary.summary_270x }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  {% else %}
   <h2>Hotspot gaps</h2>
 
   <table>
@@ -166,6 +182,9 @@
       {% endfor %}
     </tbody>
   </table>
+
+  {% endif %}
+
   <br>
   <br>
 
