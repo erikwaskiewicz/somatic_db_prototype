@@ -471,7 +471,8 @@ def myeloid_add_to_dict(input_dict, anno):
     gene_and_ref, exon = anno.split(':')
     exon = exon.replace('_', ' ')
     gene = gene_and_ref.split('(')[0]
-    ref = gene_and_ref.split('(')[1]. split('(')[0]
+    ref = gene_and_ref.split('(')[1]. split(')')[0]
+    print(ref)
 
     # if the gene is already in the dictionary
     if gene in input_dict.keys():
@@ -482,7 +483,7 @@ def myeloid_add_to_dict(input_dict, anno):
 
         # otherwise make a new list for that transcript
         else:
-            input_dict[gene][ref] == [exon]
+            input_dict[gene][ref] = [exon]
 
     # if the gene isnt in the dict yet, add to dict
     else:
