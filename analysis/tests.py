@@ -464,7 +464,6 @@ class TestDna(TestCase):
 		self.assertEqual(variant_11.get('checks'), ['Pending'])
 
 
-
 	def test_get_variant_info_thyroid(self):
 		'''
 		Check a subset of variants in the thyroid panel
@@ -1032,6 +1031,33 @@ class TestDna(TestCase):
 		self.assertEqual(KRAS_coverage.get('percent_ntc'), 0)
 
 
+	def test_myeloid_gaps_summary(self):
+		"""
+		Check that the myeloid gaps summary is produced correctly for the myeloid referral type
+		Includes DNMT3A which has two transcripts so outputted twice, alt transcript should be included in backets
+
+		"""
+		panel_obj = Panel.objects.get(panel_name='myeloid', dna_or_rna='DNA')
+		sample_obj = SampleAnalysis.objects.get(sample_id='dna_test_1',panel=panel_obj)
+		sample_data = get_sample_info(sample_obj)
+
+		self.assertEqual(sample_data['is_myeloid_referral'], True)
+
+		myeloid_coverage_summary = create_myeloid_coverage_summary(sample_obj)
+		self.assertEqual(myeloid_coverage_summary['summary_0x'], 'N/A')
+		self.assertEqual(myeloid_coverage_summary['summary_270x'], 'BCOR exon 5; CEBPA exon 1; DNMT3A (NM_153759.3) exon 1; DNMT3A exon 2; NPM1 exon 11.')
+
+
+	def test_myeloid_gaps_summary_non_myeloid(self):
+		"""
+		Check that a non-myeloid referral type correctly returns False for the 'is_myeloid_referral' variable
+		
+		"""
+		panel_obj = Panel.objects.get(panel_name='Lung', dna_or_rna='DNA')
+		sample_obj = SampleAnalysis.objects.get(sample_id='dna_test_1',panel=panel_obj)
+		sample_data = get_sample_info(sample_obj)
+
+		self.assertEqual(sample_data['is_myeloid_referral'], False)
 
 
 class TestRna(TestCase):
