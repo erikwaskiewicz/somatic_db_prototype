@@ -76,7 +76,7 @@
 
 <div class="container-fluid">
   <div class="row">
-    <div class="col-sm">
+    <div class="col-4">
 
       <h5>Coverage</h5>
       <table class="table table-sm table-striped table-hover">
@@ -102,7 +102,47 @@
       </table>
 
     </div>
-    <div class="col-sm">
+
+    {% if myeloid_coverage_summary %}
+    <div class="col-8">
+      <h5>Gaps summary</h5>
+      <table class="table table-striped table-sm">
+        <thead>
+          <tr>
+            <th scope="col">Cutoff</th>
+            <th scope="col">Regions</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td scope="col" class="col-3">Regions with 0% coverage</td>
+            <td scope="col" class="col-8">
+              <p style="display:inline">{{ myeloid_coverage_summary.summary_0x }}</p>
+              <p style="display:none" id="coverage-text-0x">{{ myeloid_coverage_summary.summary_0x }}</p>
+            </td>
+            <td scope="col" class="col-1">
+              <button class="btn btn-sm btn-info" onclick="copyToClipboard('#coverage-text-0x')"><span class="fa fa-copy"></span></button>
+            </td>
+          </tr>
+          <tr>
+            <td>Regions with less than 270X depth</td>
+            <td>
+              <p style="display:inline">{{ myeloid_coverage_summary.summary_270x }}</p>
+              <p style="display:none" id="coverage-text-270x">{{ myeloid_coverage_summary.summary_270x }}</p>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-info" onclick="copyToClipboard('#coverage-text-270x')"><span class="fa fa-copy"></span></button>
+            </td>
+          </tr>
+        </tbody>
+
+      </table>
+    </div>
+
+    {% else %}
+    <div class="col-4">
 
       <h5>Hotspot gaps 270X</h5>
       <table class="table table-sm table-striped table-hover">
@@ -126,7 +166,7 @@
       </table>
 
     </div>
-    <div class="col-sm">
+    <div class="col-4">
 
       <h5>Hotspot gaps 135X</h5>
       <table class="table table-sm table-striped table-hover">
@@ -150,6 +190,7 @@
       </table>
 
     </div>
+    {% endif %}
   </div>
 </div> 
 <br>

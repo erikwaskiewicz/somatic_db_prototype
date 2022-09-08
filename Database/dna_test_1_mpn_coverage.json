@@ -1,0 +1,82 @@
+{
+    "MPL": {
+        "average_depth": 619,
+        "percent_135": 100,
+        "percent_270": 100,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            [
+                "chr1",
+                43814928,
+                43815035,
+                "MPL(NM_005373.2):exon_10",
+                619,
+                100,
+                100,
+                0,
+                0
+            ]
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "JAK2": {
+        "average_depth": 602,
+        "percent_135": 100,
+        "percent_270": 100,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            [
+                "chr9",
+                5069919,
+                5070057,
+                "JAK2(NM_004972.3):exon_12)",
+                608,
+                100,
+                100,
+                0,
+                0
+            ],
+            [
+                "chr9",
+                5073763,
+                5073778,
+                "JAK2(NM_004972.3):codon_V617)",
+                548,
+                100,
+                100,
+                0,
+                0
+            ]
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "CALR": {
+        "average_depth": 834,
+        "percent_135": 100,
+        "percent_270": 100,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            [
+                "chr19",
+                13054521,
+                13054732,
+                "CALR(NM_004343.3):exon_9",
+                834,
+                100,
+                100,
+                0,
+                0
+            ]
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    }
+}

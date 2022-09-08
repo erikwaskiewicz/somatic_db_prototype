@@ -182,6 +182,47 @@
 <br>
 
 
+<!-- only show this section if myeloid referral -->
+{% if myeloid_coverage_summary %}
+<div class="container-fluid">
+  <div class="row">
+
+      <h5>Gaps summary</h5>
+      <table class="table table-striped">
+
+        <tbody>
+          <tr>
+            <td scope="col" class="col-3"><b>Regions with 0% coverage</b></td>
+            <td scope="col" class="col-8">
+              <p style="display:inline">{{ myeloid_coverage_summary.summary_0x }}</p>
+              <p style="display:none" id="coverage-text-0x">{{ myeloid_coverage_summary.summary_0x }}</p>
+            </td>
+            <td scope="col" class="col-1">
+              <button class="btn btn-sm btn-info" onclick="copyToClipboard('#coverage-text-0x')"><span class="fa fa-copy"></span></button>
+            </td>
+          </tr>
+          <tr>
+            <td><b>Regions with less than 270X depth</b></td>
+            <td>
+              <p style="display:inline">{{ myeloid_coverage_summary.summary_270x }}</p>
+              <p style="display:none" id="coverage-text-270x">{{ myeloid_coverage_summary.summary_270x }}</p>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-info" onclick="copyToClipboard('#coverage-text-270x')"><span class="fa fa-copy"></span></button>
+            </td>
+          </tr>
+        </tbody>
+
+      </table>
+
+  </div>
+</div>
+
+<br>
+<br>
+{% endif %}
+
+
 <div class="container-fluid">
   <div class="row">
     <div class="col-sm">
