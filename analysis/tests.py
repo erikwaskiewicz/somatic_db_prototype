@@ -1034,6 +1034,7 @@ class TestDna(TestCase):
 	def test_myeloid_gaps_summary(self):
 		"""
 		Check that the myeloid gaps summary is produced correctly for the myeloid referral type
+		Includes DNMT3A which has two transcripts so outputted twice, alt transcript should be included in backets
 
 		"""
 		panel_obj = Panel.objects.get(panel_name='myeloid', dna_or_rna='DNA')
@@ -1044,7 +1045,7 @@ class TestDna(TestCase):
 
 		myeloid_coverage_summary = create_myeloid_coverage_summary(sample_obj)
 		self.assertEqual(myeloid_coverage_summary['summary_0x'], 'N/A')
-		self.assertEqual(myeloid_coverage_summary['summary_270x'], 'BCOR exon 5; CEBPA exon 1; DNMT3A exon 2; NPM1 exon 11.')
+		self.assertEqual(myeloid_coverage_summary['summary_270x'], 'BCOR exon 5; CEBPA exon 1; DNMT3A (NM_153759.3) exon 1; DNMT3A exon 2; NPM1 exon 11.')
 
 
 	def test_myeloid_gaps_summary_non_myeloid(self):

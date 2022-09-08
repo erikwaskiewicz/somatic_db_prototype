@@ -472,7 +472,6 @@ def myeloid_add_to_dict(input_dict, anno):
     exon = exon.replace('_', ' ')
     gene = gene_and_ref.split('(')[0]
     ref = gene_and_ref.split('(')[1]. split(')')[0]
-    print(ref)
 
     # if the gene is already in the dictionary
     if gene in input_dict.keys():
