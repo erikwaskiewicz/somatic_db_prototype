@@ -52,7 +52,8 @@ admin.site.register(SampleAnalysis, SampleAnalysisAdmin)
 
 class CheckAdmin(admin.ModelAdmin):
     list_display = ('id', 'analysis', 'status', 'user')
-    search_fields = ['id', 'analysis__id', 'status', 'user__username']
+    search_fields = ['id', 'analysis__id', 'user__username']
+    # can't search by status because of choice field
 
 admin.site.register(Check, CheckAdmin)
 
@@ -66,7 +67,8 @@ admin.site.register(Variant, VariantAdmin)
 
 class VariantInstanceAdmin(admin.ModelAdmin):
     list_display = ('id', 'get_sample', 'get_var', 'gene', 'hgvs_c', 'hgvs_p', 'vaf', 'final_decision')
-    search_fields = ['id', 'sample__sample_id', 'variant__genomic_37', 'gene', 'hgvs_c', 'hgvs_p', 'vaf', 'final_decision']
+    search_fields = ['id', 'sample__sample_id', 'variant__genomic_37', 'gene', 'hgvs_c', 'hgvs_p', 'vaf',]
+    # can't search by final decision because of choice field
 
     # get sample name rather than sample ID
     def get_sample(self, obj):
@@ -92,14 +94,16 @@ admin.site.register(VariantPanelAnalysis, VariantPanelAnalysisAdmin)
 
 class VariantCheckAdmin(admin.ModelAdmin):
     list_display = ('id', 'variant_analysis', 'check_object', 'decision')
-    search_fields = ['id', 'variant_analysis__id', 'check_object__id', 'decision']
+    search_fields = ['id', 'variant_analysis__id', 'check_object__id',]
+    # can't search by decision because of choice field
 
 admin.site.register(VariantCheck, VariantCheckAdmin)
 
 
 class VariantListAdmin(admin.ModelAdmin):
     list_display = ('name', 'list_type')
-    search_fields = ['name', 'list_type']
+    search_fields = ['name',]
+    # can't search by list_type because of choice field
 
 admin.site.register(VariantList, VariantListAdmin )
 
@@ -149,14 +153,16 @@ admin.site.register(Fusion, FusionAdmin)
 
 class FusionAnalysisAdmin(admin.ModelAdmin):
     list_display = ('id', 'sample', 'fusion_genes', 'hgvs', 'fusion_supporting_reads', 'ref_reads_1', 'ref_reads_2', 'final_decision')
-    search_fields = ['id', 'sample__id', 'fusion_genes__id', 'hgvs', 'fusion_supporting_reads', 'ref_reads_1', 'ref_reads_2', 'final_decision']
+    search_fields = ['id', 'sample__id', 'fusion_genes__id', 'hgvs', 'fusion_supporting_reads', 'ref_reads_1', 'ref_reads_2',]
+    # can't search by final decision because of choice field
 
 admin.site.register(FusionAnalysis, FusionAnalysisAdmin)
 
 
 class FusionCheckAdmin(admin.ModelAdmin):
     list_display = ('id', 'fusion_analysis', 'check_object', 'decision')
-    search_fields = ['id', 'fusion_analysis__id', 'check_object__id', 'decision']
+    search_fields = ['id', 'fusion_analysis__id', 'check_object__id',]
+    # can't search by decision because of choice field
 
 admin.site.register(FusionCheck, FusionCheckAdmin)
 
