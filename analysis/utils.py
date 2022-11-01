@@ -546,18 +546,18 @@ def create_myeloid_coverage_summary(sample_obj):
         coverage_regions_analysis_obj = RegionCoverageAnalysis.objects.filter(gene=gene_coverage_obj)
         for region_obj in coverage_regions_analysis_obj:
 
-            # pull out the average coverage and HGVS annotations
-            cov = region_obj.average_coverage
+            # pull out the percent coverage at 270X and HGVS annotations
+            cov = region_obj.percent_270x
             anno = region_obj.hgvs_c
 
-            # only enter loop if coverage is less than 270X
-            if cov < 270:
+            # only enter loop if coverage is less than 100% at 270X
+            if cov < 100:
 
-                # if no coverage at all
+                # if no coverage at all at 270X
                 if cov == 0:
                     myeloid_add_to_dict(regions_with_zero, anno)
 
-                # if coverage is between 0-270X
+                # if coverage is between 0-100% at 270X
                 else:
                     myeloid_add_to_dict(regions_with_less_270, anno)
 
