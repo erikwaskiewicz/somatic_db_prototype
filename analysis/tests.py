@@ -1044,8 +1044,8 @@ class TestDna(TestCase):
 		self.assertEqual(sample_data['is_myeloid_referral'], True)
 
 		myeloid_coverage_summary = create_myeloid_coverage_summary(sample_obj)
-		self.assertEqual(myeloid_coverage_summary['summary_0x'], 'N/A')
-		self.assertEqual(myeloid_coverage_summary['summary_270x'], 'BCOR exon 5; CEBPA exon 1; DNMT3A (NM_153759.3) exon 1; DNMT3A exon 2; NPM1 exon 11.')
+		self.assertEqual(myeloid_coverage_summary['summary_0x'], 'BCOR exon 5.')
+		self.assertEqual(myeloid_coverage_summary['summary_270x'], 'BCOR exon 10, exon 13, exon 15, exon 3, exon 8, exon 9; CEBPA exon 1; DNMT3A exon 10, exon 2; DNMT3A (NM_153759.3) exon 1; EZH2 exon 3; GATA2 exon 2; KRAS exon 3; NPM1 exon 11; RUNX1 exon 4, exon 9; SRSF2 exon 1.')
 
 
 	def test_myeloid_gaps_summary_non_myeloid(self):
