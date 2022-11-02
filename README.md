@@ -1,5 +1,24 @@
 # Somatic variant database
 
+### Setting up a local version of the database
+
+Clone the repository
+`git clone https://github.com/AWGL/somatic_db.git`
+`cd somatic_db`
+`conda env create -f env.yaml`
+`conda activate somatic_variant_db`
+`python manage.py migrate`
+`python manage.py makemigrations`
+`python manage.py migrate`
+`python manage.py createsuperuser`
+
+The referrals fixture will also need to be loaded as follows:
+`python manage.py loaddata panels_nov2022.json`
+
+To then locally run the database:
+`python manage.py runserver`
+
+
 ### Setting up postgres
 
 https://www.digitalocean.com/community/tutorials/how-to-use-postgresql-with-your-django-application-on-ubuntu-14-04
