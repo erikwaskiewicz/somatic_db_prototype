@@ -9,7 +9,7 @@ cd somatic_db
 conda env create -f env.yaml
 conda activate somatic_variant_db
 python manage.py migrate
-python manage.py makemigrations
+python manage.py makemigrations analysis
 python manage.py migrate
 python manage.py createsuperuser
 ```
