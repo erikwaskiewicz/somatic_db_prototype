@@ -513,32 +513,40 @@ def myeloid_format_output(input_dict):
             codons = []
             exons = []
             for r in regions:
-                region, num = r.split(' ')
+                region = r.split(' ')[0]
+                num = r.split(' ')[1]
                 if region == 'exon':
                     exons.append(int(num))
                 elif region == 'codon':
                     codons.append(num)
 
-            # empty string to build output
-            all_regions = ''
+            # empty list to build output
+            all_regions_list = []
 
-            # add codons to string first, if there are any (these arent sorted if there are multiple)
+            # add codons to list first, if there are any (these arent sorted if there are multiple)
             if codons:
-                all_regions += f'codon {", ".join(codons)}, '
+                all_codons = f'codon {", ".join(codons)}'
+                all_regions_list.append(all_codons)
 
-            # add exons to string if there are any
+            # add exons to list if there are any
             if exons:
 
                 # handle pluralisation of word exon
                 if len(exons) == 1:
-                    all_regions += 'exon '
+                    all_exons = 'exon '
                 else:
-                    all_regions += 'exons '
+                    all_exons = 'exons '
 
                 # sort and concatenate all exons
                 exons_str = [str(exon) for exon in sorted(exons)]
-                all_regions += ', '.join(exons_str)
-                
+                all_exons += ', '.join(exons_str)
+
+                # add to list
+                all_regions_list.append(all_exons)
+
+            # combine codon and exon lists into one
+            all_regions = ', '.join(all_regions_list)
+
             # add to the output list. if the transcript isnt a primary transcript, add the transcript ID in brackets after the gene name
             if transcript in alt_transcripts:
                 out_list.append(f'{gene} ({transcript}) {all_regions}')
