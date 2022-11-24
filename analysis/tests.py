@@ -74,7 +74,7 @@ class TestDna(TestCase):
         The control panel has been uploaded with each of the different panels applied
         
         '''
-        panels = ['Tumour', 'Lung', 'Glioma', 'Thyroid', 'GIST', 'Melanoma', 'Colorectal']
+        panels = ['Tumour', 'Lung', 'Glioma', 'Thyroid', 'GIST', 'Melanoma', 'Colorectal', 'cll', 'mpn', 'myeloid']
 
         for panel in panels:
             panel_obj = Panel.objects.get(panel_name=panel, dna_or_rna='DNA')
