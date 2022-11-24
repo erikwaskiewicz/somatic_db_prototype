@@ -509,8 +509,43 @@ def myeloid_format_output(input_dict):
     for gene, values in sorted(input_dict.items()):
         for transcript, regions in values.items():
 
-            # concatenate all exons within the gene in numerical order
-            all_regions = ', '.join(sorted(regions))
+            # split the annotations into codons or exons and add exon/codon number to lists
+            codons = []
+            exons = []
+            for r in regions:
+                region = r.split(' ')[0]
+                num = r.split(' ')[1]
+                if region == 'exon':
+                    exons.append(int(num))
+                elif region == 'codon':
+                    codons.append(num)
+
+            # empty list to build output
+            all_regions_list = []
+
+            # add codons to list first, if there are any (these arent sorted if there are multiple)
+            if codons:
+                all_codons = f'codon {", ".join(codons)}'
+                all_regions_list.append(all_codons)
+
+            # add exons to list if there are any
+            if exons:
+
+                # handle pluralisation of word exon
+                if len(exons) == 1:
+                    all_exons = 'exon '
+                else:
+                    all_exons = 'exons '
+
+                # sort and concatenate all exons
+                exons_str = [str(exon) for exon in sorted(exons)]
+                all_exons += ', '.join(exons_str)
+
+                # add to list
+                all_regions_list.append(all_exons)
+
+            # combine codon and exon lists into one
+            all_regions = ', '.join(all_regions_list)
 
             # add to the output list. if the transcript isnt a primary transcript, add the transcript ID in brackets after the gene name
             if transcript in alt_transcripts:
@@ -546,18 +581,18 @@ def create_myeloid_coverage_summary(sample_obj):
         coverage_regions_analysis_obj = RegionCoverageAnalysis.objects.filter(gene=gene_coverage_obj)
         for region_obj in coverage_regions_analysis_obj:
 
-            # pull out the average coverage and HGVS annotations
-            cov = region_obj.average_coverage
+            # pull out the percent coverage at 270X and HGVS annotations
+            cov = region_obj.percent_270x
             anno = region_obj.hgvs_c
 
-            # only enter loop if coverage is less than 270X
-            if cov < 270:
+            # only enter loop if coverage is less than 100% at 270X
+            if cov < 100:
 
-                # if no coverage at all
+                # if no coverage at all at 270X
                 if cov == 0:
                     myeloid_add_to_dict(regions_with_zero, anno)
 
-                # if coverage is between 0-270X
+                # if coverage is between 0-100% at 270X
                 else:
                     myeloid_add_to_dict(regions_with_less_270, anno)
 

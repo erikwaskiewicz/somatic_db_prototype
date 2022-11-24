@@ -1,4 +1,5 @@
 # for details on backup and restore - see https://www.postgresql.org/docs/12/backup-dump.html#BACKUP-DUMP-RESTORE
+# to setup password on cron, see https://stackoverflow.com/questions/2893954/how-to-pass-in-password-to-pg-dump
 
 BACKUP_DIR="/home/ew/db_backups/"
 
