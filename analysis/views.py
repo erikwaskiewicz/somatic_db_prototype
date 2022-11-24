@@ -10,7 +10,7 @@ from django.template import Context
 
 from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm
 from .models import *
-from .utils import link_callback, get_samples, unassign_check, signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info
+from .utils import link_callback, get_samples, unassign_check, signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, create_myeloid_coverage_summary
 
 import json
 import os
@@ -172,14 +172,19 @@ def analysis_sheet(request, sample_id):
             comment=current_step_obj.coverage_comment,
             ntc_check=current_step_obj.coverage_ntc_check,
         ),
-
     }
 
+    # pull out coverage summary for myeloid, otherwise return false
+    if sample_data['is_myeloid_referral']:
+        myeloid_coverage_summary = create_myeloid_coverage_summary(sample_obj)
+    else:
+        myeloid_coverage_summary = False
 
     # DNA workflow
     if sample_data['dna_or_rna'] == 'DNA':
         context['variant_data'] = get_variant_info(sample_data, sample_obj)
         context['coverage_data'] = get_coverage_data(sample_obj)
+        context['myeloid_coverage_summary'] = myeloid_coverage_summary
 
     # RNA workflow
     elif sample_data['dna_or_rna'] == 'RNA':
