@@ -67,8 +67,9 @@ admin.site.register(Variant, VariantAdmin)
 
 class VariantInstanceAdmin(admin.ModelAdmin):
     list_display = ('id', 'get_sample', 'get_var', 'gene', 'hgvs_c', 'hgvs_p', 'vaf', 'final_decision')
-    search_fields = ['id', 'sample__sample_id', 'variant__genomic_37', 'gene', 'hgvs_c', 'hgvs_p', 'vaf',]
+    # cant search by vaf as its a class function
     # can't search by final decision because of choice field
+    search_fields = ['id', 'sample__sample_id', 'variant__genomic_37', 'gene', 'hgvs_c', 'hgvs_p',]
 
     # get sample name rather than sample ID
     def get_sample(self, obj):
