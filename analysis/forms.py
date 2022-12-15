@@ -19,6 +19,22 @@ class UnassignForm(forms.Form):
         )
 
 
+class PaperworkCheckForm(forms.Form):
+    """
+    Form that users tick after they have checked patient paperwork to confirm referral is correct
+    """
+    paperwork_check = forms.BooleanField(required=True, label='Confirm that paperwork is correct')
+    sample = forms.CharField(widget=forms.HiddenInput(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(PaperworkCheckForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Continue to analysis', css_class='btn btn-info w-100')
+        )
+
+
 class NewVariantForm(forms.Form):
     """
     """

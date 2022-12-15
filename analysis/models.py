@@ -75,6 +75,7 @@ class SampleAnalysis(models.Model):
     worksheet = models.ForeignKey('Worksheet', on_delete=models.CASCADE)
     sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
     panel = models.ForeignKey('Panel', on_delete=models.CASCADE)
+    paperwork_check = models.BooleanField(default=False)
     total_reads = models.IntegerField(blank=True, null=True)
     total_reads_ntc = models.IntegerField(blank=True, null=True)
     percent_reads_ntc = models.CharField(max_length=200, blank=True, null=True)

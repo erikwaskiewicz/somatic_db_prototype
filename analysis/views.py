@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.template.loader import get_template
 from django.template import Context
 
-from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm
+from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm
 from .models import *
 from .utils import link_callback, get_samples, unassign_check, signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, create_myeloid_coverage_summary
 
@@ -117,6 +117,8 @@ def view_samples(request, worksheet_id):
     """
     samples = SampleAnalysis.objects.filter(worksheet = worksheet_id)
     sample_dict = get_samples(samples)
+    ws_obj = Worksheet.objects.get(ws_id = worksheet_id)
+    run_id = ws_obj.run
 
     # if unassign modal button is pressed
     if request.method == 'POST':
@@ -130,16 +132,28 @@ def view_samples(request, worksheet_id):
                 # get latest check and reset
                 unassign_check(sample_analysis_obj)
 
-                # reload context
-                samples = SampleAnalysis.objects.filter(worksheet = worksheet_id)
-                sample_dict = get_samples(samples)
+                # redirect to force refresh, otherwise form could accidentally be resubmitted when refreshing the page
+                return redirect('view_samples', worksheet_id)
+
+        if 'paperwork_check' in request.POST:
+            #print(request.POST)
+            check_form = PaperworkCheckForm(request.POST)
+            if check_form.is_valid():
+                # get sample analysis pk from form
+                sample_pk = check_form.cleaned_data['sample']
+                sample_analysis_obj = SampleAnalysis.objects.get(pk=sample_pk)
+                sample_analysis_obj.paperwork_check = True
+
+                return redirect('analysis_sheet', sample_analysis_obj.pk)
 
     
     # render context
     context = {
         'worksheet': worksheet_id,
+        'run_id': run_id,
         'samples': sample_dict,
         'unassign_form': UnassignForm(),
+        'check_form': PaperworkCheckForm(),
     }
 
     return render(request, 'analysis/view_samples.html', context)
