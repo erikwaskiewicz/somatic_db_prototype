@@ -135,7 +135,7 @@ class Check(models.Model):
     coverage_comment = models.CharField(max_length=500, blank=True)
     coverage_comment_updated = models.DateTimeField(blank=True, null=True)
     patient_info_check = models.BooleanField(default=False)
-    overall_comment = models.CharField(max_length=500, blank=True)
+    overall_comment = models.CharField(max_length=2000, blank=True)
     overall_comment_updated = models.DateTimeField(blank=True, null=True)
     signoff_time = models.DateTimeField(blank=True, null=True)
 
@@ -379,7 +379,7 @@ class FusionCheck(models.Model):
     fusion_analysis = models.ForeignKey('FusionPanelAnalysis', on_delete=models.CASCADE)
     check_object = models.ForeignKey('Check', on_delete=models.CASCADE)
     decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
-    comment = models.CharField(max_length=500, blank=True, null=True)
+    comment = models.CharField(max_length=2000, blank=True, null=True)
     comment_updated = models.DateTimeField(blank=True, null=True)
 
 
