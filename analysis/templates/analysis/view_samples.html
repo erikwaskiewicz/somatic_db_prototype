@@ -48,8 +48,22 @@
               <a class="btn btn-danger btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">Fail</a>
 
               {% elif analysis.checks.current_status == 'Fail - 2nd check required' %}
-              <a class="btn btn-warning btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}" role="button">Fail (check required)</a>
+                {% if analysis.checks.assigned_to == None %}
+                <a class="btn btn-warning btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}" role="button">Fail (check required)</a>
 
+                {% else %}
+                <div class="btn-group btn-block">
+                  <a class="btn btn-warning btn-block btn-disabled" href="#" role="button">Fail - assigned to {{ analysis.checks.assigned_to }}</a>
+                  <button type="button btn-block" class="btn btn-warning dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="sr-only">Toggle Dropdown</span>
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" data-toggle="modal" data-target="#unassign-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.assigned_to }}" data-status="{{ analysis.checks.current_status }}">
+                      Unassign
+                    </a>
+                  </div>
+                </div>
+                {% endif %}
               {% endif %}
 
             <!-- buttons when no one is assigned to an analysis, 1st analysis gets extra check-->
