@@ -5,7 +5,7 @@
 <nav class="breadcrumb flex-nowrap" aria-label="breadcrumb">
   <div class="container">
     <a class="breadcrumb-item active" href="{% url 'home' %}"><span class="fa fa-home"></span></a>
-    <a class="breadcrumb-item active" href="{% url 'view_worksheets' %}" aria-current="page">Worksheets</a>
+    <a class="breadcrumb-item active" href="{% url 'view_worksheets' 'recent' %}" aria-current="page">Worksheets</a>
     <a class="breadcrumb-item active" aria-current="page">{{ worksheet }}</a>
   </div>
 </nav>
