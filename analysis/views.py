@@ -120,8 +120,8 @@ def view_samples(request, worksheet_id):
     ws_obj = Worksheet.objects.get(ws_id = worksheet_id)
     run_id = ws_obj.run
 
-    # if unassign modal button is pressed
     if request.method == 'POST':
+        # if unassign modal button is pressed
         if 'unassign' in request.POST:
             unassign_form = UnassignForm(request.POST)
             if unassign_form.is_valid():
@@ -135,18 +135,20 @@ def view_samples(request, worksheet_id):
                 # redirect to force refresh, otherwise form could accidentally be resubmitted when refreshing the page
                 return redirect('view_samples', worksheet_id)
 
+        # if someone starts a first check
         if 'paperwork_check' in request.POST:
-            #print(request.POST)
             check_form = PaperworkCheckForm(request.POST)
             if check_form.is_valid():
                 # get sample analysis pk from form
                 sample_pk = check_form.cleaned_data['sample']
                 sample_analysis_obj = SampleAnalysis.objects.get(pk=sample_pk)
+
+                # set the check to true and redirect to the sample
                 sample_analysis_obj.paperwork_check = True
+                sample_analysis_obj.save()
 
                 return redirect('analysis_sheet', sample_analysis_obj.pk)
 
-    
     # render context
     context = {
         'worksheet': worksheet_id,
@@ -165,10 +167,13 @@ def analysis_sheet(request, sample_id):
     Display coverage and variant metrics to allow checking of data 
     in IGV
     """
-    # load in data that is common to both RNA and DNA workflows
+    # load sample object, error if the paperwork check hasnt been done
     sample_obj = SampleAnalysis.objects.get(pk = sample_id)
-    sample_data = get_sample_info(sample_obj)
+    if sample_obj.paperwork_check == False:
+        raise Http404("Paperwork hasn't been checked")
 
+    # load in data that is common to both RNA and DNA workflows
+    sample_data = get_sample_info(sample_obj)
     current_step_obj = sample_data['checks']['current_check_object']
 
     # assign to whoever clicked the sample and reload check objects
