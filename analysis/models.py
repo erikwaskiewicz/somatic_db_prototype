@@ -24,6 +24,7 @@ class Worksheet(models.Model):
     ws_id = models.CharField(max_length=50, primary_key=True)
     run = models.ForeignKey('Run', on_delete=models.CASCADE)
     assay = models.CharField(max_length=50)
+    diagnostic = models.BooleanField(default=True)
 
     def __str__(self):
         return self.ws_id
