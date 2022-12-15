@@ -55,16 +55,28 @@ def home(request):
     """
     TODO - no home page yet, just redirect to list of worksheets
     """
-    return redirect('view_worksheets')
+    return redirect('view_worksheets', 'recent')
 
 
 @login_required
-def view_worksheets(request):
+def view_worksheets(request, query):
     """
     Displays all worksheets and links to the page to show all samples 
     within the worksheet
     """
-    worksheets = Worksheet.objects.all().order_by('-ws_id')
+    # based on URL, either query 30 most recent or all results
+    if query == 'recent':
+        worksheets = Worksheet.objects.all().order_by('-run')[:30]
+        filtered = True
+
+    elif query == 'all':
+        worksheets = Worksheet.objects.all().order_by('-run')
+        filtered = False
+
+    # any other string will be chnaged to most recent, if left blank then it'll throw a 404 error
+    else:
+        return redirect('view_worksheets', 'recent')
+
 
     # Two seperate lists so that diagnostics runs appear first
     diagnostics_ws_list = []
@@ -72,7 +84,7 @@ def view_worksheets(request):
 
     for w in worksheets:
         # if first two characters are digits, add to diagnostics list, otherwise add to other list
-        if w.ws_id[0:2].isdigit():
+        if w.diagnostic:
             diagnostics_ws_list.append({
                 'worksheet_id': w.ws_id,
                 'run_id': w.run.run_id,
@@ -91,6 +103,7 @@ def view_worksheets(request):
 
     context = {
         'worksheets': ws_list,
+        'filtered': filtered,
     }
 
     return render(request, 'analysis/view_worksheets.html', context)
