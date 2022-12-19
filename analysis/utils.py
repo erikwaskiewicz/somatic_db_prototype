@@ -78,8 +78,13 @@ def unassign_check(sample_analysis_obj):
     """
 
     """
-    # get latest check  
-    latest_check = sample_analysis_obj.get_checks()['current_check_object']
+    # get latest check
+    all_checks = sample_analysis_obj.get_checks()
+    latest_check = all_checks['current_check_object']
+
+    # if resetting from 1st check, reset the tickbox for the paperwork check too
+    if all_checks['current_status'] == 'IGV check 1':
+        sample_analysis_obj.paperwork_check = False
 
     # reset check
     latest_check.user = None
@@ -107,6 +112,8 @@ def unassign_check(sample_analysis_obj):
         c.comment = ''
         c.comment_updated = None
         c.save()
+
+    sample_analysis_obj.save()
 
     return True
 

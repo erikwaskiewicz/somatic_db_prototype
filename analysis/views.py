@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.template.loader import get_template
 from django.template import Context
 
-from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm
+from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm
 from .models import *
 from .utils import link_callback, get_samples, unassign_check, signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, create_myeloid_coverage_summary
 
@@ -55,16 +55,28 @@ def home(request):
     """
     TODO - no home page yet, just redirect to list of worksheets
     """
-    return redirect('view_worksheets')
+    return redirect('view_worksheets', 'recent')
 
 
 @login_required
-def view_worksheets(request):
+def view_worksheets(request, query):
     """
     Displays all worksheets and links to the page to show all samples 
     within the worksheet
     """
-    worksheets = Worksheet.objects.all().order_by('-ws_id')
+    # based on URL, either query 30 most recent or all results
+    if query == 'recent':
+        worksheets = Worksheet.objects.all().order_by('-run')[:30]
+        filtered = True
+
+    elif query == 'all':
+        worksheets = Worksheet.objects.all().order_by('-run')
+        filtered = False
+
+    # any other string will be chnaged to most recent, if left blank then it'll throw a 404 error
+    else:
+        return redirect('view_worksheets', 'recent')
+
 
     # Two seperate lists so that diagnostics runs appear first
     diagnostics_ws_list = []
@@ -72,7 +84,7 @@ def view_worksheets(request):
 
     for w in worksheets:
         # if first two characters are digits, add to diagnostics list, otherwise add to other list
-        if w.ws_id[0:2].isdigit():
+        if w.diagnostic:
             diagnostics_ws_list.append({
                 'worksheet_id': w.ws_id,
                 'run_id': w.run.run_id,
@@ -91,6 +103,7 @@ def view_worksheets(request):
 
     context = {
         'worksheets': ws_list,
+        'filtered': filtered,
     }
 
     return render(request, 'analysis/view_worksheets.html', context)
@@ -104,9 +117,11 @@ def view_samples(request, worksheet_id):
     """
     samples = SampleAnalysis.objects.filter(worksheet = worksheet_id)
     sample_dict = get_samples(samples)
+    ws_obj = Worksheet.objects.get(ws_id = worksheet_id)
+    run_id = ws_obj.run
 
-    # if unassign modal button is pressed
     if request.method == 'POST':
+        # if unassign modal button is pressed
         if 'unassign' in request.POST:
             unassign_form = UnassignForm(request.POST)
             if unassign_form.is_valid():
@@ -117,16 +132,30 @@ def view_samples(request, worksheet_id):
                 # get latest check and reset
                 unassign_check(sample_analysis_obj)
 
-                # reload context
-                samples = SampleAnalysis.objects.filter(worksheet = worksheet_id)
-                sample_dict = get_samples(samples)
+                # redirect to force refresh, otherwise form could accidentally be resubmitted when refreshing the page
+                return redirect('view_samples', worksheet_id)
 
-    
+        # if someone starts a first check
+        if 'paperwork_check' in request.POST:
+            check_form = PaperworkCheckForm(request.POST)
+            if check_form.is_valid():
+                # get sample analysis pk from form
+                sample_pk = check_form.cleaned_data['sample']
+                sample_analysis_obj = SampleAnalysis.objects.get(pk=sample_pk)
+
+                # set the check to true and redirect to the sample
+                sample_analysis_obj.paperwork_check = True
+                sample_analysis_obj.save()
+
+                return redirect('analysis_sheet', sample_analysis_obj.pk)
+
     # render context
     context = {
         'worksheet': worksheet_id,
+        'run_id': run_id,
         'samples': sample_dict,
         'unassign_form': UnassignForm(),
+        'check_form': PaperworkCheckForm(),
     }
 
     return render(request, 'analysis/view_samples.html', context)
@@ -138,10 +167,13 @@ def analysis_sheet(request, sample_id):
     Display coverage and variant metrics to allow checking of data 
     in IGV
     """
-    # load in data that is common to both RNA and DNA workflows
+    # load sample object, error if the paperwork check hasnt been done
     sample_obj = SampleAnalysis.objects.get(pk = sample_id)
-    sample_data = get_sample_info(sample_obj)
+    if sample_obj.paperwork_check == False:
+        raise Http404("Paperwork hasn't been checked")
 
+    # load in data that is common to both RNA and DNA workflows
+    sample_data = get_sample_info(sample_obj)
     current_step_obj = sample_data['checks']['current_check_object']
 
     # assign to whoever clicked the sample and reload check objects

@@ -32,9 +32,15 @@ class TestViews(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-    def test_view_worksheets(self):
-        ''' Access worksheets page '''
-        response = self.client.get('/worksheets', follow=True)
+    def test_view_recent_worksheets(self):
+        ''' Access worksheets page with only the most recent 30 shown'''
+        response = self.client.get('/view_worksheets/recent', follow=True)
+        self.assertEqual(response.status_code, 200)
+
+
+    def test_view_all_worksheets(self):
+        ''' Access worksheets page with all shown'''
+        response = self.client.get('/view_worksheets/all', follow=True)
         self.assertEqual(response.status_code, 200)
 
 

@@ -24,6 +24,7 @@ class Worksheet(models.Model):
     ws_id = models.CharField(max_length=50, primary_key=True)
     run = models.ForeignKey('Run', on_delete=models.CASCADE)
     assay = models.CharField(max_length=50)
+    diagnostic = models.BooleanField(default=True)
 
     def __str__(self):
         return self.ws_id
@@ -74,6 +75,7 @@ class SampleAnalysis(models.Model):
     worksheet = models.ForeignKey('Worksheet', on_delete=models.CASCADE)
     sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
     panel = models.ForeignKey('Panel', on_delete=models.CASCADE)
+    paperwork_check = models.BooleanField(default=False)
     total_reads = models.IntegerField(blank=True, null=True)
     total_reads_ntc = models.IntegerField(blank=True, null=True)
     percent_reads_ntc = models.CharField(max_length=200, blank=True, null=True)
@@ -133,7 +135,7 @@ class Check(models.Model):
     coverage_comment = models.CharField(max_length=500, blank=True)
     coverage_comment_updated = models.DateTimeField(blank=True, null=True)
     patient_info_check = models.BooleanField(default=False)
-    overall_comment = models.CharField(max_length=500, blank=True)
+    overall_comment = models.CharField(max_length=2000, blank=True)
     overall_comment_updated = models.DateTimeField(blank=True, null=True)
     signoff_time = models.DateTimeField(blank=True, null=True)
 
@@ -377,7 +379,7 @@ class FusionCheck(models.Model):
     fusion_analysis = models.ForeignKey('FusionPanelAnalysis', on_delete=models.CASCADE)
     check_object = models.ForeignKey('Check', on_delete=models.CASCADE)
     decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
-    comment = models.CharField(max_length=500, blank=True, null=True)
+    comment = models.CharField(max_length=2000, blank=True, null=True)
     comment_updated = models.DateTimeField(blank=True, null=True)
 
 
