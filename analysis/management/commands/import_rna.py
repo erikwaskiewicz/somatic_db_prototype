@@ -1,6 +1,7 @@
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
+from django.conf import settings
 
 from analysis.models import *
 
@@ -40,7 +41,7 @@ class Command(BaseCommand):
         # hard coded variables
         dna_or_rna = 'RNA'
         assay = 'TSO500'
-        panels_file = '/home/ew/somatic_db/roi/rna_panels.yaml'
+        panels_file = settings.ROI_PATH_RNA
 
         # check that inputs are valid
         if not os.path.isfile(fusions_file):
@@ -139,7 +140,9 @@ class Command(BaseCommand):
                     )
                     # splice variants only have one reference value, fusions have two (one per gene)
                     if f['type'] == 'Fusion':
-                        new_fusion_instance.ref_reads_2 = f['reference_reads_2']
+                        # reference reads 2 isnt always included if the fusion is intragenic
+                        if f['reference_reads_2'] != 'NA':
+                            new_fusion_instance.ref_reads_2 = f['reference_reads_2']
                         new_fusion_instance.fusion_score = f['fusion_score']
                         new_fusion_instance.split_reads = f['split_reads']
                         new_fusion_instance.spanning_reads = f['spanning_reads']

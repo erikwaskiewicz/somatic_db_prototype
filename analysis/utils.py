@@ -78,8 +78,13 @@ def unassign_check(sample_analysis_obj):
     """
 
     """
-    # get latest check  
-    latest_check = sample_analysis_obj.get_checks()['current_check_object']
+    # get latest check
+    all_checks = sample_analysis_obj.get_checks()
+    latest_check = all_checks['current_check_object']
+
+    # if resetting from 1st check, reset the tickbox for the paperwork check too
+    if all_checks['current_status'] == 'IGV check 1':
+        sample_analysis_obj.paperwork_check = False
 
     # reset check
     latest_check.user = None
@@ -107,6 +112,8 @@ def unassign_check(sample_analysis_obj):
         c.comment = ''
         c.comment_updated = None
         c.save()
+
+    sample_analysis_obj.save()
 
     return True
 
@@ -280,13 +287,16 @@ def get_variant_info(sample_data, sample_obj):
                 #'count': this_run_count, 
                 #'total': len(sample_objects),
                 'ntc': sample_variant.variant_instance.in_ntc,
+                'alt_count_ntc': sample_variant.variant_instance.alt_count_ntc,
+                'total_count_ntc': sample_variant.variant_instance.total_count_ntc,
+                'vaf_ntc': sample_variant.variant_instance.vaf_ntc(),
             },   
             'previous_runs': {
                 'known': ' | '.join(previous_classifications),
                 'count': 'N/A', #previous_runs,
             },
             'vaf': {
-                'vaf': sample_variant.variant_instance.vaf,
+                'vaf': sample_variant.variant_instance.vaf(),
                 'total_count': sample_variant.variant_instance.total_count,
                 'alt_count': sample_variant.variant_instance.alt_count,
             },

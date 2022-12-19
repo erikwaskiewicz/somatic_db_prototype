@@ -14,6 +14,22 @@
 <div class="container">
   <h5>Worksheets</h5>
   <br>
+  {% if filtered %}
+  <div class="alert alert-warning">
+    <div class="container">
+      <div class="row">
+        <div class="col-8">
+          <strong>Showing the most recent 30 worksheets</strong><br>Click to view all worksheets (this will take some time to load).
+        </div>
+        <div class="col-4">
+          <a class="btn btn-warning w-100" href="{% url 'view_worksheets' 'all' %}" role="button">
+              View all
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
 
   <table class="table" id="worksheets-table">
     <thead>

@@ -1,6 +1,9 @@
 from auditlog.registry import auditlog
 from django.db import models
 
+import decimal
+
+
 # Create your models here.
 class Run(models.Model):
     """
@@ -21,6 +24,7 @@ class Worksheet(models.Model):
     ws_id = models.CharField(max_length=50, primary_key=True)
     run = models.ForeignKey('Run', on_delete=models.CASCADE)
     assay = models.CharField(max_length=50)
+    diagnostic = models.BooleanField(default=True)
 
     def __str__(self):
         return self.ws_id
@@ -71,6 +75,7 @@ class SampleAnalysis(models.Model):
     worksheet = models.ForeignKey('Worksheet', on_delete=models.CASCADE)
     sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
     panel = models.ForeignKey('Panel', on_delete=models.CASCADE)
+    paperwork_check = models.BooleanField(default=False)
     total_reads = models.IntegerField(blank=True, null=True)
     total_reads_ntc = models.IntegerField(blank=True, null=True)
     percent_reads_ntc = models.CharField(max_length=200, blank=True, null=True)
@@ -130,7 +135,7 @@ class Check(models.Model):
     coverage_comment = models.CharField(max_length=500, blank=True)
     coverage_comment_updated = models.DateTimeField(blank=True, null=True)
     patient_info_check = models.BooleanField(default=False)
-    overall_comment = models.CharField(max_length=500, blank=True)
+    overall_comment = models.CharField(max_length=2000, blank=True)
     overall_comment_updated = models.DateTimeField(blank=True, null=True)
     signoff_time = models.DateTimeField(blank=True, null=True)
 
@@ -165,12 +170,37 @@ class VariantInstance(models.Model):
     exon = models.CharField(max_length=50)
     hgvs_c = models.CharField(max_length=200)
     hgvs_p = models.CharField(max_length=200)
-    vaf = models.IntegerField()
     total_count = models.IntegerField()
     alt_count = models.IntegerField()
     in_ntc = models.BooleanField()
+    total_count_ntc = models.IntegerField(blank=True, null=True)
+    alt_count_ntc = models.IntegerField(blank=True, null=True)
     manual_upload = models.BooleanField(default=False)
     final_decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
+
+    def vaf(self):
+        """
+        calculate VAF of variant from total and alt read counts
+        VAF is always displayed to two decimal places
+
+        """
+        vaf = decimal.Decimal(self.alt_count / self.total_count) * 100
+        vaf_rounded = vaf.quantize(decimal.Decimal('.01'), rounding = decimal.ROUND_DOWN)
+
+        return vaf_rounded
+
+    def vaf_ntc(self):
+        """
+        calculate VAF of NTC variant if its seen in NTC, otherwise return None
+        VAF is always displayed to two decimal places
+
+        """
+        if self.in_ntc:
+            vaf = decimal.Decimal(self.alt_count_ntc / self.total_count_ntc) * 100
+            vaf_rounded = vaf.quantize(decimal.Decimal('.01'), rounding = decimal.ROUND_DOWN)
+            return vaf_rounded
+        else:
+            return None
 
 
 class VariantPanelAnalysis(models.Model):
@@ -275,7 +305,7 @@ class RegionCoverageAnalysis(models.Model):
     percent_ntc = models.IntegerField()
 
     def genomic(self):
-        return f'{chr_start}:{pos_start}_{chr_end}:{pos_end}'
+        return f'{self.chr_start}:{self.pos_start}_{self.chr_end}:{self.pos_end}'
 
 
 class GapsAnalysis(models.Model):
@@ -349,7 +379,7 @@ class FusionCheck(models.Model):
     fusion_analysis = models.ForeignKey('FusionPanelAnalysis', on_delete=models.CASCADE)
     check_object = models.ForeignKey('Check', on_delete=models.CASCADE)
     decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
-    comment = models.CharField(max_length=500, blank=True, null=True)
+    comment = models.CharField(max_length=2000, blank=True, null=True)
     comment_updated = models.DateTimeField(blank=True, null=True)
 
 
