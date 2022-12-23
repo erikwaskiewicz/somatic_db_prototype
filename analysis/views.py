@@ -595,6 +595,10 @@ def view_polys(request):
                 variant_pk = confirm_form.cleaned_data['variant_pk']
                 comment = confirm_form.cleaned_data['comment']
 
+                # get genomic coords
+                variant_obj = Variant.objects.get(id=variant_pk)
+                variant = variant_obj.genomic_37
+
                 # update poly list
                 variant_to_variant_list_obj = VariantToVariantList.objects.get(pk=variant_pk)
                 variant_to_variant_list_obj.check_user = request.user
@@ -606,6 +610,7 @@ def view_polys(request):
                 confirmed_list, checking_list = get_poly_list(poly_list, request.user)
                 context['confirmed_list'] = confirmed_list
                 context['checking_list'] = checking_list
+                context['success'].append(f'Variant {variant} added to poly list')
 
         # if add new poly button is pressed
         if 'variant' in request.POST:
@@ -632,9 +637,13 @@ def view_polys(request):
                         variant_to_variant_list_obj.upload_time = timezone.now()
                         variant_to_variant_list_obj.upload_comment = comment
                         variant_to_variant_list_obj.save()
+
+                        # give success message
+                        context['success'].append(f'Variant {variant} added to poly checking list')
+
                     # throw error if already in poly list
                     else:
-                        context['warning'].append('This poly is already in the poly list')
+                        context['warning'].append(f'Variant {variant} is already in the poly list')
 
                     # reload context
                     confirmed_list, checking_list = get_poly_list(poly_list, request.user)

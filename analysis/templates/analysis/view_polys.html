@@ -16,10 +16,8 @@
   <h5>Poly list</h5>
   <br>
 
-  <p><b>Manage polys</b></p>
   <div class="card-body bg-light">
     <button class="btn btn-info w-100" type="button" data-toggle="modal" data-target="#add-modal" class="btn btn-info">Add new poly</button>
-    <br>
     <br>
   </div>
   <br>
@@ -59,7 +57,7 @@
                 {% if v.able_to_sign_off %}
                 <button type="button" data-toggle="modal" data-target="#check-modal" data-pk="{{ v.variant_pk }}" data-coord="{{ v.genomic_37 }}"
                   data-gene="{{ v.gene }}" data-hgvs_c="{{ v.hgvs_c }}" data-hgvs_p="{{ v.hgvs_p }}" data-user="{{ v.upload_user }}"  
-                  data-time="{{ v.upload_time }}" data-comment="{{ v.upload_comment }}" class="btn btn-info">
+                  data-time="{{ v.upload_time }}" data-comment="{{ v.upload_comment }}" class="btn btn-secondary">
                   Check
                 </button>
 
@@ -75,16 +73,10 @@
   
       </div>
     </div>
-
-
-  {% else %}
-  <div class="alert alert-success">
-    <p><span class="fa fa-check" style="color:rgb(46, 178, 34)"></span> No polys to check</p>
-    
-    {% endif %}
   </div>
   <br>
   <br>
+  {% endif %}
 
   <p><b>Confirmed polys</b></p>
   <table class="table" id="poly-table">
@@ -165,16 +157,33 @@
           </tbody>
         </table>
         <br>
-        <br>
 
-        <p><b>Not a poly?</b></p>
-        <p>If this is not a poly, it will need to be removed by bioinformatics. Please screenshot/ copy & paste the following information and send to <b>bioinformatics@wales.nhs.uk</b>:</p>
-        <div class="card-body bg-light">
-          <p>
-            ERROR CODE #1<br>
-            VariantToVariantList PK: {{ v.variant_pk }}<br>
-            Variant: {{ v.genomic_37 }}
-          </p>
+        <button class="btn btn-light w-100" type="button" data-toggle="collapse" data-target="#dont-agree" aria-expanded="false" aria-controls="dont-agree">
+          Don't agree? Click here
+        </button>
+        <div class="collapse" id="dont-agree">
+
+          <p>Please discuss with whoever added the variant and agree whether this variant is a poly or not.</p>
+          <p>If it is not a poly, it will need to be removed by bioinformatics. Please copy & paste the following information and send to <b>bioinformatics@wales.nhs.uk</b>:</p>
+          <div class="card-body bg-light">
+
+            <table class="table table-sm">
+              <tbody>
+                <tr>
+                  <td>ISSUE CODE #2</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>VariantToVariantList PK: </td>
+                  <td>{{ v.variant_pk }}</td>
+                </tr>
+                <tr>
+                  <td>Variant: </td>
+                  <td>{{ v.genomic_37 }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -194,6 +203,10 @@
         </button>
       </div>
       <div class="modal-body">
+
+        <div class="alert alert-warning">
+          <p>Polys are filtered out for <b>all referral types</b>, please make sure that all sections agree</p>
+        </div>
 
         <p><b>Variant details</b></p>
         <table class="table table-sm table-hover">
@@ -234,15 +247,33 @@
         {% crispy confirm_form %}
         <br>
 
-        <p><b>Dont agree?</b></p>
-        <p>Please discuss with whoever added the variant and agree whether this variant is a poly or not.</p>
-        <p>If it is not a poly, it will need to be removed by bioinformatics. Please screenshot/ copy & paste the following information and send to <b>bioinformatics@wales.nhs.uk</b>:</p>
-        <div class="card-body bg-light">
-          <p>
-            ISSUE CODE #2<br>
-            VariantToVariantList PK: <span class="modal-pk"></span><br>
-            Variant: <span class="modal-coord"></span>
-          </p>
+
+        <button class="btn btn-light w-100" type="button" data-toggle="collapse" data-target="#dont-agree" aria-expanded="false" aria-controls="dont-agree">
+          Don't agree? Click here
+        </button>
+        <div class="collapse" id="dont-agree">
+
+          <p>Please discuss with whoever added the variant and agree whether this variant is a poly or not.</p>
+          <p>If it is not a poly, it will need to be removed by bioinformatics. Please copy & paste the following information and send to <b>bioinformatics@wales.nhs.uk</b>:</p>
+          <div class="card-body bg-light">
+
+            <table class="table table-sm">
+              <tbody>
+                <tr>
+                  <td>ISSUE CODE #2</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>VariantToVariantList PK: </td>
+                  <td class="modal-pk"></td>
+                </tr>
+                <tr>
+                  <td>Variant: </td>
+                  <td class="modal-coord"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -262,6 +293,10 @@
         </button>
       </div>
       <div class="modal-body">
+
+        <div class="alert alert-warning">
+          <p>Polys are filtered out for <b>all referral types</b>, please make sure that all sections agree</p>
+        </div>
 
         {% crispy add_new_form %}
 

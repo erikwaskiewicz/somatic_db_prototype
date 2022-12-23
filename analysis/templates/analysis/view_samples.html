@@ -195,40 +195,48 @@
 
         {% crispy check_form %}
 
-        <br><br>
-        <p><b>Incorrect referral?</b></p>
-        <p>
-          If there is a mistake, bioinformatics will need to remove the incorrect panel and upload the corrected one.<br>
-          Please send the correct panel and the following information to <b>bioinformatics@wales.nhs.uk</b>:
-        </p>
-        <div class="card-body bg-light">
-          <table class="table table-sm">
-            <tbody>        
-              <tr>
-                <td>SampleAnalysis PK: </td>
-                <td class="modal-pk"></td>
-              </tr>
-              <tr>
-                <td>Sample ID: </td>
-                <td class="modal-sample"></td>
-              </tr>
-              <tr>
-                <td>Current panel (the incorrect one): </td>
-                <td class="modal-panel"></td>
-              </tr>
-              <tr>
-                <td>Worksheet ID: </td>
-                <td class="modal-ws"></td>
-              </tr>
-              <tr>
-                <td>Run ID: </td>
-                <td class="modal-run"></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <p>Please note, by default <b>we will remove the incorrect version of the panel</b>, please let us know if you do not want this to happen.</p>
 
+        <button class="btn btn-light w-100" type="button" data-toggle="collapse" data-target="#wrong-referral" aria-expanded="false" aria-controls="wrong-referral">
+          Incorrect referral? Click here
+        </button>
+        <div class="collapse" id="wrong-referral">
+
+          <p>
+            If there is a mistake, bioinformatics will need to remove the incorrect panel and upload the corrected one.<br>
+            Please send the correct panel and the following information to <b>bioinformatics@wales.nhs.uk</b>:
+          </p>
+          <div class="card-body bg-light">
+            <table class="table table-sm">
+              <tbody>
+                <tr>
+                  <td>ISSUE CODE #1</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>SampleAnalysis PK: </td>
+                  <td class="modal-pk"></td>
+                </tr>
+                <tr>
+                  <td>Sample ID: </td>
+                  <td class="modal-sample"></td>
+                </tr>
+                <tr>
+                  <td>Current panel (the incorrect one): </td>
+                  <td class="modal-panel"></td>
+                </tr>
+                <tr>
+                  <td>Worksheet ID: </td>
+                  <td class="modal-ws"></td>
+                </tr>
+                <tr>
+                  <td>Run ID: </td>
+                  <td class="modal-run"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Please note, by default <b>we will remove the incorrect version of the panel</b>, please let us know if you do not want this to happen.</p>
+        </div>
       </div>
     </div>
   </div>
