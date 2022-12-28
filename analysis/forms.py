@@ -227,7 +227,7 @@ class ConfirmPolyForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(ConfirmPolyForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.fields['comment'].widget.attrs['placeholder'] = 'Add evidence to support this variant being a poly'
+        self.fields['comment'].widget.attrs['placeholder'] = 'Add comments or evidence to support this variant being a poly\ne.g. filepaths to documented evidence, sample IDs to check...'
         self.helper.form_method = 'POST'
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-100')
@@ -248,7 +248,7 @@ class AddNewPolyForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(AddNewPolyForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.fields['comment'].widget.attrs['placeholder'] = 'Add evidence to support this variant being a poly'
+        self.fields['comment'].widget.attrs['placeholder'] = 'Add comments or evidence to support this variant being a poly\ne.g. filepaths to documented evidence, sample IDs to check...'
         self.fields['variant'].widget.attrs['placeholder'] = 'Must be in genomic format e.g. 7:140453136A>T'
         self.helper.form_method = 'POST'
         self.helper.add_input(
