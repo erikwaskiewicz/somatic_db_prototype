@@ -2,7 +2,19 @@
 
 ### ISSUE CODE #1 - Wrong panel applied
 
-TODO - add from SOP
+The following information should be supplied along with the request:
+- *SampleAnalysis PK* - the primary key of the SampleAnalysis object that needs to be removed (unless requested otherwise)
+- *Sample ID*
+- *Current panel (the incorrect one)*
+- *Correct panel (the one to be applied)*
+- *Worksheet ID*
+- *Run ID*
+
+Instructions
+- Open the LP-GEN-TSO500Bioinf SOP
+- Navigate to section 3.7 - FAQs
+- To add the correct panel, follow the process in part 8 - Uploading a sample with a new referral
+- To remove the incorrect panel (if required), follow part 2 - Removing a sample analysis from the somatic variant database
 
 ### ISSUE CODE #2 - Variant needs to be removed from the poly list
 
