@@ -11,6 +11,7 @@ def link_callback(uri, rel):
     Convert HTML URIs to absolute system paths so xhtml2pdf can access those
     resources 
     taken straight from https://xhtml2pdf.readthedocs.io/en/latest/usage.html#using-xhtml2pdf-in-django
+    TODO - try removing this, I dont think it's being used, intentation is wrong so would error if its called
     """
     result = finders.find(uri)
     if result:
@@ -41,6 +42,8 @@ def link_callback(uri, rel):
     
 def get_samples(samples):
     """
+    Create context dictionary of all sample analyses for rendering the worksheet page
+
     """
     # adds a record for each panel analysis - i.e. if a sample has two panels
     # it will have two records
@@ -76,6 +79,7 @@ def get_samples(samples):
 @transaction.atomic
 def unassign_check(sample_analysis_obj):
     """
+    Unassign a sample analysis so that if can be analysed by someone else, resets the check to begin from scratch
 
     """
     # get latest check
@@ -119,14 +123,16 @@ def unassign_check(sample_analysis_obj):
 
 
 @transaction.atomic
-def signoff_check(user, current_step_obj, sample_obj, status='C'):
+def signoff_check(user, current_step_obj, sample_obj, status='C', complete=False):
     """
+    Signs off a check, returns true if successful, returns false if not, along with an error message
 
     """
     # get all variant checks for the sample
-    if sample_obj.sample.sample_type == 'DNA':
+    sample_type = sample_obj.sample.sample_type
+    if sample_type == 'DNA':
         variant_checks = VariantCheck.objects.filter(check_object=current_step_obj)
-    elif sample_obj.sample.sample_type == 'RNA':
+    elif sample_type == 'RNA':
         variant_checks = FusionCheck.objects.filter(check_object=current_step_obj)
 
     # make sure that none of the variant checks are still pending
@@ -134,8 +140,13 @@ def signoff_check(user, current_step_obj, sample_obj, status='C'):
     if status != 'F':
         for v in variant_checks:
             if v.decision == '-':
-                return False
+                return False, 'Did not finalise check - not all variants have been checked'
 
+    # commit to database if its the last check
+    if complete:
+        submitted, err = complete_checks(sample_obj, sample_type)
+        if not submitted:
+            return False, err
 
     # signoff current check
     now = timezone.now()
@@ -146,11 +157,12 @@ def signoff_check(user, current_step_obj, sample_obj, status='C'):
     # save object
     current_step_obj.save()
 
-    return True
+    return True, ''
 
 
 def make_next_check(sample_obj, next_step):
     """
+    Sets up the next check and associated variant checks
 
     """
     # add new check object
@@ -186,8 +198,68 @@ def make_next_check(sample_obj, next_step):
     return True
 
 
+@transaction.atomic
+def complete_checks(sample_analysis_obj, sample_type):
+    """
+    Finalises an analysis, checks for clashes in checks and then commits results to the database
+    TODO - test RNA & add tests
+
+    """
+    # list to collect output, only committed to the database if there are no errors so this is done at the end
+    out_list = []
+
+    # load in variant list depending on whether its a DNa or RNA sample
+    if sample_type == 'DNA':
+        variants = VariantPanelAnalysis.objects.filter(sample_analysis=sample_analysis_obj)
+    elif sample_type == 'RNA':
+        variants = FusionPanelAnalysis.objects.filter(sample_analysis=sample_analysis_obj)
+
+    # loop through all variants
+    for v in variants:
+
+        # get all checks for that variant
+        variant_checks = v.get_all_checks()
+        variant_checks_list = [ v.decision for v in variant_checks ]
+
+        # if all checks are not analysed, set final decision as not analysed
+        if set(variant_checks_list) == set(['N']):
+            final_decision = 'N'
+
+        # if theres other options than just not analysed
+        else:
+            # make a list in the same order but excluding 'Not analysed'
+            temp_list = []
+            for c in variant_checks_list:
+                if c != 'N':
+                    temp_list.append(c)
+
+            # error if there#s less than 2 checks remaining
+            if len(temp_list) < 2:
+                return False, f"Did not finalise check - not all variants have been checked at least twice (excluding 'Not analysed')"
+            
+            # error if the last two checks dont agree
+            last2 = temp_list[-2:]
+            if last2[0] != last2[1]:
+                return False, f"Did not finalise check - last checkers don't agree (excluding 'Not analysed')"
+
+            # if all checks pass, record final decision
+            final_decision = last2[1]
+
+        # add to out_list for committing to the database at the end
+        variant_instance_obj = v.variant_instance
+        out_list.append([variant_instance_obj, final_decision])
+        
+    # commit to database, will only run if there are no errors so that data isnt half added to the database
+    for variant_instance_obj, final_decision in out_list:
+        variant_instance_obj.final_decision = final_decision
+        variant_instance_obj.save()
+
+    return True, ''
+
+
 def get_sample_info(sample_obj):
     """
+    Get info for a specific sample to generate a part of the sample analysis context dictionary
 
     """
     sample_data = {
@@ -208,6 +280,10 @@ def get_sample_info(sample_obj):
 
 
 def get_variant_info(sample_data, sample_obj):
+    """
+    Get information on all variants in a sample analysis to generate the variant portion of the context dictionary
+
+    """
 
     sample_variants = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
 
@@ -251,15 +327,18 @@ def get_variant_info(sample_data, sample_obj):
         variant_checks_list = [ v.get_decision_display() for v in variant_checks ]
         latest_check = variant_checks.latest('pk')
 
+        # remove Not analysed from checks list
+        variant_checks_analysed = []
+        for c in variant_checks_list:
+            if c != 'Not analysed':
+                variant_checks_analysed.append(c)
+
         # do the last two checks agree?
         last_two_checks_agree = True
-        if len(variant_checks_list) > 1:
-
-            last2 = variant_checks_list[-2:]
-            # skip check if not analysed
-            if last2[1] != 'Not analysed':
-                if last2[0] != last2[1]:
-                    last_two_checks_agree = False
+        if len(variant_checks_analysed) > 1:
+            last2 = variant_checks_analysed[-2:]
+            if last2[0] != last2[1]:
+                last_two_checks_agree = False
 
         # set decision if falls in poly list, otherwise the finilise sample validation will fail
         if 'Poly' in previous_classifications:
@@ -329,6 +408,10 @@ def get_variant_info(sample_data, sample_obj):
 
 
 def get_fusion_info(sample_data,sample_obj):
+    """
+    Get information on all fusions in a sample analysis to generate the fusion portion of the context dictionary
+
+    """
 
     fusions = FusionPanelAnalysis.objects.filter(sample_analysis= sample_obj)
 
@@ -350,14 +433,18 @@ def get_fusion_info(sample_data,sample_obj):
         fusion_checks_list = [ v.get_decision_display() for v in fusion_checks ]
         latest_check = fusion_checks.latest('pk')
 
+        # remove Not analysed from checks list
+        fusion_checks_analysed = []
+        for c in fusion_checks_list:
+            if c != 'Not analysed':
+                fusion_checks_analysed.append(c)
+
         # do the last two checks agree?
         last_two_checks_agree = True
-        if len(fusion_checks_list) > 1:
-            last2 = fusion_checks_list[-2:]
-            # skip check if not analysed
-            if last2[1] != 'Not analysed':
-                if last2[0] != last2[1]:
-                    last_two_checks_agree = False
+        if len(fusion_checks_analysed) > 1:
+            last2 = fusion_checks_analysed[-2:]
+            if last2[0] != last2[1]:
+                last_two_checks_agree = False
 
         fusion_comment_form = FusionCommentForm(
             pk=latest_check.pk, 
@@ -412,6 +499,11 @@ def get_fusion_info(sample_data,sample_obj):
 
 
 def get_coverage_data(sample_obj):
+    """
+    Get information on the coverage in a sample analysis to generate the coverage portion of the context dictionary
+
+    """
+
     #create a coverage dictionary
     coverage_data = {}
     gene_coverage_analysis_obj = GeneCoverageAnalysis.objects.filter(sample=sample_obj).order_by('gene')

@@ -439,11 +439,12 @@ def analysis_sheet(request, sample_id):
 
                         # if 1st IGV, make 2nd IGV
                         if current_step == 'IGV check 1':
-                            if signoff_check(request.user, current_step_obj, sample_obj):
+                            submitted, err = signoff_check(request.user, current_step_obj, sample_obj)
+                            if submitted:
                                 make_next_check(sample_obj, 'IGV')
                                 return redirect('view_samples', sample_data['worksheet_id'])
                             else:
-                                context['warning'].append('Did not finalise check - not all variant have been checked')
+                                context['warning'].append(err)
                             
                         # if 2nd IGV (or 3rd...)
                         else:
@@ -467,22 +468,25 @@ def analysis_sheet(request, sample_id):
                                 warning_text = ', '.join(non_matching_variants)
                                 context['warning'].append(f'Did not finalise check - the last two checkers dont agree for the following variants: {warning_text}')
                             
-                            elif signoff_check(request.user, current_step_obj, sample_obj):
-                                return redirect('view_samples', sample_data['worksheet_id'])
+                            # final signoff
                             else:
-                                context['warning'].append('Did not finalise check - not all variants have been checked')
+                                submitted, err = signoff_check(request.user, current_step_obj, sample_obj, complete=True)
+                                if submitted:
+                                    return redirect('view_samples', sample_data['worksheet_id'])
 
-                                # TODO - error if there aren't at least two classifications per variant?
-
+                                # throw warning if not all variants are checked
+                                else:
+                                    context['warning'].append(err)
 
                     elif next_step == 'Request extra check':
 
                         # make extra IGV check
-                        if signoff_check(request.user, current_step_obj, sample_obj):
+                        submitted, err = signoff_check(request.user, current_step_obj, sample_obj)
+                        if submitted:
                             make_next_check(sample_obj, 'IGV')
                             return redirect('view_samples', sample_data['worksheet_id'])
                         else:
-                            context['warning'].append('Did not finalise check - not all variants have been checked')
+                            context['warning'].append(err)
 
 
                     elif next_step == 'Fail sample':
@@ -491,13 +495,13 @@ def analysis_sheet(request, sample_id):
 
                         # if failed 1st check, make 2nd check 
                         if current_step == 'IGV check 1':
-                            signoff_check(request.user, current_step_obj, sample_obj, 'F')
+                            signoff_check(request.user, current_step_obj, sample_obj, status='F')
                             make_next_check(sample_obj, 'IGV')
                             return redirect('view_samples', sample_data['worksheet_id'])
 
                         # otherwise sign off and make sample failed
                         else:
-                            signoff_check(request.user, current_step_obj, sample_obj, 'F')
+                            signoff_check(request.user, current_step_obj, sample_obj, status='F')
                             return redirect('view_samples', sample_data['worksheet_id'])
 
 
@@ -532,12 +536,6 @@ def ajax(request):
                 current_check.decision = new_choice
                 current_check.save()
 
-                # TODO make more robust - could potentially end up with not analysed labelled as something else if people click multiple times
-                if new_choice != 'N':
-                    variant_instance_obj = variant_obj.variant_instance
-                    variant_instance_obj.final_decision = new_choice
-                    variant_instance_obj.save()
-
         elif dna_or_rna == 'RNA':
             for variant in selections:
                 fusion_obj = FusionPanelAnalysis.objects.get(pk=variant)
@@ -546,12 +544,6 @@ def ajax(request):
                 new_choice = selections[variant]['genuine_dropdown']
                 current_check.decision = new_choice
                 current_check.save()
-
-                # TODO make more robust - could potentially end up with not analysed labelled as something else if people click multiple times
-                if new_choice != 'N':
-                    fusion_obj = fusion_obj.fusion_instance
-                    fusion_obj.final_decision = new_choice
-                    fusion_obj.save()
 
         # dont think this redirect is doing anything but there needs to be a HTML response
         # actual reidrect is handled inside AJAX call in analysis-snvs.html
