@@ -59,7 +59,7 @@
       <td>{{ v.gene }} ({{ v.exon }})</td>
       <td>{{ v.hgvs_c }}</td>
       <td>{{ v.hgvs_p }}</td>
-      <td>{{ v.vaf.vaf }}%</td>
+      <td>{{ v.vaf.vaf_rounded }}%</td>
       <td>{{ v.final_decision }}</td>
       <td>
       {% for c in v.comments %}

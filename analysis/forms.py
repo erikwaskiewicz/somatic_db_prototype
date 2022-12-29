@@ -67,9 +67,9 @@ class SubmitForm(forms.Form):
     """
     """
     NEXT_STEP_CHOICES = (
-        ('Complete check', 'Sample passed and check complete'),
-        ('Request extra check', 'Sample passed, check complete but extra check required (dont do this at first check)'),
-        ('Fail sample', 'Sample failed analysis but check is complete'),
+        ('Complete check', 'Sample passed check'),
+        ('Request extra check', 'Sample passed check, send for an extra check'),
+        ('Fail sample', 'Sample failed check'),
     )
     next_step = forms.ChoiceField(choices=NEXT_STEP_CHOICES)
     confirm = forms.BooleanField(required=True, label="Confirm check is complete")
