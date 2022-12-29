@@ -242,7 +242,9 @@ def get_variant_info(sample_data, sample_obj):
             if l.variant_list.name == 'TSO500_known':
                 previous_classifications.append(l.classification)
             elif l.variant_list.name == 'TSO500_polys':
-                previous_classifications.append('Poly')
+                # only add if polys have been checked twice
+                if l.signed_off():
+                    previous_classifications.append('Poly')
 
         # get checks for each variant
         variant_checks = VariantCheck.objects.filter(variant_analysis=sample_variant).order_by('pk')
@@ -618,3 +620,62 @@ def create_myeloid_coverage_summary(sample_obj):
         }
 
     return myeloid_coverage_summary
+
+
+def get_poly_list(poly_list_obj, user):
+    """
+    get all polys and split into a list of confirmed polys and 
+    a list of polys that need checking
+
+    """
+    # get all variant objects from the poly list
+    variants = VariantToVariantList.objects.filter(variant_list=poly_list_obj)
+
+    # make empty lists before collecting data from loop
+    confirmed_list = []
+    checking_list = []
+
+    for n, v in enumerate(variants):
+        # get gene info
+        variant_instances = VariantInstance.objects.filter(variant=v.variant)
+        genes = []
+        hgvs_cs = []
+        hgvs_ps = []
+        for annotation in variant_instances:
+            genes.append(annotation.gene)
+            hgvs_cs.append(annotation.hgvs_c)
+            hgvs_ps.append(annotation.hgvs_p)
+
+        # format variant info info dictionary 
+        formatted_variant = {
+            'counter': n,
+            'variant_pk': v.id,
+            'genomic_37': v.variant.genomic_37,
+            'gene': '|'.join(set(genes)),
+            'hgvs_c': '|'.join(set(hgvs_cs)),
+            'hgvs_p': '|'.join(set(hgvs_ps)),
+            'upload_user': v.upload_user,
+            'upload_time': v.upload_time,
+            'upload_comment': v.upload_comment,
+            'check_user': v.check_user,
+            'check_time': v.check_time,
+            'check_comment': v.check_comment,
+        }
+
+        # add polys with two checks to the confirmed list
+        if v.signed_off():
+            confirmed_list.append(formatted_variant)
+
+        # otherwise add to the checking list
+        else:
+            # check if the current user is the person who submitted the poly
+            # if it is then disable the button to sign off
+            if user == v.upload_user:
+                formatted_variant['able_to_sign_off'] = False
+            else:
+                formatted_variant['able_to_sign_off'] = True
+
+            # add to checking list
+            checking_list.append(formatted_variant)
+
+    return confirmed_list, checking_list

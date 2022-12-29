@@ -1,5 +1,9 @@
 # Somatic variant database
 
+### Troubleshooting
+
+See [here](docs/common_errors.md) for common issues
+
 ### Setting up a local version of the database
 
 Clone the repository, change to the directory, set up environment and the django database

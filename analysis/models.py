@@ -258,6 +258,22 @@ class VariantToVariantList(models.Model):
     variant_list = models.ForeignKey('VariantList', on_delete=models.CASCADE)
     variant = models.ForeignKey('Variant', on_delete=models.CASCADE)
     classification = models.CharField(max_length=50, blank=True, null=True)
+    upload_user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True, related_name='upload_user')
+    upload_time = models.DateTimeField(blank=True, null=True)
+    upload_comment = models.CharField(max_length=500, blank=True, null=True)
+    check_user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True,  related_name='check_user')
+    check_time = models.DateTimeField(blank=True, null=True)
+    check_comment = models.CharField(max_length=500, blank=True, null=True)
+
+    def signed_off(self):
+        """
+        Check that there is a user assigned for both upload and check
+
+        """
+        if self.upload_user == None or self.check_user == None:
+            return False
+        else:
+            return True
 
 
 class Gene(models.Model):

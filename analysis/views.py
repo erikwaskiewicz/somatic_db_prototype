@@ -8,9 +8,11 @@ from django.utils import timezone
 from django.template.loader import get_template
 from django.template import Context
 
-from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm
+
+from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, ConfirmPolyForm, AddNewPolyForm
 from .models import *
-from .utils import link_callback, get_samples, unassign_check, signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, create_myeloid_coverage_summary
+from .utils import link_callback, get_samples, unassign_check, signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, create_myeloid_coverage_summary, get_poly_list
+
 
 import json
 import os
@@ -551,3 +553,103 @@ def ajax(request):
         # dont think this redirect is doing anything but there needs to be a HTML response
         # actual reidrect is handled inside AJAX call in analysis-snvs.html
         return redirect('analysis_sheet', sample_pk)
+
+
+@login_required
+def view_polys(request):
+    """
+    Page to view all confirmed polys and add and check new ones
+
+    """
+    # load poly list object
+    list_name = 'TSO500_polys'
+    poly_list = VariantList.objects.get(name=list_name)
+
+    # pull out list of confirmed polys and polys to be checked
+    confirmed_list, checking_list = get_poly_list(poly_list, request.user)
+
+    # make context dictionary
+    context = {
+        'success': [],
+        'warning': [],
+        'confirmed_list': confirmed_list,
+        'checking_list': checking_list,
+        'confirm_form': ConfirmPolyForm(),
+        'add_new_form': AddNewPolyForm(),
+    }
+
+    #----------------------------------------------------------
+    #  If any buttons are pressed
+    if request.method == 'POST':
+
+        # if confirm poly button is pressed
+        if 'variant_pk' in request.POST:
+
+            confirm_form = ConfirmPolyForm(request.POST)
+            if confirm_form.is_valid():
+
+                # get form data
+                variant_pk = confirm_form.cleaned_data['variant_pk']
+                comment = confirm_form.cleaned_data['comment']
+
+                # get genomic coords
+                variant_obj = Variant.objects.get(id=variant_pk)
+                variant = variant_obj.genomic_37
+
+                # update poly list
+                variant_to_variant_list_obj = VariantToVariantList.objects.get(pk=variant_pk)
+                variant_to_variant_list_obj.check_user = request.user
+                variant_to_variant_list_obj.check_time = timezone.now()
+                variant_to_variant_list_obj.check_comment = comment
+                variant_to_variant_list_obj.save()
+
+                # reload context
+                confirmed_list, checking_list = get_poly_list(poly_list, request.user)
+                context['confirmed_list'] = confirmed_list
+                context['checking_list'] = checking_list
+                context['success'].append(f'Variant {variant} added to poly list')
+
+        # if add new poly button is pressed
+        if 'variant' in request.POST:
+            add_new_form = AddNewPolyForm(request.POST)
+
+            if add_new_form.is_valid():
+
+                # get form data
+                variant = add_new_form.cleaned_data['variant']
+                comment = add_new_form.cleaned_data['comment']
+
+                # wrap in try/ except to handle when a variant doesnt match the input
+                try:
+                    # load in variant and variant to list objects
+                    variant_obj = Variant.objects.get(genomic_37=variant)
+                    variant_to_variant_list_obj, created = VariantToVariantList.objects.get_or_create(
+                        variant_list = poly_list,
+                        variant = variant_obj
+                    )
+
+                    # add user info if a new model is created
+                    if created:
+                        variant_to_variant_list_obj.upload_user = request.user
+                        variant_to_variant_list_obj.upload_time = timezone.now()
+                        variant_to_variant_list_obj.upload_comment = comment
+                        variant_to_variant_list_obj.save()
+
+                        # give success message
+                        context['success'].append(f'Variant {variant} added to poly checking list')
+
+                    # throw error if already in poly list
+                    else:
+                        context['warning'].append(f'Variant {variant} is already in the poly list')
+
+                    # reload context
+                    confirmed_list, checking_list = get_poly_list(poly_list, request.user)
+                    context['confirmed_list'] = confirmed_list
+                    context['checking_list'] = checking_list
+
+                # throw error if there isnt a variant matching the input
+                except Variant.DoesNotExist:
+                    context['warning'].append(f'Cannot find variant matching {variant}') 
+
+    # render the page
+    return render(request, 'analysis/view_polys.html', context)
