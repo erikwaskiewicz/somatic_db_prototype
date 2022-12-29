@@ -66,7 +66,7 @@ def view_worksheets(request, query):
     """
     # based on URL, either query 30 most recent or all results
     if query == 'recent':
-        worksheets = Worksheet.objects.all().order_by('-run')[:30]
+        worksheets = Worksheet.objects.filter(diagnostic=True).order_by('-run')[:30]
         filtered = True
 
     elif query == 'all':
@@ -350,8 +350,6 @@ def analysis_sheet(request, sample_id):
 
                 new_variant_data = new_variant_form.cleaned_data
 
-                vaf = int((new_variant_data['alt_reads'] / new_variant_data['total_reads']) * 100)
-
                 new_variant_object, created = Variant.objects.get_or_create(
                     genomic_37 = new_variant_data['hgvs_g'],
                     genomic_38 = None,
@@ -364,7 +362,6 @@ def analysis_sheet(request, sample_id):
                     hgvs_c = new_variant_data['hgvs_c'],
                     hgvs_p = new_variant_data['hgvs_p'],
                     sample = sample_obj.sample, 
-                    vaf = vaf, 
                     total_count = new_variant_data['total_reads'], 
                     alt_count = new_variant_data['alt_reads'], 
                     in_ntc = new_variant_data['in_ntc'], 
