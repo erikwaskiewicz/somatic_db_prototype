@@ -273,6 +273,10 @@ def get_variant_info(sample_data, sample_obj):
                     { 'comment': v.comment, 'user': v.check_object.user, 'updated': v.comment_updated, }
                 )
 
+        # get VAF and round to nearest whole number
+        vaf = sample_variant.variant_instance.vaf()
+        vaf_rounded = vaf.quantize(decimal.Decimal('1'), rounding=decimal.ROUND_HALF_UP)
+
         #Create a variant calls dictionary to pass to analysis-snvs.html
         variant_calls_dict = {
             'pk': sample_variant.pk,
@@ -296,7 +300,8 @@ def get_variant_info(sample_data, sample_obj):
                 'count': 'N/A', #previous_runs,
             },
             'vaf': {
-                'vaf': sample_variant.variant_instance.vaf(),
+                'vaf': vaf,
+                'vaf_rounded': vaf_rounded,
                 'total_count': sample_variant.variant_instance.total_count,
                 'alt_count': sample_variant.variant_instance.alt_count,
             },
