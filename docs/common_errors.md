@@ -20,7 +20,7 @@ Instructions
 
 The following information should be supplied along with the request:
 - *VariantToVariantList PK* - the primary key of the VaraintToVariantList object that needs to be removed
-- *Variant* - the genomic co-ordinates of the variant to be removed, to be used an a sanity check
+- *Variant* - the genomic co-ordinates of the variant to be removed, to be used as a sanity check
 
 Instructions
 - Make sure all of the info above has been supplied, if not then ask the clinical scientist to provide it
