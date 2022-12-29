@@ -144,9 +144,42 @@ def signoff_check(user, current_step_obj, sample_obj, status='C', complete=False
 
     # commit to database if its the last check
     if complete:
-        submitted, err = complete_checks(sample_obj, sample_type)
-        if not submitted:
-            return False, err
+
+        # list to collect output, only committed to the database if there are no errors so this is done at the end
+        out_list = []
+
+        # load in variant list depending on whether its a DNA or RNA sample
+        if sample_type == 'DNA':
+            variants = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
+        elif sample_type == 'RNA':
+            variants = FusionPanelAnalysis.objects.filter(sample_analysis=sample_obj)
+
+        # loop through all variants
+        for v in variants:
+
+            # get all checks for that variant
+            variant_checks = v.get_all_checks()
+            variant_checks_list = [ v.decision for v in variant_checks ]
+
+            # function to validate checks
+            submitted, out = complete_checks(variant_checks_list)
+
+            # throw error if validation fails, output will be error message
+            if not submitted:
+                return False, out
+
+            # if validation passes, get the database object add to out_list for committing to the database at the end
+            else:
+                if sample_type == 'DNA':
+                    variant_instance_obj = v.variant_instance
+                elif sample_type == 'RNA':
+                    variant_instance_obj = v.fusion_instance
+                out_list.append([variant_instance_obj, out])
+
+        # commit to database, will only run if there are no errors so that data isnt half added to the database
+        for variant_instance_obj, final_decision in out_list:
+            variant_instance_obj.final_decision = final_decision
+            variant_instance_obj.save()
 
     # signoff current check
     now = timezone.now()
@@ -199,62 +232,46 @@ def make_next_check(sample_obj, next_step):
 
 
 @transaction.atomic
-def complete_checks(sample_analysis_obj, sample_type):
+def complete_checks(variant_checks_list):
     """
-    Finalises an analysis, checks for clashes in checks and then commits results to the database
-    TODO - test RNA & add tests
+    Takes a list of checks, validates whether or not they can be finalised and returns the final decision
+      if there are clashes then it will return a tuple of False plus an error message
+      if tests pass then it will return a tuple of True and the final classification decision
+
+    Limitation - the only way that a variant will be classified as 'Not analysed' is if all checks are set that way,
+      if a variant is assigned anything other than 'Not analysed' in any checks and it is later decided
+      that the variant should have been ignored, the variant will have to be manually edited in the Django admin page
 
     """
-    # list to collect output, only committed to the database if there are no errors so this is done at the end
-    out_list = []
+    # throw error if theres only one check
+    if len(variant_checks_list) < 2:
+        return False, "Did not finalise check - not all variants have been checked at least twice (excluding 'Not analysed')"
 
-    # load in variant list depending on whether its a DNa or RNA sample
-    if sample_type == 'DNA':
-        variants = VariantPanelAnalysis.objects.filter(sample_analysis=sample_analysis_obj)
-    elif sample_type == 'RNA':
-        variants = FusionPanelAnalysis.objects.filter(sample_analysis=sample_analysis_obj)
+    # if all checks are not analysed, set final decision as not analysed
+    elif set(variant_checks_list) == set(['N']):
+        final_decision = 'N'
 
-    # loop through all variants
-    for v in variants:
+    # if theres other options than just not analysed
+    else:
+        # make a list in the same order as the original but 'Not analysed' removed
+        checks_minus_na = []
+        for c in variant_checks_list:
+            if c != 'N':
+                checks_minus_na.append(c)
 
-        # get all checks for that variant
-        variant_checks = v.get_all_checks()
-        variant_checks_list = [ v.decision for v in variant_checks ]
+        # error if theres less than 2 checks
+        if len(checks_minus_na) < 2:
+            return False, "Did not finalise check - not all variants have been checked at least twice (excluding 'Not analysed')"
 
-        # if all checks are not analysed, set final decision as not analysed
-        if set(variant_checks_list) == set(['N']):
-            final_decision = 'N'
+        # error if the last two checks dont agree
+        last2 = checks_minus_na[-2:]
+        if last2[0] != last2[1]:
+            return False, "Did not finalise check - last checkers don't agree (excluding 'Not analysed')"
 
-        # if theres other options than just not analysed
-        else:
-            # make a list in the same order but excluding 'Not analysed'
-            temp_list = []
-            for c in variant_checks_list:
-                if c != 'N':
-                    temp_list.append(c)
+        # if all checks pass, record final decision
+        final_decision = last2[1]
 
-            # error if there#s less than 2 checks remaining
-            if len(temp_list) < 2:
-                return False, f"Did not finalise check - not all variants have been checked at least twice (excluding 'Not analysed')"
-            
-            # error if the last two checks dont agree
-            last2 = temp_list[-2:]
-            if last2[0] != last2[1]:
-                return False, f"Did not finalise check - last checkers don't agree (excluding 'Not analysed')"
-
-            # if all checks pass, record final decision
-            final_decision = last2[1]
-
-        # add to out_list for committing to the database at the end
-        variant_instance_obj = v.variant_instance
-        out_list.append([variant_instance_obj, final_decision])
-        
-    # commit to database, will only run if there are no errors so that data isnt half added to the database
-    for variant_instance_obj, final_decision in out_list:
-        variant_instance_obj.final_decision = final_decision
-        variant_instance_obj.save()
-
-    return True, ''
+    return True, final_decision
 
 
 def get_sample_info(sample_obj):

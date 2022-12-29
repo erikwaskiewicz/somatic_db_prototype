@@ -414,7 +414,7 @@ class FusionPanelAnalysis(models.Model):
         return FusionCheck.objects.filter(fusion_analysis=self).latest('pk')
 
     def get_all_checks(self):
-        return FusionCheck.objects.filter(variant_analysis=self).order_by('pk')
+        return FusionCheck.objects.filter(fusion_analysis=self).order_by('pk')
 
 
 auditlog.register(Run)
