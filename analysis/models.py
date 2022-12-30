@@ -214,6 +214,9 @@ class VariantPanelAnalysis(models.Model):
     def get_current_check(self):
         return VariantCheck.objects.filter(variant_analysis=self).latest('pk')
 
+    def get_all_checks(self):
+        return VariantCheck.objects.filter(variant_analysis=self).order_by('pk')
+
 
 class VariantCheck(models.Model):
     """
@@ -344,7 +347,7 @@ class GapsAnalysis(models.Model):
 
 class Fusion(models.Model):
     """
-
+    A fusion
     """
     fusion_genes = models.CharField(max_length=50)
     left_breakpoint = models.CharField(max_length=50)
@@ -353,7 +356,7 @@ class Fusion(models.Model):
 
 class FusionAnalysis(models.Model):
     """
-
+    A specfic analysis of a fusion
     """
     DECISION_CHOICES = (
         ('-', 'Pending'),
@@ -409,6 +412,9 @@ class FusionPanelAnalysis(models.Model):
 
     def get_current_check(self):
         return FusionCheck.objects.filter(fusion_analysis=self).latest('pk')
+
+    def get_all_checks(self):
+        return FusionCheck.objects.filter(fusion_analysis=self).order_by('pk')
 
 
 auditlog.register(Run)
