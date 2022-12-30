@@ -6,7 +6,8 @@ from crispy_forms.bootstrap import Field, FieldWithButtons, StrictButton
 
 class UnassignForm(forms.Form):
     """
-    Search bar for home page
+    Unassign yourself/ someone else from a sample analysis
+
     """
     unassign = forms.CharField(widget=forms.HiddenInput(), required=False)
 
@@ -37,6 +38,8 @@ class PaperworkCheckForm(forms.Form):
 
 class NewVariantForm(forms.Form):
     """
+    Manually add a SNV
+
     """
     hgvs_g = forms.CharField(label='Genomic coordinates')
     hgvs_c = forms.CharField(label='HGVS c.')
@@ -45,8 +48,7 @@ class NewVariantForm(forms.Form):
     exon = forms.CharField(required=False, label='Exon')
     alt_reads = forms.IntegerField(label='Number of reads supporting variant')
     total_reads = forms.IntegerField(label='Total depth')
-    in_ntc = forms.BooleanField(required=False, label="Variant seen in NTC?")
-
+    in_ntc = forms.BooleanField(required=False, label='Variant seen in NTC?')
 
     def __init__(self, *args, **kwargs):
         super(NewVariantForm, self).__init__(*args, **kwargs)
@@ -65,6 +67,8 @@ class NewVariantForm(forms.Form):
 
 class SubmitForm(forms.Form):
     """
+    Finalise a sample analysis
+
     """
     NEXT_STEP_CHOICES = (
         ('Complete check', 'Sample passed check'),
@@ -72,8 +76,7 @@ class SubmitForm(forms.Form):
         ('Fail sample', 'Sample failed check'),
     )
     next_step = forms.ChoiceField(choices=NEXT_STEP_CHOICES)
-    confirm = forms.BooleanField(required=True, label="Confirm check is complete")
-
+    confirm = forms.BooleanField(required=True, label='Confirm check is complete')
 
     def __init__(self, *args, **kwargs):
         super(SubmitForm, self).__init__(*args, **kwargs)
@@ -86,13 +89,15 @@ class SubmitForm(forms.Form):
 
 class SampleCommentForm(forms.Form):
     """
+    Add a sample wide comment
+
     """
     sample_comment = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 4}),
         required=False,
         label='General sample comments:'
     )
-    patient_demographics = forms.BooleanField(required=False, label="Patient demographics checked")
+    patient_demographics = forms.BooleanField(required=False, label='Patient demographics checked')
     pk = forms.CharField(widget=forms.HiddenInput())
 
     def __init__(self, *args, **kwargs):
@@ -108,9 +113,9 @@ class SampleCommentForm(forms.Form):
         self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-success'))
 
 
-
 class VariantCommentForm(forms.Form):
     """
+    Add a comment to a specific SNV
 
     """
     variant_comment = forms.CharField(
@@ -133,12 +138,13 @@ class VariantCommentForm(forms.Form):
 
 class FusionCommentForm(forms.Form):
     """
+    Add a comment to a specific fusion
 
     """
     hgvs = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 1}),
         required=False,
-        label="HGVS"
+        label='HGVS'
     )
     fusion_comment = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 4}),
@@ -162,6 +168,8 @@ class FusionCommentForm(forms.Form):
 
 class UpdatePatientName(forms.Form):
     """
+    Add/ change the patient name
+
     """
     name = forms.CharField()
 
@@ -180,8 +188,10 @@ class UpdatePatientName(forms.Form):
 
 class CoverageCheckForm(forms.Form):
     """
+    Confirm that coverage has been checked and add a comment 
+
     """
-    ntc_checked = forms.BooleanField(required=False, label="NTC checked")
+    ntc_checked = forms.BooleanField(required=False, label='NTC checked')
     coverage_comment = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 3}),
         required=False,
@@ -200,3 +210,47 @@ class CoverageCheckForm(forms.Form):
         self.fields['ntc_checked'].initial = self.ntc
         self.fields['pk'].initial = self.pk
         self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-success'))
+
+
+class ConfirmPolyForm(forms.Form):
+    """
+    Confirm that a variant should be added to the poly list
+
+    """
+    confirm = forms.BooleanField(required=True, label='I agree that this variant is a poly')
+    comment = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 4}),
+        label='Comments'
+    )
+    variant_pk = forms.CharField(widget=forms.HiddenInput(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(ConfirmPolyForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.fields['comment'].widget.attrs['placeholder'] = 'Add comments or evidence to support this variant being a poly\ne.g. filepaths to documented evidence, sample IDs to check...'
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Submit', css_class='btn btn-info w-100')
+        )
+
+
+class AddNewPolyForm(forms.Form):
+    """
+    Add a variant to the poly list
+
+    """
+    variant = forms.CharField()
+    comment = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 4}),
+        label='Comments'
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(AddNewPolyForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.fields['comment'].widget.attrs['placeholder'] = 'Add comments or evidence to support this variant being a poly\ne.g. filepaths to documented evidence, sample IDs to check...'
+        self.fields['variant'].widget.attrs['placeholder'] = 'Must be in genomic format e.g. 7:140453136A>T'
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Submit', css_class='btn btn-info w-25')
+        )

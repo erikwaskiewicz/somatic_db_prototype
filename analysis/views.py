@@ -8,9 +8,11 @@ from django.utils import timezone
 from django.template.loader import get_template
 from django.template import Context
 
-from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm
+
+from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, ConfirmPolyForm, AddNewPolyForm
 from .models import *
-from .utils import link_callback, get_samples, unassign_check, signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, create_myeloid_coverage_summary
+from .utils import link_callback, get_samples, unassign_check, signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, create_myeloid_coverage_summary, get_poly_list
+
 
 import json
 import os
@@ -434,11 +436,12 @@ def analysis_sheet(request, sample_id):
 
                         # if 1st IGV, make 2nd IGV
                         if current_step == 'IGV check 1':
-                            if signoff_check(request.user, current_step_obj, sample_obj):
+                            submitted, err = signoff_check(request.user, current_step_obj, sample_obj)
+                            if submitted:
                                 make_next_check(sample_obj, 'IGV')
                                 return redirect('view_samples', sample_data['worksheet_id'])
                             else:
-                                context['warning'].append('Did not finalise check - not all variant have been checked')
+                                context['warning'].append(err)
                             
                         # if 2nd IGV (or 3rd...)
                         else:
@@ -462,22 +465,25 @@ def analysis_sheet(request, sample_id):
                                 warning_text = ', '.join(non_matching_variants)
                                 context['warning'].append(f'Did not finalise check - the last two checkers dont agree for the following variants: {warning_text}')
                             
-                            elif signoff_check(request.user, current_step_obj, sample_obj):
-                                return redirect('view_samples', sample_data['worksheet_id'])
+                            # final signoff
                             else:
-                                context['warning'].append('Did not finalise check - not all variants have been checked')
+                                submitted, err = signoff_check(request.user, current_step_obj, sample_obj, complete=True)
+                                if submitted:
+                                    return redirect('view_samples', sample_data['worksheet_id'])
 
-                                # TODO - error if there aren't at least two classifications per variant?
-
+                                # throw warning if not all variants are checked
+                                else:
+                                    context['warning'].append(err)
 
                     elif next_step == 'Request extra check':
 
                         # make extra IGV check
-                        if signoff_check(request.user, current_step_obj, sample_obj):
+                        submitted, err = signoff_check(request.user, current_step_obj, sample_obj)
+                        if submitted:
                             make_next_check(sample_obj, 'IGV')
                             return redirect('view_samples', sample_data['worksheet_id'])
                         else:
-                            context['warning'].append('Did not finalise check - not all variants have been checked')
+                            context['warning'].append(err)
 
 
                     elif next_step == 'Fail sample':
@@ -486,13 +492,13 @@ def analysis_sheet(request, sample_id):
 
                         # if failed 1st check, make 2nd check 
                         if current_step == 'IGV check 1':
-                            signoff_check(request.user, current_step_obj, sample_obj, 'F')
+                            signoff_check(request.user, current_step_obj, sample_obj, status='F')
                             make_next_check(sample_obj, 'IGV')
                             return redirect('view_samples', sample_data['worksheet_id'])
 
                         # otherwise sign off and make sample failed
                         else:
-                            signoff_check(request.user, current_step_obj, sample_obj, 'F')
+                            signoff_check(request.user, current_step_obj, sample_obj, status='F')
                             return redirect('view_samples', sample_data['worksheet_id'])
 
 
@@ -527,12 +533,6 @@ def ajax(request):
                 current_check.decision = new_choice
                 current_check.save()
 
-                # TODO make more robust - could potentially end up with not analysed labelled as something else if people click multiple times
-                if new_choice != 'N':
-                    variant_instance_obj = variant_obj.variant_instance
-                    variant_instance_obj.final_decision = new_choice
-                    variant_instance_obj.save()
-
         elif dna_or_rna == 'RNA':
             for variant in selections:
                 fusion_obj = FusionPanelAnalysis.objects.get(pk=variant)
@@ -542,12 +542,106 @@ def ajax(request):
                 current_check.decision = new_choice
                 current_check.save()
 
-                # TODO make more robust - could potentially end up with not analysed labelled as something else if people click multiple times
-                if new_choice != 'N':
-                    fusion_obj = fusion_obj.fusion_instance
-                    fusion_obj.final_decision = new_choice
-                    fusion_obj.save()
-
         # dont think this redirect is doing anything but there needs to be a HTML response
         # actual reidrect is handled inside AJAX call in analysis-snvs.html
         return redirect('analysis_sheet', sample_pk)
+
+
+@login_required
+def view_polys(request):
+    """
+    Page to view all confirmed polys and add and check new ones
+
+    """
+    # load poly list object
+    list_name = 'TSO500_polys'
+    poly_list = VariantList.objects.get(name=list_name)
+
+    # pull out list of confirmed polys and polys to be checked
+    confirmed_list, checking_list = get_poly_list(poly_list, request.user)
+
+    # make context dictionary
+    context = {
+        'success': [],
+        'warning': [],
+        'confirmed_list': confirmed_list,
+        'checking_list': checking_list,
+        'confirm_form': ConfirmPolyForm(),
+        'add_new_form': AddNewPolyForm(),
+    }
+
+    #----------------------------------------------------------
+    #  If any buttons are pressed
+    if request.method == 'POST':
+
+        # if confirm poly button is pressed
+        if 'variant_pk' in request.POST:
+
+            confirm_form = ConfirmPolyForm(request.POST)
+            if confirm_form.is_valid():
+
+                # get form data
+                variant_pk = confirm_form.cleaned_data['variant_pk']
+                comment = confirm_form.cleaned_data['comment']
+
+                # get genomic coords
+                variant_obj = Variant.objects.get(id=variant_pk)
+                variant = variant_obj.genomic_37
+
+                # update poly list
+                variant_to_variant_list_obj = VariantToVariantList.objects.get(pk=variant_pk)
+                variant_to_variant_list_obj.check_user = request.user
+                variant_to_variant_list_obj.check_time = timezone.now()
+                variant_to_variant_list_obj.check_comment = comment
+                variant_to_variant_list_obj.save()
+
+                # reload context
+                confirmed_list, checking_list = get_poly_list(poly_list, request.user)
+                context['confirmed_list'] = confirmed_list
+                context['checking_list'] = checking_list
+                context['success'].append(f'Variant {variant} added to poly list')
+
+        # if add new poly button is pressed
+        if 'variant' in request.POST:
+            add_new_form = AddNewPolyForm(request.POST)
+
+            if add_new_form.is_valid():
+
+                # get form data
+                variant = add_new_form.cleaned_data['variant']
+                comment = add_new_form.cleaned_data['comment']
+
+                # wrap in try/ except to handle when a variant doesnt match the input
+                try:
+                    # load in variant and variant to list objects
+                    variant_obj = Variant.objects.get(genomic_37=variant)
+                    variant_to_variant_list_obj, created = VariantToVariantList.objects.get_or_create(
+                        variant_list = poly_list,
+                        variant = variant_obj
+                    )
+
+                    # add user info if a new model is created
+                    if created:
+                        variant_to_variant_list_obj.upload_user = request.user
+                        variant_to_variant_list_obj.upload_time = timezone.now()
+                        variant_to_variant_list_obj.upload_comment = comment
+                        variant_to_variant_list_obj.save()
+
+                        # give success message
+                        context['success'].append(f'Variant {variant} added to poly checking list')
+
+                    # throw error if already in poly list
+                    else:
+                        context['warning'].append(f'Variant {variant} is already in the poly list')
+
+                    # reload context
+                    confirmed_list, checking_list = get_poly_list(poly_list, request.user)
+                    context['confirmed_list'] = confirmed_list
+                    context['checking_list'] = checking_list
+
+                # throw error if there isnt a variant matching the input
+                except Variant.DoesNotExist:
+                    context['warning'].append(f'Cannot find variant matching {variant}') 
+
+    # render the page
+    return render(request, 'analysis/view_polys.html', context)

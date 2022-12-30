@@ -11,6 +11,7 @@ def link_callback(uri, rel):
     Convert HTML URIs to absolute system paths so xhtml2pdf can access those
     resources 
     taken straight from https://xhtml2pdf.readthedocs.io/en/latest/usage.html#using-xhtml2pdf-in-django
+    TODO - try removing this, I dont think it's being used, intentation is wrong so would error if its called
     """
     result = finders.find(uri)
     if result:
@@ -41,6 +42,8 @@ def link_callback(uri, rel):
     
 def get_samples(samples):
     """
+    Create context dictionary of all sample analyses for rendering the worksheet page
+
     """
     # adds a record for each panel analysis - i.e. if a sample has two panels
     # it will have two records
@@ -76,6 +79,7 @@ def get_samples(samples):
 @transaction.atomic
 def unassign_check(sample_analysis_obj):
     """
+    Unassign a sample analysis so that if can be analysed by someone else, resets the check to begin from scratch
 
     """
     # get latest check
@@ -119,14 +123,16 @@ def unassign_check(sample_analysis_obj):
 
 
 @transaction.atomic
-def signoff_check(user, current_step_obj, sample_obj, status='C'):
+def signoff_check(user, current_step_obj, sample_obj, status='C', complete=False):
     """
+    Signs off a check, returns true if successful, returns false if not, along with an error message
 
     """
     # get all variant checks for the sample
-    if sample_obj.sample.sample_type == 'DNA':
+    sample_type = sample_obj.sample.sample_type
+    if sample_type == 'DNA':
         variant_checks = VariantCheck.objects.filter(check_object=current_step_obj)
-    elif sample_obj.sample.sample_type == 'RNA':
+    elif sample_type == 'RNA':
         variant_checks = FusionCheck.objects.filter(check_object=current_step_obj)
 
     # make sure that none of the variant checks are still pending
@@ -134,8 +140,46 @@ def signoff_check(user, current_step_obj, sample_obj, status='C'):
     if status != 'F':
         for v in variant_checks:
             if v.decision == '-':
-                return False
+                return False, 'Did not finalise check - not all variants have been checked'
 
+    # commit to database if its the last check
+    if complete:
+
+        # list to collect output, only committed to the database if there are no errors so this is done at the end
+        out_list = []
+
+        # load in variant list depending on whether its a DNA or RNA sample
+        if sample_type == 'DNA':
+            variants = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
+        elif sample_type == 'RNA':
+            variants = FusionPanelAnalysis.objects.filter(sample_analysis=sample_obj)
+
+        # loop through all variants
+        for v in variants:
+
+            # get all checks for that variant
+            variant_checks = v.get_all_checks()
+            variant_checks_list = [ v.decision for v in variant_checks ]
+
+            # function to validate checks
+            submitted, out = complete_checks(variant_checks_list)
+
+            # throw error if validation fails, output will be error message
+            if not submitted:
+                return False, out
+
+            # if validation passes, get the database object add to out_list for committing to the database at the end
+            else:
+                if sample_type == 'DNA':
+                    variant_instance_obj = v.variant_instance
+                elif sample_type == 'RNA':
+                    variant_instance_obj = v.fusion_instance
+                out_list.append([variant_instance_obj, out])
+
+        # commit to database, will only run if there are no errors so that data isnt half added to the database
+        for variant_instance_obj, final_decision in out_list:
+            variant_instance_obj.final_decision = final_decision
+            variant_instance_obj.save()
 
     # signoff current check
     now = timezone.now()
@@ -146,11 +190,12 @@ def signoff_check(user, current_step_obj, sample_obj, status='C'):
     # save object
     current_step_obj.save()
 
-    return True
+    return True, ''
 
 
 def make_next_check(sample_obj, next_step):
     """
+    Sets up the next check and associated variant checks
 
     """
     # add new check object
@@ -186,8 +231,52 @@ def make_next_check(sample_obj, next_step):
     return True
 
 
+@transaction.atomic
+def complete_checks(variant_checks_list):
+    """
+    Takes a list of checks, validates whether or not they can be finalised and returns the final decision
+      if there are clashes then it will return a tuple of False plus an error message
+      if tests pass then it will return a tuple of True and the final classification decision
+
+    Limitation - the only way that a variant will be classified as 'Not analysed' is if all checks are set that way,
+      if a variant is assigned anything other than 'Not analysed' in any checks and it is later decided
+      that the variant should have been ignored, the variant will have to be manually edited in the Django admin page
+
+    """
+    # throw error if theres only one check
+    if len(variant_checks_list) < 2:
+        return False, "Did not finalise check - not all variants have been checked at least twice (excluding 'Not analysed')"
+
+    # if all checks are not analysed, set final decision as not analysed
+    elif set(variant_checks_list) == set(['N']):
+        final_decision = 'N'
+
+    # if theres other options than just not analysed
+    else:
+        # make a list in the same order as the original but 'Not analysed' removed
+        checks_minus_na = []
+        for c in variant_checks_list:
+            if c != 'N':
+                checks_minus_na.append(c)
+
+        # error if theres less than 2 checks
+        if len(checks_minus_na) < 2:
+            return False, "Did not finalise check - not all variants have been checked at least twice (excluding 'Not analysed')"
+
+        # error if the last two checks dont agree
+        last2 = checks_minus_na[-2:]
+        if last2[0] != last2[1]:
+            return False, "Did not finalise check - last checkers don't agree (excluding 'Not analysed')"
+
+        # if all checks pass, record final decision
+        final_decision = last2[1]
+
+    return True, final_decision
+
+
 def get_sample_info(sample_obj):
     """
+    Get info for a specific sample to generate a part of the sample analysis context dictionary
 
     """
     sample_data = {
@@ -208,6 +297,10 @@ def get_sample_info(sample_obj):
 
 
 def get_variant_info(sample_data, sample_obj):
+    """
+    Get information on all variants in a sample analysis to generate the variant portion of the context dictionary
+
+    """
 
     sample_variants = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
 
@@ -242,22 +335,27 @@ def get_variant_info(sample_data, sample_obj):
             if l.variant_list.name == 'TSO500_known':
                 previous_classifications.append(l.classification)
             elif l.variant_list.name == 'TSO500_polys':
-                previous_classifications.append('Poly')
+                # only add if polys have been checked twice
+                if l.signed_off():
+                    previous_classifications.append('Poly')
 
         # get checks for each variant
         variant_checks = VariantCheck.objects.filter(variant_analysis=sample_variant).order_by('pk')
         variant_checks_list = [ v.get_decision_display() for v in variant_checks ]
         latest_check = variant_checks.latest('pk')
 
+        # remove Not analysed from checks list
+        variant_checks_analysed = []
+        for c in variant_checks_list:
+            if c != 'Not analysed':
+                variant_checks_analysed.append(c)
+
         # do the last two checks agree?
         last_two_checks_agree = True
-        if len(variant_checks_list) > 1:
-
-            last2 = variant_checks_list[-2:]
-            # skip check if not analysed
-            if last2[1] != 'Not analysed':
-                if last2[0] != last2[1]:
-                    last_two_checks_agree = False
+        if len(variant_checks_analysed) > 1:
+            last2 = variant_checks_analysed[-2:]
+            if last2[0] != last2[1]:
+                last_two_checks_agree = False
 
         # set decision if falls in poly list, otherwise the finilise sample validation will fail
         if 'Poly' in previous_classifications:
@@ -332,6 +430,10 @@ def get_variant_info(sample_data, sample_obj):
 
 
 def get_fusion_info(sample_data,sample_obj):
+    """
+    Get information on all fusions in a sample analysis to generate the fusion portion of the context dictionary
+
+    """
 
     fusions = FusionPanelAnalysis.objects.filter(sample_analysis= sample_obj)
 
@@ -353,14 +455,18 @@ def get_fusion_info(sample_data,sample_obj):
         fusion_checks_list = [ v.get_decision_display() for v in fusion_checks ]
         latest_check = fusion_checks.latest('pk')
 
+        # remove Not analysed from checks list
+        fusion_checks_analysed = []
+        for c in fusion_checks_list:
+            if c != 'Not analysed':
+                fusion_checks_analysed.append(c)
+
         # do the last two checks agree?
         last_two_checks_agree = True
-        if len(fusion_checks_list) > 1:
-            last2 = fusion_checks_list[-2:]
-            # skip check if not analysed
-            if last2[1] != 'Not analysed':
-                if last2[0] != last2[1]:
-                    last_two_checks_agree = False
+        if len(fusion_checks_analysed) > 1:
+            last2 = fusion_checks_analysed[-2:]
+            if last2[0] != last2[1]:
+                last_two_checks_agree = False
 
         fusion_comment_form = FusionCommentForm(
             pk=latest_check.pk, 
@@ -415,6 +521,11 @@ def get_fusion_info(sample_data,sample_obj):
 
 
 def get_coverage_data(sample_obj):
+    """
+    Get information on the coverage in a sample analysis to generate the coverage portion of the context dictionary
+
+    """
+
     #create a coverage dictionary
     coverage_data = {}
     gene_coverage_analysis_obj = GeneCoverageAnalysis.objects.filter(sample=sample_obj).order_by('gene')
@@ -618,3 +729,62 @@ def create_myeloid_coverage_summary(sample_obj):
         }
 
     return myeloid_coverage_summary
+
+
+def get_poly_list(poly_list_obj, user):
+    """
+    get all polys and split into a list of confirmed polys and 
+    a list of polys that need checking
+
+    """
+    # get all variant objects from the poly list
+    variants = VariantToVariantList.objects.filter(variant_list=poly_list_obj)
+
+    # make empty lists before collecting data from loop
+    confirmed_list = []
+    checking_list = []
+
+    for n, v in enumerate(variants):
+        # get gene info
+        variant_instances = VariantInstance.objects.filter(variant=v.variant)
+        genes = []
+        hgvs_cs = []
+        hgvs_ps = []
+        for annotation in variant_instances:
+            genes.append(annotation.gene)
+            hgvs_cs.append(annotation.hgvs_c)
+            hgvs_ps.append(annotation.hgvs_p)
+
+        # format variant info info dictionary 
+        formatted_variant = {
+            'counter': n,
+            'variant_pk': v.id,
+            'genomic_37': v.variant.genomic_37,
+            'gene': '|'.join(set(genes)),
+            'hgvs_c': '|'.join(set(hgvs_cs)),
+            'hgvs_p': '|'.join(set(hgvs_ps)),
+            'upload_user': v.upload_user,
+            'upload_time': v.upload_time,
+            'upload_comment': v.upload_comment,
+            'check_user': v.check_user,
+            'check_time': v.check_time,
+            'check_comment': v.check_comment,
+        }
+
+        # add polys with two checks to the confirmed list
+        if v.signed_off():
+            confirmed_list.append(formatted_variant)
+
+        # otherwise add to the checking list
+        else:
+            # check if the current user is the person who submitted the poly
+            # if it is then disable the button to sign off
+            if user == v.upload_user:
+                formatted_variant['able_to_sign_off'] = False
+            else:
+                formatted_variant['able_to_sign_off'] = True
+
+            # add to checking list
+            checking_list.append(formatted_variant)
+
+    return confirmed_list, checking_list

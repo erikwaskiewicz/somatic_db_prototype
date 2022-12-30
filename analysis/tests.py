@@ -1120,7 +1120,7 @@ class TestNTCCalls(TestCase):
     }
 
 
-def test_ntc_calls(self):
+    def test_ntc_calls(self):
         '''
         Check a subset of variant calls with fake NTC contamination
 
@@ -1708,3 +1708,266 @@ class TestRna(TestCase):
         self.assertEqual(fusion_3.get('fusion_genes'), 'ETV6-NTRK3')
         self.assertEqual(fusion_3.get('left_breakpoint'), 'chr12:12022900')
         self.assertEqual(fusion_3.get('right_breakpoint'), 'chr15:88483984')
+
+
+class TestChecks(TestCase):
+    """
+    Correctly validate checks and assign the correct final decision
+
+    """
+
+    def test_checks_passed_all_agree(self):
+        '''
+        Checks correct final classification is applied when all checks agree
+
+        '''
+        # list of tuples containing an input list and an expected outcome
+        passed_checks = [
+            (['G', 'G'], 'G'),
+            (['G', 'G', 'G'], 'G'),
+            (['G', 'G', 'G', 'G'], 'G'),
+            (['A', 'A'], 'A'),
+            (['A', 'A', 'A'], 'A'),
+            (['A', 'A', 'A', 'A'], 'A'),
+            (['P', 'P'], 'P'),
+            (['P', 'P', 'P'], 'P'),
+            (['P', 'P', 'P', 'P'], 'P'),
+            (['M', 'M'], 'M'),
+            (['M', 'M', 'M'], 'M'),
+            (['M', 'M', 'M', 'M'], 'M'),
+            (['F', 'F'], 'F'),
+            (['F', 'F', 'F'], 'F'),
+            (['F', 'F', 'F', 'F'], 'F'),
+        ]
+
+        # loop through and test each line
+        for line in passed_checks:
+            list_in = line[0]
+            expected_out = (True, line[1])
+            self.assertEqual(complete_checks(list_in), expected_out)
+
+
+    def test_checks_passed_all_agree_with_not_analysed(self):
+        '''
+        Checks correct final classification is applied when all checks agree but some steps are Ns
+
+        '''
+        # list of tuples containing an input list and an expected outcome
+        passed_checks = [
+            (['N', 'G', 'G'], 'G'),
+            (['G', 'N', 'G'], 'G'),
+            (['G', 'G', 'N'], 'G'),
+            (['N', 'G', 'G', 'G'], 'G'),
+            (['G', 'N', 'G', 'G'], 'G'),
+            (['G', 'G', 'N', 'G'], 'G'),
+            (['G', 'G', 'G', 'N'], 'G'),
+            (['N', 'N', 'G', 'G'], 'G'),
+            (['N', 'G', 'N', 'G'], 'G'),
+            (['N', 'G', 'G', 'N'], 'G'),
+            (['G', 'N', 'N', 'G'], 'G'),
+            (['G', 'N', 'G', 'N'], 'G'),
+            (['G', 'G', 'N', 'N'], 'G'),
+        ]
+
+        # loop through and test each line
+        for line in passed_checks:
+            list_in = line[0]
+            expected_out = (True, line[1])
+            self.assertEqual(complete_checks(list_in), expected_out)
+
+
+    def test_checks_passed_mixed(self):
+        '''
+        Checks correct final classification is applied when theres a mixture of 
+        different selections
+
+        '''
+        # list of tuples containing an input list and an expected outcome
+        passed_checks = [
+            (['A', 'G', 'G'], 'G'),
+            (['A', 'G', 'G', 'G'], 'G'),
+            (['G', 'A', 'G', 'G'], 'G'),
+            (['A', 'A', 'G', 'G'], 'G'),
+            (['A', 'M', 'G', 'G'], 'G'),
+            (['M', 'A', 'G', 'G'], 'G'),
+        ]
+
+        # loop through and test each line
+        for line in passed_checks:
+            list_in = line[0]
+            expected_out = (True, line[1])
+            self.assertEqual(complete_checks(list_in), expected_out)
+
+
+    def test_checks_passed_mixed_with_not_analysed(self):
+        '''
+        Checks correct final classification is applied when theres a mixture of 
+        different selections and Ns
+
+        '''
+        # list of tuples containing an input list and an expected outcome
+        passed_checks = [
+            (['N', 'A', 'G', 'G'], 'G'),
+            (['A', 'N', 'G', 'G'], 'G'),
+            (['A', 'G', 'N', 'G'], 'G'),
+            (['A', 'G', 'G', 'N'], 'G'),
+        ]
+
+        # loop through and test each line
+        for line in passed_checks:
+            list_in = line[0]
+            expected_out = (True, line[1])
+            self.assertEqual(complete_checks(list_in), expected_out)
+
+
+    def test_checks_passed_all_not_analysed(self):
+        '''
+        Check that the final class is set as Not analysed when every single check is N.
+        A single N isnt included as it would error, this is covered below
+
+        '''
+        # list of tuples containing an input list and an expected outcome
+        passed_checks = [
+            (['N', 'N'], 'N'),
+            (['N', 'N', 'N'], 'N'),
+            (['N', 'N', 'N', 'N'], 'N'),
+        ]
+
+        # loop through and test each line
+        for line in passed_checks:
+            list_in = line[0]
+            expected_out = (True, line[1])
+            self.assertEqual(complete_checks(list_in), expected_out)
+
+
+    def test_checks_failed_dont_agree(self):
+        '''
+        Checks that samples where last two checks disagree are failed. 
+        There are no Ns in these examples
+
+        '''
+        # list of input lists that will fail due to final two checks not agreeing
+        failed_checks = [
+            ['G', 'A'],
+            ['G', 'P'],
+            ['G', 'M'],
+            ['G', 'F'],
+            ['G', 'G', 'A'],
+            ['G', 'G', 'P'],
+            ['G', 'G', 'M'],
+            ['G', 'G', 'F'],
+            ['G', 'G', 'G', 'A'],
+            ['G', 'G', 'G', 'P'],
+            ['G', 'G', 'G', 'M'],
+            ['G', 'G', 'G', 'F'],
+        ]
+        expected_out = (False, "Did not finalise check - last checkers don't agree (excluding 'Not analysed')")
+
+        # loop through and test each line
+        for line in failed_checks:
+            self.assertEqual(complete_checks(line), expected_out)
+
+
+    def test_checks_failed_dont_agree_not_analysed(self):
+        '''
+        Checks that samples where last two checks disagree are failed. 
+        Ns are ignored when doing this check
+
+        '''
+        # list of input lists that will fail due to final two checks not agreeing
+        failed_checks = [
+            ['N', 'G', 'A'],
+            ['N', 'G', 'P'],
+            ['N', 'G', 'M'],
+            ['N', 'G', 'F'],
+            ['G', 'N', 'A'],
+            ['G', 'N', 'P'],
+            ['G', 'N', 'M'],
+            ['G', 'N', 'F'],
+            ['G', 'A', 'N'],
+            ['G', 'P', 'N'],
+            ['G', 'M', 'N'],
+            ['G', 'F', 'N'],
+
+            ['N', 'G', 'G', 'A'],
+            ['N', 'G', 'G', 'P'],
+            ['N', 'G', 'G', 'M'],
+            ['N', 'G', 'G', 'F'],
+            ['G', 'N', 'G', 'A'],
+            ['G', 'N', 'G', 'P'],
+            ['G', 'N', 'G', 'M'],
+            ['G', 'N', 'G', 'F'],
+            ['G', 'G', 'N', 'A'],
+            ['G', 'G', 'N', 'P'],
+            ['G', 'G', 'N', 'M'],
+            ['G', 'G', 'N', 'F'],
+            ['G', 'G', 'A', 'N'],
+            ['G', 'G', 'P', 'N'],
+            ['G', 'G', 'M', 'N'],
+            ['G', 'G', 'F', 'N'],
+
+            ['N', 'N', 'G', 'A'],
+            ['N', 'N', 'G', 'P'],
+            ['N', 'N', 'G', 'M'],
+            ['N', 'N', 'G', 'F'],
+            ['N', 'G', 'N', 'A'],
+            ['N', 'G', 'N', 'P'],
+            ['N', 'G', 'N', 'M'],
+            ['N', 'G', 'N', 'F'],
+            ['N', 'G', 'A', 'N'],
+            ['N', 'G', 'P', 'N'],
+            ['N', 'G', 'M', 'N'],
+            ['N', 'G', 'F', 'N'],
+
+            ['G', 'N', 'N', 'A'],
+            ['G', 'N', 'N', 'P'],
+            ['G', 'N', 'N', 'M'],
+            ['G', 'N', 'N', 'F'],
+            ['G', 'N', 'A', 'N'],
+            ['G', 'N', 'P', 'N'],
+            ['G', 'N', 'M', 'N'],
+            ['G', 'N', 'F', 'N'],
+
+            ['G', 'A', 'N', 'N'],
+            ['G', 'P', 'N', 'N'],
+            ['G', 'M', 'N', 'N'],
+            ['G', 'F', 'N', 'N'],
+        ]
+        expected_out = (False, "Did not finalise check - last checkers don't agree (excluding 'Not analysed')")
+
+        # loop through and test each line
+        for line in failed_checks:
+            self.assertEqual(complete_checks(line), expected_out)
+
+
+    def test_checks_failed_not_enough(self):
+        '''
+        Checks that samples with less than 2 checks after Ns are removed are failed
+
+        '''
+        # list of input lists that will fail due to final two checks not agreeing
+        failed_checks = [
+            ['N'], ['G'], ['A'], ['P'], ['M'], ['F'],
+            ['N', 'G'],
+            ['N', 'A'],
+            ['N', 'P'],
+            ['N', 'M'],
+            ['N', 'F'],
+            ['G', 'N'],
+            ['A', 'N'],
+            ['P', 'N'],
+            ['M', 'N'],
+            ['F', 'N'],
+            ['G', 'N', 'N'],
+            ['N', 'G', 'N'],
+            ['N', 'N', 'G'],
+            ['G', 'N', 'N', 'N'],
+            ['N', 'G', 'N', 'N'],
+            ['N', 'N', 'G', 'N'],
+            ['N', 'N', 'N', 'G'],
+        ]
+        expected_out = (False, "Did not finalise check - not all variants have been checked at least twice (excluding 'Not analysed')")
+
+        # loop through and test each line
+        for line in failed_checks:
+            self.assertEqual(complete_checks(line), expected_out)

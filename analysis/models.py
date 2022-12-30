@@ -214,6 +214,9 @@ class VariantPanelAnalysis(models.Model):
     def get_current_check(self):
         return VariantCheck.objects.filter(variant_analysis=self).latest('pk')
 
+    def get_all_checks(self):
+        return VariantCheck.objects.filter(variant_analysis=self).order_by('pk')
+
 
 class VariantCheck(models.Model):
     """
@@ -258,6 +261,22 @@ class VariantToVariantList(models.Model):
     variant_list = models.ForeignKey('VariantList', on_delete=models.CASCADE)
     variant = models.ForeignKey('Variant', on_delete=models.CASCADE)
     classification = models.CharField(max_length=50, blank=True, null=True)
+    upload_user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True, related_name='upload_user')
+    upload_time = models.DateTimeField(blank=True, null=True)
+    upload_comment = models.CharField(max_length=500, blank=True, null=True)
+    check_user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True,  related_name='check_user')
+    check_time = models.DateTimeField(blank=True, null=True)
+    check_comment = models.CharField(max_length=500, blank=True, null=True)
+
+    def signed_off(self):
+        """
+        Check that there is a user assigned for both upload and check
+
+        """
+        if self.upload_user == None or self.check_user == None:
+            return False
+        else:
+            return True
 
 
 class Gene(models.Model):
@@ -328,7 +347,7 @@ class GapsAnalysis(models.Model):
 
 class Fusion(models.Model):
     """
-
+    A fusion
     """
     fusion_genes = models.CharField(max_length=50)
     left_breakpoint = models.CharField(max_length=50)
@@ -337,7 +356,7 @@ class Fusion(models.Model):
 
 class FusionAnalysis(models.Model):
     """
-
+    A specfic analysis of a fusion
     """
     DECISION_CHOICES = (
         ('-', 'Pending'),
@@ -393,6 +412,9 @@ class FusionPanelAnalysis(models.Model):
 
     def get_current_check(self):
         return FusionCheck.objects.filter(fusion_analysis=self).latest('pk')
+
+    def get_all_checks(self):
+        return FusionCheck.objects.filter(fusion_analysis=self).order_by('pk')
 
 
 auditlog.register(Run)
