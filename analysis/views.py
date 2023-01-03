@@ -584,16 +584,16 @@ def view_polys(request):
                 variant_pk = confirm_form.cleaned_data['variant_pk']
                 comment = confirm_form.cleaned_data['comment']
 
-                # get genomic coords
-                variant_obj = Variant.objects.get(id=variant_pk)
-                variant = variant_obj.genomic_37
-
                 # update poly list
                 variant_to_variant_list_obj = VariantToVariantList.objects.get(pk=variant_pk)
                 variant_to_variant_list_obj.check_user = request.user
                 variant_to_variant_list_obj.check_time = timezone.now()
                 variant_to_variant_list_obj.check_comment = comment
                 variant_to_variant_list_obj.save()
+
+                # get genomic coords
+                variant_obj = variant_to_variant_list_obj.variant
+                variant = variant_obj.genomic_37
 
                 # reload context
                 confirmed_list, checking_list = get_poly_list(poly_list, request.user)
