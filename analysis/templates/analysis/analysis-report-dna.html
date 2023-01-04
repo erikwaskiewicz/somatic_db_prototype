@@ -55,7 +55,13 @@
     {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
     <tr>
       <td class="variant-pk" style="display:none">{{ v.pk }}</td>
-      <td><p style="display:inline" id="igv">{{ v.genomic }} </p></td>
+      <td><p style="display:inline" id="igv">{{ v.genomic }} 
+        {% if v.genome_build == 37 %}
+        <span class = "badge badge-info badge-pill">GRCh{{ v.genome_build }}
+        {% elif v.genome_build == 38 %}
+        <span class = "badge badge-success badge-pill">GRCh{{ v.genome_build }}
+        {% endif %}
+      </p></td>
       <td>{{ v.gene }} ({{ v.exon }})</td>
       <td>{{ v.hgvs_c }}</td>
       <td>{{ v.hgvs_p }}</td>

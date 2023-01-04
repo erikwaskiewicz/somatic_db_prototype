@@ -79,6 +79,7 @@ class SampleAnalysis(models.Model):
     total_reads = models.IntegerField(blank=True, null=True)
     total_reads_ntc = models.IntegerField(blank=True, null=True)
     percent_reads_ntc = models.CharField(max_length=200, blank=True, null=True)
+    genome_build = models.IntegerField(default=37)
 
     def get_checks(self):
         """

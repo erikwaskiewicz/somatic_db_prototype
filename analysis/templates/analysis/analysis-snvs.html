@@ -25,7 +25,14 @@
     <tr>
       <td class="variant-pk" style="display:none">{{ v.pk }}</td>
       <td>
-        <p style="display:inline" >{{ v.genomic }}</p><p style="display:none" id="igv-{{ v.pk }}">{{ v.igv_coords }}</p>
+        <p style="display:inline" >{{ v.genomic }}
+        {% if v.genome_build == 37 %}
+        <span class = "badge badge-info badge-pill">GRCh{{ v.genome_build }}
+        {% elif v.genome_build == 38 %}
+        <span class = "badge badge-success badge-pill">GRCh{{ v.genome_build }}
+        {% endif %}
+        </p>  
+        <p style="display:none" id="igv-{{ v.pk }}">{{ v.igv_coords }}</p>
         <button class="btn btn-sm btn-info" onclick="copyToClipboard('#igv-{{ v.pk }}')"><span class="fa fa-copy"></span></button>
         {% if v.manual_upload %}
         <button class="btn btn-sm btn-warning"><b>Manual</b></button>
@@ -153,7 +160,12 @@
             {% for p in variant_data.polys %}
             <tr>
               <td>
-                {{ p.genomic }}
+                {{ p.genomic }}<br>
+                {% if p.genome_build == 37 %}
+                <span class = "badge badge-info badge-pill">GRCh{{ p.genome_build }}
+                {% elif p.genome_build == 38 %}
+                <span class = "badge badge-success badge-pill">GRCh{{ p.genome_build }}
+                {% endif %}
               </td>
               <td>
                 {{ p.gene }}<br>{{ p.exon }}

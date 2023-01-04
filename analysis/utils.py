@@ -292,6 +292,7 @@ def get_sample_info(sample_obj):
         'total_reads_ntc': sample_obj.total_reads_ntc,
         'percent_reads_ntc': sample_obj.percent_reads_ntc,
         'checks': sample_obj.get_checks(),
+        'genome_build': sample_obj.genome_build,
     }
     return sample_data
 
@@ -380,6 +381,7 @@ def get_variant_info(sample_data, sample_obj):
             'pk': sample_variant.pk,
             'variant_instance_pk': sample_variant.variant_instance.pk,
             'genomic': variant_obj.variant,
+            'genome_build': variant_obj.genome_build,
             'igv_coords': variant_obj.variant.strip('ACGT>'), #TODO what about dels?
             'gene': sample_variant.variant_instance.gene,
             'exon': sample_variant.variant_instance.exon,
