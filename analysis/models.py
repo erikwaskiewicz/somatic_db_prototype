@@ -145,8 +145,8 @@ class Variant(models.Model):
     Variant info that always stays the same
 
     """
-    genomic_37 = models.CharField(max_length=200, unique=True)
-    genomic_38 = models.CharField(max_length=200, blank=True, null=True)
+    variant = models.CharField(max_length=200, unique=True)
+    genome_build = models.CharField(max_length=200, blank=True, null=True)
 
 
 class VariantInstance(models.Model):
