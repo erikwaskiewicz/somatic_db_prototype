@@ -21,6 +21,7 @@ class Command(BaseCommand):
         parser.add_argument('--panel', nargs=1, type=str, required=True, help='Name of virtual panel applied')
         parser.add_argument('--variants', nargs=1, type=str, required=True, help='Path to variants CSV file')
         parser.add_argument('--coverage', nargs=1, type=str, required=True, help='Path to coverage JSON file')
+        parser.add_argument('--genome', nargs=1, type=str, required=True, help='Reference genome as GRCh37 or GRCh38')
 
 
     @transaction.atomic
@@ -35,11 +36,21 @@ class Command(BaseCommand):
         ws = options['worksheet'][0]
         sample = options['sample'][0]
         panel = options['panel'][0]
+        genome = options['genome'][0]
+        if genome == "GRCh38":
+        	genome_build = 38
+        elif genome == "GRCh37":
+        	genome_build = 37
 
         # hard coded variables
         dna_or_rna = 'DNA'
         assay = 'TSO500'
-        panel_folder = settings.ROI_PATH_DNA
+       
+        if genome_build == 37:
+            panel_folder = settings.ROI_PATH_DNA
+        elif genome_build == 38:
+            panel_folder = settings.ROI_PATH_B38	        
+        
         panel_bed_file = f'{panel_folder}/{panel}.bed' 
 
         # check that inputs are valid
@@ -78,6 +89,7 @@ class Command(BaseCommand):
             worksheet=new_ws,
             sample=new_sample,
             panel=panel_obj,
+            genome_build=genome_build,
         )
         new_sample_analysis.save()
 
@@ -104,8 +116,8 @@ class Command(BaseCommand):
 
                 # variant object is created for all variants across whole panel
                 new_var, created = Variant.objects.get_or_create(
-                    genomic_37 = genomic_coords,
-                    genomic_38 = None,
+                    variant = genomic_coords,
+                    genome_build = genome_build,
                 )
 
                 ## check if variant is within the virtual panel
@@ -132,12 +144,15 @@ class Command(BaseCommand):
                         alt_count = v['alt_reads'],
                         in_ntc = v['in_ntc'],
                     )
-
-                    # add NTC read counts if the variant is seen in the NTC
+                    
+                    # add NTC read counts if the variant is seen in the NTC. For new database had to convert string to boolean
+                    if v['in_ntc'] == "False":
+                        v['in_ntc'] = False
+                        
                     if v['in_ntc']:
                         new_var_instance.total_count_ntc = v['ntc_depth']
                         new_var_instance.alt_count_ntc = v['ntc_alt_reads']
-
+                      
                     new_var_instance.save()
 
                     # put on panel
