@@ -379,8 +379,8 @@ def get_variant_info(sample_data, sample_obj):
         variant_calls_dict = {
             'pk': sample_variant.pk,
             'variant_instance_pk': sample_variant.variant_instance.pk,
-            'genomic': variant_obj.genomic_37,
-            'igv_coords': variant_obj.genomic_37.strip('ACGT>'), #TODO what about dels?
+            'genomic': variant_obj.variant,
+            'igv_coords': variant_obj.variant.strip('ACGT>'), #TODO what about dels?
             'gene': sample_variant.variant_instance.gene,
             'exon': sample_variant.variant_instance.exon,
             'hgvs_c': sample_variant.variant_instance.hgvs_c,
@@ -759,7 +759,7 @@ def get_poly_list(poly_list_obj, user):
         formatted_variant = {
             'counter': n,
             'variant_pk': v.id,
-            'genomic_37': v.variant.genomic_37,
+            'variant': v.variant.variant,
             'gene': '|'.join(set(genes)),
             'hgvs_c': '|'.join(set(hgvs_cs)),
             'hgvs_p': '|'.join(set(hgvs_ps)),

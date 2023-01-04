@@ -353,8 +353,8 @@ def analysis_sheet(request, sample_id):
                 new_variant_data = new_variant_form.cleaned_data
 
                 new_variant_object, created = Variant.objects.get_or_create(
-                    genomic_37 = new_variant_data['hgvs_g'],
-                    genomic_38 = None,
+                    variant = new_variant_data['hgvs_g'],
+                    #genome_build = NEED TO ADD IN,
                 )
                 new_variant_object.save()
                 new_variant_instance_object = VariantInstance(
@@ -593,7 +593,7 @@ def view_polys(request):
 
                 # get genomic coords
                 variant_obj = variant_to_variant_list_obj.variant
-                variant = variant_obj.genomic_37
+                variant = variant_obj.variant
 
                 # reload context
                 confirmed_list, checking_list = get_poly_list(poly_list, request.user)
@@ -614,7 +614,7 @@ def view_polys(request):
                 # wrap in try/ except to handle when a variant doesnt match the input
                 try:
                     # load in variant and variant to list objects
-                    variant_obj = Variant.objects.get(genomic_37=variant)
+                    variant_obj = Variant.objects.get(variant=variant)
                     variant_to_variant_list_obj, created = VariantToVariantList.objects.get_or_create(
                         variant_list = poly_list,
                         variant = variant_obj

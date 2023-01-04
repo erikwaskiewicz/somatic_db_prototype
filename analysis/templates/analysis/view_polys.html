@@ -50,12 +50,12 @@
           <tbody>
             {% for v in checking_list %}
             <tr>
-              <td>{{ v.genomic_37 }}</td>
+              <td>{{ v.variant }}</td>
               <td>{{ v.gene }}<br>{{ v.hgvs_c }}<br>{{ v.hgvs_p }}</td>
               <td>{{ v.upload_user }}<br>{{ v.upload_time }}</td>
               <td style="text-align:right">
                 {% if v.able_to_sign_off %}
-                <button type="button" data-toggle="modal" data-target="#check-modal" data-pk="{{ v.variant_pk }}" data-coord="{{ v.genomic_37 }}"
+                <button type="button" data-toggle="modal" data-target="#check-modal" data-pk="{{ v.variant_pk }}" data-coord="{{ v.variant }}"
                   data-gene="{{ v.gene }}" data-hgvs_c="{{ v.hgvs_c }}" data-hgvs_p="{{ v.hgvs_p }}" data-user="{{ v.upload_user }}"  
                   data-time="{{ v.upload_time }}" data-comment="{{ v.upload_comment }}" class="btn btn-secondary">
                   Check
@@ -91,7 +91,7 @@
     <tbody>
       {% for v in confirmed_list %}
       <tr>
-        <td>{{ v.genomic_37 }}</td>
+        <td>{{ v.variant }}</td>
         <td>{{ v.gene }}</td>
         <td>{{ v.hgvs_c }}<br>{{ v.hgvs_p }}</td>
         <td style="text-align:right">
@@ -179,7 +179,7 @@
                 </tr>
                 <tr>
                   <td>Variant: </td>
-                  <td>{{ v.genomic_37 }}</td>
+                  <td>{{ v.variant }}</td>
                 </tr>
               </tbody>
             </table>
