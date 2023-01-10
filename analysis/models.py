@@ -255,6 +255,7 @@ class VariantList(models.Model):
     )
     name = models.CharField(max_length=50, primary_key=True)
     list_type = models.CharField(max_length=1, choices=TYPE_CHOICES)
+    genome_build = models.IntegerField(default=37)
 
 
 class VariantToVariantList(models.Model):

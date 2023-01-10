@@ -91,7 +91,13 @@
     <tbody>
       {% for v in confirmed_list %}
       <tr>
-        <td>{{ v.variant }}</td>
+        <td>{{ v.variant }}
+        {% if v.genome_build == 37 %}
+        <span class = "badge badge-info badge-pill">GRCh{{ v.genome_build }}
+        {% elif v.genome_build == 38 %}
+        <span class = "badge badge-success badge-pill">GRCh{{ v.genome_build }}
+        {% endif %}
+        </td>
         <td>{{ v.gene }}</td>
         <td>{{ v.hgvs_c }}<br>{{ v.hgvs_p }}</td>
         <td style="text-align:right">

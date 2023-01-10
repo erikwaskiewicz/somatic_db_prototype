@@ -553,19 +553,29 @@ def view_polys(request):
     Page to view all confirmed polys and add and check new ones
 
     """
-    # load poly list object
-    list_name = 'TSO500_polys'
-    poly_list = VariantList.objects.get(name=list_name)
+    #Get all poly lists
+    poly_list = VariantList.objects.filter(list_type='P')
 
-    # pull out list of confirmed polys and polys to be checked
-    confirmed_list, checking_list = get_poly_list(poly_list, request.user)
+    # pull out list of confirmed polys and polys to be checked - this will initially make a list of lists - then convert into a single list! 
+    confirmed_list = []
+    checking_list = []
+
+    for i in poly_list:
+        
+        temp_confirmed_list, temp_checking_list = get_poly_list(i, request.user)
+        confirmed_list.append(temp_confirmed_list)
+        checking_list.append(temp_checking_list)
+    
+    #Flatten the list of lists    
+    confirmed_list_final = [item for sublist in confirmed_list for item in sublist]
+    checking_list_final = [item for sublist in checking_list for item in sublist]
 
     # make context dictionary
     context = {
         'success': [],
         'warning': [],
-        'confirmed_list': confirmed_list,
-        'checking_list': checking_list,
+        'confirmed_list': confirmed_list_final,
+        'checking_list': checking_list_final,
         'confirm_form': ConfirmPolyForm(),
         'add_new_form': AddNewPolyForm(),
     }
@@ -594,6 +604,12 @@ def view_polys(request):
                 # get genomic coords
                 variant_obj = variant_to_variant_list_obj.variant
                 variant = variant_obj.variant
+                
+                if variant_obj.genome_build == 37:
+                	poly_list = VariantList.objects.get(name='build_37_polys')
+                	
+                elif variant_obj.genome_build == 38:
+                	poly_list = VariantList.objects.get(name='build_38_polys')
 
                 # reload context
                 confirmed_list, checking_list = get_poly_list(poly_list, request.user)
@@ -610,14 +626,22 @@ def view_polys(request):
                 # get form data
                 variant = add_new_form.cleaned_data['variant']
                 comment = add_new_form.cleaned_data['comment']
-
+                genome = add_new_form.cleaned_data['genome']
+            
                 # wrap in try/ except to handle when a variant doesnt match the input
                 try:
                     # load in variant and variant to list objects
-                    variant_obj = Variant.objects.get(variant=variant)
+                    variant_obj = Variant.objects.get(variant=variant, genome_build=genome)
+                   
+                    if genome == '37':
+                        poly_list = VariantList.objects.get(name='build_37_polys')
+      
+                    elif genome == '38':
+                        poly_list = VariantList.objects.get(name='build_38_polys')
+                        
                     variant_to_variant_list_obj, created = VariantToVariantList.objects.get_or_create(
                         variant_list = poly_list,
-                        variant = variant_obj
+                        variant = variant_obj,
                     )
 
                     # add user info if a new model is created

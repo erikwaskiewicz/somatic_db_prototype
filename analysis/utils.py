@@ -328,14 +328,23 @@ def get_variant_info(sample_data, sample_obj):
         #    )
         #    if qs:
         #        this_run_count += 1
-
+	
+	#Set poly list based on genome build
+        if variant_obj.genome_build == 37:
+             
+             poly_list_name = "build_37_polys"
+        
+        elif variant_obj.genome_build == 38:
+            
+            poly_list_name = "build_38_polys"
+	
         # get whether the variant falls within a poly/ known list
         # TODO - will have to handle multiple poly/ known lists in future
         previous_classifications = []
         for l in VariantToVariantList.objects.filter(variant=variant_obj):
             if l.variant_list.name == 'TSO500_known':
                 previous_classifications.append(l.classification)
-            elif l.variant_list.name == 'TSO500_polys':
+            elif l.variant_list.name == poly_list_name:
                 # only add if polys have been checked twice
                 if l.signed_off():
                     previous_classifications.append('Poly')
@@ -763,6 +772,7 @@ def get_poly_list(poly_list_obj, user):
             'counter': n,
             'variant_pk': v.id,
             'variant': v.variant.variant,
+            'genome_build': v.variant.genome_build,
             'gene': '|'.join(set(genes)),
             'hgvs_c': '|'.join(set(hgvs_cs)),
             'hgvs_p': '|'.join(set(hgvs_ps)),
