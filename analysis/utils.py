@@ -498,6 +498,7 @@ def get_fusion_info(sample_data,sample_obj):
             'fusion_supporting_reads': fusion_object.fusion_instance.fusion_supporting_reads,
             'left_breakpoint': fusion_object.fusion_instance.fusion_genes.left_breakpoint,
             'right_breakpoint': fusion_object.fusion_instance.fusion_genes.right_breakpoint,
+            'genome_build': fusion_object.fusion_instance.fusion_genes.genome_build,
             #'reference_reads': reference_reads,
             'this_run': {
                 #'count': this_run_count, 

@@ -356,6 +356,7 @@ class Fusion(models.Model):
     fusion_genes = models.CharField(max_length=50)
     left_breakpoint = models.CharField(max_length=50)
     right_breakpoint = models.CharField(max_length=50)
+    genome_build = models.IntegerField(default=37)
 
 
 class FusionAnalysis(models.Model):
