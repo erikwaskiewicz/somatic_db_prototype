@@ -604,17 +604,27 @@ def view_polys(request):
                 # get genomic coords
                 variant_obj = variant_to_variant_list_obj.variant
                 variant = variant_obj.variant
-                
-                if variant_obj.genome_build == 37:
-                	poly_list = VariantList.objects.get(name='build_37_polys')
-                	
-                elif variant_obj.genome_build == 38:
-                	poly_list = VariantList.objects.get(name='build_38_polys')
 
                 # reload context
-                confirmed_list, checking_list = get_poly_list(poly_list, request.user)
-                context['confirmed_list'] = confirmed_list
-                context['checking_list'] = checking_list
+                #Get all poly lists
+                poly_list = VariantList.objects.filter(list_type='P')
+
+                # pull out list of confirmed polys and polys to be checked - this will initially make a list of lists - then convert into a single list! 
+                confirmed_list = []
+                checking_list = []
+
+                for i in poly_list:
+        
+                    temp_confirmed_list, temp_checking_list = get_poly_list(i, request.user)
+                    confirmed_list.append(temp_confirmed_list)
+                    checking_list.append(temp_checking_list)
+    
+                #Flatten the list of lists    
+                confirmed_list_final = [item for sublist in confirmed_list for item in sublist]
+                checking_list_final = [item for sublist in checking_list for item in sublist]
+                
+                context['confirmed_list'] = confirmed_list_final
+                context['checking_list'] = checking_list_final
                 context['success'].append(f'Variant {variant} added to poly list')
 
         # if add new poly button is pressed
@@ -659,9 +669,25 @@ def view_polys(request):
                         context['warning'].append(f'Variant {variant} is already in the poly list')
 
                     # reload context
-                    confirmed_list, checking_list = get_poly_list(poly_list, request.user)
-                    context['confirmed_list'] = confirmed_list
-                    context['checking_list'] = checking_list
+                    #Get all poly lists
+                    poly_list = VariantList.objects.filter(list_type='P')
+
+                    # pull out list of confirmed polys and polys to be checked - this will initially make a list of lists - then convert into a single list! 
+                    confirmed_list = []
+                    checking_list = []
+ 
+                    for i in poly_list:
+        
+                        temp_confirmed_list, temp_checking_list = get_poly_list(i, request.user)
+                        confirmed_list.append(temp_confirmed_list)
+                        checking_list.append(temp_checking_list)
+    
+                    #Flatten the list of lists    
+                    confirmed_list_final = [item for sublist in confirmed_list for item in sublist]
+                    checking_list_final = [item for sublist in checking_list for item in sublist]
+        
+                    context['confirmed_list'] = confirmed_list_final
+                    context['checking_list'] = checking_list_final
 
                 # throw error if there isnt a variant matching the input
                 except Variant.DoesNotExist:
