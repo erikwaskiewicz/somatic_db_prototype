@@ -351,10 +351,12 @@ def analysis_sheet(request, sample_id):
             if new_variant_form.is_valid():
 
                 new_variant_data = new_variant_form.cleaned_data
-
+		
+                #Lock to same genome build as sample_analysis 
                 new_variant_object, created = Variant.objects.get_or_create(
                     variant = new_variant_data['hgvs_g'],
-                    #genome_build = NEED TO ADD IN,
+                    genome_build = sample_obj.genome_build,
+
                 )
                 new_variant_object.save()
                 new_variant_instance_object = VariantInstance(

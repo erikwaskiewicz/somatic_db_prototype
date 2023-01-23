@@ -11,16 +11,17 @@ import pybedtools
 
 
 class Command(BaseCommand):
-    help = "Import a DNA run"
+    help = "Import a Poly List"
 
     def add_arguments(self, parser):
-        parser.add_argument('--list', nargs=1, type=str, required=True, help='Run ID')
+        parser.add_argument('--list', nargs=1, type=str, required=True, help='Poly list file')
+        parser.add_argument('--genome', nargs=1, type=str, required=True, help='Genome build as 37 or 38')
 
 
     @transaction.atomic
     def handle(self, *args, **options):
         """
-        Run sample upload script
+        Run poly upload script
         """
         # extract variables from argparse
         poly_list = options['list'][0]
@@ -29,9 +30,16 @@ class Command(BaseCommand):
         if not os.path.isfile(poly_list):
             raise IOError(f'{poly_list} file does not exist')
 
-
-        # get poly list object
-        list_obj = VariantList.objects.get(name='TSO500_polys')
+	
+        #  get poly list object
+        genome = options['genome'][0]
+        if genome == '37': 
+       
+            list_obj = VariantList.objects.get(name='build_37_polys')
+            
+        elif genome == '38':
+        
+            list_obj = VariantList.objects.get(name='build_38_polys')
 
 
         # make variants and variant checks
@@ -47,8 +55,8 @@ class Command(BaseCommand):
 
                 # variant object is created for all variants across whole panel
                 new_var, created = Variant.objects.get_or_create(
-                    genomic_37 = genomic_coords,
-                    genomic_38 = None,
+                    variant = genomic_coords,
+                    genome_build = genome,
                 )
 
                 new_var_list_obj, created = VariantToVariantList.objects.get_or_create(
