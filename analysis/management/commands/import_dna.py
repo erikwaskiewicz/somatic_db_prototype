@@ -236,6 +236,7 @@ class Command(BaseCommand):
                     chr_end=gap[0],
                     pos_end=gap[2],
                     coverage_cutoff=135,
+                    percent_cosmic=gap[6],
                 )
                 new_gap_obj.save()
 
@@ -249,5 +250,6 @@ class Command(BaseCommand):
                     chr_end=gap[0],
                     pos_end=gap[2],
                     coverage_cutoff=270,
+                    percent_cosmic=gap[6],
                 )
                 new_gap_obj.save()
