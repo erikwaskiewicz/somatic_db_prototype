@@ -127,7 +127,11 @@
                 <tr>
                   <td>{{ r.hgvs_c }}</td>
                   <td>{{ r.genomic }}</td>
+                  {% if sample_data.panel == "Lung" or sample_data.panel == "Melanoma" or sample_data.panel == "GIST" or sample_data.panel == "Colorectal" or sample_data.panel == "breast" %}
                   <td>{{ r.percent_cosmic }}</td>
+                  {% else %}
+                  <td>NA</td>
+                  {% endif %}
                 </tr>
               {% endfor %}
               </tbody>
@@ -156,7 +160,11 @@
                 <tr>
                   <td>{{ r.hgvs_c }}</td>
                   <td>{{ r.genomic }}</td>
+                  {% if sample_data.panel == "Lung" or sample_data.panel == "Melanoma" or sample_data.panel == "GIST" or sample_data.panel == "Colorectal" or sample_data.panel == "breast" %}
                   <td>{{ r.percent_cosmic }}</td>
+                  {% else %}
+                  <td>NA</td>
+                  {% endif %}
                 </tr>
               {% endfor %}
               </tbody>

@@ -9,6 +9,7 @@ import os
 import csv
 import json
 import pybedtools
+import numpy as np
 
 
 class Command(BaseCommand):
@@ -226,8 +227,13 @@ class Command(BaseCommand):
                 )
                 new_regions_obj.save()
         
-            # TODO - add cosmic to this when integrated into pipeline
+            #Gaps 135x
             for gap in values['gaps_135']:
+                
+                #if cosmic percent is NaN (because no cosmic annotations for that referral), make it 0 (html displays NA in these cases)
+                if np.isnan(gap[6]):
+                    gap[6]=0
+                
                 new_gap_obj = GapsAnalysis(
                     gene=new_gene_coverage_obj,
                     hgvs_c=gap[3],
@@ -240,8 +246,13 @@ class Command(BaseCommand):
                 )
                 new_gap_obj.save()
 
-
+            #Gaps 270x
             for gap in values['gaps_270']:
+            
+                #if cosmic percent is NaN (because no cosmic annotations for that referral), make it 0 (html displays NA in these cases)
+                if np.isnan(gap[6]):
+                    gap[6]=0
+                    
                 new_gap_obj = GapsAnalysis(
                     gene=new_gene_coverage_obj,
                     hgvs_c=gap[3],
