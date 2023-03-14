@@ -137,7 +137,6 @@ class Check(models.Model):
     coverage_comment_updated = models.DateTimeField(blank=True, null=True)
     patient_info_check = models.BooleanField(default=False)
     overall_comment = models.CharField(max_length=2000, blank=True)
-    overall_comment_updated = models.DateTimeField(blank=True, null=True)
     signoff_time = models.DateTimeField(blank=True, null=True)
 
 
@@ -179,6 +178,7 @@ class VariantInstance(models.Model):
     in_ntc = models.BooleanField()
     total_count_ntc = models.IntegerField(blank=True, null=True)
     alt_count_ntc = models.IntegerField(blank=True, null=True)
+    gnomad_popmax = models.DecimalField(decimal_places=5, max_digits=10, blank=True, null=True)
     manual_upload = models.BooleanField(default=False)
     final_decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
 

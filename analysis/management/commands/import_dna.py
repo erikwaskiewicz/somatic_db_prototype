@@ -144,6 +144,7 @@ class Command(BaseCommand):
                         total_count = v['depth'],
                         alt_count = v['alt_reads'],
                         in_ntc = v['in_ntc'],
+                        gnomad_popmax = v['gnomad_popmax_AF'],
                     )
                     
                     # add NTC read counts if the variant is seen in the NTC. For new database had to convert string to boolean
