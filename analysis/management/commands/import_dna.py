@@ -132,6 +132,10 @@ class Command(BaseCommand):
                 # if both booleans true, enter loop
                 if overlaps_panel and above_vaf_threshold:
                     print(v)
+                   
+                    #If gnomad frequency not there, make it None
+                    if 'gnomad_popmax_AF' not in v:
+                    	v['gnomad_popmax_AF'] = None
 
                     # make new instance of variant
                     new_var_instance = VariantInstance(
@@ -231,6 +235,11 @@ class Command(BaseCommand):
             #Gaps 135x
             for gap in values['gaps_135']:
                 
+                #if there is no cosmic percent or count present, make this 0 (so adding two numbers to the list)
+                if len(gap) < 6:
+                	gap.append(0)
+                	gap.append(0)
+                	
                 #if cosmic percent is NaN (because no cosmic annotations for that referral), make it 0 (html displays NA in these cases)
                 if np.isnan(gap[6]):
                     gap[6]=0
@@ -249,6 +258,11 @@ class Command(BaseCommand):
 
             #Gaps 270x
             for gap in values['gaps_270']:
+                
+                #if there is no cosmic percent present, make this 0 (so adding two numbers to the list)
+                if len(gap) < 6:
+                	gap.append(0)
+                	gap.append(0)
             
                 #if cosmic percent is NaN (because no cosmic annotations for that referral), make it 0 (html displays NA in these cases)
                 if np.isnan(gap[6]):
