@@ -352,39 +352,50 @@ def analysis_sheet(request, sample_id):
 
                 new_variant_data = new_variant_form.cleaned_data
 		
-                #Lock to same genome build as sample_analysis 
-                new_variant_object, created = Variant.objects.get_or_create(
-                    variant = new_variant_data['hgvs_g'],
-                    genome_build = sample_obj.genome_build,
+                #Error out if total depth is set to zero
+                if new_variant_data['total_reads'] == 0:
+                                	
+                    context['warning'].append('Total read counts can not be zero')
+                    
+                elif new_variant_data['alt_reads'] == 0:
+                
+                     context['warning'].append('Alt read counts can not be zero')
+                    
+                else:
+                
+                    #Lock to same genome build as sample_analysis 
+                    new_variant_object, created = Variant.objects.get_or_create(
+                        variant = new_variant_data['hgvs_g'],
+                        genome_build = sample_obj.genome_build,
 
-                )
-                new_variant_object.save()
-                new_variant_instance_object = VariantInstance(
-                    variant = new_variant_object,
-                    gene = new_variant_data['gene'],
-                    exon = new_variant_data['exon'],
-                    hgvs_c = new_variant_data['hgvs_c'],
-                    hgvs_p = new_variant_data['hgvs_p'],
-                    sample = sample_obj.sample, 
-                    total_count = new_variant_data['total_reads'], 
-                    alt_count = new_variant_data['alt_reads'], 
-                    in_ntc = new_variant_data['in_ntc'], 
-                    manual_upload = True,
-                )
-                new_variant_instance_object.save()
-                new_variant_panel_object = VariantPanelAnalysis(
-                    variant_instance=new_variant_instance_object, 
-                    sample_analysis=sample_obj
-                )
-                new_variant_panel_object.save()
-                new_variant_check_object = VariantCheck(
-                    variant_analysis=new_variant_panel_object, 
-                    check_object=sample_obj.get_checks().get('current_check_object')
-                )
-                new_variant_check_object.save()
+                    )
+                    new_variant_object.save()
+                    new_variant_instance_object = VariantInstance(
+                        variant = new_variant_object,
+                        gene = new_variant_data['gene'],
+                        exon = new_variant_data['exon'],
+                        hgvs_c = new_variant_data['hgvs_c'],
+                        hgvs_p = new_variant_data['hgvs_p'],
+                        sample = sample_obj.sample, 
+                        total_count = new_variant_data['total_reads'], 
+                        alt_count = new_variant_data['alt_reads'], 
+                        in_ntc = new_variant_data['in_ntc'], 
+                        manual_upload = True,
+                    )
+                    new_variant_instance_object.save()
+                    new_variant_panel_object = VariantPanelAnalysis(
+                        variant_instance=new_variant_instance_object, 
+                        sample_analysis=sample_obj
+                    )
+                    new_variant_panel_object.save()
+                    new_variant_check_object = VariantCheck(
+                        variant_analysis=new_variant_panel_object, 
+                        check_object=sample_obj.get_checks().get('current_check_object')
+                    )
+                    new_variant_check_object.save()
 
-                # reload context
-                context['variant_data'] = get_variant_info(sample_data, sample_obj)
+                    # reload context
+                    context['variant_data'] = get_variant_info(sample_data, sample_obj)
 
 
         # overall sample comments form
