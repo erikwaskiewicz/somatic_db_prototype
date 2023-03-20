@@ -155,6 +155,7 @@ def view_samples(request, worksheet_id):
     context = {
         'worksheet': worksheet_id,
         'run_id': run_id,
+        'assay': ws_obj.assay,
         'samples': sample_dict,
         'unassign_form': UnassignForm(),
         'check_form': PaperworkCheckForm(),
