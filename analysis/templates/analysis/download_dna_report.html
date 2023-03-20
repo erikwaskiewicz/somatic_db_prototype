@@ -34,8 +34,9 @@
 
 <body>
 
-  <h1>TSO500 DNA report for {{ sample_data.sample_id }}</h1>
+  <h1>TSO500 DNA report for {{ sample_data.sample_id }}</h1> <!-- TODO add assay-->
 
+  <!-- Fail warning box -->
   {% if sample_data.checks.current_status  == 'Fail' %}
   <div class="alert">
     <h2><b>This sample has failed QC</b></h2>
@@ -43,6 +44,7 @@
   <br>
   {% endif %}
 
+  <!-- patient summary box -->
   <h2>Patient details</h2>
   <table>
     <thead>
@@ -67,8 +69,9 @@
   <br>
   <br>
 
-
-  <h2>Variants</h2>
+  <!-- SNV section - variant calls ------------------------------>
+  {% if sample_data.panel_obj.show_snvs %}
+  <h2>SNVs & indels - variant calls</h2>
 
   <table class="table">
     <thead>
@@ -104,9 +107,10 @@
   <br>
   <br>
 
+  <!-- SNV section - coverage ------------------------------>
+  <h2>Gene coverage</h2>
 
-  <h2>Coverage</h2>
-
+  <!-- gene overall coverage table - all panels -->
   <table>
     <thead>
       <tr>
@@ -129,6 +133,7 @@
   <br>
   <br>
 
+  <!-- gaps summary for myeloid referrals-->
   {% if myeloid_coverage_summary %}
   <h2>Gaps summary</h2>
 
@@ -145,6 +150,7 @@
     </tbody>
   </table>
 
+  <!-- hotspot gaps for non-myeloid referrals -->
   {% else %}
   <h2>Hotspot gaps</h2>
 
@@ -189,7 +195,57 @@
 
   <br>
   <br>
+  {% endif %}
 
+  {% if sample_data.panel_obj.show_fusions %}
+  <h2>Fusions</h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 15%">Fusion</th>
+        <th style="width: 7%">Fusion supporting reads</th>
+        <th style="width: 12%">Breakpoints</th>
+        <th style="width: 25%">HGVS</th>
+        <th style="width: 10%">IGV</th>
+        <th style="width: 30%">Comments</th>
+      </tr>
+    </thead>
+
+    <tbody>
+    {% for v in fusion_data.fusion_calls %}
+      {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
+      <tr>
+        <td>{{ v.fusion_genes }}</td>
+        <td>{{ v.fusion_supporting_reads }}</td>
+        <td>{{ v.left_breakpoint }}<br>{{ v.right_breakpoint }}</td>
+        <td>
+          <!-- loop required because bug in xhtml will collpase whole column if hgvs is None -->
+          {% if v.fusion_hgvs %}
+          {{ v.fusion_hgvs }}
+          {% else %}
+          N/A
+          {% endif %}
+        </td>
+        <td>{{ v.final_decision }}</td>
+        <td>
+          {% for c in v.comments %}
+          <i>{{ c.user }}: </i>{{ c.comment | wordwrap:50 | linebreaksbr }}<br>
+          {% endfor %}
+        </td>
+      </tr>
+      {% endif %}
+    {% endfor %}
+    </tbody>
+  </table>
+  <br>
+  <br>
+
+  <!-- TODO add rna coverage here - needs model change -->
+
+
+  {% endif %}
+
+  <!-- checks section ------------------------------>
   <h2>Checks performed</h2>
 
   <table>
@@ -197,9 +253,8 @@
       <tr>
         <th style="width: 10%">Check</th>
         <th style="width: 20%">User</th>
-        <th style="width: 10%">Patient info check</th>
-        <th style="width: 10%">NTC check</th>
-        <th style="width: 50%">Comments</th>
+        <th style="width: 15%">Checks</th>
+        <th style="width: 55%">Comments</th>
       </tr>
     </thead>
 
@@ -208,8 +263,9 @@
       <tr>
         <td>{{ forloop.counter }}</td>
         <td>{{ c.user }}<br>{{ c.signoff_time }}</td>
-        <td>{{ c.patient_info_check }}</td>
-        <td>{{ c.coverage_ntc_check }}</td>
+        <td><i>Patient info check:</i> {{ c.patient_info_check }}
+          <br><i>NTC check:</i> {{ c.coverage_ntc_check }}
+        </td>
         <td>
           <i>Coverage:</i> {{ c.coverage_comment | wordwrap:50 | linebreaksbr }}<br>
           <i>Overall:</i> {{ c.overall_comment | wordwrap:50 | linebreaksbr }}</td>
@@ -220,6 +276,7 @@
   </table>
   <br>
   
+  <!-- footer -->
   <p>View report in somatic variant database: <a href="http://10.59.210.247:8000/analysis/{{ sample_data.sample_pk }}#report" target="_blank">http://10.59.210.247:8000/analysis/{{ sample_data.sample_pk }}#report</a></p>
   <p>PDF report generated {% now "jS F Y H:i" %}</p>
 

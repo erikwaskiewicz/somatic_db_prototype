@@ -250,25 +250,6 @@ def analysis_sheet(request, sample_id):
 
             return response
 
-        if 'download-rna' in request.GET:
-            filename=f"{context['sample_data']['worksheet_id']}_{context['sample_data']['sample_id']}_{context['sample_data']['panel']}.pdf"
-
-            # Create a Django response object, and specify content_type as pdf
-            response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = f'attachment; filename="{filename}"'
-
-            # find the template and render it.
-            template = get_template('analysis/download_rna_report.html')
-            html = template.render(context)
-
-            # create a pdf
-            pisa_status = pisa.CreatePDF(
-                html, dest=response, link_callback=link_callback
-            )
-
-            return response
-
-
     # submit buttons
     if request.method == 'POST':
         # patient name input form

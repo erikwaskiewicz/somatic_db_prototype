@@ -283,7 +283,7 @@
       <td>{{ forloop.counter }}</td>
       <td>{{ c.user }}<br>{{ c.signoff_time }}</td>
       <td>
-        <b>Demographics check:</b> {{ c.patient_info_check }}
+        <b>Patient info check:</b> {{ c.patient_info_check }}
         {% if sample_data.panel_obj.show_snvs %}
           <br><b>NTC check:</b> {{ c.coverage_ntc_check }}
         {% endif %}
