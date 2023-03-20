@@ -215,13 +215,13 @@ def analysis_sheet(request, sample_id):
         myeloid_coverage_summary = False
 
     # DNA workflow
-    if sample_data['dna_or_rna'] == 'DNA':
+    if sample_data['panel_obj'].show_snvs == True:
         context['variant_data'] = get_variant_info(sample_data, sample_obj)
         context['coverage_data'] = get_coverage_data(sample_obj)
         context['myeloid_coverage_summary'] = myeloid_coverage_summary
 
     # RNA workflow
-    elif sample_data['dna_or_rna'] == 'RNA':
+    elif sample_data['panel_obj'].show_fusions == True:
         context['fusion_data'] = get_fusion_info(sample_data, sample_obj)
 
         
@@ -437,7 +437,7 @@ def analysis_sheet(request, sample_id):
                 if sample_data['sample_name'] == None:
                     context['warning'].append('Did not finalise check - input patient name before continuing')
 
-                if (sample_data['dna_or_rna'] == 'DNA') and (current_step_obj.coverage_ntc_check == False) and (next_step != "Fail sample"):
+                if (sample_data['panel_obj'].show_snvs == True) and (current_step_obj.coverage_ntc_check == False) and (next_step != "Fail sample"):
                     context['warning'].append('Did not finalise check - check NTC before continuing')
 
                 if current_step_obj.patient_info_check == False:
@@ -462,13 +462,14 @@ def analysis_sheet(request, sample_id):
                             variants_match = True
                             non_matching_variants = []
 
-                            if sample_data['dna_or_rna'] == 'DNA':
+                            # TODO - replace with true/flase, same below
+                            if sample_data['panel_obj'].show_snvs == True:
                                 for variant in context['variant_data']['variant_calls']:
                                     if not variant['latest_checks_agree']:
                                         variants_match = False
                                         non_matching_variants.append(variant['genomic'])
 
-                            elif sample_data['dna_or_rna'] == 'RNA':
+                            if sample_data['panel_obj'].show_fusions == True:
                                 for fusion in context['fusion_data']['fusion_calls']:
                                     if not fusion['latest_checks_agree']:
                                         variants_match = False
@@ -516,13 +517,7 @@ def analysis_sheet(request, sample_id):
 
 
     # render the pages
-    if sample_data['dna_or_rna'] == 'DNA':
-        return render(request, 'analysis/analysis_sheet_dna.html', context)
-    if sample_data['dna_or_rna'] == 'RNA':
-        return render(request, 'analysis/analysis_sheet_rna.html', context)
-
-    else:
-        raise Http404(f'Sample must be either DNA or RNA, not {sample_data["dna_or_rna"]}')
+    return render(request, 'analysis/analysis_sheet_dna.html', context)
 
 
 def ajax(request):

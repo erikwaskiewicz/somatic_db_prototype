@@ -57,13 +57,35 @@ class Panel(models.Model):
     e.g. path to BED, ?panel version number
 
     """
+    # TODO - this will be removed along with dna_or_rna when deployed and replaced by assay
     TYPE_CHOICES = (
         ('DNA', 'DNA'),
         ('RNA', 'RNA'),
     )
+    ASSAY_CHOICES = (
+        ('1', 'TSO500 DNA'),
+        ('2', 'TSO500 RNA'),
+        ('3', 'TSO500 ctDNA'),
+    )
     panel_name = models.CharField(max_length=50)
-    dna_or_rna = models.CharField(max_length=3, choices=TYPE_CHOICES)
+    pretty_print = models.CharField(max_length=100)
+    version = models.IntegerField()
+    live = models.BooleanField()
+    dna_or_rna = models.CharField(max_length=3, choices=TYPE_CHOICES) # TODO - remove
+    assay = models.CharField(max_length=1, choices=ASSAY_CHOICES)
+
+    # depth of coverage settings
+    depth_cutoffs = models.CharField(max_length=50, blank=True, null=True)
     show_myeloid_gaps_summary = models.BooleanField(default=False)
+
+    # snv settings
+    show_snvs = models.BooleanField()
+
+    # fusion settings
+    show_fusions = models.BooleanField()
+
+    class Meta:
+        unique_together = ('panel_name', 'version', 'assay')
 
 
 class SampleAnalysis(models.Model):
@@ -137,6 +159,7 @@ class Check(models.Model):
     coverage_comment_updated = models.DateTimeField(blank=True, null=True)
     patient_info_check = models.BooleanField(default=False)
     overall_comment = models.CharField(max_length=2000, blank=True)
+    overall_comment_updated = models.DateTimeField(blank=True, null=True)
     signoff_time = models.DateTimeField(blank=True, null=True)
 
 
@@ -149,7 +172,7 @@ class Variant(models.Model):
     genome_build = models.IntegerField(default=37)
     
     class Meta:
-    	unique_together = ('variant','genome_build')
+        unique_together = ('variant','genome_build')
 
 
 class VariantInstance(models.Model):
