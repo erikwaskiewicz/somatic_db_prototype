@@ -212,6 +212,19 @@ class CoverageCheckForm(forms.Form):
         self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-success'))
 
 
+class ManualVariantCheckForm(forms.Form):
+    """
+    Confirm that a manual review of IGV for specific variants has been completed
+
+    """
+    variants_checked = forms.BooleanField(required=False, label='Check completed')
+
+    def __init__(self, *args, **kwargs):
+        super(ManualVariantCheckForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-secondary'))
+
+
 class ConfirmPolyForm(forms.Form):
     """
     Confirm that a variant should be added to the poly list

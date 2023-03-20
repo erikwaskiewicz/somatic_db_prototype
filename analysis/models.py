@@ -79,6 +79,8 @@ class Panel(models.Model):
     show_myeloid_gaps_summary = models.BooleanField(default=False)
     depth_cutoffs = models.CharField(max_length=50, blank=True, null=True)
     vaf_cutoff = models.DecimalField(decimal_places=5, max_digits=10, blank=True, null=True)
+    manual_review_required = models.BooleanField(default=False)
+    manual_review_desc = models.CharField(max_length=200, blank=True, null=True)
 
     # fusion settings
     show_fusions = models.BooleanField()
@@ -158,6 +160,7 @@ class Check(models.Model):
     coverage_comment = models.CharField(max_length=500, blank=True)
     coverage_comment_updated = models.DateTimeField(blank=True, null=True)
     patient_info_check = models.BooleanField(default=False)
+    manual_review_check = models.BooleanField(default=False)
     overall_comment = models.CharField(max_length=2000, blank=True)
     overall_comment_updated = models.DateTimeField(blank=True, null=True)
     signoff_time = models.DateTimeField(blank=True, null=True)

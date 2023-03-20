@@ -9,7 +9,7 @@ from django.template.loader import get_template
 from django.template import Context
 
 
-from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, ConfirmPolyForm, AddNewPolyForm
+from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, ConfirmPolyForm, AddNewPolyForm, ManualVariantCheckForm
 from .models import *
 from .utils import link_callback, get_samples, unassign_check, signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, create_myeloid_coverage_summary, get_poly_list
 
@@ -194,6 +194,7 @@ def analysis_sheet(request, sample_id):
         'warning': [],
         'sample_data': sample_data,
         'new_variant_form': NewVariantForm(),
+        'manual_check_form': ManualVariantCheckForm(),
         'submit_form': SubmitForm(),
         'update_name_form': UpdatePatientName(),
         'sample_comment_form': SampleCommentForm(
@@ -275,6 +276,15 @@ def analysis_sheet(request, sample_id):
 
             # reload variant data
             context['variant_data'] = get_variant_info(sample_data, sample_obj)
+
+        if 'variants_checked' in request.POST:
+            manual_check_form = ManualVariantCheckForm(request.POST)
+
+            if manual_check_form.is_valid():
+                if manual_check_form.cleaned_data['variants_checked']:
+                    current_step_obj.manual_review_check = True
+                    current_step_obj.save()
+                    context['sample_data'] = get_sample_info(current_step_obj.analysis)
 
         # coverage comments button
         if 'coverage_comment' in request.POST:
