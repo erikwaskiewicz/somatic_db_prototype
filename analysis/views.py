@@ -232,7 +232,7 @@ def analysis_sheet(request, sample_id):
     # download PDF reports
     if request.method == 'GET':
 
-        if 'download-dna' in request.GET:
+        if 'download-report' in request.GET:
             filename=f"{context['sample_data']['worksheet_id']}_{context['sample_data']['sample_id']}_{context['sample_data']['panel']}.pdf"
 
             # Create a Django response object, and specify content_type as pdf
@@ -240,7 +240,7 @@ def analysis_sheet(request, sample_id):
             response['Content-Disposition'] = f'attachment; filename="{filename}"'
 
             # find the template and render it.
-            template = get_template('analysis/download_dna_report.html')
+            template = get_template('analysis/download_report.html')
             html = template.render(context)
 
             # create a pdf
