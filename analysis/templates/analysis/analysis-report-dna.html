@@ -35,7 +35,10 @@
 {% endif %}
 <br>
 
-<h5>Variants</h5>
+
+<!-- SNV section - variant calls -->
+{% if sample_data.panel_obj.show_snvs %}
+<h5>SNVs & indels - variant calls</h5>
 <table class="table table-sm table-striped table-hover">
   <thead>
     <tr>
@@ -80,11 +83,14 @@
 </table>
 <br>
 
+<!-- SNV section - coverage info -->
+<h5>SNVs & indels - coverage</h5><br>
 <div class="container-fluid">
   <div class="row">
     <div class="col-4">
 
-      <h5>Coverage</h5>
+      <!-- gene overall coverage table - all panels -->
+      <h5>Gene coverage</h5>
       <table class="table table-sm table-striped table-hover">
         <thead>
           <tr>
@@ -109,10 +115,11 @@
 
     </div>
 
+    <!-- gaps summary for myeloid referrals-->
     {% if myeloid_coverage_summary %}
     <div class="col-8">
       <h5>Gaps summary</h5>
-      <table class="table table-striped table-sm">
+      <table class="table table-sm table-striped table-hover">
         <thead>
           <tr>
             <th scope="col">Cutoff</th>
@@ -147,6 +154,7 @@
       </table>
     </div>
 
+    <!-- hotspot gaps for non-myeloid referrals -->
     {% else %}
     <div class="col-4">
 
@@ -200,16 +208,72 @@
   </div>
 </div> 
 <br>
+{% endif %}
 
-<h5>Checks performed</h5>
-<table class="table table-sm table-bordered">
+
+<!-- fusions section -->
+{% if sample_data.panel_obj.show_fusions %}
+<h5>Fusions</h5>
+<table class="table table-sm table-striped table-hover">
   <thead>
     <tr>
-      <th>Check</th>
-      <th>User</th>
-      <th>Patient info check</th>
-      <th>NTC check</th>
-      <th>Comments</th>
+      <th scope="col">Fusion</th>
+      <th scope="col">HGVS</th>
+      <th scope="col">Fusion supporting reads</th>
+      <th scope="col">Left breakpoint</th>
+      <th scope="col">Right breakpoint</th>
+      <th scope="col">IGV</th>
+      <th scope="col">Comments</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for v in fusion_data.fusion_calls %}
+    {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
+    <tr>
+      <td>{{ v.fusion_genes }}</td>
+      <td>{{ v.fusion_hgvs }}</td>
+      <td>{{ v.fusion_supporting_reads }}</td>
+      <td>{{ v.left_breakpoint }}
+      {% if v.genome_build == 37 %}
+       <span class = "badge badge-info badge-pill">GRCh{{ v.genome_build }}
+       {% elif v.genome_build == 38 %}
+       <span class = "badge badge-success badge-pill">GRCh{{ v.genome_build }}
+       {% endif %}
+      </td>
+      <td>{{ v.right_breakpoint }}
+      {% if v.genome_build == 37 %}
+       <span class = "badge badge-info badge-pill">GRCh{{ v.genome_build }}
+       {% elif v.genome_build == 38 %}
+       <span class = "badge badge-success badge-pill">GRCh{{ v.genome_build }}
+       {% endif %}
+      </td>
+      <td>{{ v.final_decision }}</td>
+      <td>
+      {% for c in v.comments %}
+        {{ c.user }}-{{ c.comment }}<br>
+      {% endfor %}
+      </td>
+      <td></td>
+    </tr>
+    {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+<br>
+
+{% endif %}
+
+
+<!-- checks summary -->
+<h5>Checks performed</h5>
+<table class="table table-sm table-striped table-hover">
+  <thead>
+    <tr>
+      <th class="col-1">Check</th>
+      <th class="col-3">User</th>
+      <th class="col-2">Checks</th>
+      <th class="col-6">Comments</th>
       
     </tr>
   </thead>
@@ -218,10 +282,16 @@
     <tr>
       <td>{{ forloop.counter }}</td>
       <td>{{ c.user }}<br>{{ c.signoff_time }}</td>
-      <td>{{ c.patient_info_check }}</td>
-      <td>{{ c.coverage_ntc_check }}</td>
       <td>
-        <b>Coverage:</b> {{ c.coverage_comment | wordwrap:100 | linebreaksbr }}<br>
+        <b>Demographics check:</b> {{ c.patient_info_check }}
+        {% if sample_data.panel_obj.show_snvs %}
+          <br><b>NTC check:</b> {{ c.coverage_ntc_check }}
+        {% endif %}
+      </td>
+      <td>
+        {% if sample_data.panel_obj.show_snvs %}
+          <b>Coverage:</b> {{ c.coverage_comment | wordwrap:100 | linebreaksbr }}<br>
+        {% endif %}
         <b>Overall:</b> {{ c.overall_comment | wordwrap:100 | linebreaksbr }}</td>
     </tr>
     {% endfor %}

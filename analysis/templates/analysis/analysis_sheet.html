@@ -77,17 +77,10 @@
 
     <!-- otherwise show report tab -->
     {% else %}
-      {% if sample_data.panel_obj.show_snvs %}
-      <li class="nav-item">
-        <a class="nav-link section-button" href="#report-dna" data-target="report">Report summary</a>
-      </li>
-      {% endif %}
 
-      {% if sample_data.panel_obj.show_fusions %}
-      <li class="nav-item">
-        <a class="nav-link section-button" href="#report-rna" data-target="report">Report summary</a>
-      </li>
-      {% endif %}
+    <li class="nav-item">
+      <a class="nav-link section-button" href="#report" data-target="report">Report summary</a>
+    </li>
 
     {% endif %}
   </ul>
@@ -111,12 +104,7 @@
 <div class="container" id="finalise">{% include 'analysis/analysis-finalise.html' %}</div>
 
 {% else %}
-  {% if sample_data.panel_obj.show_snvs %}
-  <div class="container-fluid" id="report-dna">{% include 'analysis/analysis-report-dna.html' %}</div>
-  {% endif %}
-  {% if sample_data.panel_obj.show_fusions %}
-  <div class="container-fluid" id="report-rna">{% include 'analysis/analysis-report-rna.html' %}</div>
-  {% endif %}
+<div class="container-fluid" id="report">{% include 'analysis/analysis-report-dna.html' %}</div>
 
 {% endif %}
 
