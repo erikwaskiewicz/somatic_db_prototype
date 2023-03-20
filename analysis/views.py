@@ -217,7 +217,7 @@ def analysis_sheet(request, sample_id):
     # DNA workflow
     if sample_data['panel_obj'].show_snvs == True:
         context['variant_data'] = get_variant_info(sample_data, sample_obj)
-        context['coverage_data'] = get_coverage_data(sample_obj)
+        context['coverage_data'] = get_coverage_data(sample_obj, sample_data['panel_obj'].depth_cutoffs)
         context['myeloid_coverage_summary'] = myeloid_coverage_summary
 
     # RNA workflow

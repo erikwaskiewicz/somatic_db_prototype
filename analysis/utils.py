@@ -536,14 +536,19 @@ def get_fusion_info(sample_data,sample_obj):
 
 
 
-def get_coverage_data(sample_obj):
+def get_coverage_data(sample_obj, depth_cutoffs):
     """
     Get information on the coverage in a sample analysis to generate the coverage portion of the context dictionary
 
     """
+    # get list of target depths from panel object
+    target_depths = depth_cutoffs.split('|')
 
-    #create a coverage dictionary
-    coverage_data = {}
+    # create a coverage dictionary
+    coverage_data = {
+        'regions': {},
+        'depth_cutoffs': target_depths,
+    }
     gene_coverage_analysis_obj = GeneCoverageAnalysis.objects.filter(sample=sample_obj).order_by('gene')
 
     for gene_coverage_obj in gene_coverage_analysis_obj:
@@ -557,30 +562,45 @@ def get_coverage_data(sample_obj):
                 'hotspot_or_genescreen': region.get_hotspot_display(),
                 'percent_135x': region.percent_135x,
                 'percent_270x': region.percent_270x,
+                'percent_1000x': region.percent_1000x,
                 'ntc_coverage': region.ntc_coverage,
                 'percent_ntc': region.percent_ntc,
             }
             regions.append(regions_dict)
 
-        # Create a dictionary of gaps in the sample for the given gene
-        gaps_270 = []
-        gaps_135 = []
-        gaps_analysis_obj=GapsAnalysis.objects.filter(gene=gene_coverage_obj)
+        # create a dictionary of gaps in the sample for the given gene, split by depths
+        # TODO - not a great long term fix, need to update models to handle different depths
+        gaps_135, gaps_270, gaps_1000 = [], [], []
+
+        gaps_analysis_obj = GapsAnalysis.objects.filter(gene=gene_coverage_obj)
         for gap in gaps_analysis_obj:
-            if gap.coverage_cutoff == 270:
-                gaps_dict = {
-                    'genomic': gap.genomic(),
-                    'hgvs_c': gap.hgvs_c,
-                    'percent_cosmic': gap.percent_cosmic
-                }
-                gaps_270.append(gaps_dict)
-            elif gap.coverage_cutoff == 135:
+
+            # gaps at 135x
+            if gap.coverage_cutoff == 135:
                 gaps_dict = {
                     'genomic': gap.genomic(),
                     'hgvs_c': gap.hgvs_c,
                     'percent_cosmic': gap.percent_cosmic
                 }
                 gaps_135.append(gaps_dict)
+
+            # gaps at 270x
+            elif gap.coverage_cutoff == 270:
+                gaps_dict = {
+                    'genomic': gap.genomic(),
+                    'hgvs_c': gap.hgvs_c,
+                    'percent_cosmic': gap.percent_cosmic
+                }
+                gaps_270.append(gaps_dict)
+
+            # gaps at 1000x
+            elif gap.coverage_cutoff == 1000:
+                gaps_dict = {
+                    'genomic': gap.genomic(),
+                    'hgvs_c': gap.hgvs_c,
+                    'percent_cosmic': gap.percent_cosmic
+                }
+                gaps_1000.append(gaps_dict)
 
         # combine gaps and regions dictionaries
         gene_dict = {
@@ -590,12 +610,13 @@ def get_coverage_data(sample_obj):
             'av_ntc_coverage': gene_coverage_obj.av_ntc_coverage,
             'percent_ntc': gene_coverage_obj.percent_ntc,
             'regions': regions,
-            'gaps_270': gaps_270,
             'gaps_135': gaps_135,
+            'gaps_270': gaps_270,
+            'gaps_1000': gaps_1000,
         }
 
-        coverage_data[gene_coverage_obj.gene.gene] = gene_dict
-        
+        coverage_data['regions'][gene_coverage_obj.gene.gene] = gene_dict
+
     return coverage_data
 
 

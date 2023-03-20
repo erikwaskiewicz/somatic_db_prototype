@@ -3,43 +3,65 @@
 <table class="table">
   <thead>
     <tr>
-      <th scope="col" class="col-1"></th>
-      <th scope="col" class="col-1">Region</th>
-      <th scope="col" class="col-2">Average depth</th>
-      <th scope="col" class="col-2">% at 135X</th>
-      <th scope="col" class="col-2">% at 270X</th>
-      <th scope="col" class="col-2">Average NTC depth</th>
-      <th scope="col" class="col-1">% NTC</th>
-      <th scope="col" class="col-1"></th>
+      <th scope="col">Gene</th>
+      <th scope="col">Average depth</th>
+      {% if '135' in coverage_data.depth_cutoffs %}
+      <th scope="col">% at 135X</th>
+      {% endif %}
+      {% if '270' in coverage_data.depth_cutoffs %}
+      <th scope="col">% at 270X</th>
+      {% endif %}
+      {% if '1000' in coverage_data.depth_cutoffs %}
+      <th scope="col">% at 1000X</th>
+      {% endif %}
+      <th scope="col">Average NTC depth</th>
+      <th scope="col">% NTC</th>
+      <th scope="col"></th>
     </tr>
   </thead>
   <tbody>
-    {% for region, v in coverage_data.items %}
+    {% for region, value in coverage_data.regions.items %}
     <tr>
-      <td></td>
+      <!-- gene summary section ---------------------------->
       <td>{{ region }}<br><br></td>
-      <td>{{ v.av_coverage }}</td>
+      <td>{{ value.av_coverage }}</td>
+
+      {% if '135' in coverage_data.depth_cutoffs %}
       <td>
-        {{ v.percent_135x }}
-        {% if v.percent_135x != 100 %}
+        {{ value.percent_135x }}
+        {% if value.percent_135x != 100 %}
+        <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
+        {% endif %}
+      </td>
+      {% endif %}
+
+      {% if '270' in coverage_data.depth_cutoffs %}
+      <td>
+        {{ value.percent_270x }}
+        {% if value.percent_270x != 100 %}
+        <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
+        {% endif %}
+      </td>
+      {% endif %}
+
+      {% if '1000' in coverage_data.depth_cutoffs %}
+      <td>
+        {{ value.percent_1000x }}
+        {% if value.percent_1000x != 100 %}
+        <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
+        {% endif %}
+      </td>
+      {% endif %}
+
+      <td>
+        {{ value.av_ntc_coverage }}
+        {% if value.av_ntc_coverage != 0 %}
         <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
         {% endif %}
       </td>
       <td>
-        {{ v.percent_270x }}
-        {% if v.percent_270x != 100 %}
-        <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
-        {% endif %}
-      </td>
-      <td>
-        {{ v.av_ntc_coverage }}
-        {% if v.av_ntc_coverage != 0 %}
-        <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
-        {% endif %}
-      </td>
-      <td>
-        {{ v.percent_ntc }}
-        {% if v.percent_ntc != 0 %}
+        {{ value.percent_ntc }}
+        {% if value.percent_ntc != 0 %}
         <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
         {% endif %}
       </td>
@@ -50,10 +72,11 @@
         </button>
       </td>
     </tr>
+
+    <!-- detailed region coverage section -------------------------------->
     <tr class="collapse" id="collapse-{{ region }}">
 
-      <td></td>
-      <td colspan="6">
+      <td colspan="100%">
         <div class="card bg-light">
           <div class="card-body">
 
@@ -62,16 +85,23 @@
               <thead>
                 <tr>
                   <th scope="col" class="col-5">HGVS</th>
-                  <th scope="col" class="col-2">Hotspot/ genescreen</th>
-                  <th scope="col" class="col-1">Average coverage</th>
-                  <th scope="col" class="col-1">% at 135X</th>
-                  <th scope="col" class="col-1">% at 270X</th>
-                  <th scope="col" class="col-1">Average NTC coverage</th>
-                  <th scope="col" class="col-1">% NTC</th>
+                  <th scope="col">Hotspot/ genescreen</th>
+                  <th scope="col">Average coverage</th>
+                  {% if '135' in coverage_data.depth_cutoffs %}
+                  <th scope="col">% at 135X</th>
+                  {% endif %}
+                  {% if '270' in coverage_data.depth_cutoffs %}
+                  <th scope="col">% at 270X</th>
+                  {% endif %}
+                  {% if '1000' in coverage_data.depth_cutoffs %}
+                  <th scope="col">% at 1000X</th>
+                  {% endif %}
+                  <th scope="col">Average NTC coverage</th>
+                  <th scope="col">% NTC</th>
                 </tr>
               </thead>
               <tbody>
-              {% for r in v.regions %}
+              {% for r in value.regions %}
                 <tr>
                   <td>{{ r.hgvs_c }}</td>
                   <td>
@@ -82,18 +112,30 @@
                     {% endif %}
                   </td>
                   <td>{{ r.average_coverage }}</td>
+                  {% if '135' in coverage_data.depth_cutoffs %}
                   <td>
                     {{ r.percent_135x}}
                     {% if r.percent_135x != 100 %}
                     <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
                     {% endif %}
                   </td>
+                  {% endif %}
+                  {% if '270' in coverage_data.depth_cutoffs %}
                   <td>
                     {{ r.percent_270x }}
                     {% if r.percent_270x != 100 %}
                     <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
                     {% endif %}
                   </td>
+                  {% endif %}
+                  {% if '1000' in coverage_data.depth_cutoffs %}
+                  <td>
+                    {{ r.percent_1000x }}
+                    {% if r.percent_1000x != 100 %}
+                    <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
+                    {% endif %}
+                  </td>
+                  {% endif %}
                   <td>
                     {{ r.ntc_coverage }}
                     {% if r.ntc_coverage != 0 %}
@@ -111,86 +153,117 @@
               </tbody>
             </table>
             <br>
-            
-            <p><b>Hotspot gaps at 270X</b></p>
-            {% if v.gaps_270 %}
-            <table class="table table-hover table-bordered">
-              <thead>
-                <tr>
-                  <th scope="col" class="col-5">HGVS</th>
-                  <th scope="col" class="col-5">Genomic</th>
-                  <th scope="col" class="col-2">% COSMIC</th>
-                </tr>
-              </thead>
-              <tbody>
-              {% for r in v.gaps_270 %}
-                <tr>
-                  <td>{{ r.hgvs_c }}</td>
-                  <td>{{ r.genomic }}</td>
-                  <!-- only show cosmic % for B38 and correct referrals -->
-                  {% if sample_data.genome_build == 37 %}
-                  <td>NA</td>
-                  {% else %}
-                  {% if sample_data.panel == "Lung" or sample_data.panel == "Melanoma" or sample_data.panel == "GIST" or sample_data.panel == "Colorectal" or sample_data.panel == "breast" %}
-                  <td>{{ r.percent_cosmic }}</td>
-                  {% else %}
-                  <td>NA</td>
-                  {% endif %}
-                  {% endif %}
-                </tr>
-              {% endfor %}
-              </tbody>
-            </table>
 
-            {% else %}
-            <div class="alert alert-success">
-              No hotspot gaps at 270X
-            </div>
-            
-            {% endif %}
+            <!-- solid tumour gaps - dont show for myeloid -->
+            {% if not myeloid_coverage_summary %}
 
+              {% if '135' in coverage_data.depth_cutoffs %}
+                <p><b>Hotspot gaps at 135X</b></p>
+                {% if value.gaps_135 %}
+                  <table class="table table-hover table-bordered">
+                    <thead>
+                      <tr>
+                        <th scope="col" class="col-5">HGVS</th>
+                        <th scope="col" class="col-5">Genomic</th>
+                        <th scope="col" class="col-2">% COSMIC</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {% for r in value.gaps_135 %}
+                      <tr>
+                        <td>{{ r.hgvs_c }}</td>
+                        <td>{{ r.genomic }}</td>
+                        <!-- only show cosmic % when not none -->
+                        {% if r.percent_cosmic %}
+                          <td>{{ r.percent_cosmic }}%</td>
+                        {% else %}
+                          <td>N/A</td>
+                        {% endif %}
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
 
-            <p><b>Hotspot gaps at 135X</b></p>
-            {% if v.gaps_135 %}
-            <table class="table table-hover table-bordered">
-              <thead>
-                <tr>
-                  <th scope="col" class="col-5">HGVS</th>
-                  <th scope="col" class="col-5">Genomic</th>
-                  <th scope="col" class="col-2">% COSMIC</th>
-                </tr>
-              </thead>
-              <tbody>
-              {% for r in v.gaps_135 %}
-                <tr>
-                  <td>{{ r.hgvs_c }}</td>
-                  <td>{{ r.genomic }}</td>
-                  <!-- only show cosmic % for B38 and correct referrals -->
-                  {% if sample_data.genome_build == "37" %}
-                  <td>NA</td>
-                  {% else %}
-                  {% if sample_data.panel == "Lung" or sample_data.panel == "Melanoma" or sample_data.panel == "GIST" or sample_data.panel == "Colorectal" or sample_data.panel == "breast" %}
-                  <td>{{ r.percent_cosmic }}</td>
-                  {% else %}
-                  <td>NA</td>
-                  {% endif %}
-                  {% endif %}
-                </tr>
-              {% endfor %}
-              </tbody>
-            </table>
+                {% else %}
+                  <div class="alert alert-success">
+                    No hotspot gaps at 135X
+                  </div>
+                {% endif %}
+              {% endif %}
 
-            {% else %}
-            <div class="alert alert-success">
-              No hotspot gaps at 135X
-            </div>
+              {% if '270' in coverage_data.depth_cutoffs %}
+                <p><b>Hotspot gaps at 270X</b></p>
+                {% if value.gaps_270 %}
+                  <table class="table table-hover table-bordered">
+                    <thead>
+                      <tr>
+                        <th scope="col" class="col-5">HGVS</th>
+                        <th scope="col" class="col-5">Genomic</th>
+                        <th scope="col" class="col-2">% COSMIC</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {% for r in value.gaps_270 %}
+                      <tr>
+                        <td>{{ r.hgvs_c }}</td>
+                        <td>{{ r.genomic }}</td>
+                        <!-- only show cosmic % when not none -->
+                        {% if r.percent_cosmic %}
+                          <td>{{ r.percent_cosmic }}%</td>
+                        {% else %}
+                          <td>N/A</td>
+                        {% endif %}
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+
+                {% else %}
+                  <div class="alert alert-success">
+                    No hotspot gaps at 270X
+                  </div>
+                {% endif %}
+              {% endif %}
+
+              {% if '1000' in coverage_data.depth_cutoffs %}
+                <p><b>Hotspot gaps at 1000X</b></p>
+                {% if value.gaps_1000 %}
+                  <table class="table table-hover table-bordered">
+                    <thead>
+                      <tr>
+                        <th scope="col" class="col-5">HGVS</th>
+                        <th scope="col" class="col-5">Genomic</th>
+                        <th scope="col" class="col-2">% COSMIC</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {% for r in value.gaps_1000 %}
+                      <tr>
+                        <td>{{ r.hgvs_c }}</td>
+                        <td>{{ r.genomic }}</td>
+                        <!-- only show cosmic % when not none -->
+                        {% if r.percent_cosmic %}
+                          <td>{{ r.percent_cosmic }}%</td>
+                        {% else %}
+                          <td>N/A</td>
+                        {% endif %}
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+
+                {% else %}
+                  <div class="alert alert-success">
+                    No hotspot gaps at 1000X
+                  </div>
+                {% endif %}
+              {% endif %}
 
             {% endif %}
 
           </div>
       </div>
     </td>
-    <td></td>
 
     {% endfor %}
   </tbody>

@@ -38,7 +38,7 @@
 
 <!-- SNV section - variant calls -->
 {% if sample_data.panel_obj.show_snvs %}
-<h5>SNVs & indels - variant calls</h5>
+<h4>SNVs & indels - variant calls</h4>
 <table class="table table-sm table-striped table-hover">
   <thead>
     <tr>
@@ -84,10 +84,10 @@
 <br>
 
 <!-- SNV section - coverage info -->
-<h5>SNVs & indels - coverage</h5><br>
+<h4>SNVs & indels - coverage</h4><br>
 <div class="container-fluid">
   <div class="row">
-    <div class="col-4">
+    <div class="col-5">
 
       <!-- gene overall coverage table - all panels -->
       <h5>Gene coverage</h5>
@@ -96,18 +96,32 @@
           <tr>
             <th scope="col">Gene</th>
             <th scope="col">Average coverage</th>
+            {% if '135' in coverage_data.depth_cutoffs %}
             <th scope="col">Percent 135X</th>
+            {% endif %}
+            {% if '270' in coverage_data.depth_cutoffs %}
             <th scope="col">Percent 270X</th>
+            {% endif %}
+            {% if '1000' in coverage_data.depth_cutoffs %}
+            <th scope="col">Percent 1000X</th>
+            {% endif %}
           </tr>
         </thead>
 
         <tbody>
-          {% for gene, values in coverage_data.items %}
+          {% for gene, values in coverage_data.regions.items %}
           <tr>
             <td>{{ gene }}</td>
             <td>{{ values.av_coverage }}</td>
+            {% if '135' in coverage_data.depth_cutoffs %}
             <td>{{ values.percent_135x }}</td>
+            {% endif %}
+            {% if '270' in coverage_data.depth_cutoffs %}
             <td>{{ values.percent_270x }}</td>
+            {% endif %}
+            {% if '1000' in coverage_data.depth_cutoffs %}
+            <td>{{ values.percent_270x }}</td>
+            {% endif %}
           </tr>
           {% endfor %}
         </tbody>
@@ -117,7 +131,7 @@
 
     <!-- gaps summary for myeloid referrals-->
     {% if myeloid_coverage_summary %}
-    <div class="col-8">
+    <div class="col-7">
       <h5>Gaps summary</h5>
       <table class="table table-sm table-striped table-hover">
         <thead>
@@ -156,32 +170,9 @@
 
     <!-- hotspot gaps for non-myeloid referrals -->
     {% else %}
-    <div class="col-4">
+    <div class="col-7">
 
-      <h5>Hotspot gaps 270X</h5>
-      <table class="table table-sm table-striped table-hover">
-        <thead>
-          <tr>
-            <th scope="col">Gap</th>
-            <th scope="col">Percent COSMIC</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {% for gene, values in coverage_data.items %}
-            {% for gap in values.gaps_270 %}
-            <tr>
-              <td>{{ gap.hgvs_c }}</td>
-              <td>N/A</td>
-            </tr>
-            {% endfor %}
-          {% endfor %}
-        </tbody>
-      </table>
-
-    </div>
-    <div class="col-4">
-
+      {% if '135' in coverage_data.depth_cutoffs %}
       <h5>Hotspot gaps 135X</h5>
       <table class="table table-sm table-striped table-hover">
         <thead>
@@ -192,18 +183,73 @@
         </thead>
 
         <tbody>
-          {% for gene, values in coverage_data.items %}
-            {% for gap in values.gaps_135 %}
-            <tr>
-              <td>{{ gap.hgvs_c }}</td>
-              <td>N/A</td>
-            </tr>
-            {% endfor %}
+          {% for gene, values in coverage_data.regions.items %}
+            {% if values.gaps_135 %}
+              {% for gap in values.gaps_135 %}
+              <tr>
+                <td>{{ gap.hgvs_c }}</td>
+                <td>N/A</td>
+              </tr>
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+      <br>
+
+    {% endif %}
+    {% if '270' in coverage_data.depth_cutoffs %}
+      <h5>Hotspot gaps 270X</h5>
+      <table class="table table-sm table-striped table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Gap</th>
+            <th scope="col">Percent COSMIC</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for gene, values in coverage_data.regions.items %}
+            {% if values.gaps_270 %}
+              {% for gap in values.gaps_270 %}
+              <tr>
+                <td>{{ gap.hgvs_c }}</td>
+                <td>N/A</td>
+              </tr>
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+      <br>
+
+    {% endif %}
+    {% if '1000' in coverage_data.depth_cutoffs %}
+      <h5>Hotspot gaps 1000X</h5>
+      <table class="table table-sm table-striped table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Gap</th>
+            <th scope="col">Percent COSMIC</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for gene, values in coverage_data.regions.items %}
+            {% if values.gaps_1000 %}
+              {% for gap in values.gaps_1000 %}
+              <tr>
+                <td>{{ gap.hgvs_c }}</td>
+                <td>N/A</td>
+              </tr>
+              {% endfor %}
+            {% endif %}
           {% endfor %}
         </tbody>
       </table>
 
     </div>
+    {% endif %}
     {% endif %}
   </div>
 </div> 
@@ -213,7 +259,7 @@
 
 <!-- fusions section -->
 {% if sample_data.panel_obj.show_fusions %}
-<h5>Fusions</h5>
+<h4>Fusions</h4>
 <table class="table table-sm table-striped table-hover">
   <thead>
     <tr>
@@ -266,7 +312,7 @@
 
 
 <!-- checks summary -->
-<h5>Checks performed</h5>
+<h4>Checks performed</h4>
 <table class="table table-sm table-striped table-hover">
   <thead>
     <tr>

@@ -116,17 +116,31 @@
     <thead>
       <tr>
         <th>Gene</th>
+        {% if '135' in coverage_data.depth_cutoffs %}
         <th>Percent 135X</th>
+        {% endif %}
+        {% if '270' in coverage_data.depth_cutoffs %}
         <th>Percent 270X</th>
+        {% endif %}
+        {% if '1000' in coverage_data.depth_cutoffs %}
+        <th>Percent 1000X</th>
+        {% endif %}
       </tr>
     </thead>
 
     <tbody>
-      {% for gene, values in coverage_data.items %}
+      {% for gene, values in coverage_data.regions.items %}
       <tr>
         <td>{{ gene }}</td>
+        {% if '135' in coverage_data.depth_cutoffs %}
         <td>{{ values.percent_135x }}</td>
+        {% endif %}
+        {% if '270' in coverage_data.depth_cutoffs %}
         <td>{{ values.percent_270x }}</td>
+        {% endif %}
+        {% if '1000' in coverage_data.depth_cutoffs %}
+        <td>{{ values.percent_1000x }}</td>
+        {% endif %}
       </tr>
       {% endfor %}
     </tbody>
@@ -155,6 +169,28 @@
   {% else %}
   <h2>Hotspot gaps</h2>
 
+  {% if '135' in coverage_data.depth_cutoffs %}
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 100%">Hotspot gaps at 135X</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for gene, values in coverage_data.items %}
+        {% for gap in values.gaps_135 %}
+        <tr>
+          <td>{{ gap.hgvs_c }}</td>
+        </tr>
+        {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
+  <br>
+  {% endif %}
+
+  {% if '270' in coverage_data.depth_cutoffs %}
   <table>
     <thead>
       <tr>
@@ -173,17 +209,19 @@
     </tbody>
   </table>
   <br>
+  {% endif %}
 
+  {% if '1000' in coverage_data.depth_cutoffs %}
   <table>
     <thead>
       <tr>
-        <th style="width: 100%">Hotspot gaps at 135X</th>
+        <th style="width: 100%">Hotspot gaps at 1000X</th>
       </tr>
     </thead>
 
     <tbody>
       {% for gene, values in coverage_data.items %}
-        {% for gap in values.gaps_135 %}
+        {% for gap in values.gaps_1000 %}
         <tr>
           <td>{{ gap.hgvs_c }}</td>
         </tr>
@@ -191,6 +229,8 @@
       {% endfor %}
     </tbody>
   </table>
+  <br>
+  {% endif %}
 
   {% endif %}
 

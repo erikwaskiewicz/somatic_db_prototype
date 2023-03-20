@@ -323,8 +323,9 @@ class GeneCoverageAnalysis(models.Model):
     sample = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
     gene = models.ForeignKey('Gene', on_delete=models.CASCADE)
     av_coverage = models.IntegerField()
-    percent_270x = models.IntegerField()
-    percent_135x = models.IntegerField()
+    percent_135x = models.IntegerField(blank=True, null=True)
+    percent_270x = models.IntegerField(blank=True, null=True)
+    percent_1000x = models.IntegerField(blank=True, null=True)
     av_ntc_coverage = models.IntegerField()
     percent_ntc = models.IntegerField()
 
@@ -346,8 +347,9 @@ class RegionCoverageAnalysis(models.Model):
     pos_end = models.IntegerField()
     hotspot = models.CharField(max_length=1, choices=HOTSPOT_CHOICES)
     average_coverage = models.IntegerField()
-    percent_270x = models.IntegerField()
-    percent_135x = models.IntegerField()
+    percent_135x = models.IntegerField(blank=True, null=True)
+    percent_270x = models.IntegerField(blank=True, null=True)
+    percent_1000x = models.IntegerField(blank=True, null=True)
     ntc_coverage = models.IntegerField()
     percent_ntc = models.IntegerField()
 
