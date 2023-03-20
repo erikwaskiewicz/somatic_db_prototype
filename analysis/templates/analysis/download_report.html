@@ -34,7 +34,7 @@
 
 <body>
 
-  <h1>TSO500 DNA report for {{ sample_data.sample_id }}</h1> <!-- TODO add assay-->
+  <h1>{{ sample_data.panel_obj.get_assay_display }} report for {{ sample_data.sample_id }}</h1>
 
   <!-- Fail warning box -->
   {% if sample_data.checks.current_status  == 'Fail' %}
