@@ -1,3 +1,4 @@
+{% load humanize %}
 <head>
   <style>
     @page {
@@ -241,7 +242,28 @@
   <br>
 
   <!-- TODO add rna coverage here - needs model change -->
-
+    {% if sample_data.panel_obj.show_fusion_coverage %}
+    <h2>Coverage</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Number of reads in sample</th>
+          <th>Number of reads in NTC</th>
+          <th>Percent NTC</th>
+        </tr>
+      </thead>
+  
+      <tbody>
+        <tr>
+          <td>{{ sample_data.total_reads | intcomma }}</td>
+          <td>{{ sample_data.total_reads_ntc | intcomma }}</td>
+          <td>{{ sample_data.percent_reads_ntc }}%</td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <br>
+    {% endif %}
 
   {% endif %}
 

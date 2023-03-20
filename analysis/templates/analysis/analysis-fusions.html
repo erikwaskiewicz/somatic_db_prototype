@@ -1,19 +1,17 @@
 {% load crispy_forms_tags %}
 {% load humanize %}
 
+{% if sample_data.panel_obj.show_fusion_coverage %}
 <div class="container">
   <div class="row">
     <div class="col-6">
       {% if sample_data.total_reads >= 9000000 %}
-      <div class="alert alert-success">
+      <div class="alert alert-success"><p><b>Number of reads in sample:</b> {{ sample_data.total_reads | intcomma }}</p></div>
     
       {% else %}
-      <div class="alert alert-danger">
+      <div class="alert alert-danger"><p><b>Number of reads in sample:</b> {{ sample_data.total_reads | intcomma }}</p></div>
       
       {% endif %}
-        <p><b>Number of reads in sample:</b> {{ sample_data.total_reads | intcomma }} </p>
-      </div>
-
     </div>
     <div class="col-6">
       <div class="alert alert-secondary">
@@ -23,6 +21,7 @@
   </div>
 </div>
 <br>
+{% endif %}
 
 
 <table id="fusions-table" class="table table-striped table-hover">

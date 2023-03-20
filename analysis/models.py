@@ -74,15 +74,15 @@ class Panel(models.Model):
     dna_or_rna = models.CharField(max_length=3, choices=TYPE_CHOICES) # TODO - remove
     assay = models.CharField(max_length=1, choices=ASSAY_CHOICES)
 
-    # depth of coverage settings
-    depth_cutoffs = models.CharField(max_length=50, blank=True, null=True)
-    show_myeloid_gaps_summary = models.BooleanField(default=False)
-
     # snv settings
     show_snvs = models.BooleanField()
+    show_myeloid_gaps_summary = models.BooleanField(default=False)
+    depth_cutoffs = models.CharField(max_length=50, blank=True, null=True)
+    vaf_cutoff = models.DecimalField(decimal_places=5, max_digits=10, blank=True, null=True)
 
     # fusion settings
     show_fusions = models.BooleanField()
+    show_fusion_coverage = models.BooleanField()
 
     class Meta:
         unique_together = ('panel_name', 'version', 'assay')
