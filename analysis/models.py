@@ -89,6 +89,9 @@ class Panel(models.Model):
     class Meta:
         unique_together = ('panel_name', 'version', 'assay')
 
+    def __str__(self):
+        return f'{self.pretty_print} (v{self.version})'
+
 
 class SampleAnalysis(models.Model):
     """

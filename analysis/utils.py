@@ -59,7 +59,7 @@ def get_samples(samples):
                 'dna_rna': s.sample.sample_type,
                 'panels': [{
                     'analysis_id': s.pk,
-                    'panel': s.panel.panel_name,
+                    'panel': s.panel,
                     'checks': s.get_checks(),
                 }]
             }
@@ -68,7 +68,7 @@ def get_samples(samples):
         else:
             sample_dict[sample_id]['panels'].append({
                     'analysis_id': s.pk,
-                    'panel': s.panel.panel_name,
+                    'panel': s.panel,
                     'checks': s.get_checks(),
                 }
             )
