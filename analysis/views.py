@@ -517,7 +517,7 @@ def analysis_sheet(request, sample_id):
 
 
     # render the pages
-    return render(request, 'analysis/analysis_sheet_dna.html', context)
+    return render(request, 'analysis/analysis_sheet.html', context)
 
 
 def ajax(request):
