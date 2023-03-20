@@ -325,8 +325,14 @@
       <tr>
         <td>{{ forloop.counter }}</td>
         <td>{{ c.user }}<br>{{ c.signoff_time }}</td>
-        <td><i>Patient info check:</i> {{ c.patient_info_check }}
+        <td>
+          <i>Patient info check:</i> {{ c.patient_info_check }}
+        {% if sample_data.panel_obj.show_snvs %}
           <br><i>NTC check:</i> {{ c.coverage_ntc_check }}
+        {% endif %}
+        {% if sample_data.panel_obj.manual_review_required %}
+          <br><i>Manual variant check:</i> {{ c.manual_review_check }}
+        {% endif %}
         </td>
         <td>
           <i>Coverage:</i> {{ c.coverage_comment | wordwrap:50 | linebreaksbr }}<br>

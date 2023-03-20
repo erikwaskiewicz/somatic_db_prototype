@@ -330,9 +330,12 @@
       <td>{{ c.user }}<br>{{ c.signoff_time }}</td>
       <td>
         <b>Patient info check:</b> {{ c.patient_info_check }}
-        {% if sample_data.panel_obj.show_snvs %}
+      {% if sample_data.panel_obj.show_snvs %}
           <br><b>NTC check:</b> {{ c.coverage_ntc_check }}
-        {% endif %}
+      {% endif %}
+      {% if sample_data.panel_obj.manual_review_required %}
+        <br><b>Manual variant check:</b> {{ c.manual_review_check }}
+      {% endif %}
       </td>
       <td>
         {% if sample_data.panel_obj.show_snvs %}

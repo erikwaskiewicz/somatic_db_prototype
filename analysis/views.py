@@ -434,6 +434,10 @@ def analysis_sheet(request, sample_id):
                 if current_step_obj.patient_info_check == False:
                     context['warning'].append('Did not finalise check - check patient demographics before continuing')
 
+                if sample_data['panel_obj'].manual_review_required:
+                    if not current_step_obj.manual_review_check:
+                        context['warning'].append('Did not finalise check - manual variant review in IGV required, see top of SNVs & indels tab')
+
                 # only enter this loop if there are no warnings so far, otherwise the warnings above get skipped
                 if len(context['warning']) == 0:
                     if next_step == 'Complete check':
