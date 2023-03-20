@@ -54,8 +54,20 @@
       <td>{{ v.fusion_hgvs }}</td>
       <td>{{ v.fusion_supporting_reads }}</td>
       <!--<td>{{ v.reference_reads }}</td>-->
-      <td>{{ v.left_breakpoint }}</td>
-      <td>{{ v.right_breakpoint }}</td>
+      <td>{{ v.left_breakpoint }}
+      {% if v.genome_build == 37 %}
+       <span class = "badge badge-info badge-pill">GRCh{{ v.genome_build }}
+       {% elif v.genome_build == 38 %}
+       <span class = "badge badge-success badge-pill">GRCh{{ v.genome_build }}
+       {% endif %}
+      </td>
+      <td>{{ v.right_breakpoint }}
+      {% if v.genome_build == 37 %}
+       <span class = "badge badge-info badge-pill">GRCh{{ v.genome_build }}
+       {% elif v.genome_build == 38 %}
+       <span class = "badge badge-success badge-pill">GRCh{{ v.genome_build }}
+       {% endif %}
+      </td>
       <td>
         <!--{{ v.this_run.count }} of {{ v.this_run.total }} samples<br>-->
         

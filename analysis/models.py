@@ -79,6 +79,7 @@ class SampleAnalysis(models.Model):
     total_reads = models.IntegerField(blank=True, null=True)
     total_reads_ntc = models.IntegerField(blank=True, null=True)
     percent_reads_ntc = models.CharField(max_length=200, blank=True, null=True)
+    genome_build = models.IntegerField(default=37)
 
     def get_checks(self):
         """
@@ -136,7 +137,6 @@ class Check(models.Model):
     coverage_comment_updated = models.DateTimeField(blank=True, null=True)
     patient_info_check = models.BooleanField(default=False)
     overall_comment = models.CharField(max_length=2000, blank=True)
-    overall_comment_updated = models.DateTimeField(blank=True, null=True)
     signoff_time = models.DateTimeField(blank=True, null=True)
 
 
@@ -145,8 +145,11 @@ class Variant(models.Model):
     Variant info that always stays the same
 
     """
-    genomic_37 = models.CharField(max_length=200, unique=True)
-    genomic_38 = models.CharField(max_length=200, blank=True, null=True)
+    variant = models.CharField(max_length=200)
+    genome_build = models.IntegerField(default=37)
+    
+    class Meta:
+    	unique_together = ('variant','genome_build')
 
 
 class VariantInstance(models.Model):
@@ -175,6 +178,7 @@ class VariantInstance(models.Model):
     in_ntc = models.BooleanField()
     total_count_ntc = models.IntegerField(blank=True, null=True)
     alt_count_ntc = models.IntegerField(blank=True, null=True)
+    gnomad_popmax = models.DecimalField(decimal_places=5, max_digits=10, blank=True, null=True)
     manual_upload = models.BooleanField(default=False)
     final_decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
 
@@ -251,6 +255,7 @@ class VariantList(models.Model):
     )
     name = models.CharField(max_length=50, primary_key=True)
     list_type = models.CharField(max_length=1, choices=TYPE_CHOICES)
+    genome_build = models.IntegerField(default=37)
 
 
 class VariantToVariantList(models.Model):
@@ -339,7 +344,7 @@ class GapsAnalysis(models.Model):
     chr_end = models.CharField(max_length=50)
     pos_end = models.IntegerField()
     coverage_cutoff = models.IntegerField()
-    percent_cosmic = models.IntegerField(blank=True, null=True)
+    percent_cosmic = models.DecimalField(decimal_places=2, max_digits=5, blank=True, null=True)
 
     def genomic(self):
         return f'{self.chr_start}:{self.pos_start}_{self.chr_end}:{self.pos_end}'
@@ -352,6 +357,7 @@ class Fusion(models.Model):
     fusion_genes = models.CharField(max_length=50)
     left_breakpoint = models.CharField(max_length=50)
     right_breakpoint = models.CharField(max_length=50)
+    genome_build = models.IntegerField(default=37)
 
 
 class FusionAnalysis(models.Model):

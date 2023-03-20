@@ -9,6 +9,7 @@ import os
 import csv
 import json
 import pybedtools
+import numpy as np
 
 
 class Command(BaseCommand):
@@ -21,6 +22,7 @@ class Command(BaseCommand):
         parser.add_argument('--panel', nargs=1, type=str, required=True, help='Name of virtual panel applied')
         parser.add_argument('--variants', nargs=1, type=str, required=True, help='Path to variants CSV file')
         parser.add_argument('--coverage', nargs=1, type=str, required=True, help='Path to coverage JSON file')
+        parser.add_argument('--genome', nargs=1, type=str, required=True, help='Reference genome as GRCh37 or GRCh38')
 
 
     @transaction.atomic
@@ -35,11 +37,21 @@ class Command(BaseCommand):
         ws = options['worksheet'][0]
         sample = options['sample'][0]
         panel = options['panel'][0]
+        genome = options['genome'][0]
+        if genome == "GRCh38":
+        	genome_build = 38
+        elif genome == "GRCh37":
+        	genome_build = 37
 
         # hard coded variables
         dna_or_rna = 'DNA'
         assay = 'TSO500'
-        panel_folder = settings.ROI_PATH_DNA
+       
+        if genome_build == 37:
+            panel_folder = settings.ROI_PATH_DNA
+        elif genome_build == 38:
+            panel_folder = settings.ROI_PATH_B38	        
+        
         panel_bed_file = f'{panel_folder}/{panel}.bed' 
 
         # check that inputs are valid
@@ -78,6 +90,7 @@ class Command(BaseCommand):
             worksheet=new_ws,
             sample=new_sample,
             panel=panel_obj,
+            genome_build=genome_build,
         )
         new_sample_analysis.save()
 
@@ -104,8 +117,8 @@ class Command(BaseCommand):
 
                 # variant object is created for all variants across whole panel
                 new_var, created = Variant.objects.get_or_create(
-                    genomic_37 = genomic_coords,
-                    genomic_38 = None,
+                    variant = genomic_coords,
+                    genome_build = genome_build,
                 )
 
                 ## check if variant is within the virtual panel
@@ -119,6 +132,10 @@ class Command(BaseCommand):
                 # if both booleans true, enter loop
                 if overlaps_panel and above_vaf_threshold:
                     print(v)
+                   
+                    #If gnomad frequency not there, make it None
+                    if 'gnomad_popmax_AF' not in v:
+                    	v['gnomad_popmax_AF'] = None
 
                     # make new instance of variant
                     new_var_instance = VariantInstance(
@@ -131,13 +148,17 @@ class Command(BaseCommand):
                         total_count = v['depth'],
                         alt_count = v['alt_reads'],
                         in_ntc = v['in_ntc'],
+                        gnomad_popmax = v['gnomad_popmax_AF'],
                     )
-
-                    # add NTC read counts if the variant is seen in the NTC
+                    
+                    # add NTC read counts if the variant is seen in the NTC. For new database had to convert string to boolean
+                    if v['in_ntc'] == "False":
+                        v['in_ntc'] = False
+                        
                     if v['in_ntc']:
                         new_var_instance.total_count_ntc = v['ntc_depth']
                         new_var_instance.alt_count_ntc = v['ntc_alt_reads']
-
+                      
                     new_var_instance.save()
 
                     # put on panel
@@ -211,8 +232,18 @@ class Command(BaseCommand):
                 )
                 new_regions_obj.save()
         
-            # TODO - add cosmic to this when integrated into pipeline
+            #Gaps 135x
             for gap in values['gaps_135']:
+                
+                #if there is no cosmic percent or count present, make this 0 (so adding two numbers to the list)
+                if len(gap) < 6:
+                	gap.append(0)
+                	gap.append(0)
+                	
+                #if cosmic percent is NaN (because no cosmic annotations for that referral), make it 0 (html displays NA in these cases)
+                if np.isnan(gap[6]):
+                    gap[6]=0
+                
                 new_gap_obj = GapsAnalysis(
                     gene=new_gene_coverage_obj,
                     hgvs_c=gap[3],
@@ -221,11 +252,22 @@ class Command(BaseCommand):
                     chr_end=gap[0],
                     pos_end=gap[2],
                     coverage_cutoff=135,
+                    percent_cosmic=gap[6],
                 )
                 new_gap_obj.save()
 
-
+            #Gaps 270x
             for gap in values['gaps_270']:
+                
+                #if there is no cosmic percent present, make this 0 (so adding two numbers to the list)
+                if len(gap) < 6:
+                	gap.append(0)
+                	gap.append(0)
+            
+                #if cosmic percent is NaN (because no cosmic annotations for that referral), make it 0 (html displays NA in these cases)
+                if np.isnan(gap[6]):
+                    gap[6]=0
+                    
                 new_gap_obj = GapsAnalysis(
                     gene=new_gene_coverage_obj,
                     hgvs_c=gap[3],
@@ -234,5 +276,6 @@ class Command(BaseCommand):
                     chr_end=gap[0],
                     pos_end=gap[2],
                     coverage_cutoff=270,
+                    percent_cosmic=gap[6],
                 )
                 new_gap_obj.save()

@@ -20,6 +20,7 @@ class Command(BaseCommand):
         parser.add_argument('--panel', nargs=1, type=str, required=True, help='Name of virtual panel applied')
         parser.add_argument('--fusions', nargs=1, type=str, required=True, help='Path to variants CSV file')
         parser.add_argument('--coverage', nargs=1, type=str, required=True, help='Path to coverage JSON file')
+        parser.add_argument('--genome', nargs=1, type=str, required=True, help='Reference genome as GRCh37 or GRCh38')
 
 
     @transaction.atomic
@@ -32,6 +33,11 @@ class Command(BaseCommand):
         ws = options['worksheet'][0]
         sample = options['sample'][0]
         panel = options['panel'][0]
+        genome = options['genome'][0]
+        if genome == "GRCh38":
+        	genome_build = 38
+        elif genome == "GRCh37":
+        	genome_build = 37
 
         # TODO temporary - input coverage values as comma seperated list
         total_cov, ntc_cov = options['coverage'][0].split(',')
@@ -85,6 +91,7 @@ class Command(BaseCommand):
             total_reads=total_cov,
             total_reads_ntc=ntc_cov,
             percent_reads_ntc=percent_reads_ntc,
+            genome_build=genome_build,
         )
         new_sample_analysis.save()
 
@@ -123,6 +130,7 @@ class Command(BaseCommand):
                     fusion_genes = fusion,
                     left_breakpoint = f['left_breakpoint'],
                     right_breakpoint = f['right_breakpoint'],
+                    genome_build = genome_build
                 )
 
 

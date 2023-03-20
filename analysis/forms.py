@@ -239,7 +239,12 @@ class AddNewPolyForm(forms.Form):
     Add a variant to the poly list
 
     """
+    GENOME_CHOICES = (
+        ('37', 'GRCh37'),
+        ('38', 'GRCh38'),
+    )
     variant = forms.CharField()
+    genome = forms.ChoiceField(choices=GENOME_CHOICES)
     comment = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 4}),
         label='Comments'
