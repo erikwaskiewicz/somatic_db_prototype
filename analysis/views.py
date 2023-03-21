@@ -458,7 +458,7 @@ def analysis_sheet(request, sample_id):
                             variants_match = True
                             non_matching_variants = []
 
-                            # TODO - replace with true/flase, same below
+                            # check for variants/fusions with disagreeing checks
                             if sample_data['panel_obj'].show_snvs == True:
                                 for variant in context['variant_data']['variant_calls']:
                                     if not variant['latest_checks_agree']:

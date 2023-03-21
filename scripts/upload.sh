@@ -2,7 +2,7 @@
 echo -e "INFO\t"$(date +"%Y-%m-%d %T.%6N")"\tupload.sh\tFound new samples file - "$1
 
 for s in $(cat $1); do
-    # todo - get path that file is located to replace hardcoded paths
+    # get path where samples file is located
     data_folder="$PWD"/"$(dirname $1)"
     data_file=$(basename $1)
 
@@ -62,7 +62,6 @@ for s in $(cat $1); do
       --fusion_coverage "$cov","$ntc_cov" \
       --debug False
 
-    # log to terminal - TODO - captire error code?? add logging to python script
     echo "------------------------------------------------------------------------------------------------------------"
 
 done

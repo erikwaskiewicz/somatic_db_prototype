@@ -417,7 +417,7 @@ def get_variant_info(sample_data, sample_obj):
             'variant_instance_pk': sample_variant.variant_instance.pk,
             'genomic': variant_obj.variant,
             'genome_build': variant_obj.genome_build,
-            'igv_coords': variant_obj.variant.strip('ACGT>'), #TODO what about dels?
+            'igv_coords': variant_obj.variant.strip('ACGT>'),
             'gene': sample_variant.variant_instance.gene,
             'exon': sample_variant.variant_instance.exon,
             'hgvs_c': sample_variant.variant_instance.hgvs_c,
