@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'somatic_variant_db.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 
-DB_INSTANCE = 'local'
+DB_INSTANCE = 'cluster'
 if DB_INSTANCE == 'local':
 
 	DATABASES = {
