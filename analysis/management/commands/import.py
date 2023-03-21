@@ -500,7 +500,7 @@ class Command(BaseCommand):
                         if debug:
                             print(f'DEBUG\t{datetime.now()}\timport.py\tAdding fusion: {f}')
 
-                        #TODO change hard coded variables - they should be optional
+                        # add fusion instance object
                         new_fusion_instance = FusionAnalysis(
                             sample = new_sample_analysis,
                             fusion_genes = new_fusion,
@@ -509,13 +509,14 @@ class Command(BaseCommand):
                             fusion_caller = f['type'],
                             in_ntc = f['in_ntc'],
                         )
-                        # splice variants only have one reference value, fusions have two (one per gene)
-                        if f['type'] == 'Fusion':
-                            # reference reads 2 isnt always included if the fusion is intragenic
-                            if f['reference_reads_2'] != 'NA':
-                                new_fusion_instance.ref_reads_2 = f['reference_reads_2']
+                        # some variables aren't always included in pipeline output (particularly for splice variants)
+                        if f['reference_reads_2'] not in ['', 'NA']:
+                            new_fusion_instance.ref_reads_2 = f['reference_reads_2']
+                        if f['fusion_score'] != '':
                             new_fusion_instance.fusion_score = f['fusion_score']
+                        if f['split_reads'] != '':
                             new_fusion_instance.split_reads = f['split_reads']
+                        if f['split_reads'] != '':
                             new_fusion_instance.spanning_reads = f['spanning_reads']
                         new_fusion_instance.save()
 
