@@ -178,7 +178,7 @@
     </thead>
 
     <tbody>
-      {% for gene, values in coverage_data.items %}
+      {% for gene, values in coverage_data.regions.items %}
         {% for gap in values.gaps_135 %}
         <tr>
           <td>{{ gap.hgvs_c }}</td>
@@ -199,7 +199,7 @@
     </thead>
 
     <tbody>
-      {% for gene, values in coverage_data.items %}
+      {% for gene, values in coverage_data.regions.items %}
         {% for gap in values.gaps_270 %}
         <tr>
           <td>{{ gap.hgvs_c }}</td>
@@ -220,7 +220,7 @@
     </thead>
 
     <tbody>
-      {% for gene, values in coverage_data.items %}
+      {% for gene, values in coverage_data.regions.items %}
         {% for gap in values.gaps_1000 %}
         <tr>
           <td>{{ gap.hgvs_c }}</td>

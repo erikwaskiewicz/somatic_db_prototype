@@ -628,8 +628,9 @@ def get_coverage_data(sample_obj, depth_cutoffs):
         # combine gaps and regions dictionaries
         gene_dict = {
             'av_coverage': gene_coverage_obj.av_coverage,
-            'percent_270x': gene_coverage_obj.percent_270x,
             'percent_135x': gene_coverage_obj.percent_135x,
+            'percent_270x': gene_coverage_obj.percent_270x,
+            'percent_1000x': gene_coverage_obj.percent_1000x,
             'av_ntc_coverage': gene_coverage_obj.av_ntc_coverage,
             'percent_ntc': gene_coverage_obj.percent_ntc,
             'regions': regions,

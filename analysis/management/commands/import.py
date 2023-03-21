@@ -49,7 +49,12 @@ class Command(BaseCommand):
         """
         Use in coverage upload section to add specific gaps for a list in the coverage JSON
         """
-        # TODO - any error handing for cosmic?
+        # error handling for COSMIC
+        if gap['percent_cosmic'] == 'N/A':
+            perc_cosmic = None
+        else:
+            perc_cosmic = gap['percent_cosmic']
+
         new_gap_obj = GapsAnalysis(
             gene = new_gene_coverage_obj,
             hgvs_c = gap['hgvs_c'],
@@ -58,7 +63,7 @@ class Command(BaseCommand):
             chr_end = gap['chr'],
             pos_end = gap['pos_end'],
             coverage_cutoff = cutoff,
-            percent_cosmic = gap['percent_cosmic'],
+            percent_cosmic = perc_cosmic,
         )
         new_gap_obj.save()
 
@@ -205,9 +210,9 @@ class Command(BaseCommand):
             # get values from argparse and handle missing values
             total_cov, ntc_cov = options['fusion_coverage'][0].split(',')
             if total_cov == 'NA':
-                total_cov == 0:
+                total_cov = 0
             if ntc_cov == 'NA':
-                ntc_cov == 0:
+                ntc_cov = 0
 
             # add to model
             new_sample_analysis.total_reads = total_cov
@@ -380,7 +385,7 @@ class Command(BaseCommand):
                         self.add_regions_from_list(r, 'H', new_gene_coverage_obj)
 
                     elif isinstance(r, dict):
-                        self.add_regions_from_dict()
+                        self.add_regions_from_dict(r, 'H', new_gene_coverage_obj)
 
                 # genescreen regions
                 for r in values['genescreen_regions']:
@@ -388,7 +393,7 @@ class Command(BaseCommand):
                         self.add_regions_from_list(r, 'G', new_gene_coverage_obj)
 
                     elif isinstance(r, dict):
-                        self.add_regions_from_dict()
+                        self.add_regions_from_dict(r, 'G', new_gene_coverage_obj)
 
                 # gaps 135x
                 if '135' in coverage_thresholds:
@@ -397,7 +402,7 @@ class Command(BaseCommand):
                             self.add_gaps_from_list(gap, '135', new_gene_coverage_obj)
 
                         elif isinstance(r, dict):
-                            self.add_gaps_from_dict()
+                            self.add_gaps_from_dict(gap, '135', new_gene_coverage_obj)
 
                 # gaps 270x
                 if '270' in coverage_thresholds:
@@ -406,7 +411,7 @@ class Command(BaseCommand):
                             self.add_gaps_from_list(gap, '270', new_gene_coverage_obj)
 
                         elif isinstance(r, dict):
-                            self.add_gaps_from_dict()
+                            self.add_gaps_from_dict(gap, '270', new_gene_coverage_obj)
 
                 # gaps 1000x
                 if '1000' in coverage_thresholds:
@@ -415,7 +420,7 @@ class Command(BaseCommand):
                             self.add_gaps_from_list(gap, '1000', new_gene_coverage_obj)
 
                         elif isinstance(r, dict):
-                            self.add_gaps_from_dict()
+                            self.add_gaps_from_dict(gap, '1000', new_gene_coverage_obj)
 
             # logging
             print(f'INFO\t{datetime.now()}\timport.py\tFinished uploading coverage data successfully')
