@@ -54,14 +54,9 @@ class Panel(models.Model):
     """
     A virtual panel
     TODO - add enough info to kick off a reanalysis from within the db
-    e.g. path to BED, ?panel version number
+    e.g. path to BED
 
     """
-    # TODO - this will be removed along with dna_or_rna when deployed and replaced by assay
-    TYPE_CHOICES = (
-        ('DNA', 'DNA'),
-        ('RNA', 'RNA'),
-    )
     ASSAY_CHOICES = (
         ('1', 'TSO500 DNA'),
         ('2', 'TSO500 RNA'),
@@ -71,14 +66,13 @@ class Panel(models.Model):
     pretty_print = models.CharField(max_length=100)
     version = models.IntegerField()
     live = models.BooleanField()
-    dna_or_rna = models.CharField(max_length=3, choices=TYPE_CHOICES) # TODO - remove
     assay = models.CharField(max_length=1, choices=ASSAY_CHOICES)
 
     # snv settings
     show_snvs = models.BooleanField()
     show_myeloid_gaps_summary = models.BooleanField(default=False)
     depth_cutoffs = models.CharField(max_length=50, blank=True, null=True)
-    vaf_cutoff = models.DecimalField(decimal_places=5, max_digits=10, blank=True, null=True)
+    vaf_cutoff = models.DecimalField(decimal_places=5, max_digits=10, blank=True, null=True) # formatted as e.g. 1.4%, not 0.014
     manual_review_required = models.BooleanField(default=False)
     manual_review_desc = models.CharField(max_length=200, blank=True, null=True)
 
@@ -156,7 +150,7 @@ class Check(models.Model):
         ('F', 'Fail'),
     )
     analysis = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
-    stage = models.CharField(max_length=3, choices=STAGE_CHOICES)
+    stage = models.CharField(max_length=3, choices=STAGE_CHOICES) # TODO - this isnt really needed anymore
     status = models.CharField(max_length=1, choices=STATUS_CHOICES)
     user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True)
     coverage_ntc_check = models.BooleanField(default=False)
