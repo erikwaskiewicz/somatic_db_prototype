@@ -174,7 +174,7 @@ class Command(BaseCommand):
 
         # get panel object
         panel = options['panel'][0]
-        panel_obj = Panel.objects.get(panel_name=panel, assay=assay_choices[assay], live=True)
+        panel_obj = Panel.objects.get(panel_name=panel, assay=assay_choices[assay], live=True, genome_build=genome_build)
 
         # make run
         new_run, created = Run.objects.get_or_create(run_id=run_id)
@@ -201,12 +201,17 @@ class Command(BaseCommand):
         )
         # add num reads if in panel settings
         if panel_obj.show_fusion_coverage:
+
+            # get values from argparse and handle missing values
             total_cov, ntc_cov = options['fusion_coverage'][0].split(',')
+            if total_cov == 'NA':
+                total_cov == 0:
+            if ntc_cov == 'NA':
+                ntc_cov == 0:
+
+            # add to model
             new_sample_analysis.total_reads = total_cov
             new_sample_analysis.total_reads_ntc = ntc_cov
-            # TODO - round better and handle zero division error
-            percent_reads_ntc=int((int(ntc_cov) / int(total_cov))*100)
-            new_sample_analysis.percent_reads_ntc = percent_reads_ntc
 
         new_sample_analysis.save()
 

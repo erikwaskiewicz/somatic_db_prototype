@@ -50,8 +50,9 @@ def make_bedfile_path(instance, filename):
     Function to generate filepath when adding bed file to Panel model below
     """
     filepath = '/'.join([
-        'roi', 
-        instance.get_assay_display().replace(' ', '_'), 
+        'roi',
+        f'b{instance.genome_build}',
+        instance.get_assay_display().replace(' ', '_'),
         f'{instance.panel_name}_variants_b{instance.genome_build}_v{instance.version}.bed'
     ])
     return filepath
@@ -91,7 +92,7 @@ class Panel(models.Model):
     splice_genes = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
-        unique_together = ('panel_name', 'version', 'assay')
+        unique_together = ('panel_name', 'version', 'assay', 'genome_build')
 
     def __str__(self):
         return f'{self.pretty_print} (v{self.version})'
@@ -109,8 +110,20 @@ class SampleAnalysis(models.Model):
     paperwork_check = models.BooleanField(default=False)
     total_reads = models.IntegerField(blank=True, null=True)
     total_reads_ntc = models.IntegerField(blank=True, null=True)
-    percent_reads_ntc = models.CharField(max_length=200, blank=True, null=True)
     genome_build = models.IntegerField(default=37)
+
+    def percent_reads_ntc(self):
+        """
+        Calculate percent NTC from the total reads in the sample and NTC
+        """
+        if self.total_reads == 0:
+            perc_ntc = 100
+        elif self.total_reads_ntc == 0:
+            perc_ntc = 0
+        else:
+            perc_ntc_full = decimal.Decimal(self.total_reads_ntc / self.total_reads) * 100
+            perc_ntc = perc_ntc_full.quantize(decimal.Decimal('.01'), rounding = decimal.ROUND_UP)
+        return perc_ntc
 
     def get_checks(self):
         """
