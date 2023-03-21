@@ -116,7 +116,9 @@ class SampleAnalysis(models.Model):
         """
         Calculate percent NTC from the total reads in the sample and NTC
         """
-        if self.total_reads == 0:
+        if self.total_reads == None or self.total_reads_ntc == None:
+            perc_ntc = None
+        elif self.total_reads == 0:
             perc_ntc = 100
         elif self.total_reads_ntc == 0:
             perc_ntc = 0
