@@ -148,15 +148,9 @@ class Command(BaseCommand):
         # check assay is in list and use to extract variables
         assay = options['assay'][0]
         assay_choices = {
-            'TSO500_DNA': {
-                'model_key': '1',
-            },
-            'TSO500_RNA': {
-                'model_key': '2',
-            },
-            'TSO500_ctDNA': {
-                'model_key': '3',
-            },
+            'TSO500_DNA': '1',
+            'TSO500_RNA': '2',
+            'TSO500_ctDNA': '3',
         }
         if assay not in assay_choices.keys():
             print(f'ERROR\t{datetime.now()}\timport.py\tUnknown assay - {assay}')
@@ -180,7 +174,7 @@ class Command(BaseCommand):
 
         # get panel object TODO - add error if doesnt exist
         panel = options['panel'][0]
-        panel_obj = Panel.objects.get(panel_name=panel, assay=assay_choices[assay]['model_key'], live=True) # TODO need to map these to assay choices in model
+        panel_obj = Panel.objects.get(panel_name=panel, assay=assay_choices[assay], live=True)
 
         # make run
         new_run, created = Run.objects.get_or_create(run_id=run_id)

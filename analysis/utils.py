@@ -56,7 +56,6 @@ def get_samples(samples):
 
             sample_dict[sample_id] = {
                 'sample_id': sample_id,
-                'dna_rna': s.sample.sample_type,
                 'panels': [{
                     'analysis_id': s.pk,
                     'panel': s.panel,
@@ -128,19 +127,26 @@ def signoff_check(user, current_step_obj, sample_obj, status='C', complete=False
     Signs off a check, returns true if successful, returns false if not, along with an error message
 
     """
-    # get all variant checks for the sample
-    sample_type = sample_obj.sample.sample_type
-    if sample_type == 'DNA':
-        variant_checks = VariantCheck.objects.filter(check_object=current_step_obj)
-    elif sample_type == 'RNA':
-        variant_checks = FusionCheck.objects.filter(check_object=current_step_obj)
+    # get all SNV checks for the sample
+    if sample_obj.panel.show_snvs:
+        snv_checks = VariantCheck.objects.filter(check_object=current_step_obj)
 
-    # make sure that none of the variant checks are still pending
-    # this trigers view to render the error on the page, skip this validation for failed samples
-    if status != 'F':
-        for v in variant_checks:
-            if v.decision == '-':
-                return False, 'Did not finalise check - not all variants have been checked'
+        # make sure that none of the variant checks are still pending
+        # this trigers view to render the error on the page, skip this validation for failed samples
+        if status != 'F':
+            for v in snv_checks:
+                if v.decision == '-':
+                    return False, 'Did not finalise check - not all SNVs have been checked'
+
+    # get all fusion checks for the sample
+    if sample_obj.panel.show_fusions:
+            fusion_checks = FusionCheck.objects.filter(check_object=current_step_obj)
+            # make sure that none of the variant checks are still pending
+            # this trigers view to render the error on the page, skip this validation for failed samples
+            if status != 'F':
+                for v in fusion_checks:
+                    if v.decision == '-':
+                        return False, 'Did not finalise check - not all fusions have been checked'
 
     # commit to database if its the last check
     if complete:
@@ -149,38 +155,57 @@ def signoff_check(user, current_step_obj, sample_obj, status='C', complete=False
         out_list = []
 
         # load in variant list depending on whether its a DNA or RNA sample
-        if sample_type == 'DNA':
+        if sample_obj.panel.show_snvs:
             variants = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
-        elif sample_type == 'RNA':
+
+            # loop through all variants
+            for v in variants:
+
+                # get all checks for that variant
+                variant_checks = v.get_all_checks()
+                variant_checks_list = [ v.decision for v in variant_checks ]
+
+                # function to validate checks
+                submitted, out = complete_checks(variant_checks_list)
+
+                # throw error if validation fails, output will be error message
+                if not submitted:
+                    return False, out
+
+                # if validation passes, get the database object add to out_list for committing to the database at the end
+                else:
+                    variant_instance_obj = v.variant_instance
+                    out_list.append([variant_instance_obj, out])
+
+        if sample_obj.panel.show_fusions:
             variants = FusionPanelAnalysis.objects.filter(sample_analysis=sample_obj)
 
-        # loop through all variants
-        for v in variants:
+            # loop through all variants
+            for v in variants:
 
-            # get all checks for that variant
-            variant_checks = v.get_all_checks()
-            variant_checks_list = [ v.decision for v in variant_checks ]
+                # get all checks for that variant
+                variant_checks = v.get_all_checks()
+                variant_checks_list = [ v.decision for v in variant_checks ]
 
-            # function to validate checks
-            submitted, out = complete_checks(variant_checks_list)
+                # function to validate checks
+                submitted, out = complete_checks(variant_checks_list)
 
-            # throw error if validation fails, output will be error message
-            if not submitted:
-                return False, out
+                # throw error if validation fails, output will be error message
+                if not submitted:
+                    return False, out
 
-            # if validation passes, get the database object add to out_list for committing to the database at the end
-            else:
-                if sample_type == 'DNA':
-                    variant_instance_obj = v.variant_instance
-                elif sample_type == 'RNA':
+                # if validation passes, get the database object add to out_list for committing to the database at the end
+                else:
                     variant_instance_obj = v.fusion_instance
-                out_list.append([variant_instance_obj, out])
+                    out_list.append([variant_instance_obj, out])
+
 
         # commit to database, will only run if there are no errors so that data isnt half added to the database
         for variant_instance_obj, final_decision in out_list:
             variant_instance_obj.final_decision = final_decision
             variant_instance_obj.save()
 
+        
     # signoff current check
     now = timezone.now()
     current_step_obj.user = user
@@ -208,7 +233,7 @@ def make_next_check(sample_obj, next_step):
     # save object
     new_check_obj.save()
 
-    if sample_obj.sample.sample_type == 'DNA':
+    if sample_obj.panel.show_snvs:
         # make check objects for all variants
         variant_objects = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
         for v in variant_objects:
@@ -217,8 +242,8 @@ def make_next_check(sample_obj, next_step):
                 check_object = new_check_obj,
             )
             new_variant_check.save()
-
-    elif sample_obj.sample.sample_type == 'RNA':
+    
+    if sample_obj.panel.show_fusions:
         # make check objects for all variants
         variant_objects = FusionPanelAnalysis.objects.filter(sample_analysis=sample_obj)
         for v in variant_objects:
@@ -279,11 +304,9 @@ def get_sample_info(sample_obj):
     Get info for a specific sample to generate a part of the sample analysis context dictionary
 
     """
-    #TODO - maybe delete dna/rna?
     sample_data = {
         'sample_pk': sample_obj.pk,
         'assay': sample_obj.panel.assay,
-        'dna_or_rna': sample_obj.sample.sample_type,
         'sample_id': sample_obj.sample.sample_id,
         'sample_name': sample_obj.sample.sample_name,
         'worksheet_id': sample_obj.worksheet.ws_id,

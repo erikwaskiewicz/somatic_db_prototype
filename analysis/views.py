@@ -223,7 +223,7 @@ def analysis_sheet(request, sample_id):
         context['myeloid_coverage_summary'] = myeloid_coverage_summary
 
     # RNA workflow
-    elif sample_data['panel_obj'].show_fusions == True:
+    if sample_data['panel_obj'].show_fusions == True:
         context['fusion_data'] = get_fusion_info(sample_data, sample_obj)
 
         

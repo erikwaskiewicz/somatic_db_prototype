@@ -1,5 +1,3 @@
-# TODO activate env
-#conda activate somatic_variant_db
 
 echo -e "INFO\t"$(date +"%Y-%m-%d %T.%6N")"\tupload.sh\tFound new samples file - "$1
 
@@ -13,15 +11,15 @@ for s in $(cat $1); do
     ws=$(echo $s | cut -d, -f2)
     assay=$(echo $s | cut -d, -f3)
     referral=$(echo $s | cut -d, -f4)
+    run=$(echo $s | cut -d, -f5)
+    genome=$(echo $s | cut -d, -f6)
 
     # DNA specific variables
     if [ "$assay" == 'DNA' ]; then 
         assay="TSO500_DNA"
-        run=$(echo $s | cut -d, -f5)
-        genome=$(echo $s | cut -d, -f6)
     fi
 
-    # RNA specific variables - TODO - reorder in pipeline so that run and genome are the same order as DNA
+    # RNA specific variables - TODO-reorder in pipeline so that run and genome are the same order as DNA
     if [ "$assay" == 'RNA' ]; then 
         assay="TSO500_RNA"
         cov=$(echo $s | cut -d, -f5)
@@ -29,8 +27,6 @@ for s in $(cat $1); do
         run=$(echo $s | cut -d, -f7)
         genome=$(echo $s | cut -d, -f8)
     fi
-
-    # TODO - ctdna variables - same as DNA?
 
     # check if run ID not given on sample list, take from command line (so old style upload will still work for older runs). If reference genome not given, make GRCh37 - again for old runs
     if [ -z "$run" ]; then run=$2; fi
@@ -70,5 +66,3 @@ for s in $(cat $1); do
     echo "------------------------------------------------------------------------------------------------------------"
 
 done
-
-#conda deactivate
