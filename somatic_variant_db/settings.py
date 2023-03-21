@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'somatic_variant_db.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 
-DB_INSTANCE = 'cluster'
+DB_INSTANCE = 'local'
 if DB_INSTANCE == 'local':
 
 	DATABASES = {
@@ -153,7 +153,3 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = '/login/'
-
-
-ROI_PATH_DNA = '/home/ew/somatic_db/roi/variant_calling'
-ROI_PATH_B38 = '/home/ew/somatic_db/roi/variant_calling_b38'

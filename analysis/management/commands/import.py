@@ -1,4 +1,3 @@
-
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.conf import settings
@@ -15,12 +14,13 @@ from datetime import datetime
 
 
 class Command(BaseCommand):
-    help = "Import a DNA run"
+    help = "Import a run"
 
 
     def add_gaps_from_list(self, gap, cutoff, new_gene_coverage_obj):
         """
         Use in coverage upload section to add specific gaps for a list in the coverage JSON
+        TODO remove when coverage2json updated, called on lines 390, 400, 410
         """
         #if there is no cosmic percent or count present, make this 0 (so adding two numbers to the list)
         if len(gap) < 6:
@@ -28,8 +28,9 @@ class Command(BaseCommand):
             gap.append(None)
     
         #if cosmic percent is NaN (because no cosmic annotations for that referral), make it 0 (html displays NA in these cases)
-        #if np.isnan(gap[6]):
-        #    gap[6] = None
+        # TODO - test more with gappy samples, this wasnt working earlier
+        if np.isnan(gap[6]):
+            gap[6] = None
             
         new_gap_obj = GapsAnalysis(
             gene = new_gene_coverage_obj,
@@ -65,6 +66,7 @@ class Command(BaseCommand):
     def add_regions_from_list(self, region, hotspot, new_gene_coverage_obj):
         """
         Add specific regions (e.g. exons or codons) and their associated coverages
+        TODO remove this when coverage2json updated, called on lines 372, 381
         """
         new_regions_obj = RegionCoverageAnalysis(
             gene = new_gene_coverage_obj,
@@ -156,14 +158,12 @@ class Command(BaseCommand):
             print(f'ERROR\t{datetime.now()}\timport.py\tUnknown assay - {assay}')
             raise IOError(f'ERROR\tUnknown assay - {assay}')
 
-        # check genome build is in list # TODO pnel folder needs to be more specific
+        # check genome build is in list
         genome = options['genome'][0]
         if genome == 'GRCh38':
             genome_build = 38
-            panel_folder = settings.ROI_PATH_B38
         elif genome == 'GRCh37':
             genome_build = 37
-            panel_folder = settings.ROI_PATH_DNA
         else:
             raise IOError(f'Genome build {genome} is neither GRCh37 or GRCh38')
 
@@ -172,7 +172,7 @@ class Command(BaseCommand):
         # Sample level objects
         # ---------------------------------------------------------------------------------------------------------
 
-        # get panel object TODO - add error if doesnt exist
+        # get panel object
         panel = options['panel'][0]
         panel_obj = Panel.objects.get(panel_name=panel, assay=assay_choices[assay], live=True)
 
@@ -239,8 +239,8 @@ class Command(BaseCommand):
                 print(f'ERROR\t{datetime.now()}\timport.py\t{coverage_file} file does not exist')
                 raise IOError(f'{coverage_file} file does not exist')
 
-            # TODO - attach file to models???
-            panel_bed_file = f'{panel_folder}/{panel}.bed' 
+            # get filepath for bed from panel model
+            panel_bed_file = panel_obj.bed_file.path
             if not os.path.isfile(panel_bed_file):
                 print(f'ERROR\t{datetime.now()}\timport.py\t{panel_bed_file} file does not exist')
                 raise IOError(f'{panel_bed_file} file does not exist')
@@ -371,7 +371,6 @@ class Command(BaseCommand):
 
                 # hotspot regions
                 for r in values['hotspot_regions']:
-                    # TODO - this is for the legacy coverage2json script, remove after its been changed to use dicts
                     if isinstance(r, list):
                         self.add_regions_from_list(r, 'H', new_gene_coverage_obj)
 
@@ -380,7 +379,6 @@ class Command(BaseCommand):
 
                 # genescreen regions
                 for r in values['genescreen_regions']:
-                    # TODO - this is for the legacy coverage2json script, remove after its been changed to use dicts
                     if isinstance(r, list):
                         self.add_regions_from_list(r, 'G', new_gene_coverage_obj)
 
@@ -390,7 +388,6 @@ class Command(BaseCommand):
                 # gaps 135x
                 if '135' in coverage_thresholds:
                     for gap in values['gaps_135']:
-                        # TODO - this is for the legacy coverage2json script, remove after its been changed to use dicts
                         if isinstance(r, list):
                             self.add_gaps_from_list(gap, '135', new_gene_coverage_obj)
 
@@ -400,7 +397,6 @@ class Command(BaseCommand):
                 # gaps 270x
                 if '270' in coverage_thresholds:
                     for gap in values['gaps_270']:
-                        # TODO - this is for the legacy coverage2json script, remove after its been changed to use dicts
                         if isinstance(r, list):
                             self.add_gaps_from_list(gap, '270', new_gene_coverage_obj)
 
@@ -410,7 +406,6 @@ class Command(BaseCommand):
                 # gaps 1000x
                 if '1000' in coverage_thresholds:
                     for gap in values['gaps_1000']:
-                        # TODO - this is for the legacy coverage2json script, remove after its been changed to use dicts
                         if isinstance(r, list):
                             self.add_gaps_from_list(gap, '1000', new_gene_coverage_obj)
 

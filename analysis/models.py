@@ -45,11 +45,22 @@ class Sample(models.Model):
     sample_name_check = models.BooleanField(default=False)
 
 
+def make_bedfile_path(instance, filename):
+    """
+    Function to generate filepath when adding bed file to Panel model below
+    """
+    filepath = '/'.join([
+        'roi', 
+        instance.get_assay_display().replace(' ', '_'), 
+        f'{instance.panel_name}_variants_b{instance.genome_build}_v{instance.version}.bed'
+    ])
+    return filepath
+
+
 class Panel(models.Model):
     """
-    A virtual panel
-    TODO - add enough info to kick off a reanalysis from within the db
-    e.g. path to BED
+    A virtual panel. 
+    Contains all the information needed to apply a panel and display the required types of variants
 
     """
     ASSAY_CHOICES = (
@@ -62,6 +73,7 @@ class Panel(models.Model):
     version = models.IntegerField()
     live = models.BooleanField()
     assay = models.CharField(max_length=1, choices=ASSAY_CHOICES)
+    genome_build = models.IntegerField(default=37)
 
     # snv settings
     show_snvs = models.BooleanField()
@@ -70,7 +82,7 @@ class Panel(models.Model):
     vaf_cutoff = models.DecimalField(decimal_places=5, max_digits=10, blank=True, null=True) # formatted as e.g. 1.4%, not 0.014
     manual_review_required = models.BooleanField(default=False)
     manual_review_desc = models.CharField(max_length=200, blank=True, null=True)
-    #bed file
+    bed_file = models.FileField(upload_to=make_bedfile_path, blank=True, null=True)
 
     # fusion settings
     show_fusions = models.BooleanField()
