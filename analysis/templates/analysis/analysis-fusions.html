@@ -123,7 +123,7 @@
   <!-- button to add new variant in case of miscalled indels -->
   {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail' %}
   <div class="float-right">
-    <button type="button" class="btn btn-success variants-submit" id="variants-submit">Update selections</button>
+    <button type="button" class="btn btn-success fusion-submit" id="fusion-submit">Update selections</button>
   </div>
   <br>
   {% endif %}
@@ -208,7 +208,7 @@
     }
 
     // gather selections from dropdown
-    $(".variants-submit").click(function(){
+    $(".fusion-submit").click(function(){
       var rows = $("#fusions-table").children("tbody").children();
       var selection_dict = {};
 
@@ -216,13 +216,9 @@
         // extract required variables
         var pk = $(rows[i]).children("td.variant-pk").text();
         var genuine_selection = $(rows[i]).children("td.genuine-dropdown").children().val();
-        var tier_selection = $(rows[i]).children("td.tier-dropdown").children().val();
-        var actionable_selection = $(rows[i]).children("td.actionable-dropdown").children().val();
         // compile into dictionary for individual variant
         var d = {
           'genuine_dropdown': genuine_selection,
-          'actionable_dropdown': actionable_selection,
-          'tier_dropdown': tier_selection,
         };
         // add to dictionary for all variants
         selection_dict[pk] = d
@@ -233,6 +229,7 @@
       formData.append('csrfmiddlewaretoken',document.getElementsByName('csrfmiddlewaretoken')[0].value);
       formData.append('selections', JSON.stringify(selection_dict));
       formData.append('sample_pk', "{{ sample_data.sample_pk }}");
+      formData.append('variant_type', "fusion");
 
       $.ajax({
           url: "{% url 'ajax' %}",

@@ -524,11 +524,11 @@ def ajax(request):
 
         sample_pk = request.POST.get('sample_pk')
         sample_obj = SampleAnalysis.objects.get(pk = sample_pk)
-        dna_or_rna = sample_obj.sample.sample_type
 
         selections = json.loads(request.POST.get('selections'))
+        variant_type = request.POST.get('variant_type')
 
-        if dna_or_rna == 'DNA':
+        if variant_type == 'snv':
             for variant in selections:
                 variant_obj = VariantPanelAnalysis.objects.get(pk=variant)
                 current_check = variant_obj.get_current_check()
@@ -537,7 +537,7 @@ def ajax(request):
                 current_check.decision = new_choice
                 current_check.save()
 
-        elif dna_or_rna == 'RNA':
+        elif variant_type == 'fusion':
             for variant in selections:
                 fusion_obj = FusionPanelAnalysis.objects.get(pk=variant)
                 current_check = fusion_obj.get_current_check()
