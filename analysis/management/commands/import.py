@@ -150,15 +150,12 @@ class Command(BaseCommand):
         assay_choices = {
             'TSO500_DNA': {
                 'model_key': '1',
-                'sample_type': 'DNA'
             },
             'TSO500_RNA': {
                 'model_key': '2',
-                'sample_type': 'RNA'
             },
             'TSO500_ctDNA': {
                 'model_key': '3',
-                'sample_type': 'ctDNA'
             },
         }
         if assay not in assay_choices.keys():
@@ -199,7 +196,6 @@ class Command(BaseCommand):
         # make samples
         new_sample, created = Sample.objects.get_or_create(
             sample_id=sample,
-            sample_type=assay_choices[assay]['sample_type'],
         )
 
         # make sample analysis and checks

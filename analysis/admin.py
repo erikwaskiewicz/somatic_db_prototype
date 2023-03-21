@@ -24,8 +24,8 @@ admin.site.register(Worksheet, WorksheetAdmin)
 
 
 class SampleAdmin(admin.ModelAdmin):
-    list_display = ('sample_id', 'sample_name', 'sample_type')
-    search_fields = ['sample_id', 'sample_name', 'sample_type']
+    list_display = ('sample_id', 'sample_name',)
+    search_fields = ['sample_id', 'sample_name',]
 
 admin.site.register(Sample, SampleAdmin)
 

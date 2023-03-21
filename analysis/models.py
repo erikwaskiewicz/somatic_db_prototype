@@ -40,14 +40,9 @@ class Sample(models.Model):
     An individual sample
 
     """
-    TYPE_CHOICES = (
-        ('DNA', 'DNA'),
-        ('RNA', 'RNA'),
-    )
     sample_id = models.CharField(max_length=50, primary_key=True)
     sample_name = models.CharField(max_length=200, blank=True, null=True)
     sample_name_check = models.BooleanField(default=False)
-    sample_type = models.CharField(max_length=3, choices=TYPE_CHOICES)
 
 
 class Panel(models.Model):
