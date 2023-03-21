@@ -17,6 +17,98 @@ from datetime import datetime
 class Command(BaseCommand):
     help = "Import a DNA run"
 
+
+    def add_gaps_from_list(self, gap, cutoff, new_gene_coverage_obj):
+        """
+        Use in coverage upload section to add specific gaps for a list in the coverage JSON
+        """
+        #if there is no cosmic percent or count present, make this 0 (so adding two numbers to the list)
+        if len(gap) < 6:
+            gap.append(None)
+            gap.append(None)
+    
+        #if cosmic percent is NaN (because no cosmic annotations for that referral), make it 0 (html displays NA in these cases)
+        #if np.isnan(gap[6]):
+        #    gap[6] = None
+            
+        new_gap_obj = GapsAnalysis(
+            gene = new_gene_coverage_obj,
+            hgvs_c = gap[3],
+            chr_start = gap[0],
+            pos_start = gap[1],
+            chr_end = gap[0],
+            pos_end = gap[2],
+            coverage_cutoff = cutoff,
+            percent_cosmic = gap[6],
+        )
+        new_gap_obj.save()
+
+
+    def add_gaps_from_dict(self, gap, cutoff, new_gene_coverage_obj):
+        """
+        Use in coverage upload section to add specific gaps for a list in the coverage JSON
+        """
+        # TODO - any error handing for cosmic?
+        new_gap_obj = GapsAnalysis(
+            gene = new_gene_coverage_obj,
+            hgvs_c = gap['hgvs_c'],
+            chr_start = gap['chr'],
+            pos_start = gap['pos_start'],
+            chr_end = gap['chr'],
+            pos_end = gap['pos_end'],
+            coverage_cutoff = cutoff,
+            percent_cosmic = gap['percent_cosmic'],
+        )
+        new_gap_obj.save()
+
+
+    def add_regions_from_list(self, region, hotspot, new_gene_coverage_obj):
+        """
+        Add specific regions (e.g. exons or codons) and their associated coverages
+        """
+        new_regions_obj = RegionCoverageAnalysis(
+            gene = new_gene_coverage_obj,
+            hgvs_c = region[3],
+            chr_start = region[0],
+            pos_start = region[1],
+            chr_end = region[0],
+            pos_end = region[2],
+            hotspot = hotspot,
+            average_coverage = region[4],
+            percent_135x = region[6],
+            percent_270x = region[5],
+            ntc_coverage = region[7],
+            percent_ntc = region[8],
+        )
+        new_regions_obj.save()
+
+
+    def add_regions_from_dict(self, region, hotspot, new_gene_coverage_obj):
+        """
+        Add specific regions (e.g. exons or codons) and their associated coverages
+        """
+        percent_135x = region.get('percent_135', None)
+        percent_270x = region.get('percent_270', None)
+        percent_1000x = region.get('percent_1000', None)
+
+        new_regions_obj = RegionCoverageAnalysis(
+            gene = new_gene_coverage_obj,
+            hgvs_c = region['hgvs_c'],
+            chr_start = region['chr'],
+            pos_start = region['pos_start'],
+            chr_end = region['chr'],
+            pos_end = region['pos_end'],
+            hotspot = hotspot,
+            average_coverage = region['average_coverage'],
+            percent_135x = percent_135x,
+            percent_270x = percent_270x,
+            percent_1000x = percent_1000x,
+            ntc_coverage = region['ntc_coverage'],
+            percent_ntc = region['percent_ntc'],
+        )
+        new_regions_obj.save()
+
+
     def add_arguments(self, parser):
         parser.add_argument('--run', nargs=1, type=str, required=True, help='Run ID')
         parser.add_argument('--worksheet', nargs=1, type=str, required=True, help='Worksheet')
@@ -33,7 +125,6 @@ class Command(BaseCommand):
         # fusion only
         parser.add_argument('--fusions', nargs=1, type=str, required=False, help='Path to fusions CSV file')
         parser.add_argument('--fusion_coverage', nargs=1, type=str, required=False, help='sample and NTC coverage, seperated by commas')
-
 
 
     @transaction.atomic
@@ -142,33 +233,35 @@ class Command(BaseCommand):
         # ---------------------------------------------------------------------------------------------------------
         if panel_obj.show_snvs:
 
+            # counter for logging
+            snv_counter = 0
+            print(f'INFO\t{datetime.now()}\timport.py\tUploading SNVs...')
+
+            # files from argparse
             snvs_file = options['snvs'][0]
             coverage_file = options['snv_coverage'][0]
 
             # check that inputs are valid
             if not os.path.isfile(snvs_file):
+                print(f'ERROR\t{datetime.now()}\timport.py\t{snvs_file} file does not exist')
                 raise IOError(f'{snvs_file} file does not exist')
             if not os.path.isfile(coverage_file):
+                print(f'ERROR\t{datetime.now()}\timport.py\t{coverage_file} file does not exist')
                 raise IOError(f'{coverage_file} file does not exist')
 
             # TODO - attach file to models???
             panel_bed_file = f'{panel_folder}/{panel}.bed' 
             if not os.path.isfile(panel_bed_file):
+                print(f'ERROR\t{datetime.now()}\timport.py\t{panel_bed_file} file does not exist')
                 raise IOError(f'{panel_bed_file} file does not exist')
 
             # open bed file object
             panel_bed = pybedtools.BedTool(panel_bed_file)
 
-
-
-
-            # counter for logging
-            snv_counter = 0
-            print(f'INFO\t{datetime.now()}\timport.py\tUploading SNVs...')
-
-            # make variants and variant checks
+            # pull cutoff from panel object
             vaf_threshold = panel_obj.vaf_cutoff
 
+            # make variants and variant checks
             with open(snvs_file) as f:
                 reader = csv.DictReader(f, delimiter='\t')
 
@@ -218,10 +311,11 @@ class Command(BaseCommand):
                             gnomad_popmax = v['gnomad_popmax_AF'],
                         )
                         
-                        # add NTC read counts if the variant is seen in the NTC. For new database had to convert string to boolean #TODO - do in reverse?
-                        if v['in_ntc'] == "False":
+                        # For new database had to convert string to boolean
+                        if v['in_ntc'] == 'False':
                             v['in_ntc'] = False
-                            
+                        
+                        # add NTC read counts if the variant is seen in the NTC
                         if v['in_ntc']:
                             new_var_instance.total_count_ntc = v['ntc_depth']
                             new_var_instance.alt_count_ntc = v['ntc_alt_reads']
@@ -248,7 +342,7 @@ class Command(BaseCommand):
                             print(f'DEBUG\t{datetime.now()}\timport.py\tVariant added successfully')
 
             # logging
-            print(f'INFO\t{datetime.now()}\timport.py\tFinished uploading successfully - added {snv_counter} variant(s)')
+            print(f'INFO\t{datetime.now()}\timport.py\tFinished uploading SNVs successfully - added {snv_counter} variant(s)')
             print(f'INFO\t{datetime.now()}\timport.py\tUploading coverage data...')
 
 
@@ -285,120 +379,56 @@ class Command(BaseCommand):
                 )
                 new_gene_coverage_obj.save()
 
-
-                # hotspot regions - TODO different coverage values - not sure this works without being a dict
+                # hotspot regions
                 for r in values['hotspot_regions']:
-                    new_regions_obj = RegionCoverageAnalysis(
-                        gene=new_gene_coverage_obj,
-                        hgvs_c=r[3],
-                        chr_start=r[0],
-                        pos_start=r[1],
-                        chr_end=r[0],
-                        pos_end=r[2],
-                        hotspot='H',
-                        average_coverage=r[4],
-                        percent_270x=r[5],
-                        percent_135x=r[6],
-                        ntc_coverage=r[7],
-                        percent_ntc=r[8],
-                    )
-                    new_regions_obj.save()
+                    # TODO - this is for the legacy coverage2json script, remove after its been changed to use dicts
+                    if isinstance(r, list):
+                        self.add_regions_from_list(r, 'H', new_gene_coverage_obj)
+
+                    elif isinstance(r, dict):
+                        self.add_regions_from_dict()
 
                 # genescreen regions
                 for r in values['genescreen_regions']:
-                    new_regions_obj = RegionCoverageAnalysis(
-                        gene=new_gene_coverage_obj,
-                        hgvs_c=r[3],
-                        chr_start=r[0],
-                        pos_start=r[1],
-                        chr_end=r[0],
-                        pos_end=r[2],
-                        hotspot='G',
-                        average_coverage=r[4],
-                        percent_270x=r[5],
-                        percent_135x=r[6],
-                        ntc_coverage=r[7],
-                        percent_ntc=r[8],
-                    )
-                    new_regions_obj.save()
-            
+                    # TODO - this is for the legacy coverage2json script, remove after its been changed to use dicts
+                    if isinstance(r, list):
+                        self.add_regions_from_list(r, 'G', new_gene_coverage_obj)
+
+                    elif isinstance(r, dict):
+                        self.add_regions_from_dict()
+
                 # gaps 135x
                 if '135' in coverage_thresholds:
                     for gap in values['gaps_135']:
-                        
-                        #if there is no cosmic percent or count present, make this 0 (so adding two numbers to the list)
-                        if len(gap) < 6:
-                            gap.append(None)
-                            gap.append(None)
-                            
-                        #if cosmic percent is NaN (because no cosmic annotations for that referral), make it 0 (html displays NA in these cases)
-                        #if np.isnan(gap[6]):
-                        #    gap[6] = None
-                        
-                        new_gap_obj = GapsAnalysis(
-                            gene=new_gene_coverage_obj,
-                            hgvs_c=gap[3],
-                            chr_start=gap[0],
-                            pos_start=gap[1],
-                            chr_end=gap[0],
-                            pos_end=gap[2],
-                            coverage_cutoff=135,
-                            percent_cosmic=gap[6],
-                        )
-                        new_gap_obj.save()
+                        # TODO - this is for the legacy coverage2json script, remove after its been changed to use dicts
+                        if isinstance(r, list):
+                            self.add_gaps_from_list(gap, '135', new_gene_coverage_obj)
+
+                        elif isinstance(r, dict):
+                            self.add_gaps_from_dict()
 
                 # gaps 270x
                 if '270' in coverage_thresholds:
                     for gap in values['gaps_270']:
-                        
-                        #if there is no cosmic percent present, make this 0 (so adding two numbers to the list)
-                        if len(gap) < 6:
-                            gap.append(None)
-                            gap.append(None)
-                    
-                        #if cosmic percent is NaN (because no cosmic annotations for that referral), make it 0 (html displays NA in these cases)
-                        #if np.isnan(gap[6]):
-                        #    gap[6] = None
-                            
-                        new_gap_obj = GapsAnalysis(
-                            gene=new_gene_coverage_obj,
-                            hgvs_c=gap[3],
-                            chr_start=gap[0],
-                            pos_start=gap[1],
-                            chr_end=gap[0],
-                            pos_end=gap[2],
-                            coverage_cutoff=270,
-                            percent_cosmic=gap[6],
-                        )
-                        new_gap_obj.save()
+                        # TODO - this is for the legacy coverage2json script, remove after its been changed to use dicts
+                        if isinstance(r, list):
+                            self.add_gaps_from_list(gap, '270', new_gene_coverage_obj)
+
+                        elif isinstance(r, dict):
+                            self.add_gaps_from_dict()
 
                 # gaps 1000x
                 if '1000' in coverage_thresholds:
                     for gap in values['gaps_1000']:
-                        
-                        #if there is no cosmic percent present, make this 0 (so adding two numbers to the list)
-                        if len(gap) < 6:
-                            gap.append(None)
-                            gap.append(None)
-                    
-                        #if cosmic percent is NaN (because no cosmic annotations for that referral), make it 0 (html displays NA in these cases)
-                        #if np.isnan(gap[6]):
-                        #    gap[6] = None
-                            
-                        new_gap_obj = GapsAnalysis(
-                            gene=new_gene_coverage_obj,
-                            hgvs_c=gap[3],
-                            chr_start=gap[0],
-                            pos_start=gap[1],
-                            chr_end=gap[0],
-                            pos_end=gap[2],
-                            coverage_cutoff=1000,
-                            percent_cosmic=gap[6],
-                        )
-                        new_gap_obj.save()
+                        # TODO - this is for the legacy coverage2json script, remove after its been changed to use dicts
+                        if isinstance(r, list):
+                            self.add_gaps_from_list(gap, '1000', new_gene_coverage_obj)
+
+                        elif isinstance(r, dict):
+                            self.add_gaps_from_dict()
 
             # logging
-            print(f'INFO\t{datetime.now()}\timport.py\tFinished uploading coverage data')
+            print(f'INFO\t{datetime.now()}\timport.py\tFinished uploading coverage data successfully')
 
 
         # ---------------------------------------------------------------------------------------------------------
@@ -411,8 +441,10 @@ class Command(BaseCommand):
 
             # check that inputs are valid
             if not os.path.isfile(fusions_file):
+                print(f'ERROR\t{datetime.now()}\timport.py\t{fusions_file} file does not exist')
                 raise IOError(f'{fusions_file} file does not exist')
             if not os.path.isfile(panels_file):
+                print(f'ERROR\t{datetime.now()}\timport.py\t{panels_file} file does not exist')
                 raise IOError(f'{panels_file} file does not exist')
 
             # load in virtual panel
