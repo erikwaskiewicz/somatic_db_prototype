@@ -427,20 +427,24 @@ class Command(BaseCommand):
 
         if panel_obj.show_fusions:
             fusions_file = options['fusions'][0]
-            panels_file = settings.ROI_PATH_RNA # TODO - from panel?
 
             # check that inputs are valid
             if not os.path.isfile(fusions_file):
                 print(f'ERROR\t{datetime.now()}\timport.py\t{fusions_file} file does not exist')
                 raise IOError(f'{fusions_file} file does not exist')
-            if not os.path.isfile(panels_file):
-                print(f'ERROR\t{datetime.now()}\timport.py\t{panels_file} file does not exist')
-                raise IOError(f'{panels_file} file does not exist')
 
-            # load in virtual panel
-            with open(panels_file) as f:
-                referrals = yaml.load(f, Loader=yaml.FullLoader)
-            virtual_panel = referrals[panel]
+            # load in virtual panel, handle empty strings as they cant be split
+            splicing, fusions = [], []
+            if panel_obj.splice_genes:
+                splicing = panel_obj.splice_genes.split(',')
+            if panel_obj.fusion_genes:
+                fusions = panel_obj.fusion_genes.split(',')
+            
+            # make panel dictionary
+            virtual_panel = {
+                'splicing': splicing,
+                'fusions': fusions,
+            }
 
             # logging
             fusion_counter = 0

@@ -70,10 +70,13 @@ class Panel(models.Model):
     vaf_cutoff = models.DecimalField(decimal_places=5, max_digits=10, blank=True, null=True) # formatted as e.g. 1.4%, not 0.014
     manual_review_required = models.BooleanField(default=False)
     manual_review_desc = models.CharField(max_length=200, blank=True, null=True)
+    #bed file
 
     # fusion settings
     show_fusions = models.BooleanField()
     show_fusion_coverage = models.BooleanField()
+    fusion_genes = models.CharField(max_length=100, blank=True, null=True)
+    splice_genes = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
         unique_together = ('panel_name', 'version', 'assay')

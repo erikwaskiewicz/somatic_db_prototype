@@ -156,7 +156,4 @@ LOGIN_URL = '/login/'
 
 
 ROI_PATH_DNA = '/home/ew/somatic_db/roi/variant_calling'
-
-ROI_PATH_RNA = '/home/ew/somatic_db/roi/rna_panels.yaml'
-
 ROI_PATH_B38 = '/home/ew/somatic_db/roi/variant_calling_b38'
