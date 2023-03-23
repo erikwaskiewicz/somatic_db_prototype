@@ -5,12 +5,12 @@
 
   {% if sample_data.checks.current_check_object.manual_review_check %}
     <div class="alert alert-success">
-      <p><b>Manual review of these regions completed:</b> {{ sample_data.panel_obj.manual_review_desc }}.</p>
+      <p><b>Manual review of these regions completed:</b> {{ sample_data.panel_manual_regions | join:', ' }}.</p>
     </div>
 
   {% else %}
     <div class="alert alert-warning">
-      <p><b>Manual review of these regions required for this panel:</b> {{ sample_data.panel_obj.manual_review_desc }}.</p>
+      <p><b>Manual review of these regions required for this panel:</b></p>
       {% crispy manual_check_form %}
     </div>
 

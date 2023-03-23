@@ -195,7 +195,7 @@ def analysis_sheet(request, sample_id):
         'warning': [],
         'sample_data': sample_data,
         'new_variant_form': NewVariantForm(),
-        'manual_check_form': ManualVariantCheckForm(),
+        'manual_check_form': ManualVariantCheckForm(regions=sample_data['panel_manual_regions']),
         'submit_form': SubmitForm(),
         'update_name_form': UpdatePatientName(),
         'sample_comment_form': SampleCommentForm(
@@ -279,13 +279,12 @@ def analysis_sheet(request, sample_id):
             context['variant_data'] = get_variant_info(sample_data, sample_obj)
 
         if 'variants_checked' in request.POST:
-            manual_check_form = ManualVariantCheckForm(request.POST)
+            manual_check_form = ManualVariantCheckForm(request.POST, regions=sample_data['panel_manual_regions'])
 
             if manual_check_form.is_valid():
-                if manual_check_form.cleaned_data['variants_checked']:
-                    current_step_obj.manual_review_check = True
-                    current_step_obj.save()
-                    context['sample_data'] = get_sample_info(current_step_obj.analysis)
+                current_step_obj.manual_review_check = True
+                current_step_obj.save()
+                context['sample_data'] = get_sample_info(current_step_obj.analysis)
 
         # coverage comments button
         if 'coverage_comment' in request.POST:
