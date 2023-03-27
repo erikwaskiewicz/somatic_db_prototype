@@ -79,17 +79,17 @@ class Panel(models.Model):
     # snv settings
     show_snvs = models.BooleanField()
     show_myeloid_gaps_summary = models.BooleanField(default=False)
-    depth_cutoffs = models.CharField(max_length=50, blank=True, null=True)
+    depth_cutoffs = models.CharField(max_length=50, blank=True, null=True) # either 135,270 or 1000, comma seperated, no spaces
     vaf_cutoff = models.DecimalField(decimal_places=5, max_digits=10, blank=True, null=True) # formatted as e.g. 1.4%, not 0.014
     manual_review_required = models.BooleanField(default=False)
-    manual_review_desc = models.CharField(max_length=200, blank=True, null=True)
+    manual_review_desc = models.CharField(max_length=200, blank=True, null=True) # comma seperated, no spaces
     bed_file = models.FileField(upload_to=make_bedfile_path, blank=True, null=True)
 
     # fusion settings
     show_fusions = models.BooleanField()
     show_fusion_coverage = models.BooleanField()
-    fusion_genes = models.CharField(max_length=100, blank=True, null=True)
-    splice_genes = models.CharField(max_length=100, blank=True, null=True)
+    fusion_genes = models.CharField(max_length=100, blank=True, null=True) # comma seperated, no spaces
+    splice_genes = models.CharField(max_length=100, blank=True, null=True) # comma seperated, no spaces
 
     class Meta:
         unique_together = ('panel_name', 'version', 'assay', 'genome_build')

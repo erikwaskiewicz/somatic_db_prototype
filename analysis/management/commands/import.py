@@ -29,8 +29,8 @@ class Command(BaseCommand):
     
         #if cosmic percent is NaN (because no cosmic annotations for that referral), make it 0 (html displays NA in these cases)
         # TODO - test more with gappy samples, this wasnt working earlier
-        if np.isnan(gap[6]):
-            gap[6] = None
+        #if np.isnan(gap[6]):
+        #    gap[6] = None
             
         new_gap_obj = GapsAnalysis(
             gene = new_gene_coverage_obj,
@@ -355,7 +355,7 @@ class Command(BaseCommand):
                 coverage_dict = json.load(f)
 
             # get required coverage values from panel
-            coverage_thresholds = panel_obj.depth_cutoffs.split('|')
+            coverage_thresholds = panel_obj.depth_cutoffs.split(',')
 
             for g, values in coverage_dict.items():
                 # get gene object

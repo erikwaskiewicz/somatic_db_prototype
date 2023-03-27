@@ -306,7 +306,7 @@ def get_sample_info(sample_obj):
     """
     # split the manual regions description if its part of the panel, otherwise make empty list
     if sample_obj.panel.manual_review_desc:
-        manual_regions = sample_obj.panel.manual_review_desc.split('|')
+        manual_regions = sample_obj.panel.manual_review_desc.split(',')
     else:
         manual_regions = []
 
@@ -572,7 +572,7 @@ def get_coverage_data(sample_obj, depth_cutoffs):
 
     """
     # get list of target depths from panel object
-    target_depths = depth_cutoffs.split('|')
+    target_depths = depth_cutoffs.split(',')
 
     # create a coverage dictionary
     coverage_data = {
