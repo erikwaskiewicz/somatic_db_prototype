@@ -54,7 +54,7 @@
         {% endif %}
         <p style="display:none" id="igv-{{ v.pk }}">{{ v.igv_coords }}</p>
         <button class="btn btn-sm btn-secondary" onclick="copyToClipboard('#igv-{{ v.pk }}')"><span class="fa fa-copy"></span></button>
-        
+
       </td>
       <td>{{ v.gene }}<br>{{ v.exon }}</td>
       <td>{{ v.hgvs_c }}<br>{{ v.hgvs_p }}</td>
@@ -71,15 +71,20 @@
 
         {% endif %}
       </td>
-      {% if v.genome_build == 37 %}
-      <td><a href="https://gnomad.broadinstitute.org/variant/{{ v.genomic }}" target="_blank">LINK</a></td>
-      {% elif v.genome_build == 38 %}
-      {% if v.gnomad_popmax != None %}
-      <td><a href="https://gnomad.broadinstitute.org/variant/{{ v.genomic }}?dataset=gnomad_r3" target="_blank">{{ v.gnomad_popmax }}</a></td>
-      {% else %}
-      <td><a href="https://gnomad.broadinstitute.org/variant/{{ v.genomic }}?dataset=gnomad_r3" target="_blank">LINK</a></td>
-      {% endif %}
-      {% endif %}
+      
+        {% if v.genome_build == 37 %}
+        <td>
+          {% if v.gnomad_popmax != None %}{{ v.gnomad_popmax }} {% endif %}
+          <a href="https://gnomad.broadinstitute.org/variant/{{ v.genomic }}" target="_blank" class="btn btn-sm btn-secondary" role="button"><span class="fa fa-link"></span></a>
+        </td>
+
+        {% elif v.genome_build == 38 %}
+        <td>
+          {% if v.gnomad_popmax != None %}{{ v.gnomad_popmax }} {% endif %}
+          <a href="https://gnomad.broadinstitute.org/variant/{{ v.genomic }}?dataset=gnomad_r3" target="_blank" class="btn btn-sm btn-secondary" role="button"><span class="fa fa-link"></span></a>
+        </td>
+        {% endif %}
+
       <td>
         {% for check in v.checks %}
           {{ forloop.counter }}: {{ check }}<br>
