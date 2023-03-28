@@ -24,15 +24,15 @@ admin.site.register(Worksheet, WorksheetAdmin)
 
 
 class SampleAdmin(admin.ModelAdmin):
-    list_display = ('sample_id', 'sample_name', 'sample_type')
-    search_fields = ['sample_id', 'sample_name', 'sample_type']
+    list_display = ('sample_id', 'sample_name',)
+    search_fields = ['sample_id', 'sample_name',]
 
 admin.site.register(Sample, SampleAdmin)
 
 
 class PanelAdmin(admin.ModelAdmin):
-    list_display = ('id', 'panel_name', 'dna_or_rna')
-    search_fields = ['id', 'panel_name', 'dna_or_rna']
+    list_display = ('id', 'panel_name', 'pretty_print', 'version', 'live', 'genome_build', 'assay', 'show_snvs', 'show_fusions',)
+    search_fields = ['id', 'panel_name', 'pretty_print', 'version', 'live', 'genome_build', 'assay', 'show_snvs', 'show_fusions',]
 
 admin.site.register(Panel, PanelAdmin)
 

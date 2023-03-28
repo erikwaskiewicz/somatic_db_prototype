@@ -56,10 +56,9 @@ def get_samples(samples):
 
             sample_dict[sample_id] = {
                 'sample_id': sample_id,
-                'dna_rna': s.sample.sample_type,
                 'panels': [{
                     'analysis_id': s.pk,
-                    'panel': s.panel.panel_name,
+                    'panel': s.panel,
                     'checks': s.get_checks(),
                 }]
             }
@@ -68,7 +67,7 @@ def get_samples(samples):
         else:
             sample_dict[sample_id]['panels'].append({
                     'analysis_id': s.pk,
-                    'panel': s.panel.panel_name,
+                    'panel': s.panel,
                     'checks': s.get_checks(),
                 }
             )
@@ -128,19 +127,26 @@ def signoff_check(user, current_step_obj, sample_obj, status='C', complete=False
     Signs off a check, returns true if successful, returns false if not, along with an error message
 
     """
-    # get all variant checks for the sample
-    sample_type = sample_obj.sample.sample_type
-    if sample_type == 'DNA':
-        variant_checks = VariantCheck.objects.filter(check_object=current_step_obj)
-    elif sample_type == 'RNA':
-        variant_checks = FusionCheck.objects.filter(check_object=current_step_obj)
+    # get all SNV checks for the sample
+    if sample_obj.panel.show_snvs:
+        snv_checks = VariantCheck.objects.filter(check_object=current_step_obj)
 
-    # make sure that none of the variant checks are still pending
-    # this trigers view to render the error on the page, skip this validation for failed samples
-    if status != 'F':
-        for v in variant_checks:
-            if v.decision == '-':
-                return False, 'Did not finalise check - not all variants have been checked'
+        # make sure that none of the variant checks are still pending
+        # this trigers view to render the error on the page, skip this validation for failed samples
+        if status != 'F':
+            for v in snv_checks:
+                if v.decision == '-':
+                    return False, 'Did not finalise check - not all SNVs have been checked'
+
+    # get all fusion checks for the sample
+    if sample_obj.panel.show_fusions:
+            fusion_checks = FusionCheck.objects.filter(check_object=current_step_obj)
+            # make sure that none of the variant checks are still pending
+            # this trigers view to render the error on the page, skip this validation for failed samples
+            if status != 'F':
+                for v in fusion_checks:
+                    if v.decision == '-':
+                        return False, 'Did not finalise check - not all fusions have been checked'
 
     # commit to database if its the last check
     if complete:
@@ -149,38 +155,57 @@ def signoff_check(user, current_step_obj, sample_obj, status='C', complete=False
         out_list = []
 
         # load in variant list depending on whether its a DNA or RNA sample
-        if sample_type == 'DNA':
+        if sample_obj.panel.show_snvs:
             variants = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
-        elif sample_type == 'RNA':
+
+            # loop through all variants
+            for v in variants:
+
+                # get all checks for that variant
+                variant_checks = v.get_all_checks()
+                variant_checks_list = [ v.decision for v in variant_checks ]
+
+                # function to validate checks
+                submitted, out = complete_checks(variant_checks_list)
+
+                # throw error if validation fails, output will be error message
+                if not submitted:
+                    return False, out
+
+                # if validation passes, get the database object add to out_list for committing to the database at the end
+                else:
+                    variant_instance_obj = v.variant_instance
+                    out_list.append([variant_instance_obj, out])
+
+        if sample_obj.panel.show_fusions:
             variants = FusionPanelAnalysis.objects.filter(sample_analysis=sample_obj)
 
-        # loop through all variants
-        for v in variants:
+            # loop through all variants
+            for v in variants:
 
-            # get all checks for that variant
-            variant_checks = v.get_all_checks()
-            variant_checks_list = [ v.decision for v in variant_checks ]
+                # get all checks for that variant
+                variant_checks = v.get_all_checks()
+                variant_checks_list = [ v.decision for v in variant_checks ]
 
-            # function to validate checks
-            submitted, out = complete_checks(variant_checks_list)
+                # function to validate checks
+                submitted, out = complete_checks(variant_checks_list)
 
-            # throw error if validation fails, output will be error message
-            if not submitted:
-                return False, out
+                # throw error if validation fails, output will be error message
+                if not submitted:
+                    return False, out
 
-            # if validation passes, get the database object add to out_list for committing to the database at the end
-            else:
-                if sample_type == 'DNA':
-                    variant_instance_obj = v.variant_instance
-                elif sample_type == 'RNA':
+                # if validation passes, get the database object add to out_list for committing to the database at the end
+                else:
                     variant_instance_obj = v.fusion_instance
-                out_list.append([variant_instance_obj, out])
+                    out_list.append([variant_instance_obj, out])
+
 
         # commit to database, will only run if there are no errors so that data isnt half added to the database
         for variant_instance_obj, final_decision in out_list:
             variant_instance_obj.final_decision = final_decision
             variant_instance_obj.save()
 
+        
     # signoff current check
     now = timezone.now()
     current_step_obj.user = user
@@ -208,7 +233,7 @@ def make_next_check(sample_obj, next_step):
     # save object
     new_check_obj.save()
 
-    if sample_obj.sample.sample_type == 'DNA':
+    if sample_obj.panel.show_snvs:
         # make check objects for all variants
         variant_objects = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
         for v in variant_objects:
@@ -217,8 +242,8 @@ def make_next_check(sample_obj, next_step):
                 check_object = new_check_obj,
             )
             new_variant_check.save()
-
-    elif sample_obj.sample.sample_type == 'RNA':
+    
+    if sample_obj.panel.show_fusions:
         # make check objects for all variants
         variant_objects = FusionPanelAnalysis.objects.filter(sample_analysis=sample_obj)
         for v in variant_objects:
@@ -279,18 +304,26 @@ def get_sample_info(sample_obj):
     Get info for a specific sample to generate a part of the sample analysis context dictionary
 
     """
+    # split the manual regions description if its part of the panel, otherwise make empty list
+    if sample_obj.panel.manual_review_desc:
+        manual_regions = sample_obj.panel.manual_review_desc.split('|')
+    else:
+        manual_regions = []
+
     sample_data = {
         'sample_pk': sample_obj.pk,
-        'dna_or_rna': sample_obj.sample.sample_type,
+        'assay': sample_obj.panel.assay,
         'sample_id': sample_obj.sample.sample_id,
         'sample_name': sample_obj.sample.sample_name,
         'worksheet_id': sample_obj.worksheet.ws_id,
         'panel': sample_obj.panel.panel_name,
+        'panel_obj': sample_obj.panel,
+        'panel_manual_regions': manual_regions,
         'is_myeloid_referral': sample_obj.panel.show_myeloid_gaps_summary,
         'run_id': sample_obj.worksheet.run.run_id,
         'total_reads': sample_obj.total_reads,
         'total_reads_ntc': sample_obj.total_reads_ntc,
-        'percent_reads_ntc': sample_obj.percent_reads_ntc,
+        'percent_reads_ntc': sample_obj.percent_reads_ntc(),
         'checks': sample_obj.get_checks(),
         'genome_build': sample_obj.genome_build,
     }
@@ -391,7 +424,7 @@ def get_variant_info(sample_data, sample_obj):
             'variant_instance_pk': sample_variant.variant_instance.pk,
             'genomic': variant_obj.variant,
             'genome_build': variant_obj.genome_build,
-            'igv_coords': variant_obj.variant.strip('ACGT>'), #TODO what about dels?
+            'igv_coords': variant_obj.variant.strip('ACGT>'),
             'gene': sample_variant.variant_instance.gene,
             'exon': sample_variant.variant_instance.exon,
             'hgvs_c': sample_variant.variant_instance.hgvs_c,
@@ -506,6 +539,7 @@ def get_fusion_info(sample_data,sample_obj):
             'fusion_genes': fusion_object.fusion_instance.fusion_genes.fusion_genes,
             'fusion_hgvs': fusion_object.fusion_instance.hgvs,
             'fusion_supporting_reads': fusion_object.fusion_instance.fusion_supporting_reads,
+            'vaf': fusion_object.fusion_instance.vaf(),
             'left_breakpoint': fusion_object.fusion_instance.fusion_genes.left_breakpoint,
             'right_breakpoint': fusion_object.fusion_instance.fusion_genes.right_breakpoint,
             'genome_build': fusion_object.fusion_instance.fusion_genes.genome_build,
@@ -533,14 +567,19 @@ def get_fusion_info(sample_data,sample_obj):
 
 
 
-def get_coverage_data(sample_obj):
+def get_coverage_data(sample_obj, depth_cutoffs):
     """
     Get information on the coverage in a sample analysis to generate the coverage portion of the context dictionary
 
     """
+    # get list of target depths from panel object
+    target_depths = depth_cutoffs.split(',')
 
-    #create a coverage dictionary
-    coverage_data = {}
+    # create a coverage dictionary
+    coverage_data = {
+        'regions': {},
+        'depth_cutoffs': target_depths,
+    }
     gene_coverage_analysis_obj = GeneCoverageAnalysis.objects.filter(sample=sample_obj).order_by('gene')
 
     for gene_coverage_obj in gene_coverage_analysis_obj:
@@ -554,24 +593,21 @@ def get_coverage_data(sample_obj):
                 'hotspot_or_genescreen': region.get_hotspot_display(),
                 'percent_135x': region.percent_135x,
                 'percent_270x': region.percent_270x,
+                'percent_1000x': region.percent_1000x,
                 'ntc_coverage': region.ntc_coverage,
                 'percent_ntc': region.percent_ntc,
             }
             regions.append(regions_dict)
 
-        # Create a dictionary of gaps in the sample for the given gene
-        gaps_270 = []
-        gaps_135 = []
-        gaps_analysis_obj=GapsAnalysis.objects.filter(gene=gene_coverage_obj)
+        # create a dictionary of gaps in the sample for the given gene, split by depths
+        # TODO - not a great long term fix, need to update models to handle different depths
+        gaps_135, gaps_270, gaps_1000 = [], [], []
+
+        gaps_analysis_obj = GapsAnalysis.objects.filter(gene=gene_coverage_obj)
         for gap in gaps_analysis_obj:
-            if gap.coverage_cutoff == 270:
-                gaps_dict = {
-                    'genomic': gap.genomic(),
-                    'hgvs_c': gap.hgvs_c,
-                    'percent_cosmic': gap.percent_cosmic
-                }
-                gaps_270.append(gaps_dict)
-            elif gap.coverage_cutoff == 135:
+
+            # gaps at 135x
+            if gap.coverage_cutoff == 135:
                 gaps_dict = {
                     'genomic': gap.genomic(),
                     'hgvs_c': gap.hgvs_c,
@@ -579,20 +615,40 @@ def get_coverage_data(sample_obj):
                 }
                 gaps_135.append(gaps_dict)
 
+            # gaps at 270x
+            elif gap.coverage_cutoff == 270:
+                gaps_dict = {
+                    'genomic': gap.genomic(),
+                    'hgvs_c': gap.hgvs_c,
+                    'percent_cosmic': gap.percent_cosmic
+                }
+                gaps_270.append(gaps_dict)
+
+            # gaps at 1000x
+            elif gap.coverage_cutoff == 1000:
+                gaps_dict = {
+                    'genomic': gap.genomic(),
+                    'hgvs_c': gap.hgvs_c,
+                    'percent_cosmic': gap.percent_cosmic
+                }
+                gaps_1000.append(gaps_dict)
+
         # combine gaps and regions dictionaries
         gene_dict = {
             'av_coverage': gene_coverage_obj.av_coverage,
-            'percent_270x': gene_coverage_obj.percent_270x,
             'percent_135x': gene_coverage_obj.percent_135x,
+            'percent_270x': gene_coverage_obj.percent_270x,
+            'percent_1000x': gene_coverage_obj.percent_1000x,
             'av_ntc_coverage': gene_coverage_obj.av_ntc_coverage,
             'percent_ntc': gene_coverage_obj.percent_ntc,
             'regions': regions,
-            'gaps_270': gaps_270,
             'gaps_135': gaps_135,
+            'gaps_270': gaps_270,
+            'gaps_1000': gaps_1000,
         }
 
-        coverage_data[gene_coverage_obj.gene.gene] = gene_dict
-        
+        coverage_data['regions'][gene_coverage_obj.gene.gene] = gene_dict
+
     return coverage_data
 
 
