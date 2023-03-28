@@ -1,2 +1,0 @@
-hgvs_g,hgvs_c,hgvs_p,transcript,gene,exon,vaf,alt_reads,total_reads,in_ntc
-1:12345A>G,c.12345A>G,p.Arg123Pro,NM12345.6,EGFR,1|10,15,15,100,True
