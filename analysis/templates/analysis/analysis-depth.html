@@ -127,7 +127,16 @@
                 <tr>
                   <td>{{ r.hgvs_c }}</td>
                   <td>{{ r.genomic }}</td>
-                  <td>N/A</td>
+                  <!-- only show cosmic % for B38 and correct referrals -->
+                  {% if sample_data.genome_build == 37 %}
+                  <td>NA</td>
+                  {% else %}
+                  {% if sample_data.panel == "Lung" or sample_data.panel == "Melanoma" or sample_data.panel == "GIST" or sample_data.panel == "Colorectal" or sample_data.panel == "breast" %}
+                  <td>{{ r.percent_cosmic }}</td>
+                  {% else %}
+                  <td>NA</td>
+                  {% endif %}
+                  {% endif %}
                 </tr>
               {% endfor %}
               </tbody>
@@ -156,7 +165,16 @@
                 <tr>
                   <td>{{ r.hgvs_c }}</td>
                   <td>{{ r.genomic }}</td>
-                  <td>N/A</td>
+                  <!-- only show cosmic % for B38 and correct referrals -->
+                  {% if sample_data.genome_build == "37" %}
+                  <td>NA</td>
+                  {% else %}
+                  {% if sample_data.panel == "Lung" or sample_data.panel == "Melanoma" or sample_data.panel == "GIST" or sample_data.panel == "Colorectal" or sample_data.panel == "breast" %}
+                  <td>{{ r.percent_cosmic }}</td>
+                  {% else %}
+                  <td>NA</td>
+                  {% endif %}
+                  {% endif %}
                 </tr>
               {% endfor %}
               </tbody>

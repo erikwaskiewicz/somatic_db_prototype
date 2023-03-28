@@ -351,38 +351,51 @@ def analysis_sheet(request, sample_id):
             if new_variant_form.is_valid():
 
                 new_variant_data = new_variant_form.cleaned_data
+		
+                #Error out if total depth is set to zero
+                if new_variant_data['total_reads'] == 0:
+                                	
+                    context['warning'].append('Total read counts can not be zero')
+                    
+                elif new_variant_data['alt_reads'] == 0:
+                
+                     context['warning'].append('Alt read counts can not be zero')
+                    
+                else:
+                
+                    #Lock to same genome build as sample_analysis 
+                    new_variant_object, created = Variant.objects.get_or_create(
+                        variant = new_variant_data['hgvs_g'],
+                        genome_build = sample_obj.genome_build,
 
-                new_variant_object, created = Variant.objects.get_or_create(
-                    genomic_37 = new_variant_data['hgvs_g'],
-                    genomic_38 = None,
-                )
-                new_variant_object.save()
-                new_variant_instance_object = VariantInstance(
-                    variant = new_variant_object,
-                    gene = new_variant_data['gene'],
-                    exon = new_variant_data['exon'],
-                    hgvs_c = new_variant_data['hgvs_c'],
-                    hgvs_p = new_variant_data['hgvs_p'],
-                    sample = sample_obj.sample, 
-                    total_count = new_variant_data['total_reads'], 
-                    alt_count = new_variant_data['alt_reads'], 
-                    in_ntc = new_variant_data['in_ntc'], 
-                    manual_upload = True,
-                )
-                new_variant_instance_object.save()
-                new_variant_panel_object = VariantPanelAnalysis(
-                    variant_instance=new_variant_instance_object, 
-                    sample_analysis=sample_obj
-                )
-                new_variant_panel_object.save()
-                new_variant_check_object = VariantCheck(
-                    variant_analysis=new_variant_panel_object, 
-                    check_object=sample_obj.get_checks().get('current_check_object')
-                )
-                new_variant_check_object.save()
+                    )
+                    new_variant_object.save()
+                    new_variant_instance_object = VariantInstance(
+                        variant = new_variant_object,
+                        gene = new_variant_data['gene'],
+                        exon = new_variant_data['exon'],
+                        hgvs_c = new_variant_data['hgvs_c'],
+                        hgvs_p = new_variant_data['hgvs_p'],
+                        sample = sample_obj.sample, 
+                        total_count = new_variant_data['total_reads'], 
+                        alt_count = new_variant_data['alt_reads'], 
+                        in_ntc = new_variant_data['in_ntc'], 
+                        manual_upload = True,
+                    )
+                    new_variant_instance_object.save()
+                    new_variant_panel_object = VariantPanelAnalysis(
+                        variant_instance=new_variant_instance_object, 
+                        sample_analysis=sample_obj
+                    )
+                    new_variant_panel_object.save()
+                    new_variant_check_object = VariantCheck(
+                        variant_analysis=new_variant_panel_object, 
+                        check_object=sample_obj.get_checks().get('current_check_object')
+                    )
+                    new_variant_check_object.save()
 
-                # reload context
-                context['variant_data'] = get_variant_info(sample_data, sample_obj)
+                    # reload context
+                    context['variant_data'] = get_variant_info(sample_data, sample_obj)
 
 
         # overall sample comments form
@@ -553,19 +566,29 @@ def view_polys(request):
     Page to view all confirmed polys and add and check new ones
 
     """
-    # load poly list object
-    list_name = 'TSO500_polys'
-    poly_list = VariantList.objects.get(name=list_name)
+    #Get all poly lists
+    poly_list = VariantList.objects.filter(list_type='P')
 
-    # pull out list of confirmed polys and polys to be checked
-    confirmed_list, checking_list = get_poly_list(poly_list, request.user)
+    # pull out list of confirmed polys and polys to be checked - this will initially make a list of lists - then convert into a single list! 
+    confirmed_list = []
+    checking_list = []
+
+    for i in poly_list:
+        
+        temp_confirmed_list, temp_checking_list = get_poly_list(i, request.user)
+        confirmed_list.append(temp_confirmed_list)
+        checking_list.append(temp_checking_list)
+    
+    #Flatten the list of lists    
+    confirmed_list_final = [item for sublist in confirmed_list for item in sublist]
+    checking_list_final = [item for sublist in checking_list for item in sublist]
 
     # make context dictionary
     context = {
         'success': [],
         'warning': [],
-        'confirmed_list': confirmed_list,
-        'checking_list': checking_list,
+        'confirmed_list': confirmed_list_final,
+        'checking_list': checking_list_final,
         'confirm_form': ConfirmPolyForm(),
         'add_new_form': AddNewPolyForm(),
     }
@@ -593,12 +616,28 @@ def view_polys(request):
 
                 # get genomic coords
                 variant_obj = variant_to_variant_list_obj.variant
-                variant = variant_obj.genomic_37
+                variant = variant_obj.variant
 
                 # reload context
-                confirmed_list, checking_list = get_poly_list(poly_list, request.user)
-                context['confirmed_list'] = confirmed_list
-                context['checking_list'] = checking_list
+                #Get all poly lists
+                poly_list = VariantList.objects.filter(list_type='P')
+
+                # pull out list of confirmed polys and polys to be checked - this will initially make a list of lists - then convert into a single list! 
+                confirmed_list = []
+                checking_list = []
+
+                for i in poly_list:
+        
+                    temp_confirmed_list, temp_checking_list = get_poly_list(i, request.user)
+                    confirmed_list.append(temp_confirmed_list)
+                    checking_list.append(temp_checking_list)
+    
+                #Flatten the list of lists    
+                confirmed_list_final = [item for sublist in confirmed_list for item in sublist]
+                checking_list_final = [item for sublist in checking_list for item in sublist]
+                
+                context['confirmed_list'] = confirmed_list_final
+                context['checking_list'] = checking_list_final
                 context['success'].append(f'Variant {variant} added to poly list')
 
         # if add new poly button is pressed
@@ -610,14 +649,22 @@ def view_polys(request):
                 # get form data
                 variant = add_new_form.cleaned_data['variant']
                 comment = add_new_form.cleaned_data['comment']
-
+                genome = add_new_form.cleaned_data['genome']
+            
                 # wrap in try/ except to handle when a variant doesnt match the input
                 try:
                     # load in variant and variant to list objects
-                    variant_obj = Variant.objects.get(genomic_37=variant)
+                    variant_obj = Variant.objects.get(variant=variant, genome_build=genome)
+                   
+                    if genome == '37':
+                        poly_list = VariantList.objects.get(name='build_37_polys')
+      
+                    elif genome == '38':
+                        poly_list = VariantList.objects.get(name='build_38_polys')
+                        
                     variant_to_variant_list_obj, created = VariantToVariantList.objects.get_or_create(
                         variant_list = poly_list,
-                        variant = variant_obj
+                        variant = variant_obj,
                     )
 
                     # add user info if a new model is created
@@ -635,9 +682,25 @@ def view_polys(request):
                         context['warning'].append(f'Variant {variant} is already in the poly list')
 
                     # reload context
-                    confirmed_list, checking_list = get_poly_list(poly_list, request.user)
-                    context['confirmed_list'] = confirmed_list
-                    context['checking_list'] = checking_list
+                    #Get all poly lists
+                    poly_list = VariantList.objects.filter(list_type='P')
+
+                    # pull out list of confirmed polys and polys to be checked - this will initially make a list of lists - then convert into a single list! 
+                    confirmed_list = []
+                    checking_list = []
+ 
+                    for i in poly_list:
+        
+                        temp_confirmed_list, temp_checking_list = get_poly_list(i, request.user)
+                        confirmed_list.append(temp_confirmed_list)
+                        checking_list.append(temp_checking_list)
+    
+                    #Flatten the list of lists    
+                    confirmed_list_final = [item for sublist in confirmed_list for item in sublist]
+                    checking_list_final = [item for sublist in checking_list for item in sublist]
+        
+                    context['confirmed_list'] = confirmed_list_final
+                    context['checking_list'] = checking_list_final
 
                 # throw error if there isnt a variant matching the input
                 except Variant.DoesNotExist:

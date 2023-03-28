@@ -292,6 +292,7 @@ def get_sample_info(sample_obj):
         'total_reads_ntc': sample_obj.total_reads_ntc,
         'percent_reads_ntc': sample_obj.percent_reads_ntc,
         'checks': sample_obj.get_checks(),
+        'genome_build': sample_obj.genome_build,
     }
     return sample_data
 
@@ -327,14 +328,23 @@ def get_variant_info(sample_data, sample_obj):
         #    )
         #    if qs:
         #        this_run_count += 1
-
+	
+	#Set poly list based on genome build
+        if variant_obj.genome_build == 37:
+             
+             poly_list_name = "build_37_polys"
+        
+        elif variant_obj.genome_build == 38:
+            
+            poly_list_name = "build_38_polys"
+	
         # get whether the variant falls within a poly/ known list
         # TODO - will have to handle multiple poly/ known lists in future
         previous_classifications = []
         for l in VariantToVariantList.objects.filter(variant=variant_obj):
             if l.variant_list.name == 'TSO500_known':
                 previous_classifications.append(l.classification)
-            elif l.variant_list.name == 'TSO500_polys':
+            elif l.variant_list.name == poly_list_name:
                 # only add if polys have been checked twice
                 if l.signed_off():
                     previous_classifications.append('Poly')
@@ -379,12 +389,14 @@ def get_variant_info(sample_data, sample_obj):
         variant_calls_dict = {
             'pk': sample_variant.pk,
             'variant_instance_pk': sample_variant.variant_instance.pk,
-            'genomic': variant_obj.genomic_37,
-            'igv_coords': variant_obj.genomic_37.strip('ACGT>'), #TODO what about dels?
+            'genomic': variant_obj.variant,
+            'genome_build': variant_obj.genome_build,
+            'igv_coords': variant_obj.variant.strip('ACGT>'), #TODO what about dels?
             'gene': sample_variant.variant_instance.gene,
             'exon': sample_variant.variant_instance.exon,
             'hgvs_c': sample_variant.variant_instance.hgvs_c,
             'hgvs_p': sample_variant.variant_instance.hgvs_p,
+            'gnomad_popmax': sample_variant.variant_instance.gnomad_popmax,
             'this_run': {
                 #'count': this_run_count, 
                 #'total': len(sample_objects),
@@ -496,6 +508,7 @@ def get_fusion_info(sample_data,sample_obj):
             'fusion_supporting_reads': fusion_object.fusion_instance.fusion_supporting_reads,
             'left_breakpoint': fusion_object.fusion_instance.fusion_genes.left_breakpoint,
             'right_breakpoint': fusion_object.fusion_instance.fusion_genes.right_breakpoint,
+            'genome_build': fusion_object.fusion_instance.fusion_genes.genome_build,
             #'reference_reads': reference_reads,
             'this_run': {
                 #'count': this_run_count, 
@@ -759,7 +772,8 @@ def get_poly_list(poly_list_obj, user):
         formatted_variant = {
             'counter': n,
             'variant_pk': v.id,
-            'genomic_37': v.variant.genomic_37,
+            'variant': v.variant.variant,
+            'genome_build': v.variant.genome_build,
             'gene': '|'.join(set(genes)),
             'hgvs_c': '|'.join(set(hgvs_cs)),
             'hgvs_p': '|'.join(set(hgvs_ps)),

@@ -9,7 +9,7 @@
       <th scope="col">HGVS</th>
       <th scope="col">VAF</th>
       <th scope="col">NTC</th>
-      <th scope="col">Previously classed</th>
+      <th scope="col">Gnomad PopMax AF</th>
       <!--<th scope="col">Previously seen</th>-->
       <th scope="col">IGV</th>
       {% if 'IGV' in sample_data.checks.current_status %}
@@ -25,7 +25,14 @@
     <tr>
       <td class="variant-pk" style="display:none">{{ v.pk }}</td>
       <td>
-        <p style="display:inline" >{{ v.genomic }}</p><p style="display:none" id="igv-{{ v.pk }}">{{ v.igv_coords }}</p>
+        <p style="display:inline" >{{ v.genomic }}
+        {% if v.genome_build == 37 %}
+        <span class = "badge badge-info badge-pill">GRCh{{ v.genome_build }}
+        {% elif v.genome_build == 38 %}
+        <span class = "badge badge-success badge-pill">GRCh{{ v.genome_build }}
+        {% endif %}
+        </p>  
+        <p style="display:none" id="igv-{{ v.pk }}">{{ v.igv_coords }}</p>
         <button class="btn btn-sm btn-info" onclick="copyToClipboard('#igv-{{ v.pk }}')"><span class="fa fa-copy"></span></button>
         {% if v.manual_upload %}
         <button class="btn btn-sm btn-warning"><b>Manual</b></button>
@@ -46,7 +53,15 @@
 
         {% endif %}
       </td>
-      <td>{{ v.previous_runs.known }}</td>
+      {% if v.genome_build == 37 %}
+      <td><a href="https://gnomad.broadinstitute.org/variant/{{ v.genomic }}" target="_blank">LINK</a></td>
+      {% elif v.genome_build == 38 %}
+      {% if v.gnomad_popmax != None %}
+      <td><a href="https://gnomad.broadinstitute.org/variant/{{ v.genomic }}?dataset=gnomad_r3" target="_blank">{{ v.gnomad_popmax }}</a></td>
+      {% else %}
+      <td><a href="https://gnomad.broadinstitute.org/variant/{{ v.genomic }}?dataset=gnomad_r3" target="_blank">LINK</a></td>
+      {% endif %}
+      {% endif %}
       <td>
         {% for check in v.checks %}
           {{ forloop.counter }}: {{ check }}<br>
@@ -153,7 +168,12 @@
             {% for p in variant_data.polys %}
             <tr>
               <td>
-                {{ p.genomic }}
+                {{ p.genomic }}<br>
+                {% if p.genome_build == 37 %}
+                <span class = "badge badge-info badge-pill">GRCh{{ p.genome_build }}
+                {% elif p.genome_build == 38 %}
+                <span class = "badge badge-success badge-pill">GRCh{{ p.genome_build }}
+                {% endif %}
               </td>
               <td>
                 {{ p.gene }}<br>{{ p.exon }}
