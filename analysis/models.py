@@ -90,6 +90,7 @@ class Panel(models.Model):
     show_fusion_coverage = models.BooleanField()
     fusion_genes = models.CharField(max_length=100, blank=True, null=True) # comma seperated, no spaces
     splice_genes = models.CharField(max_length=100, blank=True, null=True) # comma seperated, no spaces
+    show_fusion_vaf = models.BooleanField()
 
     class Meta:
         unique_together = ('panel_name', 'version', 'assay', 'genome_build')
@@ -435,6 +436,18 @@ class FusionAnalysis(models.Model):
     fusion_score = models.CharField(max_length=50, blank=True, null=True)
     in_ntc = models.BooleanField(default=False)
     final_decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
+
+    def vaf(self):
+        """
+        calculate VAF of variant from total and alt read counts
+        VAF is always displayed to two decimal places
+
+        """
+        total_reads = self.fusion_supporting_reads + self.ref_reads_1
+        vaf = decimal.Decimal(self.fusion_supporting_reads / total_reads) * 100
+        vaf_rounded = vaf.quantize(decimal.Decimal('.01'), rounding = decimal.ROUND_DOWN)
+
+        return vaf_rounded
 
 
 class FusionCheck(models.Model):

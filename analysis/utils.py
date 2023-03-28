@@ -539,6 +539,7 @@ def get_fusion_info(sample_data,sample_obj):
             'fusion_genes': fusion_object.fusion_instance.fusion_genes.fusion_genes,
             'fusion_hgvs': fusion_object.fusion_instance.hgvs,
             'fusion_supporting_reads': fusion_object.fusion_instance.fusion_supporting_reads,
+            'vaf': fusion_object.fusion_instance.vaf(),
             'left_breakpoint': fusion_object.fusion_instance.fusion_genes.left_breakpoint,
             'right_breakpoint': fusion_object.fusion_instance.fusion_genes.right_breakpoint,
             'genome_build': fusion_object.fusion_instance.fusion_genes.genome_build,
