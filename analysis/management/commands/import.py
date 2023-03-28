@@ -23,14 +23,16 @@ class Command(BaseCommand):
         TODO remove when coverage2json updated, called on lines 390, 400, 410
         """
         #if there is no cosmic percent or count present, make this 0 (so adding two numbers to the list)
+        
         if len(gap) < 6:
             gap.append(None)
             gap.append(None)
     
         #if cosmic percent is NaN (because no cosmic annotations for that referral), make it 0 (html displays NA in these cases)
         # TODO - test more with gappy samples, this wasnt working earlier
-        #if np.isnan(gap[6]):
-        #    gap[6] = None
+        if gap[6] is not None:
+            if np.isnan(gap[6]):
+                gap[6] = None
             
         new_gap_obj = GapsAnalysis(
             gene = new_gene_coverage_obj,
