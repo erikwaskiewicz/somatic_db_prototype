@@ -82,7 +82,7 @@ class Panel(models.Model):
     depth_cutoffs = models.CharField(max_length=50, blank=True, null=True) # either 135,270 or 1000, comma seperated, no spaces
     vaf_cutoff = models.DecimalField(decimal_places=5, max_digits=10, blank=True, null=True) # formatted as e.g. 1.4%, not 0.014
     manual_review_required = models.BooleanField(default=False)
-    manual_review_desc = models.CharField(max_length=200, blank=True, null=True) # comma seperated, no spaces
+    manual_review_desc = models.CharField(max_length=200, blank=True, null=True) # pipe seperated, no spaces
     bed_file = models.FileField(upload_to=make_bedfile_path, blank=True, null=True)
 
     # fusion settings

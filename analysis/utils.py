@@ -306,7 +306,7 @@ def get_sample_info(sample_obj):
     """
     # split the manual regions description if its part of the panel, otherwise make empty list
     if sample_obj.panel.manual_review_desc:
-        manual_regions = sample_obj.panel.manual_review_desc.split(',')
+        manual_regions = sample_obj.panel.manual_review_desc.split('|')
     else:
         manual_regions = []
 
