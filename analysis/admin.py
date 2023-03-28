@@ -31,8 +31,8 @@ admin.site.register(Sample, SampleAdmin)
 
 
 class PanelAdmin(admin.ModelAdmin):
-    list_display = ('id', 'panel_name', 'pretty_print', 'version', 'live', 'assay')
-    search_fields = ['id', 'panel_name', 'pretty_print', 'version', 'live', 'assay']
+    list_display = ('id', 'panel_name', 'pretty_print', 'version', 'live', 'genome_build', 'assay', 'show_snvs', 'show_fusions',)
+    search_fields = ['id', 'panel_name', 'pretty_print', 'version', 'live', 'genome_build', 'assay', 'show_snvs', 'show_fusions',]
 
 admin.site.register(Panel, PanelAdmin)
 
