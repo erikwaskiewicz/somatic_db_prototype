@@ -70,9 +70,6 @@ class TestDna(TestCase):
 
         self.assertEqual(list(samples_dict.keys()), ['dna_test_1'])
 
-        sample = samples_dict.get('dna_test_1')
-        self.assertEqual(sample.get('dna_rna'), 'DNA')
-
 
     def test_get_sample_info_dna(self):
         '''
@@ -83,13 +80,12 @@ class TestDna(TestCase):
         panels = ['Tumour', 'Lung', 'Glioma', 'Thyroid', 'GIST', 'Melanoma', 'Colorectal', 'cll', 'mpn', 'myeloid']
 
         for panel in panels:
-            panel_obj = Panel.objects.get(panel_name=panel, dna_or_rna='DNA')
+            panel_obj = Panel.objects.get(panel_name=panel, assay='1', genome_build=37, live=True)
 
             sample = SampleAnalysis.objects.get(sample_id='dna_test_1', panel=panel_obj)
 
             sample_info = get_sample_info(sample)
 
-            self.assertEqual(sample_info.get('dna_or_rna'), 'DNA')
             self.assertEqual(sample_info.get('sample_id'), 'dna_test_1')
             self.assertEqual(sample_info.get('worksheet_id'), 'dna_ws_1')
             self.assertEqual(sample_info.get('panel'), panel)
@@ -105,7 +101,7 @@ class TestDna(TestCase):
         Check a subset of variants in the tumour panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='Tumour', dna_or_rna='DNA')
+        panel_obj = Panel.objects.get(panel_name='Tumour', assay='1', genome_build=37, live=True)
 
         sample = SampleAnalysis.objects.get(sample_id='dna_test_1', panel=panel_obj)
         sample_data = get_sample_info(sample)
@@ -229,7 +225,7 @@ class TestDna(TestCase):
         Check a subset of variants in the GIST panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='GIST', dna_or_rna='DNA')
+        panel_obj = Panel.objects.get(panel_name='GIST', assay='1', genome_build=37, live=True)
 
         sample = SampleAnalysis.objects.get(sample_id='dna_test_1', panel=panel_obj)
         sample_data = get_sample_info(sample)
@@ -276,7 +272,7 @@ class TestDna(TestCase):
         Check a subset of variants in the glioma panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='Glioma', dna_or_rna='DNA')
+        panel_obj = Panel.objects.get(panel_name='Glioma', assay='1', genome_build=37, live=True)
 
         sample = SampleAnalysis.objects.get(sample_id='dna_test_1', panel=panel_obj)
         sample_data = get_sample_info(sample)
@@ -334,7 +330,7 @@ class TestDna(TestCase):
         Check a subset of variants in the lung panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='Lung', dna_or_rna='DNA')
+        panel_obj = Panel.objects.get(panel_name='Lung', assay='1', genome_build=37, live=True)
 
         sample = SampleAnalysis.objects.get(sample_id='dna_test_1', panel=panel_obj)
         sample_data = get_sample_info(sample)
@@ -392,7 +388,7 @@ class TestDna(TestCase):
         Check a subset of variants in the melanoma panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='Melanoma', dna_or_rna='DNA')
+        panel_obj = Panel.objects.get(panel_name='Melanoma', assay='1', genome_build=37, live=True)
 
         sample = SampleAnalysis.objects.get(sample_id='dna_test_1', panel=panel_obj)
         sample_data = get_sample_info(sample)
@@ -428,7 +424,7 @@ class TestDna(TestCase):
         Check a subset of variants in the colorectal panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='Colorectal', dna_or_rna='DNA')
+        panel_obj = Panel.objects.get(panel_name='Colorectal', assay='1', genome_build=37, live=True)
 
         sample = SampleAnalysis.objects.get(sample_id='dna_test_1', panel=panel_obj)
         sample_data = get_sample_info(sample)
@@ -475,7 +471,7 @@ class TestDna(TestCase):
         Check a subset of variants in the thyroid panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='Thyroid', dna_or_rna='DNA')
+        panel_obj = Panel.objects.get(panel_name='Thyroid', assay='1', genome_build=37, live=True)
 
         sample = SampleAnalysis.objects.get(sample_id='dna_test_1', panel=panel_obj)
         sample_data = get_sample_info(sample)
@@ -522,21 +518,21 @@ class TestDna(TestCase):
         Check correct coverage values are pulled through for glioma panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='Glioma', dna_or_rna='DNA')
+        panel_obj = Panel.objects.get(panel_name='Glioma', assay='1', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='dna_test_1',panel=panel_obj)
 
-        coverage_data = get_coverage_data(sample_obj)
+        coverage_data = get_coverage_data(sample_obj, panel_obj.depth_cutoffs)
 
-        H3F3A_coverage = coverage_data.get('H3F3A')
-        IDH1_coverage = coverage_data.get('IDH1')
-        TERT_coverage = coverage_data.get('TERT')
-        EGFR_coverage = coverage_data.get('EGFR')
-        BRAF_coverage = coverage_data.get('BRAF')
-        IDH2_coverage = coverage_data.get('IDH2')
-        CDKN2A_coverage = coverage_data.get('CDKN2A')
-        PTEN_coverage = coverage_data.get('PTEN')
-        TP53_coverage = coverage_data.get('TP53')
-        ATRX_coverage = coverage_data.get('ATRX')
+        H3F3A_coverage = coverage_data['regions'].get('H3F3A')
+        IDH1_coverage = coverage_data['regions'].get('IDH1')
+        TERT_coverage = coverage_data['regions'].get('TERT')
+        EGFR_coverage = coverage_data['regions'].get('EGFR')
+        BRAF_coverage = coverage_data['regions'].get('BRAF')
+        IDH2_coverage = coverage_data['regions'].get('IDH2')
+        CDKN2A_coverage = coverage_data['regions'].get('CDKN2A')
+        PTEN_coverage = coverage_data['regions'].get('PTEN')
+        TP53_coverage = coverage_data['regions'].get('TP53')
+        ATRX_coverage = coverage_data['regions'].get('ATRX')
 
         # H3F3A overall coverage
         self.assertEqual(H3F3A_coverage.get('av_coverage'), 860)
@@ -658,13 +654,13 @@ class TestDna(TestCase):
         Check correct coverage values are pulled through for melanoma panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='Melanoma', dna_or_rna='DNA')
+        panel_obj = Panel.objects.get(panel_name='Melanoma', assay='1', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='dna_test_1',panel=panel_obj)
-        coverage_data = get_coverage_data(sample_obj)
+        coverage_data = get_coverage_data(sample_obj, panel_obj.depth_cutoffs)
 
-        NRAS_coverage = coverage_data.get('NRAS')
-        KIT_coverage = coverage_data.get('KIT')
-        BRAF_coverage = coverage_data.get('BRAF')
+        NRAS_coverage = coverage_data['regions'].get('NRAS')
+        KIT_coverage = coverage_data['regions'].get('KIT')
+        BRAF_coverage = coverage_data['regions'].get('BRAF')
 
         # NRAS overall
         self.assertEqual(NRAS_coverage.get('av_coverage'), 1220)
@@ -705,13 +701,13 @@ class TestDna(TestCase):
         Check correct coverage values are pulled through for GIST panel
         
         '''
-        panel_obj = Panel.objects.get(panel_name='GIST', dna_or_rna='DNA')
+        panel_obj = Panel.objects.get(panel_name='GIST', assay='1', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='dna_test_1',panel=panel_obj)
 
-        coverage_data = get_coverage_data(sample_obj)
+        coverage_data = get_coverage_data(sample_obj, panel_obj.depth_cutoffs)
 
-        PDGFRA_coverage = coverage_data.get('PDGFRA')
-        KIT_coverage = coverage_data.get('KIT')
+        PDGFRA_coverage = coverage_data['regions'].get('PDGFRA')
+        KIT_coverage = coverage_data['regions'].get('KIT')
 
         # PDGFRA overall
         self.assertEqual(PDGFRA_coverage.get('av_coverage'), 1387)
@@ -745,21 +741,21 @@ class TestDna(TestCase):
         Check correct coverage values are pulled through for tumour panel
         
         '''
-        panel_obj = Panel.objects.get(panel_name='Tumour', dna_or_rna='DNA')
+        panel_obj = Panel.objects.get(panel_name='Tumour', assay='1', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='dna_test_1',panel=panel_obj)
 
-        coverage_data = get_coverage_data(sample_obj)
+        coverage_data = get_coverage_data(sample_obj, panel_obj.depth_cutoffs)
  
-        AR_coverage = coverage_data.get('AR')
-        KIT_coverage = coverage_data.get('KIT')
-        ATRX_coverage = coverage_data.get('ATRX')
-        ARID1A_coverage = coverage_data.get('ARID1A')
-        NRAS_coverage = coverage_data.get('NRAS')
-        BRCA2_coverage = coverage_data.get('BRCA2')
-        IDH2_coverage = coverage_data.get('IDH2')
-        TP53_coverage = coverage_data.get('TP53')
-        ERBB2_coverage = coverage_data.get('ERBB2')
-        BRCA1_coverage = coverage_data.get('BRCA1')
+        AR_coverage = coverage_data['regions'].get('AR')
+        KIT_coverage = coverage_data['regions'].get('KIT')
+        ATRX_coverage = coverage_data['regions'].get('ATRX')
+        ARID1A_coverage = coverage_data['regions'].get('ARID1A')
+        NRAS_coverage = coverage_data['regions'].get('NRAS')
+        BRCA2_coverage = coverage_data['regions'].get('BRCA2')
+        IDH2_coverage = coverage_data['regions'].get('IDH2')
+        TP53_coverage = coverage_data['regions'].get('TP53')
+        ERBB2_coverage = coverage_data['regions'].get('ERBB2')
+        BRCA1_coverage = coverage_data['regions'].get('BRCA1')
 
         # AR overall
         self.assertEqual(AR_coverage.get('av_coverage'), 1021)
@@ -842,18 +838,18 @@ class TestDna(TestCase):
         Check correct coverage values are pulled through for colorectal panel
         
         '''
-        panel_obj = Panel.objects.get(panel_name='Colorectal', dna_or_rna='DNA')
+        panel_obj = Panel.objects.get(panel_name='Colorectal', assay='1', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='dna_test_1',panel=panel_obj)
 
-        coverage_data = get_coverage_data(sample_obj)
+        coverage_data = get_coverage_data(sample_obj, panel_obj.depth_cutoffs)
 
-        NRAS_coverage = coverage_data.get('NRAS')
-        PIK3CA_coverage = coverage_data.get('PIK3CA')
-        EGFR_coverage = coverage_data.get('EGFR')
-        BRAF_coverage = coverage_data.get('BRAF')
-        KRAS_coverage = coverage_data.get('KRAS')
-        PTEN_coverage = coverage_data.get('PTEN')
-        TP53_coverage = coverage_data.get('TP53')
+        NRAS_coverage = coverage_data['regions'].get('NRAS')
+        PIK3CA_coverage = coverage_data['regions'].get('PIK3CA')
+        EGFR_coverage = coverage_data['regions'].get('EGFR')
+        BRAF_coverage = coverage_data['regions'].get('BRAF')
+        KRAS_coverage = coverage_data['regions'].get('KRAS')
+        PTEN_coverage = coverage_data['regions'].get('PTEN')
+        TP53_coverage = coverage_data['regions'].get('TP53')
 
         # NRAS overall
         self.assertEqual(NRAS_coverage.get('av_coverage'), 1220)
@@ -922,17 +918,17 @@ class TestDna(TestCase):
         Check correct coverage values are pulled through for thyroid panel
         
         '''
-        panel_obj = Panel.objects.get(panel_name='Thyroid', dna_or_rna='DNA')
+        panel_obj = Panel.objects.get(panel_name='Thyroid', assay='1', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='dna_test_1',panel=panel_obj)
 
-        coverage_data = get_coverage_data(sample_obj)
+        coverage_data = get_coverage_data(sample_obj, panel_obj.depth_cutoffs)
 
-        NRAS_coverage = coverage_data.get('NRAS')
-        HRAS_coverage = coverage_data.get('HRAS')
-        KRAS_coverage = coverage_data.get('KRAS')
-        BRAF_coverage = coverage_data.get('BRAF')
-        TP53_coverage = coverage_data.get('TP53')
-        RET_coverage = coverage_data.get('RET')
+        NRAS_coverage = coverage_data['regions'].get('NRAS')
+        HRAS_coverage = coverage_data['regions'].get('HRAS')
+        KRAS_coverage = coverage_data['regions'].get('KRAS')
+        BRAF_coverage = coverage_data['regions'].get('BRAF')
+        TP53_coverage = coverage_data['regions'].get('TP53')
+        RET_coverage = coverage_data['regions'].get('RET')
 
         # NRAS overall
         self.assertEqual(NRAS_coverage.get('av_coverage'), 1220)
@@ -994,14 +990,14 @@ class TestDna(TestCase):
         Check correct coverage values are pulled through for lung panel
         
         '''
-        panel_obj = Panel.objects.get(panel_name='Lung', dna_or_rna='DNA')
+        panel_obj = Panel.objects.get(panel_name='Lung', assay='1', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='dna_test_1',panel=panel_obj)
 
-        coverage_data = get_coverage_data(sample_obj)
+        coverage_data = get_coverage_data(sample_obj, panel_obj.depth_cutoffs)
 
-        EGFR_coverage = coverage_data.get('EGFR')
-        BRAF_coverage = coverage_data.get('BRAF')
-        KRAS_coverage = coverage_data.get('KRAS')
+        EGFR_coverage = coverage_data['regions'].get('EGFR')
+        BRAF_coverage = coverage_data['regions'].get('BRAF')
+        KRAS_coverage = coverage_data['regions'].get('KRAS')
 
         # EGFR overall
         self.assertEqual(EGFR_coverage.get('av_coverage'), 1692)
@@ -1043,7 +1039,7 @@ class TestDna(TestCase):
         Includes DNMT3A which has two transcripts so outputted twice, alt transcript should be included in backets
 
         """
-        panel_obj = Panel.objects.get(panel_name='myeloid', dna_or_rna='DNA')
+        panel_obj = Panel.objects.get(panel_name='myeloid', assay='1', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='dna_test_1',panel=panel_obj)
         sample_data = get_sample_info(sample_obj)
 
@@ -1062,7 +1058,7 @@ class TestDna(TestCase):
         Check that a non-myeloid referral type correctly returns False for the 'is_myeloid_referral' variable
         
         """
-        panel_obj = Panel.objects.get(panel_name='Lung', dna_or_rna='DNA')
+        panel_obj = Panel.objects.get(panel_name='Lung', assay='1', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='dna_test_1',panel=panel_obj)
         sample_data = get_sample_info(sample_obj)
 
@@ -1126,7 +1122,7 @@ class TestNTCCalls(TestCase):
 
         '''
         # load sample objects
-        panel_obj = Panel.objects.get(panel_name='Lung', dna_or_rna='DNA')
+        panel_obj = Panel.objects.get(panel_name='Lung', assay='1', genome_build=37, live=True)
 
         sample = SampleAnalysis.objects.get(sample_id='dna_test_2', panel=panel_obj)
         sample_data = get_sample_info(sample)
@@ -1159,8 +1155,8 @@ class TestRna(TestCase):
 
         self.assertEqual(list(samples_dict.keys()), ['rna_test_1'])
 
-        sample = samples_dict.get('rna_test_1')
-        self.assertEqual(sample.get('dna_rna'), 'RNA')
+        #sample = samples_dict.get('rna_test_1')
+        #self.assertEqual(sample.get('dna_rna'), 'RNA')
 
 
     def test_get_sample_info_rna_tumour(self):
@@ -1168,12 +1164,11 @@ class TestRna(TestCase):
         Check sample info for tumour panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='Tumour', dna_or_rna='RNA')
+        panel_obj = Panel.objects.get(panel_name='Tumour', assay='2', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1', panel=panel_obj)
 
         sample_info = get_sample_info(sample_obj)
 
-        self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
         self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
         self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
         self.assertEqual(sample_info.get('panel'), 'Tumour')
@@ -1189,12 +1184,11 @@ class TestRna(TestCase):
         Check sample info for glioma panel 
 
         '''
-        panel_obj = Panel.objects.get(panel_name='Glioma', dna_or_rna='RNA')
+        panel_obj = Panel.objects.get(panel_name='Glioma', assay='2', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1', panel=panel_obj)
 
         sample_info = get_sample_info(sample_obj)
         
-        self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
         self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
         self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
         self.assertEqual(sample_info.get('panel'), 'Glioma')
@@ -1210,12 +1204,11 @@ class TestRna(TestCase):
         Check sample info for gist panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='GIST', dna_or_rna='RNA')
+        panel_obj = Panel.objects.get(panel_name='GIST', assay='2', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1', panel=panel_obj)
 
         sample_info = get_sample_info(sample_obj)
 
-        self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
         self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
         self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
         self.assertEqual(sample_info.get('panel'), 'GIST')
@@ -1231,12 +1224,11 @@ class TestRna(TestCase):
         Check sample info for melanoma panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='Melanoma', dna_or_rna='RNA')
+        panel_obj = Panel.objects.get(panel_name='Melanoma', assay='2', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1', panel=panel_obj)
 
         sample_info = get_sample_info(sample_obj)
         
-        self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
         self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
         self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
         self.assertEqual(sample_info.get('panel'), 'Melanoma')
@@ -1252,12 +1244,11 @@ class TestRna(TestCase):
         Check sample info for lung panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='Lung', dna_or_rna='RNA')
+        panel_obj = Panel.objects.get(panel_name='Lung', assay='2', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1', panel=panel_obj)
 
         sample_info = get_sample_info(sample_obj)
 
-        self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
         self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
         self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
         self.assertEqual(sample_info.get('panel'), 'Lung')
@@ -1273,12 +1264,11 @@ class TestRna(TestCase):
         Check sample info for thyroid panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='Thyroid', dna_or_rna='RNA')
+        panel_obj = Panel.objects.get(panel_name='Thyroid', assay='2', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1', panel=panel_obj)
 
         sample_info = get_sample_info(sample_obj)
 
-        self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
         self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
         self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
         self.assertEqual(sample_info.get('panel'), 'Thyroid')
@@ -1294,12 +1284,11 @@ class TestRna(TestCase):
         Check sample info for ntrk panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='NTRK', dna_or_rna='RNA')
+        panel_obj = Panel.objects.get(panel_name='NTRK', assay='2', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1', panel=panel_obj)
 
         sample_info = get_sample_info(sample_obj)
 
-        self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
         self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
         self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
         self.assertEqual(sample_info.get('panel'), 'NTRK')
@@ -1315,12 +1304,11 @@ class TestRna(TestCase):
         Check sample info for colorectal panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='Colorectal', dna_or_rna='RNA')
+        panel_obj = Panel.objects.get(panel_name='Colorectal', assay='2', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1', panel=panel_obj)
 
         sample_info = get_sample_info(sample_obj)
 
-        self.assertEqual(sample_info.get('dna_or_rna'), 'RNA')
         self.assertEqual(sample_info.get('sample_id'), 'rna_test_1')
         self.assertEqual(sample_info.get('worksheet_id'), 'rna_ws_1')
         self.assertEqual(sample_info.get('panel'), 'Colorectal')
@@ -1336,7 +1324,7 @@ class TestRna(TestCase):
         Check correct calls are present in tumour panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='Tumour', dna_or_rna='RNA')
+        panel_obj = Panel.objects.get(panel_name='Tumour', assay='2', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1',panel=panel_obj)
 
         sample_data = get_sample_info(sample_obj)
@@ -1414,7 +1402,7 @@ class TestRna(TestCase):
         Check correct calls are present in glioma panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='Glioma', dna_or_rna='RNA')
+        panel_obj = Panel.objects.get(panel_name='Glioma', assay='2', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1',panel=panel_obj)
 
         sample_data = get_sample_info(sample_obj)
@@ -1457,7 +1445,7 @@ class TestRna(TestCase):
         Check correct calls are present in melanoma panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='Melanoma', dna_or_rna='RNA')
+        panel_obj = Panel.objects.get(panel_name='Melanoma', assay='2', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1',panel=panel_obj)
 
         sample_data = get_sample_info(sample_obj)
@@ -1490,7 +1478,7 @@ class TestRna(TestCase):
         Check correct calls are present in ntrk panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='NTRK', dna_or_rna='RNA')
+        panel_obj = Panel.objects.get(panel_name='NTRK', assay='2', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1',panel=panel_obj)
 
         sample_data = get_sample_info(sample_obj)
@@ -1523,7 +1511,7 @@ class TestRna(TestCase):
         Check correct calls are present in GIST panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='GIST', dna_or_rna='RNA')
+        panel_obj = Panel.objects.get(panel_name='GIST', assay='2', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1',panel=panel_obj)
 
         sample_data = get_sample_info(sample_obj)
@@ -1556,7 +1544,7 @@ class TestRna(TestCase):
         Check correct calls are present in thyroid panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='Thyroid', dna_or_rna='RNA')
+        panel_obj = Panel.objects.get(panel_name='Thyroid', assay='2', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1',panel=panel_obj)
 
         sample_data = get_sample_info(sample_obj)
@@ -1609,7 +1597,7 @@ class TestRna(TestCase):
         Check correct calls are present in lung panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='Lung', dna_or_rna='RNA')
+        panel_obj = Panel.objects.get(panel_name='Lung', assay='2', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1',panel=panel_obj)
 
         sample_data = get_sample_info(sample_obj)
@@ -1682,7 +1670,7 @@ class TestRna(TestCase):
         Check correct calls are present in colorectal panel
 
         '''
-        panel_obj = Panel.objects.get(panel_name='Colorectal', dna_or_rna='RNA')
+        panel_obj = Panel.objects.get(panel_name='Colorectal', assay='2', genome_build=37, live=True)
         sample_obj = SampleAnalysis.objects.get(sample_id='rna_test_1',panel=panel_obj)
 
         sample_data = get_sample_info(sample_obj)

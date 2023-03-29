@@ -24,15 +24,15 @@ admin.site.register(Worksheet, WorksheetAdmin)
 
 
 class SampleAdmin(admin.ModelAdmin):
-    list_display = ('sample_id', 'sample_name', 'sample_type')
-    search_fields = ['sample_id', 'sample_name', 'sample_type']
+    list_display = ('sample_id', 'sample_name',)
+    search_fields = ['sample_id', 'sample_name',]
 
 admin.site.register(Sample, SampleAdmin)
 
 
 class PanelAdmin(admin.ModelAdmin):
-    list_display = ('id', 'panel_name', 'dna_or_rna')
-    search_fields = ['id', 'panel_name', 'dna_or_rna']
+    list_display = ('id', 'panel_name', 'pretty_print', 'version', 'live', 'genome_build', 'assay', 'show_snvs', 'show_fusions',)
+    search_fields = ['id', 'panel_name', 'pretty_print', 'version', 'live', 'genome_build', 'assay', 'show_snvs', 'show_fusions',]
 
 admin.site.register(Panel, PanelAdmin)
 
@@ -59,8 +59,8 @@ admin.site.register(Check, CheckAdmin)
 
 
 class VariantAdmin(admin.ModelAdmin):
-    list_display = ('id', 'genomic_37', 'genomic_38')
-    search_fields = ['id', 'genomic_37', 'genomic_38']
+    list_display = ('id', 'variant', 'genome_build')
+    search_fields = ['id', 'variant', 'genome_build']
 
 admin.site.register(Variant, VariantAdmin)
 
@@ -69,7 +69,7 @@ class VariantInstanceAdmin(admin.ModelAdmin):
     list_display = ('id', 'get_sample', 'get_var', 'gene', 'hgvs_c', 'hgvs_p', 'vaf', 'final_decision')
     # cant search by vaf as its a class function
     # can't search by final decision because of choice field
-    search_fields = ['id', 'sample__sample_id', 'variant__genomic_37', 'gene', 'hgvs_c', 'hgvs_p',]
+    search_fields = ['id', 'sample__sample_id', 'variant__variant', 'gene', 'hgvs_c', 'hgvs_p',]
 
     # get sample name rather than sample ID
     def get_sample(self, obj):
@@ -79,9 +79,9 @@ class VariantInstanceAdmin(admin.ModelAdmin):
 
     # get variant rather than variant ID
     def get_var(self, obj):
-        return obj.variant.genomic_37
+        return obj.variant.variant
     get_var.short_description = 'variant'
-    get_var.admin_order_field = 'variant__genomic_37'
+    get_var.admin_order_field = 'variant__variant'
 
 admin.site.register(VariantInstance, VariantInstanceAdmin)
 

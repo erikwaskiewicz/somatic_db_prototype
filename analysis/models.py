@@ -40,30 +40,63 @@ class Sample(models.Model):
     An individual sample
 
     """
-    TYPE_CHOICES = (
-        ('DNA', 'DNA'),
-        ('RNA', 'RNA'),
-    )
     sample_id = models.CharField(max_length=50, primary_key=True)
     sample_name = models.CharField(max_length=200, blank=True, null=True)
     sample_name_check = models.BooleanField(default=False)
-    sample_type = models.CharField(max_length=3, choices=TYPE_CHOICES)
+
+
+def make_bedfile_path(instance, filename):
+    """
+    Function to generate filepath when adding bed file to Panel model below
+    """
+    filepath = '/'.join([
+        'roi',
+        f'b{instance.genome_build}',
+        instance.get_assay_display().replace(' ', '_'),
+        f'{instance.panel_name}_variants_b{instance.genome_build}_v{instance.version}.bed'
+    ])
+    return filepath
 
 
 class Panel(models.Model):
     """
-    A virtual panel
-    TODO - add enough info to kick off a reanalysis from within the db
-    e.g. path to BED, ?panel version number
+    A virtual panel. 
+    Contains all the information needed to apply a panel and display the required types of variants
 
     """
-    TYPE_CHOICES = (
-        ('DNA', 'DNA'),
-        ('RNA', 'RNA'),
+    ASSAY_CHOICES = (
+        ('1', 'TSO500 DNA'),
+        ('2', 'TSO500 RNA'),
+        ('3', 'TSO500 ctDNA'),
     )
     panel_name = models.CharField(max_length=50)
-    dna_or_rna = models.CharField(max_length=3, choices=TYPE_CHOICES)
+    pretty_print = models.CharField(max_length=100)
+    version = models.IntegerField()
+    live = models.BooleanField()
+    assay = models.CharField(max_length=1, choices=ASSAY_CHOICES)
+    genome_build = models.IntegerField(default=37)
+
+    # snv settings
+    show_snvs = models.BooleanField()
     show_myeloid_gaps_summary = models.BooleanField(default=False)
+    depth_cutoffs = models.CharField(max_length=50, blank=True, null=True) # either 135,270 or 1000, comma seperated, no spaces
+    vaf_cutoff = models.DecimalField(decimal_places=5, max_digits=10, blank=True, null=True) # formatted as e.g. 1.4%, not 0.014
+    manual_review_required = models.BooleanField(default=False)
+    manual_review_desc = models.CharField(max_length=200, blank=True, null=True) # pipe seperated, no spaces
+    bed_file = models.FileField(upload_to=make_bedfile_path, blank=True, null=True)
+
+    # fusion settings
+    show_fusions = models.BooleanField()
+    show_fusion_coverage = models.BooleanField()
+    fusion_genes = models.CharField(max_length=100, blank=True, null=True) # comma seperated, no spaces
+    splice_genes = models.CharField(max_length=100, blank=True, null=True) # comma seperated, no spaces
+    show_fusion_vaf = models.BooleanField()
+
+    class Meta:
+        unique_together = ('panel_name', 'version', 'assay', 'genome_build')
+
+    def __str__(self):
+        return f'{self.pretty_print} (v{self.version})'
 
 
 class SampleAnalysis(models.Model):
@@ -78,7 +111,22 @@ class SampleAnalysis(models.Model):
     paperwork_check = models.BooleanField(default=False)
     total_reads = models.IntegerField(blank=True, null=True)
     total_reads_ntc = models.IntegerField(blank=True, null=True)
-    percent_reads_ntc = models.CharField(max_length=200, blank=True, null=True)
+    genome_build = models.IntegerField(default=37)
+
+    def percent_reads_ntc(self):
+        """
+        Calculate percent NTC from the total reads in the sample and NTC
+        """
+        if self.total_reads == None or self.total_reads_ntc == None:
+            perc_ntc = None
+        elif self.total_reads == 0:
+            perc_ntc = 100
+        elif self.total_reads_ntc == 0:
+            perc_ntc = 0
+        else:
+            perc_ntc_full = decimal.Decimal(self.total_reads_ntc / self.total_reads) * 100
+            perc_ntc = perc_ntc_full.quantize(decimal.Decimal('.01'), rounding = decimal.ROUND_UP)
+        return perc_ntc
 
     def get_checks(self):
         """
@@ -128,13 +176,14 @@ class Check(models.Model):
         ('F', 'Fail'),
     )
     analysis = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
-    stage = models.CharField(max_length=3, choices=STAGE_CHOICES)
+    stage = models.CharField(max_length=3, choices=STAGE_CHOICES) # TODO - this isnt really needed anymore
     status = models.CharField(max_length=1, choices=STATUS_CHOICES)
     user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True)
     coverage_ntc_check = models.BooleanField(default=False)
     coverage_comment = models.CharField(max_length=500, blank=True)
     coverage_comment_updated = models.DateTimeField(blank=True, null=True)
     patient_info_check = models.BooleanField(default=False)
+    manual_review_check = models.BooleanField(default=False)
     overall_comment = models.CharField(max_length=2000, blank=True)
     overall_comment_updated = models.DateTimeField(blank=True, null=True)
     signoff_time = models.DateTimeField(blank=True, null=True)
@@ -145,8 +194,11 @@ class Variant(models.Model):
     Variant info that always stays the same
 
     """
-    genomic_37 = models.CharField(max_length=200, unique=True)
-    genomic_38 = models.CharField(max_length=200, blank=True, null=True)
+    variant = models.CharField(max_length=200)
+    genome_build = models.IntegerField(default=37)
+    
+    class Meta:
+        unique_together = ('variant','genome_build')
 
 
 class VariantInstance(models.Model):
@@ -175,6 +227,7 @@ class VariantInstance(models.Model):
     in_ntc = models.BooleanField()
     total_count_ntc = models.IntegerField(blank=True, null=True)
     alt_count_ntc = models.IntegerField(blank=True, null=True)
+    gnomad_popmax = models.DecimalField(decimal_places=5, max_digits=10, blank=True, null=True)
     manual_upload = models.BooleanField(default=False)
     final_decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
 
@@ -251,6 +304,7 @@ class VariantList(models.Model):
     )
     name = models.CharField(max_length=50, primary_key=True)
     list_type = models.CharField(max_length=1, choices=TYPE_CHOICES)
+    genome_build = models.IntegerField(default=37)
 
 
 class VariantToVariantList(models.Model):
@@ -295,8 +349,9 @@ class GeneCoverageAnalysis(models.Model):
     sample = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
     gene = models.ForeignKey('Gene', on_delete=models.CASCADE)
     av_coverage = models.IntegerField()
-    percent_270x = models.IntegerField()
-    percent_135x = models.IntegerField()
+    percent_135x = models.IntegerField(blank=True, null=True)
+    percent_270x = models.IntegerField(blank=True, null=True)
+    percent_1000x = models.IntegerField(blank=True, null=True)
     av_ntc_coverage = models.IntegerField()
     percent_ntc = models.IntegerField()
 
@@ -318,8 +373,9 @@ class RegionCoverageAnalysis(models.Model):
     pos_end = models.IntegerField()
     hotspot = models.CharField(max_length=1, choices=HOTSPOT_CHOICES)
     average_coverage = models.IntegerField()
-    percent_270x = models.IntegerField()
-    percent_135x = models.IntegerField()
+    percent_135x = models.IntegerField(blank=True, null=True)
+    percent_270x = models.IntegerField(blank=True, null=True)
+    percent_1000x = models.IntegerField(blank=True, null=True)
     ntc_coverage = models.IntegerField()
     percent_ntc = models.IntegerField()
 
@@ -339,7 +395,7 @@ class GapsAnalysis(models.Model):
     chr_end = models.CharField(max_length=50)
     pos_end = models.IntegerField()
     coverage_cutoff = models.IntegerField()
-    percent_cosmic = models.IntegerField(blank=True, null=True)
+    percent_cosmic = models.DecimalField(decimal_places=2, max_digits=5, blank=True, null=True)
 
     def genomic(self):
         return f'{self.chr_start}:{self.pos_start}_{self.chr_end}:{self.pos_end}'
@@ -352,6 +408,7 @@ class Fusion(models.Model):
     fusion_genes = models.CharField(max_length=50)
     left_breakpoint = models.CharField(max_length=50)
     right_breakpoint = models.CharField(max_length=50)
+    genome_build = models.IntegerField(default=37)
 
 
 class FusionAnalysis(models.Model):
@@ -379,6 +436,18 @@ class FusionAnalysis(models.Model):
     fusion_score = models.CharField(max_length=50, blank=True, null=True)
     in_ntc = models.BooleanField(default=False)
     final_decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
+
+    def vaf(self):
+        """
+        calculate VAF of variant from total and alt read counts
+        VAF is always displayed to two decimal places
+
+        """
+        total_reads = self.fusion_supporting_reads + self.ref_reads_1
+        vaf = decimal.Decimal(self.fusion_supporting_reads / total_reads) * 100
+        vaf_rounded = vaf.quantize(decimal.Decimal('.01'), rounding = decimal.ROUND_DOWN)
+
+        return vaf_rounded
 
 
 class FusionCheck(models.Model):

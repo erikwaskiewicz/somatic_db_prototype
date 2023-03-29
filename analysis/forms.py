@@ -212,6 +212,30 @@ class CoverageCheckForm(forms.Form):
         self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-success'))
 
 
+class ManualVariantCheckForm(forms.Form):
+    """
+    Confirm that a manual review of IGV for specific variants has been completed
+
+    """
+    # hidden field to identify form within view
+    variants_checked = forms.CharField(widget=forms.HiddenInput(), required=False)
+
+    def __init__(self, *args, **kwargs):
+
+        # regions passed in as list
+        self.regions = kwargs.pop('regions')
+
+        super(ManualVariantCheckForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout()
+
+        # loop through regions and make a checkbox for each
+        for r in self.regions:
+            self.fields[r] = forms.BooleanField(required=True, label=r)
+
+        self.helper.add_input(Submit('submit', 'Complete manual check', css_class='btn btn-secondary'))
+
+
 class ConfirmPolyForm(forms.Form):
     """
     Confirm that a variant should be added to the poly list
@@ -239,7 +263,12 @@ class AddNewPolyForm(forms.Form):
     Add a variant to the poly list
 
     """
+    GENOME_CHOICES = (
+        ('37', 'GRCh37'),
+        ('38', 'GRCh38'),
+    )
     variant = forms.CharField()
+    genome = forms.ChoiceField(choices=GENOME_CHOICES)
     comment = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 4}),
         label='Comments'

@@ -9,7 +9,7 @@ from django.template.loader import get_template
 from django.template import Context
 
 
-from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, ConfirmPolyForm, AddNewPolyForm
+from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, ConfirmPolyForm, AddNewPolyForm, ManualVariantCheckForm
 from .models import *
 from .utils import link_callback, get_samples, unassign_check, signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, create_myeloid_coverage_summary, get_poly_list
 
@@ -155,6 +155,7 @@ def view_samples(request, worksheet_id):
     context = {
         'worksheet': worksheet_id,
         'run_id': run_id,
+        'assay': ws_obj.assay,
         'samples': sample_dict,
         'unassign_form': UnassignForm(),
         'check_form': PaperworkCheckForm(),
@@ -194,6 +195,7 @@ def analysis_sheet(request, sample_id):
         'warning': [],
         'sample_data': sample_data,
         'new_variant_form': NewVariantForm(),
+        'manual_check_form': ManualVariantCheckForm(regions=sample_data['panel_manual_regions']),
         'submit_form': SubmitForm(),
         'update_name_form': UpdatePatientName(),
         'sample_comment_form': SampleCommentForm(
@@ -214,14 +216,14 @@ def analysis_sheet(request, sample_id):
     else:
         myeloid_coverage_summary = False
 
-    # DNA workflow
-    if sample_data['dna_or_rna'] == 'DNA':
+    # SNV workflow
+    if sample_data['panel_obj'].show_snvs == True:
         context['variant_data'] = get_variant_info(sample_data, sample_obj)
-        context['coverage_data'] = get_coverage_data(sample_obj)
+        context['coverage_data'] = get_coverage_data(sample_obj, sample_data['panel_obj'].depth_cutoffs)
         context['myeloid_coverage_summary'] = myeloid_coverage_summary
 
-    # RNA workflow
-    elif sample_data['dna_or_rna'] == 'RNA':
+    # fusion workflow
+    if sample_data['panel_obj'].show_fusions == True:
         context['fusion_data'] = get_fusion_info(sample_data, sample_obj)
 
         
@@ -232,7 +234,7 @@ def analysis_sheet(request, sample_id):
     # download PDF reports
     if request.method == 'GET':
 
-        if 'download-dna' in request.GET:
+        if 'download-report' in request.GET:
             filename=f"{context['sample_data']['worksheet_id']}_{context['sample_data']['sample_id']}_{context['sample_data']['panel']}.pdf"
 
             # Create a Django response object, and specify content_type as pdf
@@ -240,7 +242,7 @@ def analysis_sheet(request, sample_id):
             response['Content-Disposition'] = f'attachment; filename="{filename}"'
 
             # find the template and render it.
-            template = get_template('analysis/download_dna_report.html')
+            template = get_template('analysis/download_report.html')
             html = template.render(context)
 
             # create a pdf
@@ -249,25 +251,6 @@ def analysis_sheet(request, sample_id):
             )
 
             return response
-
-        if 'download-rna' in request.GET:
-            filename=f"{context['sample_data']['worksheet_id']}_{context['sample_data']['sample_id']}_{context['sample_data']['panel']}.pdf"
-
-            # Create a Django response object, and specify content_type as pdf
-            response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = f'attachment; filename="{filename}"'
-
-            # find the template and render it.
-            template = get_template('analysis/download_rna_report.html')
-            html = template.render(context)
-
-            # create a pdf
-            pisa_status = pisa.CreatePDF(
-                html, dest=response, link_callback=link_callback
-            )
-
-            return response
-
 
     # submit buttons
     if request.method == 'POST':
@@ -294,6 +277,14 @@ def analysis_sheet(request, sample_id):
 
             # reload variant data
             context['variant_data'] = get_variant_info(sample_data, sample_obj)
+
+        if 'variants_checked' in request.POST:
+            manual_check_form = ManualVariantCheckForm(request.POST, regions=sample_data['panel_manual_regions'])
+
+            if manual_check_form.is_valid():
+                current_step_obj.manual_review_check = True
+                current_step_obj.save()
+                context['sample_data'] = get_sample_info(current_step_obj.analysis)
 
         # coverage comments button
         if 'coverage_comment' in request.POST:
@@ -351,38 +342,51 @@ def analysis_sheet(request, sample_id):
             if new_variant_form.is_valid():
 
                 new_variant_data = new_variant_form.cleaned_data
+		
+                #Error out if total depth is set to zero
+                if new_variant_data['total_reads'] == 0:
+                                	
+                    context['warning'].append('Total read counts can not be zero')
+                    
+                elif new_variant_data['alt_reads'] == 0:
+                
+                     context['warning'].append('Alt read counts can not be zero')
+                    
+                else:
+                
+                    #Lock to same genome build as sample_analysis 
+                    new_variant_object, created = Variant.objects.get_or_create(
+                        variant = new_variant_data['hgvs_g'],
+                        genome_build = sample_obj.genome_build,
 
-                new_variant_object, created = Variant.objects.get_or_create(
-                    genomic_37 = new_variant_data['hgvs_g'],
-                    genomic_38 = None,
-                )
-                new_variant_object.save()
-                new_variant_instance_object = VariantInstance(
-                    variant = new_variant_object,
-                    gene = new_variant_data['gene'],
-                    exon = new_variant_data['exon'],
-                    hgvs_c = new_variant_data['hgvs_c'],
-                    hgvs_p = new_variant_data['hgvs_p'],
-                    sample = sample_obj.sample, 
-                    total_count = new_variant_data['total_reads'], 
-                    alt_count = new_variant_data['alt_reads'], 
-                    in_ntc = new_variant_data['in_ntc'], 
-                    manual_upload = True,
-                )
-                new_variant_instance_object.save()
-                new_variant_panel_object = VariantPanelAnalysis(
-                    variant_instance=new_variant_instance_object, 
-                    sample_analysis=sample_obj
-                )
-                new_variant_panel_object.save()
-                new_variant_check_object = VariantCheck(
-                    variant_analysis=new_variant_panel_object, 
-                    check_object=sample_obj.get_checks().get('current_check_object')
-                )
-                new_variant_check_object.save()
+                    )
+                    new_variant_object.save()
+                    new_variant_instance_object = VariantInstance(
+                        variant = new_variant_object,
+                        gene = new_variant_data['gene'],
+                        exon = new_variant_data['exon'],
+                        hgvs_c = new_variant_data['hgvs_c'],
+                        hgvs_p = new_variant_data['hgvs_p'],
+                        sample = sample_obj.sample, 
+                        total_count = new_variant_data['total_reads'], 
+                        alt_count = new_variant_data['alt_reads'], 
+                        in_ntc = new_variant_data['in_ntc'], 
+                        manual_upload = True,
+                    )
+                    new_variant_instance_object.save()
+                    new_variant_panel_object = VariantPanelAnalysis(
+                        variant_instance=new_variant_instance_object, 
+                        sample_analysis=sample_obj
+                    )
+                    new_variant_panel_object.save()
+                    new_variant_check_object = VariantCheck(
+                        variant_analysis=new_variant_panel_object, 
+                        check_object=sample_obj.get_checks().get('current_check_object')
+                    )
+                    new_variant_check_object.save()
 
-                # reload context
-                context['variant_data'] = get_variant_info(sample_data, sample_obj)
+                    # reload context
+                    context['variant_data'] = get_variant_info(sample_data, sample_obj)
 
 
         # overall sample comments form
@@ -424,11 +428,15 @@ def analysis_sheet(request, sample_id):
                 if sample_data['sample_name'] == None:
                     context['warning'].append('Did not finalise check - input patient name before continuing')
 
-                if (sample_data['dna_or_rna'] == 'DNA') and (current_step_obj.coverage_ntc_check == False) and (next_step != "Fail sample"):
+                if (sample_data['panel_obj'].show_snvs == True) and (current_step_obj.coverage_ntc_check == False) and (next_step != "Fail sample"):
                     context['warning'].append('Did not finalise check - check NTC before continuing')
 
                 if current_step_obj.patient_info_check == False:
                     context['warning'].append('Did not finalise check - check patient demographics before continuing')
+
+                if sample_data['panel_obj'].manual_review_required:
+                    if not current_step_obj.manual_review_check:
+                        context['warning'].append('Did not finalise check - manual variant review in IGV required, see top of SNVs & indels tab')
 
                 # only enter this loop if there are no warnings so far, otherwise the warnings above get skipped
                 if len(context['warning']) == 0:
@@ -449,13 +457,14 @@ def analysis_sheet(request, sample_id):
                             variants_match = True
                             non_matching_variants = []
 
-                            if sample_data['dna_or_rna'] == 'DNA':
+                            # check for variants/fusions with disagreeing checks
+                            if sample_data['panel_obj'].show_snvs == True:
                                 for variant in context['variant_data']['variant_calls']:
                                     if not variant['latest_checks_agree']:
                                         variants_match = False
                                         non_matching_variants.append(variant['genomic'])
 
-                            elif sample_data['dna_or_rna'] == 'RNA':
+                            if sample_data['panel_obj'].show_fusions == True:
                                 for fusion in context['fusion_data']['fusion_calls']:
                                     if not fusion['latest_checks_agree']:
                                         variants_match = False
@@ -503,13 +512,7 @@ def analysis_sheet(request, sample_id):
 
 
     # render the pages
-    if sample_data['dna_or_rna'] == 'DNA':
-        return render(request, 'analysis/analysis_sheet_dna.html', context)
-    if sample_data['dna_or_rna'] == 'RNA':
-        return render(request, 'analysis/analysis_sheet_rna.html', context)
-
-    else:
-        raise Http404(f'Sample must be either DNA or RNA, not {sample_data["dna_or_rna"]}')
+    return render(request, 'analysis/analysis_sheet.html', context)
 
 
 def ajax(request):
@@ -520,11 +523,11 @@ def ajax(request):
 
         sample_pk = request.POST.get('sample_pk')
         sample_obj = SampleAnalysis.objects.get(pk = sample_pk)
-        dna_or_rna = sample_obj.sample.sample_type
 
         selections = json.loads(request.POST.get('selections'))
+        variant_type = request.POST.get('variant_type')
 
-        if dna_or_rna == 'DNA':
+        if variant_type == 'snv':
             for variant in selections:
                 variant_obj = VariantPanelAnalysis.objects.get(pk=variant)
                 current_check = variant_obj.get_current_check()
@@ -533,7 +536,7 @@ def ajax(request):
                 current_check.decision = new_choice
                 current_check.save()
 
-        elif dna_or_rna == 'RNA':
+        elif variant_type == 'fusion':
             for variant in selections:
                 fusion_obj = FusionPanelAnalysis.objects.get(pk=variant)
                 current_check = fusion_obj.get_current_check()
@@ -553,19 +556,29 @@ def view_polys(request):
     Page to view all confirmed polys and add and check new ones
 
     """
-    # load poly list object
-    list_name = 'TSO500_polys'
-    poly_list = VariantList.objects.get(name=list_name)
+    #Get all poly lists
+    poly_list = VariantList.objects.filter(list_type='P')
 
-    # pull out list of confirmed polys and polys to be checked
-    confirmed_list, checking_list = get_poly_list(poly_list, request.user)
+    # pull out list of confirmed polys and polys to be checked - this will initially make a list of lists - then convert into a single list! 
+    confirmed_list = []
+    checking_list = []
+
+    for i in poly_list:
+        
+        temp_confirmed_list, temp_checking_list = get_poly_list(i, request.user)
+        confirmed_list.append(temp_confirmed_list)
+        checking_list.append(temp_checking_list)
+    
+    #Flatten the list of lists    
+    confirmed_list_final = [item for sublist in confirmed_list for item in sublist]
+    checking_list_final = [item for sublist in checking_list for item in sublist]
 
     # make context dictionary
     context = {
         'success': [],
         'warning': [],
-        'confirmed_list': confirmed_list,
-        'checking_list': checking_list,
+        'confirmed_list': confirmed_list_final,
+        'checking_list': checking_list_final,
         'confirm_form': ConfirmPolyForm(),
         'add_new_form': AddNewPolyForm(),
     }
@@ -593,12 +606,28 @@ def view_polys(request):
 
                 # get genomic coords
                 variant_obj = variant_to_variant_list_obj.variant
-                variant = variant_obj.genomic_37
+                variant = variant_obj.variant
 
                 # reload context
-                confirmed_list, checking_list = get_poly_list(poly_list, request.user)
-                context['confirmed_list'] = confirmed_list
-                context['checking_list'] = checking_list
+                #Get all poly lists
+                poly_list = VariantList.objects.filter(list_type='P')
+
+                # pull out list of confirmed polys and polys to be checked - this will initially make a list of lists - then convert into a single list! 
+                confirmed_list = []
+                checking_list = []
+
+                for i in poly_list:
+        
+                    temp_confirmed_list, temp_checking_list = get_poly_list(i, request.user)
+                    confirmed_list.append(temp_confirmed_list)
+                    checking_list.append(temp_checking_list)
+    
+                #Flatten the list of lists    
+                confirmed_list_final = [item for sublist in confirmed_list for item in sublist]
+                checking_list_final = [item for sublist in checking_list for item in sublist]
+                
+                context['confirmed_list'] = confirmed_list_final
+                context['checking_list'] = checking_list_final
                 context['success'].append(f'Variant {variant} added to poly list')
 
         # if add new poly button is pressed
@@ -610,14 +639,22 @@ def view_polys(request):
                 # get form data
                 variant = add_new_form.cleaned_data['variant']
                 comment = add_new_form.cleaned_data['comment']
-
+                genome = add_new_form.cleaned_data['genome']
+            
                 # wrap in try/ except to handle when a variant doesnt match the input
                 try:
                     # load in variant and variant to list objects
-                    variant_obj = Variant.objects.get(genomic_37=variant)
+                    variant_obj = Variant.objects.get(variant=variant, genome_build=genome)
+                   
+                    if genome == '37':
+                        poly_list = VariantList.objects.get(name='build_37_polys')
+      
+                    elif genome == '38':
+                        poly_list = VariantList.objects.get(name='build_38_polys')
+                        
                     variant_to_variant_list_obj, created = VariantToVariantList.objects.get_or_create(
                         variant_list = poly_list,
-                        variant = variant_obj
+                        variant = variant_obj,
                     )
 
                     # add user info if a new model is created
@@ -635,9 +672,25 @@ def view_polys(request):
                         context['warning'].append(f'Variant {variant} is already in the poly list')
 
                     # reload context
-                    confirmed_list, checking_list = get_poly_list(poly_list, request.user)
-                    context['confirmed_list'] = confirmed_list
-                    context['checking_list'] = checking_list
+                    #Get all poly lists
+                    poly_list = VariantList.objects.filter(list_type='P')
+
+                    # pull out list of confirmed polys and polys to be checked - this will initially make a list of lists - then convert into a single list! 
+                    confirmed_list = []
+                    checking_list = []
+ 
+                    for i in poly_list:
+        
+                        temp_confirmed_list, temp_checking_list = get_poly_list(i, request.user)
+                        confirmed_list.append(temp_confirmed_list)
+                        checking_list.append(temp_checking_list)
+    
+                    #Flatten the list of lists    
+                    confirmed_list_final = [item for sublist in confirmed_list for item in sublist]
+                    checking_list_final = [item for sublist in checking_list for item in sublist]
+        
+                    context['confirmed_list'] = confirmed_list_final
+                    context['checking_list'] = checking_list_final
 
                 # throw error if there isnt a variant matching the input
                 except Variant.DoesNotExist:

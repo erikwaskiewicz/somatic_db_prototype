@@ -20,7 +20,7 @@
     <thead>
       <tr>
         <th scope="col">Sample ID</th>
-        <th scope="col">DNA/ RNA</th>
+        <th scope="col">Assay</th>
         <th scope="col">Panel</th>
         <th scope="col">Status</th>
         <th scope="col">Assigned to</th>
@@ -32,7 +32,7 @@
         {% for analysis in sample_info.panels %}
         <tr>
           <td>{{ sample }}</td>
-          <td>{{ sample_info.dna_rna }}</td>
+          <td>{{ assay }}</td>
           <td>{{ analysis.panel }}</td>
           <td>{{ analysis.checks.current_status }}</td>
           <td>{{ analysis.checks.assigned_to }}</td>

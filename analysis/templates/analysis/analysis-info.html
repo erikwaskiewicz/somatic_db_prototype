@@ -23,11 +23,19 @@
     </tr>
     <tr>
       <td><b>Panel</b></td>
-      <td>{{ sample_data.panel }}</td>
+      <td>{{ sample_data.panel_obj }}</td>
     </tr>
     <tr>
       <td><b>Run ID</b></td>
       <td>{{ sample_data.run_id }}</td>
+    </tr>
+    <tr>
+      <td><b>Genome Build</b></td>
+      {% if sample_data.genome_build == 37 %}
+      <td><span class = "badge badge-info badge-pill">GRCh{{ sample_data.genome_build }}</td>
+      {% elif sample_data.genome_build == 38 %}
+      <td><span class = "badge badge-success badge-pill">GRCh{{ sample_data.genome_build }}</td>
+      {% endif %}   
     </tr>
   </tbody>
 </table>

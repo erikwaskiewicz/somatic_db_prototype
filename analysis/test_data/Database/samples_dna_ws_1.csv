@@ -5,3 +5,6 @@ dna_test_1,dna_ws_1,DNA,Thyroid
 dna_test_1,dna_ws_1,DNA,GIST
 dna_test_1,dna_ws_1,DNA,Melanoma
 dna_test_1,dna_ws_1,DNA,Colorectal
+dna_test_1,dna_ws_1,DNA,myeloid
+dna_test_1,dna_ws_1,DNA,cll
+dna_test_1,dna_ws_1,DNA,mpn
