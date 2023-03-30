@@ -3,7 +3,7 @@ echo -e "INFO\t"$(date +"%Y-%m-%d %T.%6N")"\tupload.sh\tFound new samples file -
 
 for s in $(cat $1); do
     # get path where samples file is located
-    data_folder="$PWD"/"$(dirname $1)"
+    data_folder=$(dirname $1)
     data_file=$(basename $1)
 
     # get common variables

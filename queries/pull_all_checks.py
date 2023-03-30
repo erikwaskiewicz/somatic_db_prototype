@@ -11,15 +11,17 @@ from django.contrib.humanize.templatetags.humanize import ordinal
 
 
 # set date range
-start_date = datetime.date(2021, 11, 1)
-end_date = datetime.date(2022, 11, 1)
+start_date = datetime.date(2022, 4, 1)
+end_date = datetime.date(2023, 3, 31)
 
 # headers and list to save output
-out_list = [['Sample', 'Worksheet', 'DNA/RNA', 'Run', 'Date', 'Check #', 'Check result', 'User', 'Database link']]
+out_list = [['Sample', 'Worksheet', 'Assay', 'Run', 'Date', 'Check #', 'Number of checks', 'Check result', 'User', 'Database link']]
 
 # get all sample analyses and loop through
 samples = SampleAnalysis.objects.all()
 for s in samples:
+
+    num_checks = str(len(s.get_checks()['all_checks']))
 
     # get all checks for each sample analysis
     for n, check in enumerate(s.get_checks()['all_checks']):
@@ -57,10 +59,11 @@ for s in samples:
             out_list.append([
                 s.sample.sample_id,
                 s.worksheet.ws_id,
-                s.sample.sample_type,
+                s.worksheet.assay,
                 s.worksheet.run.run_id,
                 signoff,
                 count,
+                num_checks,
                 status,
                 username,
                 link,
