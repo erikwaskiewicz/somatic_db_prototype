@@ -9,9 +9,9 @@ from django.template.loader import get_template
 from django.template import Context
 
 
-from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, ConfirmPolyForm, AddNewPolyForm, ManualVariantCheckForm
+from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, ConfirmPolyForm, AddNewPolyForm, ManualVariantCheckForm, ReopenForm
 from .models import *
-from .utils import link_callback, get_samples, unassign_check, signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, create_myeloid_coverage_summary, get_poly_list
+from .utils import link_callback, get_samples, unassign_check, reopen_check, signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, create_myeloid_coverage_summary, get_poly_list
 
 
 import json
@@ -136,6 +136,21 @@ def view_samples(request, worksheet_id):
 
                 # redirect to force refresh, otherwise form could accidentally be resubmitted when refreshing the page
                 return redirect('view_samples', worksheet_id)
+            
+        # if reopen modal button is pressed
+        if 'reopen' in request.POST:
+            reopen_form = ReopenForm(request.POST)
+            if reopen_form.is_valid():
+                # get sample analysis pk from form
+                sample_pk = reopen_form.cleaned_data['reopen']
+                sample_analysis_obj = SampleAnalysis.objects.get(pk=sample_pk)
+
+                # reopen the check
+                current_user = request.user
+                reopen_check(current_user, sample_analysis_obj)
+
+                # redirect to force refresh
+                return redirect('view_samples', worksheet_id)
 
         # if someone starts a first check
         if 'paperwork_check' in request.POST:
@@ -159,6 +174,7 @@ def view_samples(request, worksheet_id):
         'samples': sample_dict,
         'unassign_form': UnassignForm(),
         'check_form': PaperworkCheckForm(),
+        'reopen_form': ReopenForm(),
     }
 
     return render(request, 'analysis/view_samples.html', context)

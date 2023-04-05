@@ -38,8 +38,22 @@
           <td>{{ analysis.checks.assigned_to }}</td>
           <td style="text-align:right">
             
+            <!-- button when analysis is complete and the logged in user did the most recent check -->
+            {% if analysis.checks.current_status == 'Complete' and request.user == analysis.checks.current_check_object.user %}
+            <div class="btn-group btn-block">
+              <a class="btn btn-info btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">Complete</a>
+              <button type="button btn-block" class="btn btn-info dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" data-toggle="modal" data-target="#reopen-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.current_check_object.user }}">
+                  Reopen Previous Check
+                </a>
+              </div>
+            </div>
+            
             <!-- button when analysis is complete -->
-            {% if analysis.checks.current_status == 'Complete' %}
+            {% elif analysis.checks.current_status == 'Complete' %}
             <a class="btn btn-light btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">View</a>
 
             <!-- buttons when analysis is a fail -->
@@ -164,6 +178,45 @@
   </div>
 </div>
 
+<!-- Reopen modal -->
+<div class="modal fade" id="reopen-modal" tabindex="-1" role="dialog" aria-labelledby="reopen-modal-label" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reopen-modal-label">Reopen Most Recent Check</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger">
+          <strong>Warning!</strong> Are you sure you want to continue?<br>
+          This sample will be reopened at its previous check. 
+        </div>
+
+        <table class="table table-sm table-striped table-hover">
+          <tbody>
+            <tr>
+              <th>Sample</td>
+              <td class="modal-sample"></td>
+            </tr>
+            <tr>
+              <th>Panel</td>
+              <td class="modal-panel"></td>
+            </tr>
+            <tr>
+              <th>Assigned to</td>
+              <td class="modal-assigned"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        {% crispy reopen_form %}
+
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Check modal -->
 <div class="modal fade" id="check-modal" tabindex="-1" role="dialog" aria-labelledby="check-modal-label" aria-hidden="true">
@@ -291,6 +344,25 @@
 
         // put sample PK into hidden form so that it can be passed to backend
         document.getElementById ('id_unassign').value = pk;
+    })
+
+    // pull analysis PK into the reopen modal
+    $('#reopen-modal').on('show.bs.modal', function (event) {
+        // extract variables from button tags
+        var button = $(event.relatedTarget);
+        var pk = button.data('pk');
+        var sample = button.data('sample');
+        var panel = button.data('panel');
+        var assigned = button.data('user');
+        var modal = $(this);
+
+        // fill out table of sample details
+        modal.find('.modal-sample').text(sample);
+        modal.find('.modal-panel').text(panel);
+        modal.find('.modal-assigned').text(assigned);
+
+        // put sample PK into hidden form so that it can be passed to backend
+        document.getElementById ('id_reopen').value = pk;
     })
 
     // pull analysis PK into the check modal
