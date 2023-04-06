@@ -39,6 +39,7 @@
         <th scope="col">Assay</th>
         <th scope="col">Status</th>
         <th scope="col"></th>
+        <th scope="col"></th>
       </tr>
     </thead>
     <tbody>
@@ -53,6 +54,7 @@
               View samples
           </a>
         </td>
+        <td>{{ ws.samples }}</td>
       </tr>
       {% endfor %}
     </tbody>
@@ -74,13 +76,14 @@
                 {orderable: true},
                 {orderable: true},
                 {orderable: false},
+                {orderable: false, visible: false}
             ],
             info: true,
             pageLength: 10,
             searching: true,
             aaSorting: [],
             language: {
-                searchPlaceholder: "Search by run ID, worksheet ID, assay or status",
+                searchPlaceholder: "Search by run ID, worksheet ID, sample, assay or status",
                 search: "",
             },
             initComplete: function () {

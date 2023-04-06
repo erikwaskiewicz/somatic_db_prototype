@@ -33,6 +33,11 @@ class Worksheet(models.Model):
         samples = SampleAnalysis.objects.filter(worksheet = self)
         l = [ s.get_checks()['current_status'] for s in samples ]
         return ' | '.join( set(l) )
+    
+    def get_samples(self):
+        samples = SampleAnalysis.objects.filter(worksheet = self)
+        sample_list = [i.sample.sample_id for i in samples]
+        return sample_list
 
 
 class Sample(models.Model):

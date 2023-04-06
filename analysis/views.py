@@ -92,6 +92,7 @@ def view_worksheets(request, query):
                 'run_id': w.run.run_id,
                 'assay': w.assay,
                 'status': w.get_status(),
+                'samples': w.get_samples()
             })
         else:
             other_ws_list.append({
@@ -99,6 +100,7 @@ def view_worksheets(request, query):
                 'run_id': w.run.run_id,
                 'assay': w.assay,
                 'status': w.get_status(),
+                'samples': w.get_samples()
             })
 
     ws_list = diagnostics_ws_list + other_ws_list
