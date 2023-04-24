@@ -50,6 +50,14 @@ class Command(BaseCommand):
         """
         Use in coverage upload section to add specific gaps for a list in the coverage JSON
         """
+        if gap['percent_cosmic'] is not None:
+            if np.isnan(gap['percent_cosmic']):
+                gap['percent_cosmic'] = None
+                
+        if gap['counts_cosmic'] is not None:
+            if np.isnan(gap['counts_cosmic']):
+                gap['counts_cosmic'] = None
+        
         # error handling for COSMIC
         if gap['percent_cosmic'] == 'N/A':
             perc_cosmic = None
@@ -297,6 +305,9 @@ class Command(BaseCommand):
                         # if gnomad frequency not there, make it None
                         if 'gnomad_popmax_AF' not in v:
                             v['gnomad_popmax_AF'] = None
+                            
+                        if v['in_ntc'] == '':
+                        	v['in_ntc'] = False
 
                         # make new instance of variant
                         new_var_instance = VariantInstance(
