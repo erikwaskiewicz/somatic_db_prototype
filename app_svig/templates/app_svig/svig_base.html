@@ -1,0 +1,20 @@
+{% extends 'analysis/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block breadcrumbs %}
+<nav class="breadcrumb flex-nowrap" aria-label="breadcrumb">
+  <div class="container">
+    <a class="breadcrumb-item active" href="{% url 'home' %}" aria-current="page"><span class="fa fa-home"></span></a>
+    <a class="breadcrumb-item active" href="{% url 'view-all-svig' %}" aria-current="page">S-VIG</a>
+    <a class="breadcrumb-item active" aria-current="page">{{ classification }}</a>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h5>{{ classification }}</h5>
+    <br>
+
+</div>
+{% endblock %}

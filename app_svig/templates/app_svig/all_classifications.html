@@ -11,22 +11,40 @@
 {% endblock %}
 
 {% block content %}
-
-
-<h1>hello world</h1>
-
+<div class="container">
+    <h5>S-VIG</h5>
+    <br>
+    <table class="table" id="classifications-table">
+      <thead>
+        <tr>
+          <th scope="col">Variant</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in classifications %}
+        <tr>
+          <td>{{ c }}</td>
+          <td style="text-align:right">
+            <a class="btn btn-secondary" href="{% url 'svig-analysis' c.pk %}" role="button">View</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <br>
+    <br>
+  
+  </div>
 
 
 <script>
     $(document).ready( function() {
 
         // Inititialise DataTable
-        $('#worksheets-table').DataTable({
+        $('#classifications-table').DataTable({
             paging: true,
             columns: [
-                {orderable: true},
-                {orderable: true},
-                {orderable: true},
                 {orderable: true},
                 {orderable: false},
             ],
@@ -35,7 +53,7 @@
             searching: true,
             aaSorting: [],
             language: {
-                searchPlaceholder: "Search by run ID, worksheet ID, assay or status",
+                searchPlaceholder: "Search",
                 search: "",
             },
             initComplete: function () {

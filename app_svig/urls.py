@@ -4,5 +4,6 @@ from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
-    path('', views.home, name='svig-home'),
+    path('', views.view_classifications, name='view-all-svig'),
+    path('classify/<str:classification>', views.classify, name='svig-analysis'),
 ]
