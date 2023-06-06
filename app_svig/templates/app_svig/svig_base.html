@@ -13,8 +13,121 @@
 
 {% block content %}
 <div class="container">
-    <h5>{{ classification }}</h5>
-    <br>
 
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th scope="col">Sample</th>
+        <th scope="col">Name</th>
+        <th scope="col">Referral</th>
+        <th scope="col">Worksheet</th>
+        <th scope="col">Status</th>
+        <th scope="col">Assigned to</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+
+    </tbody>
+  </table>
 </div>
+
+<br>
+
+<div class="container-fluid">
+  <ul class="nav nav-tabs nav-justified">
+
+    <li class="nav-item">
+      <a class="nav-link section-button active" href="#details" data-target="details">Variant details</a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link section-button" href="#svig" data-target="svig">Classify</a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link section-button" href="#finalise" data-target="finalise">Finalise</a>
+    </li>
+
+
+  </ul>
+</div>
+<br>
+
+
+<!-- load in each section from template -->
+<div class="container-fluid" id="details">{% include 'app_svig/svig_info.html' %}</div>
+<div class="container-fluid" id="svig">{% include 'app_svig/svig_classify.html' %}</div>
+<div class="container-fluid" id="finalise">{% include 'app_svig/svig_finalise.html' %}</div>
+
+
+
+
+<!--------------------------------------------------------------------------------------- 
+    Javascript
+---------------------------------------------------------------------------------------->
+<script>
+
+    // function to clear all sections
+    function clear_sections(sections) {
+        var i;
+        for (i=0; i<sections.length; i++) {
+            $(sections[i]).hide();
+        };
+    };
+
+
+    // function to show specific section
+    function show_section(target, sections) {
+        // clear all sections content
+        clear_sections(sections);
+        // get button for section
+        for (i=0; i<$('.section-button').length; i++) {
+            var temp = '#' + $('.section-button')[i].dataset.target;
+            if ( target == temp ) {
+                var section_button = $('.section-button')[i];
+            };
+        };
+        // clear active class from all, then add to current button
+        $('.section-button').removeClass('active');
+        $(section_button).addClass('active');
+        // add section content
+        $(target).fadeIn(200);
+    };
+
+
+    // get a list of section buttons
+    var i; var sections_list = [];
+    for (i=0; i<$('.section-button').length; i++) {
+        sections_list.push('#' + $('.section-button')[i].dataset.target);
+    };
+
+
+    // page loadup - load section after hash otherwise load overview
+    clear_sections(sections_list);
+    if ( sections_list.includes(window.location.hash)) {
+        show_section(window.location.hash, sections_list);
+    } else {
+        $("#details").fadeIn(200)
+    };
+
+
+    // handler for section button click
+    $('.section-button').click(function() {
+        var target = '#' + $(this).data('target');
+        show_section(target, sections_list);
+    });
+
+</script>
+
+
+
 {% endblock %}
