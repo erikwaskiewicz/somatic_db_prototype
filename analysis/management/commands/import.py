@@ -180,6 +180,16 @@ class Command(BaseCommand):
             genome_build = 37
         else:
             raise IOError(f'Genome build {genome} is neither GRCh37 or GRCh38')
+            
+        #Check that worksheet not already uploaded with another sequencing run
+        exist_worksheets = Worksheet.objects.filter(ws_id = ws)
+        
+        if len(exist_worksheets) != 0:
+        
+        	for worksheet in exist_worksheets:
+        	
+        		if worksheet.run.run_id != run_id:
+        			raise IOError(f'Worksheet {ws} uploaded already on another sequencing run {worksheet.run.run_id}. Please edit worksheet ID and try again e.g. {ws}R')
 
 
         # ---------------------------------------------------------------------------------------------------------
