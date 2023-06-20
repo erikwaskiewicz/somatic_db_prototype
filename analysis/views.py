@@ -86,21 +86,22 @@ def view_worksheets(request, query):
 
     for w in worksheets:
         # if first two characters are digits, add to diagnostics list, otherwise add to other list
+        status, samples = w.get_status_and_samples()
         if w.diagnostic:
             diagnostics_ws_list.append({
                 'worksheet_id': w.ws_id,
                 'run_id': w.run.run_id,
                 'assay': w.assay,
-                'status': w.get_status(),
-                'samples': w.get_samples()
+                'status': status,
+                'samples': samples
             })
         else:
             other_ws_list.append({
                 'worksheet_id': w.ws_id,
                 'run_id': w.run.run_id,
                 'assay': w.assay,
-                'status': w.get_status(),
-                'samples': w.get_samples()
+                'status': status,
+                'samples': samples
             })
 
     ws_list = diagnostics_ws_list + other_ws_list

@@ -29,15 +29,18 @@ class Worksheet(models.Model):
     def __str__(self):
         return self.ws_id
 
-    def get_status(self):
+    def get_status_and_samples(self):
+        # get all sample analysis objects
         samples = SampleAnalysis.objects.filter(worksheet = self)
-        l = [ s.get_checks()['current_status'] for s in samples ]
-        return ' | '.join( set(l) )
-    
-    def get_samples(self):
-        samples = SampleAnalysis.objects.filter(worksheet = self)
+
+        # get list of all unique statuses and concatenate
+        all_status = [ s.get_checks()['current_status'] for s in samples ]
+        status = ' | '.join( set(all_status) )
+        
+        # get all sample IDs
         sample_list = [i.sample.sample_id for i in samples]
-        return sample_list
+
+        return status, sample_list
 
 
 class Sample(models.Model):
