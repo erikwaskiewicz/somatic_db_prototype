@@ -20,6 +20,21 @@ class UnassignForm(forms.Form):
         )
 
 
+class ReopenForm(forms.Form):
+    """
+    Form that allows the user who closed the case to reopen the most recent check
+    """
+    reopen = forms.CharField(widget=forms.HiddenInput(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(ReopenForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', "I'm sure", css_class='btn btn-danger w-100')
+        )
+
+
 class PaperworkCheckForm(forms.Form):
     """
     Form that users tick after they have checked patient paperwork to confirm referral is correct
