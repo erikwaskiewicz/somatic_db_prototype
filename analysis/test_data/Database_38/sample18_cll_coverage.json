@@ -1,0 +1,124 @@
+{
+    "TP53": {
+        "average_depth": 482,
+        "percent_135": 84,
+        "percent_270": 76,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr17",
+                "pos_start": 7669603,
+                "pos_end": 7669695,
+                "hgvs_c": "TP53(NM_000546.6):exon_11",
+                "average_coverage": 1063,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7670603,
+                "pos_end": 7670720,
+                "hgvs_c": "TP53(NM_000546.6):exon_10",
+                "average_coverage": 244,
+                "percent_270": 46,
+                "percent_135": 84,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7673529,
+                "pos_end": 7673613,
+                "hgvs_c": "TP53(NM_000546.6):exon_9",
+                "average_coverage": 1071,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7673695,
+                "pos_end": 7673842,
+                "hgvs_c": "TP53(NM_000546.6):exon_8",
+                "average_coverage": 454,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7674175,
+                "pos_end": 7674295,
+                "hgvs_c": "TP53(NM_000546.6):exon_7",
+                "average_coverage": 454,
+                "percent_270": 95,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7674853,
+                "pos_end": 7674976,
+                "hgvs_c": "TP53(NM_000546.6):exon_6",
+                "average_coverage": 721,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7675047,
+                "pos_end": 7675241,
+                "hgvs_c": "TP53(NM_000546.6):exon_5",
+                "average_coverage": 240,
+                "percent_270": 33,
+                "percent_135": 42,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7675988,
+                "pos_end": 7676277,
+                "hgvs_c": "TP53(NM_000546.6):exon_4",
+                "average_coverage": 323,
+                "percent_270": 62,
+                "percent_135": 77,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7676376,
+                "pos_end": 7676408,
+                "hgvs_c": "TP53(NM_000546.6):exon_3",
+                "average_coverage": 441,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7676515,
+                "pos_end": 7676599,
+                "hgvs_c": "TP53(NM_000546.6):exon_2",
+                "average_coverage": 443,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    }
+}

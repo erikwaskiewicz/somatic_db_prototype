@@ -1,0 +1,82 @@
+{
+    "MPL": {
+        "average_depth": 18,
+        "percent_135": 0,
+        "percent_270": 0,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr1",
+                "pos_start": 43349257,
+                "pos_end": 43349364,
+                "hgvs_c": "MPL(NM_005373.3):exon_10",
+                "average_coverage": 18,
+                "percent_270": 0,
+                "percent_135": 0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "JAK2": {
+        "average_depth": 1174,
+        "percent_135": 100,
+        "percent_270": 100,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr9",
+                "pos_start": 5069919,
+                "pos_end": 5070057,
+                "hgvs_c": "JAK2(NM_004972.4):exon_12)",
+                "average_coverage": 1171,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr9",
+                "pos_start": 5073763,
+                "pos_end": 5073778,
+                "hgvs_c": "JAK2(NM_004972.4):codon_V617)",
+                "average_coverage": 1196,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "CALR": {
+        "average_depth": 820,
+        "percent_135": 94,
+        "percent_270": 86,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr19",
+                "pos_start": 12943707,
+                "pos_end": 12943918,
+                "hgvs_c": "CALR(NM_004343.4):exon_9",
+                "average_coverage": 820,
+                "percent_270": 86,
+                "percent_135": 94,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    }
+}

@@ -1,0 +1,1778 @@
+{
+    "MPL": {
+        "average_depth": 108,
+        "percent_135": 35,
+        "percent_270": 0,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr1",
+                "pos_start": 43349257,
+                "pos_end": 43349364,
+                "hgvs_c": "MPL(NM_005373.3):exon_10",
+                "average_coverage": 108,
+                "percent_270": 0,
+                "percent_135": 35,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "NRAS": {
+        "average_depth": 1600,
+        "percent_135": 100,
+        "percent_270": 100,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr1",
+                "pos_start": 114713900,
+                "pos_end": 114713915,
+                "hgvs_c": "NRAS(NM_002524.5):codon_Q61",
+                "average_coverage": 1364,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr1",
+                "pos_start": 114716115,
+                "pos_end": 114716133,
+                "hgvs_c": "NRAS(NM_002524.5):codons_G12-13",
+                "average_coverage": 1797,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "DNMT3A": {
+        "average_depth": 371,
+        "percent_135": 62,
+        "percent_270": 48,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr2",
+                "pos_start": 25234273,
+                "pos_end": 25234425,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_23",
+                "average_coverage": 312,
+                "percent_270": 63,
+                "percent_135": 86,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25235701,
+                "pos_end": 25235830,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_22",
+                "average_coverage": 1250,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25236930,
+                "pos_end": 25237010,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_21",
+                "average_coverage": 495,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25239124,
+                "pos_end": 25239220,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_20",
+                "average_coverage": 690,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25240296,
+                "pos_end": 25240455,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_19",
+                "average_coverage": 683,
+                "percent_270": 88,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25240634,
+                "pos_end": 25240735,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_18",
+                "average_coverage": 686,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25241556,
+                "pos_end": 25241712,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_17",
+                "average_coverage": 185,
+                "percent_270": 18,
+                "percent_135": 78,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25243892,
+                "pos_end": 25243987,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_16",
+                "average_coverage": 555,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25244149,
+                "pos_end": 25244343,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_15",
+                "average_coverage": 114,
+                "percent_270": 0,
+                "percent_135": 32,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25244534,
+                "pos_end": 25244657,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_14",
+                "average_coverage": 315,
+                "percent_270": 75,
+                "percent_135": 97,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25245247,
+                "pos_end": 25245337,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_13",
+                "average_coverage": 470,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25246014,
+                "pos_end": 25246069,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_12",
+                "average_coverage": 170,
+                "percent_270": 0,
+                "percent_135": 70,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25246154,
+                "pos_end": 25246314,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_11",
+                "average_coverage": 455,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25246614,
+                "pos_end": 25246781,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_10",
+                "average_coverage": 86,
+                "percent_270": 0,
+                "percent_135": 12,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25247045,
+                "pos_end": 25247163,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_9",
+                "average_coverage": 246,
+                "percent_270": 50,
+                "percent_135": 92,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25247585,
+                "pos_end": 25247754,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_8",
+                "average_coverage": 82,
+                "percent_270": 0,
+                "percent_135": 30,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25248031,
+                "pos_end": 25248257,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_7",
+                "average_coverage": 276,
+                "percent_270": 31,
+                "percent_135": 39,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25249651,
+                "pos_end": 25249729,
+                "hgvs_c": "DNMT3A(NM_153759.3):exon_2",
+                "average_coverage": 1691,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25252188,
+                "pos_end": 25252202,
+                "hgvs_c": "DNMT3A(NM_153759.3):exon_1",
+                "average_coverage": 25,
+                "percent_270": 0,
+                "percent_135": 0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25274935,
+                "pos_end": 25275092,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_6",
+                "average_coverage": 33,
+                "percent_270": 0,
+                "percent_135": 0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25275494,
+                "pos_end": 25275548,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_5",
+                "average_coverage": 600,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25282435,
+                "pos_end": 25282716,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_4",
+                "average_coverage": 276,
+                "percent_270": 38,
+                "percent_135": 45,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25300133,
+                "pos_end": 25300248,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_3",
+                "average_coverage": 35,
+                "percent_270": 0,
+                "percent_135": 0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25313907,
+                "pos_end": 25313989,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_2",
+                "average_coverage": 7,
+                "percent_270": 0,
+                "percent_135": 0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "SF3B1": {
+        "average_depth": 1358,
+        "percent_135": 100,
+        "percent_270": 100,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr2",
+                "pos_start": 197401736,
+                "pos_end": 197401893,
+                "hgvs_c": "SF3B1(NM_012433.4):exon_16",
+                "average_coverage": 1194,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 197401979,
+                "pos_end": 197402135,
+                "hgvs_c": "SF3B1(NM_012433.4):exon_15",
+                "average_coverage": 1276,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 197402550,
+                "pos_end": 197402831,
+                "hgvs_c": "SF3B1(NM_012433.4):exon_14",
+                "average_coverage": 1555,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 197402943,
+                "pos_end": 197403040,
+                "hgvs_c": "SF3B1(NM_012433.4):exon_13",
+                "average_coverage": 1187,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "IDH1": {
+        "average_depth": 1478,
+        "percent_135": 100,
+        "percent_270": 100,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr2",
+                "pos_start": 208248380,
+                "pos_end": 208248395,
+                "hgvs_c": "IDH1(NM_005896.4):codon_R132",
+                "average_coverage": 1478,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "GATA2": {
+        "average_depth": 169,
+        "percent_135": 25,
+        "percent_270": 15,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr3",
+                "pos_start": 128481013,
+                "pos_end": 128481323,
+                "hgvs_c": "GATA2(NM_032638.5):exon_6",
+                "average_coverage": 513,
+                "percent_270": 50,
+                "percent_135": 55,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr3",
+                "pos_start": 128481813,
+                "pos_end": 128481949,
+                "hgvs_c": "GATA2(NM_032638.5):exon_5",
+                "average_coverage": 74,
+                "percent_270": 0,
+                "percent_135": 12,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr3",
+                "pos_start": 128483854,
+                "pos_end": 128484010,
+                "hgvs_c": "GATA2(NM_032638.5):exon_4",
+                "average_coverage": 90,
+                "percent_270": 0,
+                "percent_135": 35,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr3",
+                "pos_start": 128485721,
+                "pos_end": 128486373,
+                "hgvs_c": "GATA2(NM_032638.5):exon_3",
+                "average_coverage": 94,
+                "percent_270": 10,
+                "percent_135": 19,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr3",
+                "pos_start": 128486797,
+                "pos_end": 128487036,
+                "hgvs_c": "GATA2(NM_032638.5):exon_2",
+                "average_coverage": 33,
+                "percent_270": 0,
+                "percent_135": 0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "PDGFRA": {
+        "average_depth": 1652,
+        "percent_135": 100,
+        "percent_270": 100,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr4",
+                "pos_start": 54274835,
+                "pos_end": 54274978,
+                "hgvs_c": "PDGFRA(NM_006206.6):exon_12",
+                "average_coverage": 1645,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 54277890,
+                "pos_end": 54278011,
+                "hgvs_c": "PDGFRA(NM_006206.6):exon_14",
+                "average_coverage": 1450,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 54285835,
+                "pos_end": 54285968,
+                "hgvs_c": "PDGFRA(NM_006206.6):exon_18",
+                "average_coverage": 1821,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 54285933,
+                "pos_end": 54285948,
+                "hgvs_c": "PDGFRA(NM_006206.6):codon_S847",
+                "average_coverage": 1832,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "KIT": {
+        "average_depth": 1481,
+        "percent_135": 100,
+        "percent_270": 100,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr4",
+                "pos_start": 54733064,
+                "pos_end": 54733197,
+                "hgvs_c": "KIT(NM_000222.3):exon_17",
+                "average_coverage": 1481,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "TET2": {
+        "average_depth": 1741,
+        "percent_135": 100,
+        "percent_270": 99,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr4",
+                "pos_start": 105233937,
+                "pos_end": 105237445,
+                "hgvs_c": "TET2(NM_001127208.3):exon_3",
+                "average_coverage": 1958,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 105241333,
+                "pos_end": 105241434,
+                "hgvs_c": "TET2(NM_001127208.3):exon_4",
+                "average_coverage": 1437,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 105242828,
+                "pos_end": 105242932,
+                "hgvs_c": "TET2(NM_001127208.3):exon_5",
+                "average_coverage": 1451,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 105243564,
+                "pos_end": 105243783,
+                "hgvs_c": "TET2(NM_001127208.3):exon_6",
+                "average_coverage": 630,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 105259613,
+                "pos_end": 105259774,
+                "hgvs_c": "TET2(NM_001127208.3):exon_7",
+                "average_coverage": 1183,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 105261753,
+                "pos_end": 105261853,
+                "hgvs_c": "TET2(NM_001127208.3):exon_8",
+                "average_coverage": 1180,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 105269604,
+                "pos_end": 105269752,
+                "hgvs_c": "TET2(NM_001127208.3):exon_9",
+                "average_coverage": 1099,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 105272558,
+                "pos_end": 105272923,
+                "hgvs_c": "TET2(NM_001127208.3):exon_10",
+                "average_coverage": 1615,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 105275042,
+                "pos_end": 105276524,
+                "hgvs_c": "TET2(NM_001127208.3):exon_11",
+                "average_coverage": 1627,
+                "percent_270": 98,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "NPM1": {
+        "average_depth": 714,
+        "percent_135": 100,
+        "percent_270": 100,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr5",
+                "pos_start": 171410521,
+                "pos_end": 171410570,
+                "hgvs_c": "NPM1(NM_002520.7):exon_11",
+                "average_coverage": 714,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "EZH2": {
+        "average_depth": 1167,
+        "percent_135": 100,
+        "percent_270": 99,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr7",
+                "pos_start": 148807640,
+                "pos_end": 148807711,
+                "hgvs_c": "EZH2(NM_004456.5):exon_20",
+                "average_coverage": 975,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr7",
+                "pos_start": 148809065,
+                "pos_end": 148809160,
+                "hgvs_c": "EZH2(NM_004456.5):exon_19",
+                "average_coverage": 1381,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr7",
+                "pos_start": 148809304,
+                "pos_end": 148809395,
+                "hgvs_c": "EZH2(NM_004456.5):exon_18",
+                "average_coverage": 1273,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr7",
+                "pos_start": 148810327,
+                "pos_end": 148810419,
+                "hgvs_c": "EZH2(NM_004456.5):exon_17",
+                "average_coverage": 1132,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr7",
+                "pos_start": 148811619,
+                "pos_end": 148811725,
+                "hgvs_c": "EZH2(NM_004456.5):exon_16",
+                "average_coverage": 1274,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr7",
+                "pos_start": 148811627,
+                "pos_end": 148811642,
+                "hgvs_c": "EZH2(NM_004456.5):codon_Y646",
+                "average_coverage": 1335,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr7",
+                "pos_start": 148813953,
+                "pos_end": 148814142,
+                "hgvs_c": "EZH2(NM_004456.5):exon_15",
+                "average_coverage": 521,
+                "percent_270": 88,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr7",
+                "pos_start": 148814908,
+                "pos_end": 148815044,
+                "hgvs_c": "EZH2(NM_004456.5):exon_14",
+                "average_coverage": 1370,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr7",
+                "pos_start": 148815500,
+                "pos_end": 148815551,
+                "hgvs_c": "EZH2(NM_004456.5):exon_13",
+                "average_coverage": 821,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr7",
+                "pos_start": 148816678,
+                "pos_end": 148816783,
+                "hgvs_c": "EZH2(NM_004456.5):exon_12",
+                "average_coverage": 1159,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr7",
+                "pos_start": 148817216,
+                "pos_end": 148817396,
+                "hgvs_c": "EZH2(NM_004456.5):exon_11",
+                "average_coverage": 1190,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr7",
+                "pos_start": 148817871,
+                "pos_end": 148818122,
+                "hgvs_c": "EZH2(NM_004456.5):exon_10",
+                "average_coverage": 1211,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr7",
+                "pos_start": 148819590,
+                "pos_end": 148819692,
+                "hgvs_c": "EZH2(NM_004456.5):exon_9",
+                "average_coverage": 1341,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr7",
+                "pos_start": 148826448,
+                "pos_end": 148826637,
+                "hgvs_c": "EZH2(NM_004456.5):exon_8",
+                "average_coverage": 1443,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr7",
+                "pos_start": 148827158,
+                "pos_end": 148827271,
+                "hgvs_c": "EZH2(NM_004456.5):exon_7",
+                "average_coverage": 1032,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr7",
+                "pos_start": 148828734,
+                "pos_end": 148828885,
+                "hgvs_c": "EZH2(NM_004456.5):exon_6",
+                "average_coverage": 1197,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr7",
+                "pos_start": 148829722,
+                "pos_end": 148829853,
+                "hgvs_c": "EZH2(NM_004456.5):exon_5",
+                "average_coverage": 995,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr7",
+                "pos_start": 148832628,
+                "pos_end": 148832755,
+                "hgvs_c": "EZH2(NM_004456.5):exon_4",
+                "average_coverage": 1051,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr7",
+                "pos_start": 148846464,
+                "pos_end": 148846603,
+                "hgvs_c": "EZH2(NM_004456.5):exon_3",
+                "average_coverage": 1520,
+                "percent_270": 99,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr7",
+                "pos_start": 148847176,
+                "pos_end": 148847303,
+                "hgvs_c": "EZH2(NM_004456.5):exon_2",
+                "average_coverage": 1159,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "IDH2": {
+        "average_depth": 657,
+        "percent_135": 84,
+        "percent_270": 76,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr15",
+                "pos_start": 90088581,
+                "pos_end": 90088752,
+                "hgvs_c": "IDH2(NM_002168.4):exon_4",
+                "average_coverage": 657,
+                "percent_270": 76,
+                "percent_135": 84,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "JAK2": {
+        "average_depth": 1272,
+        "percent_135": 100,
+        "percent_270": 100,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr9",
+                "pos_start": 5069919,
+                "pos_end": 5070057,
+                "hgvs_c": "JAK2(NM_004972.4):exon_12",
+                "average_coverage": 1271,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr9",
+                "pos_start": 5073763,
+                "pos_end": 5073778,
+                "hgvs_c": "JAK2(NM_004972.4):codon_V617",
+                "average_coverage": 1287,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "NOTCH1": {
+        "average_depth": 44,
+        "percent_135": 4,
+        "percent_270": 0,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr9",
+                "pos_start": 136496065,
+                "pos_end": 136497563,
+                "hgvs_c": "NOTCH1(NM_017617.5):exon_34",
+                "average_coverage": 44,
+                "percent_270": 0,
+                "percent_135": 4,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "CBL": {
+        "average_depth": 1508,
+        "percent_135": 100,
+        "percent_270": 100,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr11",
+                "pos_start": 119278160,
+                "pos_end": 119278302,
+                "hgvs_c": "CBL(NM_005188.4):exon_8",
+                "average_coverage": 1393,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr11",
+                "pos_start": 119278504,
+                "pos_end": 119278718,
+                "hgvs_c": "CBL(NM_005188.4):exon_9",
+                "average_coverage": 1585,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "ETV6": {
+        "average_depth": 1248,
+        "percent_135": 93,
+        "percent_270": 87,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr12",
+                "pos_start": 11650122,
+                "pos_end": 11650165,
+                "hgvs_c": "ETV6(NM_001987.5):exon_1",
+                "average_coverage": 1240,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 11752444,
+                "pos_end": 11752584,
+                "hgvs_c": "ETV6(NM_001987.5):exon_2",
+                "average_coverage": 521,
+                "percent_270": 76,
+                "percent_135": 85,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 11839134,
+                "pos_end": 11839309,
+                "hgvs_c": "ETV6(NM_001987.5):exon_3",
+                "average_coverage": 1997,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 11853421,
+                "pos_end": 11853566,
+                "hgvs_c": "ETV6(NM_001987.5):exon_4",
+                "average_coverage": 1855,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 11869418,
+                "pos_end": 11869974,
+                "hgvs_c": "ETV6(NM_001987.5):exon_5",
+                "average_coverage": 676,
+                "percent_270": 73,
+                "percent_135": 86,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 11884439,
+                "pos_end": 11884592,
+                "hgvs_c": "ETV6(NM_001987.5):exon_6",
+                "average_coverage": 2127,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 11885920,
+                "pos_end": 11886031,
+                "hgvs_c": "ETV6(NM_001987.5):exon_7",
+                "average_coverage": 1623,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 11890935,
+                "pos_end": 11891051,
+                "hgvs_c": "ETV6(NM_001987.5):exon_8",
+                "average_coverage": 1457,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "KRAS": {
+        "average_depth": 1118,
+        "percent_135": 100,
+        "percent_270": 100,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr12",
+                "pos_start": 25227228,
+                "pos_end": 25227417,
+                "hgvs_c": "KRAS(NM_004985.5):exon_3",
+                "average_coverage": 1070,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 25245268,
+                "pos_end": 25245389,
+                "hgvs_c": "KRAS(NM_004985.5):exon_2",
+                "average_coverage": 1194,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "FLT3": {
+        "average_depth": 1814,
+        "percent_135": 100,
+        "percent_270": 100,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr13",
+                "pos_start": 28018461,
+                "pos_end": 28018594,
+                "hgvs_c": "FLT3(NM_004119.3):exon_20",
+                "average_coverage": 2075,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr13",
+                "pos_start": 28033881,
+                "pos_end": 28033996,
+                "hgvs_c": "FLT3(NM_004119.3):exon_15",
+                "average_coverage": 1634,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr13",
+                "pos_start": 28034076,
+                "pos_end": 28034219,
+                "hgvs_c": "FLT3(NM_004119.3):exon_14",
+                "average_coverage": 1698,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr13",
+                "pos_start": 28034295,
+                "pos_end": 28034412,
+                "hgvs_c": "FLT3(NM_004119.3):exon_13",
+                "average_coverage": 1836,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "TP53": {
+        "average_depth": 766,
+        "percent_135": 87,
+        "percent_270": 80,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr17",
+                "pos_start": 7669603,
+                "pos_end": 7669695,
+                "hgvs_c": "TP53(NM_000546.6):exon_11",
+                "average_coverage": 1757,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7670603,
+                "pos_end": 7670720,
+                "hgvs_c": "TP53(NM_000546.6):exon_10",
+                "average_coverage": 340,
+                "percent_270": 59,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7673529,
+                "pos_end": 7673613,
+                "hgvs_c": "TP53(NM_000546.6):exon_9",
+                "average_coverage": 1798,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7673695,
+                "pos_end": 7673842,
+                "hgvs_c": "TP53(NM_000546.6):exon_8",
+                "average_coverage": 676,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7674175,
+                "pos_end": 7674295,
+                "hgvs_c": "TP53(NM_000546.6):exon_7",
+                "average_coverage": 730,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7674853,
+                "pos_end": 7674976,
+                "hgvs_c": "TP53(NM_000546.6):exon_6",
+                "average_coverage": 1189,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7675047,
+                "pos_end": 7675241,
+                "hgvs_c": "TP53(NM_000546.6):exon_5",
+                "average_coverage": 451,
+                "percent_270": 40,
+                "percent_135": 43,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7675988,
+                "pos_end": 7676277,
+                "hgvs_c": "TP53(NM_000546.6):exon_4",
+                "average_coverage": 496,
+                "percent_270": 71,
+                "percent_135": 82,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7676376,
+                "pos_end": 7676408,
+                "hgvs_c": "TP53(NM_000546.6):exon_3",
+                "average_coverage": 645,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7676515,
+                "pos_end": 7676599,
+                "hgvs_c": "TP53(NM_000546.6):exon_2",
+                "average_coverage": 535,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "SRSF2": {
+        "average_depth": 21,
+        "percent_135": 0,
+        "percent_270": 0,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr17",
+                "pos_start": 76736793,
+                "pos_end": 76737165,
+                "hgvs_c": "SRSF2(NM_003016.4):exon_1",
+                "average_coverage": 21,
+                "percent_270": 0,
+                "percent_135": 0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "SETBP1": {
+        "average_depth": 1085,
+        "percent_135": 100,
+        "percent_270": 100,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr18",
+                "pos_start": 44951911,
+                "pos_end": 44952100,
+                "hgvs_c": "SETBP1(NM_015559.3):exon_4_(partial)",
+                "average_coverage": 1085,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "CALR": {
+        "average_depth": 1291,
+        "percent_135": 100,
+        "percent_270": 100,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr19",
+                "pos_start": 12943707,
+                "pos_end": 12943918,
+                "hgvs_c": "CALR(NM_004343.4):exon_9",
+                "average_coverage": 1291,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "CEBPA": {
+        "average_depth": 14,
+        "percent_135": 0,
+        "percent_270": 0,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr19",
+                "pos_start": 33301332,
+                "pos_end": 33302419,
+                "hgvs_c": "CEBPA(NM_004364.5):exon_1",
+                "average_coverage": 14,
+                "percent_270": 0,
+                "percent_135": 0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "ASXL1": {
+        "average_depth": 1524,
+        "percent_135": 92,
+        "percent_270": 92,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr20",
+                "pos_start": 32434426,
+                "pos_end": 32437343,
+                "hgvs_c": "ASXL1(NM_015338.6):exon_13",
+                "average_coverage": 1524,
+                "percent_270": 92,
+                "percent_135": 92,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "RUNX1": {
+        "average_depth": 499,
+        "percent_135": 46,
+        "percent_270": 42,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr21",
+                "pos_start": 34792129,
+                "pos_end": 34792615,
+                "hgvs_c": "RUNX1(NM_001754.5):exon_9",
+                "average_coverage": 10,
+                "percent_270": 0,
+                "percent_135": 0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr21",
+                "pos_start": 34799295,
+                "pos_end": 34799467,
+                "hgvs_c": "RUNX1(NM_001754.5):exon_8",
+                "average_coverage": 1154,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr21",
+                "pos_start": 34821662,
+                "pos_end": 34821701,
+                "hgvs_c": "RUNX1(NM_001122607.2):exon_5",
+                "average_coverage": 1146,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr21",
+                "pos_start": 34834404,
+                "pos_end": 34834606,
+                "hgvs_c": "RUNX1(NM_001754.5):exon_7",
+                "average_coverage": 176,
+                "percent_270": 25,
+                "percent_135": 60,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr21",
+                "pos_start": 34859468,
+                "pos_end": 34859583,
+                "hgvs_c": "RUNX1(NM_001754.5):exon_6",
+                "average_coverage": 1513,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr21",
+                "pos_start": 34880551,
+                "pos_end": 34880718,
+                "hgvs_c": "RUNX1(NM_001754.5):exon_5",
+                "average_coverage": 1331,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr21",
+                "pos_start": 34886837,
+                "pos_end": 34887117,
+                "hgvs_c": "RUNX1(NM_001754.5):exon_4",
+                "average_coverage": 35,
+                "percent_270": 0,
+                "percent_135": 0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr21",
+                "pos_start": 34892919,
+                "pos_end": 34892968,
+                "hgvs_c": "RUNX1(NM_001754.5):exon_3",
+                "average_coverage": 703,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr21",
+                "pos_start": 35048836,
+                "pos_end": 35048904,
+                "hgvs_c": "RUNX1(NM_001754.5):exon_2",
+                "average_coverage": 935,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "U2AF1": {
+        "average_depth": 950,
+        "percent_135": 100,
+        "percent_270": 100,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr21",
+                "pos_start": 43094659,
+                "pos_end": 43094674,
+                "hgvs_c": "U2AF1(NM_006758.3):codon_Q157",
+                "average_coverage": 510,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr21",
+                "pos_start": 43104338,
+                "pos_end": 43104353,
+                "hgvs_c": "U2AF1(NM_006758.3):codon_S34",
+                "average_coverage": 1390,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "BCOR": {
+        "average_depth": 480,
+        "percent_135": 82,
+        "percent_270": 69,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chrX",
+                "pos_start": 40052103,
+                "pos_end": 40052405,
+                "hgvs_c": "BCOR(NM_001123385.2):exon_15",
+                "average_coverage": 830,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chrX",
+                "pos_start": 40053880,
+                "pos_end": 40054047,
+                "hgvs_c": "BCOR(NM_001123385.2):exon_14",
+                "average_coverage": 621,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chrX",
+                "pos_start": 40054250,
+                "pos_end": 40054338,
+                "hgvs_c": "BCOR(NM_001123385.2):exon_13",
+                "average_coverage": 566,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chrX",
+                "pos_start": 40055362,
+                "pos_end": 40055518,
+                "hgvs_c": "BCOR(NM_001123385.2):exon_12",
+                "average_coverage": 681,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chrX",
+                "pos_start": 40057149,
+                "pos_end": 40057326,
+                "hgvs_c": "BCOR(NM_001123385.2):exon_11",
+                "average_coverage": 510,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chrX",
+                "pos_start": 40062133,
+                "pos_end": 40062398,
+                "hgvs_c": "BCOR(NM_001123385.2):exon_10",
+                "average_coverage": 149,
+                "percent_270": 7,
+                "percent_135": 56,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chrX",
+                "pos_start": 40062740,
+                "pos_end": 40063076,
+                "hgvs_c": "BCOR(NM_001123385.2):exon_9",
+                "average_coverage": 364,
+                "percent_270": 56,
+                "percent_135": 68,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chrX",
+                "pos_start": 40063602,
+                "pos_end": 40063957,
+                "hgvs_c": "BCOR(NM_001123385.2):exon_8",
+                "average_coverage": 410,
+                "percent_270": 79,
+                "percent_135": 98,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chrX",
+                "pos_start": 40064330,
+                "pos_end": 40064604,
+                "hgvs_c": "BCOR(NM_001123385.2):exon_7",
+                "average_coverage": 145,
+                "percent_270": 23,
+                "percent_135": 39,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chrX",
+                "pos_start": 40070967,
+                "pos_end": 40071164,
+                "hgvs_c": "BCOR(NM_001123385.2):exon_6",
+                "average_coverage": 727,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chrX",
+                "pos_start": 40071631,
+                "pos_end": 40071695,
+                "hgvs_c": "BCOR(NM_001123385.2):exon_5",
+                "average_coverage": 379,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chrX",
+                "pos_start": 40072343,
+                "pos_end": 40075185,
+                "hgvs_c": "BCOR(NM_001123385.2):exon_4",
+                "average_coverage": 498,
+                "percent_270": 69,
+                "percent_135": 81,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chrX",
+                "pos_start": 40076448,
+                "pos_end": 40076537,
+                "hgvs_c": "BCOR(NM_001123385.2):exon_3",
+                "average_coverage": 567,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chrX",
+                "pos_start": 40077838,
+                "pos_end": 40077934,
+                "hgvs_c": "BCOR(NM_001123385.2):exon_2",
+                "average_coverage": 171,
+                "percent_270": 0,
+                "percent_135": 65,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    }
+}

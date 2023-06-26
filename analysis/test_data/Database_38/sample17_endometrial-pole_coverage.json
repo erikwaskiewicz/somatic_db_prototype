@@ -1,0 +1,339 @@
+{
+    "POLE": {
+        "average_depth": 143.0,
+        "percent_135": 63.0,
+        "percent_270": 0.0,
+        "average_ntc": 0,
+        "percent_ntc": 0.0,
+        "genescreen_regions": [
+            {
+                "chr": "chr12",
+                "pos_start": 132673158,
+                "pos_end": 132673282,
+                "hgvs_c": "POLE(NM006231.4):c.1473+5_c.1360-5(exon14)",
+                "average_coverage": 155,
+                "percent_270": 0,
+                "percent_135": 88,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 132673569,
+                "pos_end": 132673712,
+                "hgvs_c": "POLE(NM006231.4):c.1359+5_c.1227-5(exon13)",
+                "average_coverage": 85,
+                "percent_270": 0,
+                "percent_135": 12,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 132675392,
+                "pos_end": 132675522,
+                "hgvs_c": "POLE(NM006231.4):c.1226+5_c.1107-5(exon12)",
+                "average_coverage": 96,
+                "percent_270": 0,
+                "percent_135": 0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 132675729,
+                "pos_end": 132675825,
+                "hgvs_c": "POLE(NM006231.4):c.1106+5_c.1021-5(exon11)",
+                "average_coverage": 200,
+                "percent_270": 0,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 132676088,
+                "pos_end": 132676209,
+                "hgvs_c": "POLE(NM006231.4):c.1020+5_c.910-5(exon10)",
+                "average_coverage": 163,
+                "percent_270": 0,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 132676540,
+                "pos_end": 132676658,
+                "hgvs_c": "POLE(NM006231.4):c.909+5_c.802-5(exon9)",
+                "average_coverage": 186,
+                "percent_270": 0,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [
+            {
+                "chr": "chr12",
+                "pos_start": 132673260,
+                "pos_end": 132673261,
+                "hgvs_c": "POLE(NM006231.4):c.1376_p.(Ser459Phe)",
+                "average_coverage": 158,
+                "percent_270": 0,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 132673270,
+                "pos_end": 132673271,
+                "hgvs_c": "POLE(NM006231.4):c.1366_p.(Ala456Pro)",
+                "average_coverage": 141,
+                "percent_270": 0,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 132673602,
+                "pos_end": 132673603,
+                "hgvs_c": "POLE(NM006231.4):c.1331_p.(Met444Lys)",
+                "average_coverage": 49,
+                "percent_270": 0,
+                "percent_135": 0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 132673626,
+                "pos_end": 132673627,
+                "hgvs_c": "POLE(NM006231.4):c.1307_p.(Pro436Arg)",
+                "average_coverage": 72,
+                "percent_270": 0,
+                "percent_135": 0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 132673663,
+                "pos_end": 132673664,
+                "hgvs_c": "POLE(NM006231.4):c.1270_p.(Leu424Ile)",
+                "average_coverage": 123,
+                "percent_270": 0,
+                "percent_135": 0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 132673702,
+                "pos_end": 132673703,
+                "hgvs_c": "POLE(NM006231.4):c.1231_p.(Val411Leu)",
+                "average_coverage": 127,
+                "percent_270": 0,
+                "percent_135": 0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 132675738,
+                "pos_end": 132675739,
+                "hgvs_c": "POLE(NM006231.4):c.1102_p.(Asp368Tyr)",
+                "average_coverage": 178,
+                "percent_270": 0,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 132675740,
+                "pos_end": 132675741,
+                "hgvs_c": "POLE(NM006231.4):c.1100_p.(Phe367Ser)",
+                "average_coverage": 183,
+                "percent_270": 0,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 132676564,
+                "pos_end": 132676565,
+                "hgvs_c": "POLE(NM006231.4):c.890_p.(Ser297Phe)",
+                "average_coverage": 201,
+                "percent_270": 0,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 132676570,
+                "pos_end": 132676571,
+                "hgvs_c": "POLE(NM006231.4):c.884_p.(Met295Arg)",
+                "average_coverage": 194,
+                "percent_270": 0,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr12",
+                "pos_start": 132676597,
+                "pos_end": 132676598,
+                "hgvs_c": "POLE(NM006231.4):c.857_p.(Pro286Arg)",
+                "average_coverage": 182,
+                "percent_270": 0,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "gaps_135": [
+            {
+                "chr": 12,
+                "pos_start": 132673602,
+                "pos_end": 132673603,
+                "hgvs_c": "POLE(NM_006231.4)c.1331_1331",
+                "gene": "POLE",
+                "counts_cosmic": NaN,
+                "percent_cosmic": NaN
+            },
+            {
+                "chr": 12,
+                "pos_start": 132673626,
+                "pos_end": 132673627,
+                "hgvs_c": "POLE(NM_006231.4)c.1307_1307",
+                "gene": "POLE",
+                "counts_cosmic": NaN,
+                "percent_cosmic": NaN
+            },
+            {
+                "chr": 12,
+                "pos_start": 132673663,
+                "pos_end": 132673664,
+                "hgvs_c": "POLE(NM_006231.4)c.1270_1270",
+                "gene": "POLE",
+                "counts_cosmic": NaN,
+                "percent_cosmic": NaN
+            },
+            {
+                "chr": 12,
+                "pos_start": 132673702,
+                "pos_end": 132673703,
+                "hgvs_c": "POLE(NM_006231.4)c.1231_1231",
+                "gene": "POLE",
+                "counts_cosmic": NaN,
+                "percent_cosmic": NaN
+            }
+        ],
+        "gaps_270": [
+            {
+                "chr": 12,
+                "pos_start": 132673260,
+                "pos_end": 132673261,
+                "hgvs_c": "POLE(NM_006231.4)c.1376_1376",
+                "gene": "POLE",
+                "counts_cosmic": NaN,
+                "percent_cosmic": NaN
+            },
+            {
+                "chr": 12,
+                "pos_start": 132673270,
+                "pos_end": 132673271,
+                "hgvs_c": "POLE(NM_006231.4)c.1366_1366",
+                "gene": "POLE",
+                "counts_cosmic": NaN,
+                "percent_cosmic": NaN
+            },
+            {
+                "chr": 12,
+                "pos_start": 132673602,
+                "pos_end": 132673603,
+                "hgvs_c": "POLE(NM_006231.4)c.1331_1331",
+                "gene": "POLE",
+                "counts_cosmic": NaN,
+                "percent_cosmic": NaN
+            },
+            {
+                "chr": 12,
+                "pos_start": 132673626,
+                "pos_end": 132673627,
+                "hgvs_c": "POLE(NM_006231.4)c.1307_1307",
+                "gene": "POLE",
+                "counts_cosmic": NaN,
+                "percent_cosmic": NaN
+            },
+            {
+                "chr": 12,
+                "pos_start": 132673663,
+                "pos_end": 132673664,
+                "hgvs_c": "POLE(NM_006231.4)c.1270_1270",
+                "gene": "POLE",
+                "counts_cosmic": NaN,
+                "percent_cosmic": NaN
+            },
+            {
+                "chr": 12,
+                "pos_start": 132673702,
+                "pos_end": 132673703,
+                "hgvs_c": "POLE(NM_006231.4)c.1231_1231",
+                "gene": "POLE",
+                "counts_cosmic": NaN,
+                "percent_cosmic": NaN
+            },
+            {
+                "chr": 12,
+                "pos_start": 132675738,
+                "pos_end": 132675739,
+                "hgvs_c": "POLE(NM_006231.4)c.1102_1102",
+                "gene": "POLE",
+                "counts_cosmic": NaN,
+                "percent_cosmic": NaN
+            },
+            {
+                "chr": 12,
+                "pos_start": 132675740,
+                "pos_end": 132675741,
+                "hgvs_c": "POLE(NM_006231.4)c.1100_1100",
+                "gene": "POLE",
+                "counts_cosmic": NaN,
+                "percent_cosmic": NaN
+            },
+            {
+                "chr": 12,
+                "pos_start": 132676564,
+                "pos_end": 132676565,
+                "hgvs_c": "POLE(NM_006231.4)c.890_890",
+                "gene": "POLE",
+                "counts_cosmic": NaN,
+                "percent_cosmic": NaN
+            },
+            {
+                "chr": 12,
+                "pos_start": 132676570,
+                "pos_end": 132676571,
+                "hgvs_c": "POLE(NM_006231.4)c.884_884",
+                "gene": "POLE",
+                "counts_cosmic": NaN,
+                "percent_cosmic": NaN
+            },
+            {
+                "chr": 12,
+                "pos_start": 132676597,
+                "pos_end": 132676598,
+                "hgvs_c": "POLE(NM_006231.4)c.857_857",
+                "gene": "POLE",
+                "counts_cosmic": NaN,
+                "percent_cosmic": NaN
+            }
+        ]
+    }
+}

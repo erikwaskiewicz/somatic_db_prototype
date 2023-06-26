@@ -1,0 +1,528 @@
+{
+    "DNMT3A": {
+        "average_depth": 119,
+        "percent_135": 41,
+        "percent_270": 0,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr2",
+                "pos_start": 25234273,
+                "pos_end": 25234425,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_23",
+                "average_coverage": 112,
+                "percent_270": 0,
+                "percent_135": 33,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25235701,
+                "pos_end": 25235830,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_22",
+                "average_coverage": 169,
+                "percent_270": 0,
+                "percent_135": 79,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25236930,
+                "pos_end": 25237010,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_21",
+                "average_coverage": 156,
+                "percent_270": 0,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25239124,
+                "pos_end": 25239220,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_20",
+                "average_coverage": 130,
+                "percent_270": 0,
+                "percent_135": 55,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25240296,
+                "pos_end": 25240455,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_19",
+                "average_coverage": 156,
+                "percent_270": 0,
+                "percent_135": 67,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25240634,
+                "pos_end": 25240735,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_18",
+                "average_coverage": 137,
+                "percent_270": 0,
+                "percent_135": 65,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25241556,
+                "pos_end": 25241712,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_17",
+                "average_coverage": 131,
+                "percent_270": 0,
+                "percent_135": 49,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25243892,
+                "pos_end": 25243987,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_16",
+                "average_coverage": 154,
+                "percent_270": 0,
+                "percent_135": 72,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25244149,
+                "pos_end": 25244343,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_15",
+                "average_coverage": 110,
+                "percent_270": 0,
+                "percent_135": 26,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25244534,
+                "pos_end": 25244657,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_14",
+                "average_coverage": 182,
+                "percent_270": 0,
+                "percent_135": 87,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25245247,
+                "pos_end": 25245337,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_13",
+                "average_coverage": 102,
+                "percent_270": 0,
+                "percent_135": 0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25246014,
+                "pos_end": 25246069,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_12",
+                "average_coverage": 137,
+                "percent_270": 0,
+                "percent_135": 63,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25246154,
+                "pos_end": 25246314,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_11",
+                "average_coverage": 138,
+                "percent_270": 0,
+                "percent_135": 45,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25246614,
+                "pos_end": 25246781,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_10",
+                "average_coverage": 87,
+                "percent_270": 0,
+                "percent_135": 4,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25247045,
+                "pos_end": 25247163,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_9",
+                "average_coverage": 137,
+                "percent_270": 0,
+                "percent_135": 63,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25247585,
+                "pos_end": 25247754,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_8",
+                "average_coverage": 82,
+                "percent_270": 0,
+                "percent_135": 1,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25248031,
+                "pos_end": 25248257,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_7",
+                "average_coverage": 95,
+                "percent_270": 0,
+                "percent_135": 29,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25249651,
+                "pos_end": 25249729,
+                "hgvs_c": "DNMT3A(NM_153759.3):exon_2",
+                "average_coverage": 185,
+                "percent_270": 0,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25252188,
+                "pos_end": 25252202,
+                "hgvs_c": "DNMT3A(NM_153759.3):exon_1",
+                "average_coverage": 58,
+                "percent_270": 0,
+                "percent_135": 0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25274935,
+                "pos_end": 25275092,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_6",
+                "average_coverage": 54,
+                "percent_270": 0,
+                "percent_135": 0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25275494,
+                "pos_end": 25275548,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_5",
+                "average_coverage": 154,
+                "percent_270": 0,
+                "percent_135": 85,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25282435,
+                "pos_end": 25282716,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_4",
+                "average_coverage": 120,
+                "percent_270": 0,
+                "percent_135": 40,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25300133,
+                "pos_end": 25300248,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_3",
+                "average_coverage": 71,
+                "percent_270": 0,
+                "percent_135": 0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr2",
+                "pos_start": 25313907,
+                "pos_end": 25313989,
+                "hgvs_c": "DNMT3A(NM_175629.2):exon_2",
+                "average_coverage": 34,
+                "percent_270": 0,
+                "percent_135": 0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "RHOA": {
+        "average_depth": 140,
+        "percent_135": 65,
+        "percent_270": 0,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr3",
+                "pos_start": 49375428,
+                "pos_end": 49375594,
+                "hgvs_c": "RHOA(NM001664.4):exon_2",
+                "average_coverage": 140,
+                "percent_270": 0,
+                "percent_135": 65,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [
+            {
+                "chr": "chr3",
+                "pos_start": 49375532,
+                "pos_end": 49375535,
+                "hgvs_c": "RHOA(NM001664.4):codon_T19",
+                "average_coverage": 148,
+                "percent_270": 0,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr3",
+                "pos_start": 49375535,
+                "pos_end": 49375538,
+                "hgvs_c": "RHOA(NM001664.4):codon_K18",
+                "average_coverage": 149,
+                "percent_270": 0,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr3",
+                "pos_start": 49375538,
+                "pos_end": 49375541,
+                "hgvs_c": "RHOA(NM001664.4):codon_G17",
+                "average_coverage": 147,
+                "percent_270": 0,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "TET2": {
+        "average_depth": 170,
+        "percent_135": 81,
+        "percent_270": 0,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr4",
+                "pos_start": 105233937,
+                "pos_end": 105237445,
+                "hgvs_c": "TET2(NM_001127208.3):exon_3",
+                "average_coverage": 183,
+                "percent_270": 0,
+                "percent_135": 92,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 105241333,
+                "pos_end": 105241434,
+                "hgvs_c": "TET2(NM_001127208.3):exon_4",
+                "average_coverage": 174,
+                "percent_270": 0,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 105242828,
+                "pos_end": 105242932,
+                "hgvs_c": "TET2(NM_001127208.3):exon_5",
+                "average_coverage": 189,
+                "percent_270": 0,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 105243564,
+                "pos_end": 105243783,
+                "hgvs_c": "TET2(NM_001127208.3):exon_6",
+                "average_coverage": 153,
+                "percent_270": 0,
+                "percent_135": 74,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 105259613,
+                "pos_end": 105259774,
+                "hgvs_c": "TET2(NM_001127208.3):exon_7",
+                "average_coverage": 149,
+                "percent_270": 0,
+                "percent_135": 77,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 105261753,
+                "pos_end": 105261853,
+                "hgvs_c": "TET2(NM_001127208.3):exon_8",
+                "average_coverage": 181,
+                "percent_270": 0,
+                "percent_135": 96,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 105269604,
+                "pos_end": 105269752,
+                "hgvs_c": "TET2(NM_001127208.3):exon_9",
+                "average_coverage": 139,
+                "percent_270": 0,
+                "percent_135": 47,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 105272558,
+                "pos_end": 105272923,
+                "hgvs_c": "TET2(NM_001127208.3):exon_10",
+                "average_coverage": 197,
+                "percent_270": 0,
+                "percent_135": 92,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 105275042,
+                "pos_end": 105276524,
+                "hgvs_c": "TET2(NM_001127208.3):exon_11",
+                "average_coverage": 135,
+                "percent_270": 0,
+                "percent_135": 54,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "IDH2": {
+        "average_depth": 130,
+        "percent_135": 48,
+        "percent_270": 0,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr15",
+                "pos_start": 90088581,
+                "pos_end": 90088752,
+                "hgvs_c": "IDH2(NM_002168.4):exon_4",
+                "average_coverage": 130,
+                "percent_270": 0,
+                "percent_135": 48,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [
+            {
+                "chr": "chr15",
+                "pos_start": 90088604,
+                "pos_end": 90088607,
+                "hgvs_c": "IDH2(NM_002168.4):codon_R172",
+                "average_coverage": 78,
+                "percent_270": 0,
+                "percent_135": 0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "gaps_135": [
+            {
+                "chr": 15,
+                "pos_start": 90088604,
+                "pos_end": 90088607,
+                "hgvs_c": "IDH2(NM_002168.4)c.514_516",
+                "gene": "IDH2",
+                "counts_cosmic": NaN,
+                "percent_cosmic": NaN
+            }
+        ],
+        "gaps_270": [
+            {
+                "chr": 3,
+                "pos_start": 49375532,
+                "pos_end": 49375535,
+                "hgvs_c": "RHOA(NM_001664.4)c.55_57",
+                "gene": "IDH2",
+                "counts_cosmic": NaN,
+                "percent_cosmic": NaN
+            },
+            {
+                "chr": 3,
+                "pos_start": 49375535,
+                "pos_end": 49375538,
+                "hgvs_c": "RHOA(NM_001664.4)c.52_54",
+                "gene": "IDH2",
+                "counts_cosmic": NaN,
+                "percent_cosmic": NaN
+            },
+            {
+                "chr": 3,
+                "pos_start": 49375538,
+                "pos_end": 49375541,
+                "hgvs_c": "RHOA(NM_001664.4)c.49_51",
+                "gene": "IDH2",
+                "counts_cosmic": NaN,
+                "percent_cosmic": NaN
+            },
+            {
+                "chr": 15,
+                "pos_start": 90088604,
+                "pos_end": 90088607,
+                "hgvs_c": "IDH2(NM_002168.4)c.514_516",
+                "gene": "IDH2",
+                "counts_cosmic": NaN,
+                "percent_cosmic": NaN
+            }
+        ]
+    }
+}

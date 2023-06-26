@@ -1,0 +1,249 @@
+{
+    "IDH1": {
+        "average_depth": 1313,
+        "percent_135": 100,
+        "percent_270": 100,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr2",
+                "pos_start": 208248380,
+                "pos_end": 208248395,
+                "hgvs_c": "IDH1(NM_005896.4):codon_R132",
+                "average_coverage": 1313,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "NPM1": {
+        "average_depth": 636,
+        "percent_135": 100,
+        "percent_270": 100,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr5",
+                "pos_start": 171410521,
+                "pos_end": 171410570,
+                "hgvs_c": "NPM1(NM_002520.7):exon_11",
+                "average_coverage": 636,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "IDH2": {
+        "average_depth": 595,
+        "percent_135": 86,
+        "percent_270": 77,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr15",
+                "pos_start": 90088581,
+                "pos_end": 90088752,
+                "hgvs_c": "IDH2(NM_002168.4):exon_4",
+                "average_coverage": 595,
+                "percent_270": 77,
+                "percent_135": 86,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "FLT3": {
+        "average_depth": 1566,
+        "percent_135": 100,
+        "percent_270": 100,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr13",
+                "pos_start": 28018461,
+                "pos_end": 28018594,
+                "hgvs_c": "FLT3(NM_004119.3):exon_20",
+                "average_coverage": 1784,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr13",
+                "pos_start": 28033881,
+                "pos_end": 28033996,
+                "hgvs_c": "FLT3(NM_004119.3):exon_15",
+                "average_coverage": 1505,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr13",
+                "pos_start": 28034076,
+                "pos_end": 28034219,
+                "hgvs_c": "FLT3(NM_004119.3):exon_14",
+                "average_coverage": 1507,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr13",
+                "pos_start": 28034295,
+                "pos_end": 28034412,
+                "hgvs_c": "FLT3(NM_004119.3):exon_13",
+                "average_coverage": 1451,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "TP53": {
+        "average_depth": 676,
+        "percent_135": 88,
+        "percent_270": 82,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [
+            {
+                "chr": "chr17",
+                "pos_start": 7669603,
+                "pos_end": 7669695,
+                "hgvs_c": "TP53(NM_000546.6):exon_11",
+                "average_coverage": 1433,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7670603,
+                "pos_end": 7670720,
+                "hgvs_c": "TP53(NM_000546.6):exon_10",
+                "average_coverage": 344,
+                "percent_270": 67,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7673529,
+                "pos_end": 7673613,
+                "hgvs_c": "TP53(NM_000546.6):exon_9",
+                "average_coverage": 1520,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7673695,
+                "pos_end": 7673842,
+                "hgvs_c": "TP53(NM_000546.6):exon_8",
+                "average_coverage": 673,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7674175,
+                "pos_end": 7674295,
+                "hgvs_c": "TP53(NM_000546.6):exon_7",
+                "average_coverage": 636,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7674853,
+                "pos_end": 7674976,
+                "hgvs_c": "TP53(NM_000546.6):exon_6",
+                "average_coverage": 1014,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7675047,
+                "pos_end": 7675241,
+                "hgvs_c": "TP53(NM_000546.6):exon_5",
+                "average_coverage": 354,
+                "percent_270": 39,
+                "percent_135": 43,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7675988,
+                "pos_end": 7676277,
+                "hgvs_c": "TP53(NM_000546.6):exon_4",
+                "average_coverage": 448,
+                "percent_270": 74,
+                "percent_135": 85,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7676376,
+                "pos_end": 7676408,
+                "hgvs_c": "TP53(NM_000546.6):exon_3",
+                "average_coverage": 632,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr17",
+                "pos_start": 7676515,
+                "pos_end": 7676599,
+                "hgvs_c": "TP53(NM_000546.6):exon_2",
+                "average_coverage": 583,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "hotspot_regions": [],
+        "gaps_135": [],
+        "gaps_270": []
+    }
+}
