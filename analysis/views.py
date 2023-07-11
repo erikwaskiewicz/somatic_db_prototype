@@ -18,7 +18,7 @@ import json
 import os
 
 from xhtml2pdf import pisa 
-    
+
 
 def signup(request):
     """
@@ -254,7 +254,7 @@ def analysis_sheet(request, sample_id):
     if request.method == 'GET':
 
         if 'download-report' in request.GET:
-            filename=f"{context['sample_data']['worksheet_id']}_{context['sample_data']['sample_id']}_{context['sample_data']['panel']}.pdf"
+            filename = f"{context['sample_data']['worksheet_id']}_{context['sample_data']['sample_id']}_{context['sample_data']['panel']}.pdf"
 
             # Create a Django response object, and specify content_type as pdf
             response = HttpResponse(content_type='application/pdf')
@@ -270,6 +270,18 @@ def analysis_sheet(request, sample_id):
             )
 
             return response
+
+        if 'download-xml' in request.GET:
+            # create XML from template and context info
+            filename = f"{context['sample_data']['worksheet_id']}_{context['sample_data']['sample_id']}_{context['sample_data']['panel']}.xml"
+            template = get_template('analysis/lims_xml.xml')
+            html = template.render(context)
+
+            # return XML
+            response = HttpResponse(html, content_type='application/xml')
+            response['Content-Disposition'] = f'attachment; filename={filename}'
+            return response
+
 
     # submit buttons
     if request.method == 'POST':
