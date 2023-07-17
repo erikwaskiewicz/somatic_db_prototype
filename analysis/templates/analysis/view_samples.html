@@ -327,7 +327,14 @@
 
 <script>
     $(document).ready( function() {
-      
+
+        // remove anthing after the hash in the URL, to prevent carrying over from a previous analysis (see issue #47)
+        var uri = window.location.toString();
+        if (uri.indexOf("#") > 0) {
+            var clean_uri = uri.substring(0, uri.indexOf("#"));
+            window.history.replaceState({}, document.title, clean_uri);
+        }
+
         // Inititialise DataTable
         $('#samples-table').DataTable({
             paging: true,
