@@ -1,27 +1,27 @@
 {% load humanize %}
 <head>
   <style>
-    @page {
-      size: letter landscape;
-      margin: 2cm;
+    table {
+      word-wrap: break-word;
+      width: 100%;
+      border-spacing: 0;
     }
-
-    h1 {  font-size: 20px;  }
-    h2 {  font-size: 15px;  }
-
-    table th,
-    table td {
-      padding:3px;
+    thead {
+      display: table-row-group;
+    }
+    th, td {
       vertical-align: top;
-      border-top: 1px solid #000;
-      border-bottom: 1px solid #000;
       text-align: left;
+      border-bottom: 1px solid #000;
     }
-
-    table thead th {
-      vertical-align: bottom;
+    th {
+      border-top: 1px solid #000;
       background-color: #D3D3D3;
-      border-bottom: 2px solid #000;
+    }
+    tr {
+      page-break-before: always;
+      page-break-after: always;
+      page-break-inside: avoid;
     }
     .alert {
       padding: 10px;
@@ -34,6 +34,9 @@
 </head>
 
 <body>
+
+  <!-- TODO add cosmic column -->
+  <!-- TODO if no gaps then add 'no gaps' text -->
 
   <h1>{{ sample_data.panel_obj.get_assay_display }} report for {{ sample_data.sample_id }}</h1>
 
@@ -74,7 +77,7 @@
   {% if sample_data.panel_obj.show_snvs %}
   <h2>SNVs & indels - variant calls</h2>
 
-  <table class="table">
+  <table>
     <thead>
       <tr>
         <th style="width: 20%">Variant</th>
@@ -157,13 +160,19 @@
   <h2>Gaps summary</h2>
 
   <table>
+    <thead>
+      <tr>
+        <th>Regions with...</th>
+        <th></th>
+      </tr>
+    </thead>
     <tbody>
       <tr>
-        <td style="width: 25%"><b>Regions with 0% coverage</b></td>
+        <td style="width: 25%">0% coverage</td>
         <td style="width: 75%">{{ myeloid_coverage_summary.summary_0x }}</td>
       </tr>
       <tr>
-        <td><b>Regions with less than 270X depth</b></td>
+        <td>&lt;270X depth</td>
         <td>{{ myeloid_coverage_summary.summary_270x }}</td>
       </tr>
     </tbody>

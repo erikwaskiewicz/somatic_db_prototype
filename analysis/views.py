@@ -8,16 +8,13 @@ from django.utils import timezone
 from django.template.loader import get_template
 from django.template import Context
 
-
 from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, ConfirmPolyForm, AddNewPolyForm, ManualVariantCheckForm, ReopenForm
 from .models import *
-from .utils import link_callback, get_samples, unassign_check, reopen_check, signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, create_myeloid_coverage_summary, get_poly_list
-
+from .utils import get_samples, unassign_check, reopen_check, signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, create_myeloid_coverage_summary, get_poly_list
 
 import json
 import os
-
-from xhtml2pdf import pisa 
+import pdfkit
 
 
 def signup(request):
@@ -256,18 +253,31 @@ def analysis_sheet(request, sample_id):
         if 'download-report' in request.GET:
             filename = f"{context['sample_data']['worksheet_id']}_{context['sample_data']['sample_id']}_{context['sample_data']['panel']}.pdf"
 
-            # Create a Django response object, and specify content_type as pdf
-            response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = f'attachment; filename="{filename}"'
-
             # find the template and render it.
             template = get_template('analysis/download_report.html')
             html = template.render(context)
 
-            # create a pdf
-            pisa_status = pisa.CreatePDF(
-                html, dest=response, link_callback=link_callback
-            )
+            # create a pdf, options taken from https://wkhtmltopdf.org/usage/wkhtmltopdf.txt
+            options = {
+                'orientation': 'Landscape',
+                'footer-left': f'Sample - {context["sample_data"]["sample_id"]}',
+                'footer-center': f'Worksheet - {context["sample_data"]["worksheet_id"]} ({context["sample_data"]["panel_obj"].get_assay_display()})',
+                'footer-right': 'Page [page] of [topage]',
+                'footer-line': '',
+                'footer-font-size': '10',
+                'footer-spacing': '10',
+                'page-size': 'Letter',
+                'margin-top': '2cm',
+                'margin-right': '2cm',
+                'margin-bottom': '3cm',
+                'margin-left': '2cm',
+                'encoding': 'UTF-8',
+            }
+            pdf = pdfkit.from_string(html, options=options)
+
+            # Create a Django response object, and specify content_type as pdf
+            response = HttpResponse(pdf, content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename={filename}'
 
             return response
 
