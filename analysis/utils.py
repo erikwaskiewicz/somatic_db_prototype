@@ -323,6 +323,7 @@ def get_variant_info(sample_data, sample_obj):
 
     variant_calls = []
     polys_list = []
+    reportable_list = []
 
     # TODO this bit isnt used yet - removed to speed up db
     # get list of other samples on the run
@@ -389,6 +390,10 @@ def get_variant_info(sample_data, sample_obj):
             latest_check.save()
         var_comment_form = VariantCommentForm(pk=latest_check.pk, comment=latest_check.comment)
 
+        # if variant is to appear on report tab, add to list
+        if sample_variant.variant_instance.get_final_decision_display() in ['Genuine', 'Miscalled']:
+            reportable_list.append(variant_obj.variant)
+
         # get list of comments for variant
         variant_comments_list = []
         for v in variant_checks:
@@ -447,10 +452,16 @@ def get_variant_info(sample_data, sample_obj):
         else:
             variant_calls.append(variant_calls_dict)
 
+    # set true or false for whether there are reportable variants
+    if len(reportable_list) == 0:
+        no_calls = True
+    else:
+        no_calls = False
 
     variant_data = {
         'variant_calls': variant_calls, 
         'polys': polys_list,
+        'no_calls': no_calls,
         'check_options': VariantCheck.DECISION_CHOICES,
     }
 
