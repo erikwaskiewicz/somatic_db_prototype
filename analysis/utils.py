@@ -570,6 +570,11 @@ def get_coverage_data(sample_obj, depth_cutoffs):
     # get list of target depths from panel object
     target_depths = depth_cutoffs.split(',')
 
+    # will set to true in loop below when it hits a gap
+    gaps_present_135 = False
+    gaps_present_270 = False
+    gaps_present_1000 = False
+
     # create a coverage dictionary
     coverage_data = {
         'regions': {},
@@ -603,6 +608,7 @@ def get_coverage_data(sample_obj, depth_cutoffs):
 
             # gaps at 135x
             if gap.coverage_cutoff == 135:
+                gaps_present_135 = True
                 gaps_dict = {
                     'genomic': gap.genomic(),
                     'hgvs_c': gap.hgvs_c,
@@ -612,6 +618,7 @@ def get_coverage_data(sample_obj, depth_cutoffs):
 
             # gaps at 270x
             elif gap.coverage_cutoff == 270:
+                gaps_present_270 = True
                 gaps_dict = {
                     'genomic': gap.genomic(),
                     'hgvs_c': gap.hgvs_c,
@@ -621,6 +628,7 @@ def get_coverage_data(sample_obj, depth_cutoffs):
 
             # gaps at 1000x
             elif gap.coverage_cutoff == 1000:
+                gaps_present_1000 = True
                 gaps_dict = {
                     'genomic': gap.genomic(),
                     'hgvs_c': gap.hgvs_c,
@@ -643,6 +651,9 @@ def get_coverage_data(sample_obj, depth_cutoffs):
         }
 
         coverage_data['regions'][gene_coverage_obj.gene.gene] = gene_dict
+        coverage_data['gaps_present_135'] = gaps_present_135
+        coverage_data['gaps_present_270'] = gaps_present_270
+        coverage_data['gaps_present_1000'] = gaps_present_1000
 
     return coverage_data
 
