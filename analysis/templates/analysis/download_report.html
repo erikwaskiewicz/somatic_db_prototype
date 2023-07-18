@@ -35,8 +35,6 @@
 
 <body>
 
-  <!-- TODO add cosmic column -->
-
   <h1>{{ sample_data.panel_obj.get_assay_display }} report for {{ sample_data.sample_id }}</h1>
 
   <!-- Fail warning box -->
@@ -192,7 +190,8 @@
   <table>
     <thead>
       <tr>
-        <th style="width: 100%">Hotspot gaps at 135X</th>
+        <th style="width: 50%">Hotspot gaps at 135X</th>
+        <th style="width: 50%">Percent COSMIC</th>
       </tr>
     </thead>
 
@@ -202,6 +201,7 @@
         {% for gap in values.gaps_135 %}
         <tr>
           <td>{{ gap.hgvs_c }}</td>
+          <td>{% firstof gap.percent_cosmic "N/A" %}</td>
         </tr>
         {% endfor %}
       {% endfor %}
@@ -217,7 +217,8 @@
   <table>
     <thead>
       <tr>
-        <th style="width: 100%">Hotspot gap at 270X</th>
+        <th style="width: 50%">Hotspot gap at 270X</th>
+        <th style="width: 50%">Percent COSMIC</th>
       </tr>
     </thead>
 
@@ -227,6 +228,7 @@
         {% for gap in values.gaps_270 %}
         <tr>
           <td>{{ gap.hgvs_c }}</td>
+          <td>{% firstof gap.percent_cosmic "N/A" %}</td>
         </tr>
         {% endfor %}
       {% endfor %}
@@ -242,7 +244,8 @@
   <table>
     <thead>
       <tr>
-        <th style="width: 100%">Hotspot gaps at 1000X</th>
+        <th style="width: 50%">Hotspot gaps at 1000X</th>
+        <th style="width: 50%">Percent COSMIC</th>
       </tr>
     </thead>
 
@@ -252,6 +255,7 @@
         {% for gap in values.gaps_1000 %}
         <tr>
           <td>{{ gap.hgvs_c }}</td>
+          <td>{% firstof gap.percent_cosmic "N/A" %}</td>
         </tr>
         {% endfor %}
       {% endfor %}

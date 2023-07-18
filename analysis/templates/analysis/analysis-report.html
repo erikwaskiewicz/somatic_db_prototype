@@ -209,7 +209,7 @@
               {% for gap in values.gaps_135 %}
               <tr>
                 <td>{{ gap.hgvs_c }}</td>
-                <td>N/A</td>
+                <td>{% firstof gap.percent_cosmic "N/A" %}</td>
               </tr>
               {% endfor %}
             {% endif %}
@@ -239,7 +239,7 @@
               {% for gap in values.gaps_270 %}
               <tr>
                 <td>{{ gap.hgvs_c }}</td>
-                <td>N/A</td>
+                <td>{% firstof gap.percent_cosmic "N/A" %}</td>
               </tr>
               {% endfor %}
             {% endif %}
@@ -269,7 +269,7 @@
               {% for gap in values.gaps_1000 %}
               <tr>
                 <td>{{ gap.hgvs_c }}</td>
-                <td>N/A</td>
+                <td>{% firstof gap.percent_cosmic "N/A" %}</td>
               </tr>
               {% endfor %}
             {% endif %}
