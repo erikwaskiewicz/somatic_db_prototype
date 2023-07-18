@@ -18,11 +18,11 @@
             <variant>
                 <id>{{ v.genomic }}</id>
                 <gene>{{ v.gene }}</gene>
-                <refseq_transcript></refseq_transcript> <!-- TODO-->
+                <refseq_transcript>{{ v.transcript }}</refseq_transcript>
                 <hgvs_c>{{ v.hgvs_c }}</hgvs_c>
                 <hgvs_p>{{ v.hgvs_p }}</hgvs_p>
                 <genome_build>{{ sample_data.genome_build }}</genome_build>
-                {% if sample_data.panel_obj.assay == '3' %} <!-- 2dp for ctDNA, whole number for the rest-->
+                {% if sample_data.panel_obj.assay == '3' %}  {# VAF rounded to 2dp for ctDNA, whole number for the rest #}
                 <vaf>{{ v.vaf.vaf }}</vaf>
                 {% else %}
                 <vaf>{{ v.vaf.vaf_rounded }}</vaf>
