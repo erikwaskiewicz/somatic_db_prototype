@@ -191,7 +191,8 @@
     <thead>
       <tr>
         <th style="width: 50%">Hotspot gaps at 135X</th>
-        <th style="width: 50%">Percent COSMIC</th>
+        <th style="width: 25%">Percent COSMIC</th>
+        <th style="width: 25%">Counts COSMIC</th>
       </tr>
     </thead>
 
@@ -202,11 +203,12 @@
         <tr>
           <td>{{ gap.hgvs_c }}</td>
           <td>{% firstof gap.percent_cosmic "N/A" %}</td>
+          <td>{% firstof gap.counts_cosmic "N/A" %}</td>
         </tr>
         {% endfor %}
       {% endfor %}
     {% else %}
-      <tr><td colspan="2">No hotspot gaps</td></tr>
+      <tr><td colspan="3">No hotspot gaps</td></tr>
     {% endif %}
     </tbody>
   </table>
@@ -218,7 +220,8 @@
     <thead>
       <tr>
         <th style="width: 50%">Hotspot gap at 270X</th>
-        <th style="width: 50%">Percent COSMIC</th>
+        <th style="width: 25%">Percent COSMIC</th>
+        <th style="width: 25%">Counts COSMIC</th>
       </tr>
     </thead>
 
@@ -229,11 +232,12 @@
         <tr>
           <td>{{ gap.hgvs_c }}</td>
           <td>{% firstof gap.percent_cosmic "N/A" %}</td>
+          <td>{% firstof gap.counts_cosmic "N/A" %}</td>
         </tr>
         {% endfor %}
       {% endfor %}
     {% else %}
-      <tr><td colspan="2">No hotspot gaps</td></tr>
+      <tr><td colspan="3">No hotspot gaps</td></tr>
     {% endif %}
     </tbody>
   </table>
@@ -245,7 +249,8 @@
     <thead>
       <tr>
         <th style="width: 50%">Hotspot gaps at 1000X</th>
-        <th style="width: 50%">Percent COSMIC</th>
+        <th style="width: 25%">Percent COSMIC</th>
+        <th style="width: 25%">Counts COSMIC</th>
       </tr>
     </thead>
 
@@ -256,11 +261,12 @@
         <tr>
           <td>{{ gap.hgvs_c }}</td>
           <td>{% firstof gap.percent_cosmic "N/A" %}</td>
+          <td>{% firstof gap.counts_cosmic "N/A" %}</td>
         </tr>
         {% endfor %}
       {% endfor %}
     {% else %}
-      <tr><td colspan="2">No hotspot gaps</td></tr>
+      <tr><td colspan="3">No hotspot gaps</td></tr>
     {% endif %}
     </tbody>
   </table>

@@ -51,19 +51,24 @@ class Command(BaseCommand):
         Use in coverage upload section to add specific gaps for a list in the coverage JSON
         """
         # handle weird inputs for COSMIC percent
-        if gap['percent_cosmic'] is not None:
-            if gap['percent_cosmic'] == 'N/A':
-                perc_cosmic = None
-            elif np.isnan(gap['percent_cosmic']):
-                perc_cosmic = None
-            else:
-                perc_cosmic = gap['percent_cosmic']
+        if 'percent_cosmic' not in gaps.keys():
+            perc_cosmic = None
+        elif gap['percent_cosmic'] == 'N/A':
+            perc_cosmic = None
+        elif np.isnan(gap['percent_cosmic']):
+            perc_cosmic = None
+        else:
+            perc_cosmic = gap['percent_cosmic']
 
-        # handle weird inputs for COSMIC counts - TODO this isnt used yet
-        if 'counts_cosmic' in gap.keys():
-            if gap['counts_cosmic'] is not None:
-                if np.isnan(gap['counts_cosmic']):
-                    gap['counts_cosmic'] = None
+        # handle weird inputs for COSMIC counts
+        if 'counts_cosmic' not in gap.keys():
+            counts_cosmic = None
+        elif gap['counts_cosmic'] == 'N/A':
+            counts_cosmic = None
+        elif np.isnan(gap['counts_cosmic']):
+            counts_cosmic = None
+        else:
+            counts_cosmic = gap['counts_cosmic']
 
         # add gap to database
         new_gap_obj = GapsAnalysis(
@@ -75,6 +80,7 @@ class Command(BaseCommand):
             pos_end = gap['pos_end'],
             coverage_cutoff = cutoff,
             percent_cosmic = perc_cosmic,
+            counts_cosmic = counts_cosmic,
         )
         new_gap_obj.save()
 

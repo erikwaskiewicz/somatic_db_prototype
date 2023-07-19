@@ -199,6 +199,7 @@
           <tr>
             <th scope="col">Gap</th>
             <th scope="col">Percent COSMIC</th>
+            <th scope="col">Counts COSMIC</th>
           </tr>
         </thead>
 
@@ -210,12 +211,13 @@
               <tr>
                 <td>{{ gap.hgvs_c }}</td>
                 <td>{% firstof gap.percent_cosmic "N/A" %}</td>
+                <td>{% firstof gap.counts_cosmic "N/A" %}</td>
               </tr>
               {% endfor %}
             {% endif %}
           {% endfor %}
         {% else %}
-          <tr><td colspan="2">No hotspot gaps</td></tr>
+          <tr><td colspan="3">No hotspot gaps</td></tr>
         {% endif %}
         </tbody>
       </table>
@@ -229,6 +231,7 @@
           <tr>
             <th scope="col">Gap</th>
             <th scope="col">Percent COSMIC</th>
+            <th scope="col">Counts COSMIC</th>
           </tr>
         </thead>
 
@@ -240,12 +243,13 @@
               <tr>
                 <td>{{ gap.hgvs_c }}</td>
                 <td>{% firstof gap.percent_cosmic "N/A" %}</td>
+                <td>{% firstof gap.counts_cosmic "N/A" %}</td>
               </tr>
               {% endfor %}
             {% endif %}
           {% endfor %}
         {% else %}
-          <tr><td colspan="2">No hotspot gaps</td></tr>
+          <tr><td colspan="3">No hotspot gaps</td></tr>
         {% endif %}
         </tbody>
       </table>
@@ -259,6 +263,7 @@
           <tr>
             <th scope="col">Gap</th>
             <th scope="col">Percent COSMIC</th>
+            <th scope="col">Counts COSMIC</th>
           </tr>
         </thead>
 
@@ -270,12 +275,13 @@
               <tr>
                 <td>{{ gap.hgvs_c }}</td>
                 <td>{% firstof gap.percent_cosmic "N/A" %}</td>
+                <td>{% firstof gap.counts_cosmic "N/A" %}</td>
               </tr>
               {% endfor %}
             {% endif %}
           {% endfor %}
         {% else %}
-          <tr><td colspan="2">No hotspot gaps</td></tr>
+          <tr><td colspan="3">No hotspot gaps</td></tr>
         {% endif %}
         </tbody>
       </table>

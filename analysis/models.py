@@ -412,6 +412,7 @@ class GapsAnalysis(models.Model):
     pos_end = models.IntegerField()
     coverage_cutoff = models.IntegerField()
     percent_cosmic = models.DecimalField(decimal_places=2, max_digits=5, blank=True, null=True)
+    counts_cosmic = models.IntegerField(blank=True, null=True)
 
     def genomic(self):
         return f'{self.chr_start}:{self.pos_start}_{self.chr_end}:{self.pos_end}'
