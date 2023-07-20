@@ -325,36 +325,17 @@ def get_variant_info(sample_data, sample_obj):
     polys_list = []
     reportable_list = []
 
-    # TODO this bit isnt used yet - removed to speed up db
-    # get list of other samples on the run
-    #current_run_obj = sample_obj.worksheet.run
-    #current_run_samples = SampleAnalysis.objects.filter(worksheet__run = current_run_obj)
-    # remove dups
-    #sample_objects = set([ s.sample for s in current_run_samples ])
-
     for sample_variant in sample_variants:
 
         variant_obj = sample_variant.variant_instance.variant
 
-        # count how many times variant is present in other samples on the run
-        #this_run_count = 0
-        #for s in sample_objects:
-        #    qs = VariantInstance.objects.filter(
-        #        sample = s,
-        #        variant = variant_obj,
-        #    )
-        #    if qs:
-        #        this_run_count += 1
-	
-	#Set poly list based on genome build
+        # set poly list based on genome build
         if variant_obj.genome_build == 37:
-             
              poly_list_name = "build_37_polys"
-        
+
         elif variant_obj.genome_build == 38:
-            
             poly_list_name = "build_38_polys"
-	
+
         # get whether the variant falls within a poly/ known list
         # TODO - will have to handle multiple poly/ known lists in future
         previous_classifications = []
@@ -420,8 +401,6 @@ def get_variant_info(sample_data, sample_obj):
             'transcript': sample_variant.variant_instance.hgvs_c.split(':')[0],
             'gnomad_popmax': sample_variant.variant_instance.gnomad_popmax,
             'this_run': {
-                #'count': this_run_count, 
-                #'total': len(sample_objects),
                 'ntc': sample_variant.variant_instance.in_ntc,
                 'alt_count_ntc': sample_variant.variant_instance.alt_count_ntc,
                 'total_count_ntc': sample_variant.variant_instance.total_count_ntc,
@@ -469,7 +448,7 @@ def get_variant_info(sample_data, sample_obj):
 
 
 
-def get_fusion_info(sample_data,sample_obj):
+def get_fusion_info(sample_data, sample_obj):
     """
     Get information on all fusions in a sample analysis to generate the fusion portion of the context dictionary
 
@@ -481,16 +460,6 @@ def get_fusion_info(sample_data,sample_obj):
     reportable_list = []
 
     for fusion_object in fusions:
-
-        # TODO this is only needed for seeing variants in other runs - removed to speed up DB
-        #this_run = FusionAnalysis.objects.filter(
-        #    fusion_genes=fusion_object.fusion_instance.fusion_genes,
-        #    sample__worksheet__run__run_id=sample_data.get('run_id')
-        #)
-        #this_run_count = this_run.count()
-
-        #total_runs = FusionAnalysis.objects.filter(sample__worksheet__run__run_id=sample_data.get('run_id'))
-        #total_runs_count = total_runs.count()
 
         # get checks for each variant
         fusion_checks = FusionCheck.objects.filter(fusion_analysis=fusion_object)
@@ -512,7 +481,7 @@ def get_fusion_info(sample_data,sample_obj):
 
         fusion_comment_form = FusionCommentForm(
             pk=latest_check.pk, 
-            hgvs= fusion_object.fusion_instance.hgvs, 
+            hgvs=fusion_object.fusion_instance.hgvs, 
             comment=latest_check.comment
         )
 
@@ -528,12 +497,6 @@ def get_fusion_info(sample_data,sample_obj):
         if fusion_object.fusion_instance.get_final_decision_display() in ['Genuine', 'Miscalled']:
             reportable_list.append(fusion_object)
 
-        # TODO this is only needed if they want to see the number of reference reads
-        #if fusion_object.fusion_instance.fusion_caller == 'Splice':
-        #    reference_reads = fusion_object.fusion_instance.ref_reads_1
-        #elif fusion_object.fusion_instance.fusion_caller == 'Fusion':
-        #    reference_reads = f'{fusion_object.fusion_instance.ref_reads_1} | {fusion_object.fusion_instance.ref_reads_2}'
-
         fusion_calls_dict = {
             'pk': fusion_object.pk,
             'fusion_instance_pk': fusion_object.fusion_instance.pk,
@@ -544,12 +507,9 @@ def get_fusion_info(sample_data,sample_obj):
             'left_breakpoint': fusion_object.fusion_instance.fusion_genes.left_breakpoint,
             'right_breakpoint': fusion_object.fusion_instance.fusion_genes.right_breakpoint,
             'genome_build': fusion_object.fusion_instance.fusion_genes.genome_build,
-            #'reference_reads': reference_reads,
             'this_run': {
-                #'count': this_run_count, 
-                #'total': total_runs_count,
                 'ntc': fusion_object.fusion_instance.in_ntc,
-            },   
+            },
             'checks': fusion_checks_list,
             'latest_check': latest_check,
             'latest_checks_agree': last_two_checks_agree,
@@ -557,7 +517,6 @@ def get_fusion_info(sample_data,sample_obj):
             'comments': fusion_comments_list,
             'final_decision': fusion_object.fusion_instance.get_final_decision_display()
         }
-
         fusion_calls.append(fusion_calls_dict)
 
     # set true or false for whether there are reportable variants
