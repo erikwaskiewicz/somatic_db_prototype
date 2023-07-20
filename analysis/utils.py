@@ -475,9 +475,11 @@ def get_fusion_info(sample_data,sample_obj):
 
     """
 
-    fusions = FusionPanelAnalysis.objects.filter(sample_analysis= sample_obj)
+    fusions = FusionPanelAnalysis.objects.filter(sample_analysis=sample_obj)
 
     fusion_calls = []
+    reportable_list = []
+
     for fusion_object in fusions:
 
         # TODO this is only needed for seeing variants in other runs - removed to speed up DB
@@ -522,6 +524,10 @@ def get_fusion_info(sample_data,sample_obj):
                     { 'comment': v.comment, 'user': v.check_object.user, 'updated': v.comment_updated, }
                 )
 
+        # if variant is to appear on report tab, add to list
+        if fusion_object.fusion_instance.get_final_decision_display() in ['Genuine', 'Miscalled']:
+            reportable_list.append(fusion_object)
+
         # TODO this is only needed if they want to see the number of reference reads
         #if fusion_object.fusion_instance.fusion_caller == 'Splice':
         #    reference_reads = fusion_object.fusion_instance.ref_reads_1
@@ -550,13 +556,21 @@ def get_fusion_info(sample_data,sample_obj):
             'comment_form': fusion_comment_form,
             'comments': fusion_comments_list,
             'final_decision': fusion_object.fusion_instance.get_final_decision_display()
-                
-
         }
 
         fusion_calls.append(fusion_calls_dict)
 
-    fusion_data = {'fusion_calls': fusion_calls, 'check_options': FusionCheck.DECISION_CHOICES, }
+    # set true or false for whether there are reportable variants
+    if len(reportable_list) == 0:
+        no_calls = True
+    else:
+        no_calls = False
+
+    fusion_data = {
+        'fusion_calls': fusion_calls,
+        'no_calls': no_calls,
+        'check_options': FusionCheck.DECISION_CHOICES,
+    }
 
     return fusion_data
 

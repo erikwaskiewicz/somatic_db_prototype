@@ -294,7 +294,10 @@
     </thead>
 
     <tbody>
-    {% for v in fusion_data.fusion_calls %}
+    {% if fusion_data.no_calls %}
+      <tr><td colspan="6">No calls</td></tr>
+    {% else %}
+      {% for v in fusion_data.fusion_calls %}
       {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
       <tr>
         <td>{{ v.fusion_genes }}</td>
@@ -316,7 +319,8 @@
         </td>
       </tr>
       {% endif %}
-    {% endfor %}
+      {% endfor %}
+    {% endif %}
     </tbody>
   </table>
   <br>

@@ -312,6 +312,9 @@
   </thead>
 
   <tbody>
+  {% if fusion_data.no_calls %}
+    <tr><td colspan="7">No calls</td></tr>
+  {% else %}
     {% for v in fusion_data.fusion_calls %}
     {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
     <tr>
@@ -342,6 +345,7 @@
     </tr>
     {% endif %}
     {% endfor %}
+  {% endif %}
   </tbody>
 </table>
 <br>
