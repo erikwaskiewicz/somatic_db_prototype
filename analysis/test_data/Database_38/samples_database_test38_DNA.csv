@@ -16,3 +16,7 @@ sample12,test38,DNA,mpn,run_test38,GRCh38
 sample13,test38,DNA,mpn,run_test38,GRCh38
 sample14,test38,DNA,mpn,run_test38,GRCh38
 sample16,test38,DNA,myeloid,run_test38,GRCh38
+sample19,test38,DNA,breast,run_test38,GRCh38
+sample20,test38,DNA,melanoma,run_test38,GRCh38
+sample21,test38,DNA,colorectal,run_test38,GRCh38
+sample22,test38,DNA,lung,run_test38,GRCh38

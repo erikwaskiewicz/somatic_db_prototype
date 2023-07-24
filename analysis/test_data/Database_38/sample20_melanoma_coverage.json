@@ -1,0 +1,208 @@
+{
+    "NRAS": {
+        "average_depth": 410,
+        "percent_135": 100,
+        "percent_270": 100,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [],
+        "hotspot_regions": [
+            {
+                "chr": "chr1",
+                "pos_start": 114709580,
+                "pos_end": 114709583,
+                "hgvs_c": "NRAS(NM_002524.5):c.436_438(exon4_A146)",
+                "average_coverage": 364,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr1",
+                "pos_start": 114709667,
+                "pos_end": 114709670,
+                "hgvs_c": "NRAS(NM_002524.5):c.349_351(exon4_K117)",
+                "average_coverage": 329,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr1",
+                "pos_start": 114713906,
+                "pos_end": 114713909,
+                "hgvs_c": "NRAS(NM_002524.5):c.181_183(exon3_Q61)",
+                "average_coverage": 379,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr1",
+                "pos_start": 114713912,
+                "pos_end": 114713915,
+                "hgvs_c": "NRAS(NM_002524.5):c.175_177(exon3_A59)",
+                "average_coverage": 377,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr1",
+                "pos_start": 114716121,
+                "pos_end": 114716127,
+                "hgvs_c": "NRAS(NM_002524.5):c.34_39(exon2_G12-G13)",
+                "average_coverage": 504,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "gaps_135": [],
+        "gaps_270": []
+    },
+    "KIT": {
+        "average_depth": 367,
+        "percent_135": 100,
+        "percent_270": 94,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [],
+        "hotspot_regions": [
+            {
+                "chr": "chr4",
+                "pos_start": 54725851,
+                "pos_end": 54726055,
+                "hgvs_c": "KIT(NM_000222.3):c.1347-5_1540+5(exon9)",
+                "average_coverage": 375,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 54727410,
+                "pos_end": 54727547,
+                "hgvs_c": "KIT(NM_000222.3):c.1648-5_1774+5(exon11)",
+                "average_coverage": 381,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 54728005,
+                "pos_end": 54728126,
+                "hgvs_c": "KIT(NM_000222.3):c.1880-5_1990+5(exon13)",
+                "average_coverage": 395,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 54729329,
+                "pos_end": 54729490,
+                "hgvs_c": "KIT(NM_000222.3):c.1991-5_2141+5(exon14)",
+                "average_coverage": 296,
+                "percent_270": 75,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr4",
+                "pos_start": 54733064,
+                "pos_end": 54733197,
+                "hgvs_c": "KIT(NM_000222.3):c.2362-5_2484+5(exon17)",
+                "average_coverage": 403,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "gaps_135": [],
+        "gaps_270": [
+            {
+                "chr": 4,
+                "pos_start": 54729329,
+                "pos_end": 54729334,
+                "hgvs_c": "KIT(NM_000222.3)c.1991-5_1991-1",
+                "gene": "KIT",
+                "counts_cosmic": 0,
+                "percent_cosmic": 0.0
+            },
+            {
+                "chr": 4,
+                "pos_start": 54729453,
+                "pos_end": 54729456,
+                "hgvs_c": "KIT(NM_000222.3)c.2110_2112",
+                "gene": "KIT",
+                "counts_cosmic": 0,
+                "percent_cosmic": 0.0
+            },
+            {
+                "chr": 4,
+                "pos_start": 54729458,
+                "pos_end": 54729490,
+                "hgvs_c": "KIT(NM_000222.3)c.2115_2141+5",
+                "gene": "KIT",
+                "counts_cosmic": 1,
+                "percent_cosmic": 0.14
+            }
+        ]
+    },
+    "BRAF": {
+        "average_depth": 464,
+        "percent_135": 100,
+        "percent_270": 95,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [],
+        "hotspot_regions": [
+            {
+                "chr": "chr7",
+                "pos_start": 140753269,
+                "pos_end": 140753398,
+                "hgvs_c": "BRAF(NM_004333.6):c.1742-5_1860+5(exon15)",
+                "average_coverage": 447,
+                "percent_270": 91,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr7",
+                "pos_start": 140781570,
+                "pos_end": 140781698,
+                "hgvs_c": "BRAF(NM_004333.6):c.1315-5_1432+5(exon11)",
+                "average_coverage": 482,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "gaps_135": [],
+        "gaps_270": [
+            {
+                "chr": 7,
+                "pos_start": 140753387,
+                "pos_end": 140753398,
+                "hgvs_c": "BRAF(NM_004333.6)c.1742-5_1747",
+                "gene": "BRAF",
+                "counts_cosmic": 12,
+                "percent_cosmic": 0.1
+            }
+        ]
+    }
+}
