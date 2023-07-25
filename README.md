@@ -54,9 +54,9 @@ python manage.py add_poly_list --list roi/b38_polys.txt --genome 38 --both_check
 
 Optional - Load in test cases:
 ```
-bash scripts/upload.sh analysis/test_data/Database_37/samples_dna_ws_1.csv
-bash scripts/upload.sh analysis/test_data/Database_37/samples_dna_ws_2.csv
-bash scripts/upload.sh analysis/test_data/Database_37/samples_rna_ws_1.csv
+bash scripts/upload.sh analysis/test_data/Database_37/samples_dna_ws_1.csv run_1
+bash scripts/upload.sh analysis/test_data/Database_37/samples_dna_ws_2.csv run_2
+bash scripts/upload.sh analysis/test_data/Database_37/samples_rna_ws_1.csv run_1
 bash scripts/upload.sh analysis/test_data/Database_37/samples_ctdna_ws_1.csv
 bash scripts/upload.sh analysis/test_data/Database_38/samples_database_test38_DNA.csv
 ```
