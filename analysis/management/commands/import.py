@@ -51,7 +51,7 @@ class Command(BaseCommand):
         Use in coverage upload section to add specific gaps for a list in the coverage JSON
         """
         # handle weird inputs for COSMIC percent
-        if 'percent_cosmic' not in gaps.keys():
+        if 'percent_cosmic' not in gap.keys():
             perc_cosmic = None
         elif gap['percent_cosmic'] == 'N/A':
             perc_cosmic = None
