@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ngs_data>
+    <sample_info>
+        <worksheet_id>{{ sample_data.worksheet_id }}</worksheet_id>
+        <sample_id>{{ sample_data.sample_id }}</sample_id>
+        <referral>{{ sample_data.panel_obj.panel_name }}</referral>
+        <awmgs_db_pk>{{ sample_data.sample_pk }}</awmgs_db_pk>
+        <first_checker>{{ sample_data.checks.first_check }}</first_checker>
+        <final_checker>{{ sample_data.checks.final_check }}</final_checker>
+        <additional_checkers>{{ sample_data.checks.extra_checks }}</additional_checkers>
+    </sample_info>
+
+    <results>
+
+        <small_variants>
+            {% for v in variant_data.variant_calls %}
+            {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
+            <variant>
+                <id>{{ v.genomic }}</id>
+                <gene>{{ v.gene }}</gene>
+                <refseq_transcript>{{ v.transcript }}</refseq_transcript>
+                <hgvs_c>{{ v.hgvs_c }}</hgvs_c>
+                <hgvs_p>{{ v.hgvs_p }}</hgvs_p>
+                <genome_build>{{ sample_data.genome_build }}</genome_build>
+                {% if sample_data.panel_obj.assay == '3' %}  {# VAF rounded to 2dp for ctDNA, whole number for the rest #}
+                <vaf>{{ v.vaf.vaf }}</vaf>
+                {% else %}
+                <vaf>{{ v.vaf.vaf_rounded }}</vaf>
+                {% endif %}
+                <igv_outcome>{{ v.final_decision }}</igv_outcome>
+            </variant>
+            {% endif %}
+            {% endfor %}
+        </small_variants>
+
+        <structural_variants>
+            {% for v in fusion_data.fusion_calls %}
+            {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
+            <variant>
+                <genes>{{ v.fusion_genes }}</genes>
+                <hgvs>{{ v.fusion_hgvs }}</hgvs>
+            </variant>
+            {% endif %}
+            {% endfor %}
+        </structural_variants>
+
+        <coverage>
+            <regions>
+                {% for gene, values in coverage_data.regions.items %}
+                <region>
+                    <region_name>{{ gene }}</region_name>
+                    <percent_135x>{{ values.percent_135x }}</percent_135x>
+                    <percent_270x>{{ values.percent_270x }}</percent_270x>
+                    <percent_1000x>{{ values.percent_1000x }}</percent_1000x>
+                </region>
+                {% endfor %}
+            </regions>
+            <summary_0x>{{ myeloid_coverage_summary.summary_0x }}</summary_0x>
+            <summary_270x>{{ myeloid_coverage_summary.summary_270x }}</summary_270x>
+
+            <gaps_135x>
+                {% for gene, values in coverage_data.regions.items %}
+                {% for gap in values.gaps_135 %}
+                <gap>
+                    <region_name>{{ gap.hgvs_c }}</region_name>
+                    <cosmic>{% firstof gap.percent_cosmic "N/A" %}</cosmic>
+                </gap>
+                {% endfor %}
+                {% endfor %}
+            </gaps_135x>
+            <gaps_270x>
+                {% for gene, values in coverage_data.regions.items %}
+                {% for gap in values.gaps_270 %}
+                <gap>
+                    <region_name>{{ gap.hgvs_c }}</region_name>
+                    <cosmic>{% firstof gap.percent_cosmic "N/A" %}</cosmic>
+                </gap>
+                {% endfor %}
+                {% endfor %}
+            </gaps_270x>
+            <gaps_1000x>
+                {% for gene, values in coverage_data.regions.items %}
+                {% for gap in values.gaps_1000 %}
+                <gap>
+                    <region_name>{{ gap.hgvs_c }}</region_name>
+                    <cosmic>{% firstof gap.percent_cosmic "N/A" %}</cosmic>
+                </gap>
+                {% endfor %}
+                {% endfor %}
+            </gaps_1000x>
+
+        </coverage>
+
+    </results>
+
+</ngs_data>

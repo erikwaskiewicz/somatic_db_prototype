@@ -25,7 +25,17 @@
       </div>
       <div class="col-4">
         <form method="GET">
-          <button type="submit" name="download-report" id="download" class="btn btn-success w-100">Download report</button>
+
+          <div class="btn-group btn-block">
+            <button type="submit" name="download-report" id="download" class="btn btn-success w-100">Download report</button>
+            <button type="button btn-block" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <div class="dropdown-menu">
+              <button type="submit" name="download-xml" id="download-xml" class="dropdown-item">Download XML</button>
+            </div>
+          </div>
+
         </form>
       </div>
     </div>
@@ -53,36 +63,42 @@
   </thead>
 
   <tbody>
-    {% for v in variant_data.variant_calls %}
+    <!-- say no calls if empty -->
+    {% if variant_data.no_calls %}
+      <tr><td colspan="7">No calls</td></tr>
 
-    {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
-    <tr>
-      <td class="variant-pk" style="display:none">{{ v.pk }}</td>
-      <td><p style="display:inline" id="igv">{{ v.genomic }} 
-        {% if v.genome_build == 37 %}
-        <span class = "badge badge-info badge-pill">GRCh{{ v.genome_build }}
-        {% elif v.genome_build == 38 %}
-        <span class = "badge badge-success badge-pill">GRCh{{ v.genome_build }}
+    <!-- otherwise list all genuine or miscalled variants -->
+    {% else%}
+      {% for v in variant_data.variant_calls %}
+        {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
+        <tr>
+          <td class="variant-pk" style="display:none">{{ v.pk }}</td>
+          <td><p style="display:inline" id="igv">{{ v.genomic }} 
+            {% if v.genome_build == 37 %}
+            <span class = "badge badge-info badge-pill">GRCh{{ v.genome_build }}
+            {% elif v.genome_build == 38 %}
+            <span class = "badge badge-success badge-pill">GRCh{{ v.genome_build }}
+            {% endif %}
+          </p></td>
+          <td>{{ v.gene }} ({{ v.exon }})</td>
+          <td>{{ v.hgvs_c }}</td>
+          <td>{{ v.hgvs_p }}</td>
+          {% if sample_data.panel_obj.assay == '3' %} <!-- 2dp for ctDNA, whole number for the rest-->
+          <td>{{ v.vaf.vaf }}%</td>
+          {% else %}
+          <td>{{ v.vaf.vaf_rounded }}%</td>
+          {% endif %}
+          <td>{{ v.final_decision }}</td>
+          <td>
+          {% for c in v.comments %}
+            {{ c.user }}-{{ c.comment }}<br>
+          {% endfor %}
+          </td>
+        </tr>
         {% endif %}
-      </p></td>
-      <td>{{ v.gene }} ({{ v.exon }})</td>
-      <td>{{ v.hgvs_c }}</td>
-      <td>{{ v.hgvs_p }}</td>
-      {% if sample_data.panel_obj.assay == '3' %} <!-- 2dp for ctDNA, whole number for the rest-->
-      <td>{{ v.vaf.vaf }}%</td>
-      {% else %}
-      <td>{{ v.vaf.vaf_rounded }}%</td>
-      {% endif %}
-      <td>{{ v.final_decision }}</td>
-      <td>
-      {% for c in v.comments %}
-        {{ c.user }}-{{ c.comment }}<br>
       {% endfor %}
-      </td>
-    </tr>
-    {% endif %}
 
-    {% endfor %}
+    {% endif %}
   </tbody>
 </table>
 <br>
@@ -183,20 +199,26 @@
           <tr>
             <th scope="col">Gap</th>
             <th scope="col">Percent COSMIC</th>
+            <th scope="col">Counts COSMIC</th>
           </tr>
         </thead>
 
         <tbody>
+        {% if coverage_data.gaps_present_135 %}
           {% for gene, values in coverage_data.regions.items %}
             {% if values.gaps_135 %}
               {% for gap in values.gaps_135 %}
               <tr>
                 <td>{{ gap.hgvs_c }}</td>
-                <td>N/A</td>
+                <td>{% firstof gap.percent_cosmic "N/A" %}</td>
+                <td>{% firstof gap.counts_cosmic "N/A" %}</td>
               </tr>
               {% endfor %}
             {% endif %}
           {% endfor %}
+        {% else %}
+          <tr><td colspan="3">No hotspot gaps</td></tr>
+        {% endif %}
         </tbody>
       </table>
       <br>
@@ -209,20 +231,26 @@
           <tr>
             <th scope="col">Gap</th>
             <th scope="col">Percent COSMIC</th>
+            <th scope="col">Counts COSMIC</th>
           </tr>
         </thead>
 
         <tbody>
+        {% if coverage_data.gaps_present_270 %}
           {% for gene, values in coverage_data.regions.items %}
             {% if values.gaps_270 %}
               {% for gap in values.gaps_270 %}
               <tr>
                 <td>{{ gap.hgvs_c }}</td>
-                <td>N/A</td>
+                <td>{% firstof gap.percent_cosmic "N/A" %}</td>
+                <td>{% firstof gap.counts_cosmic "N/A" %}</td>
               </tr>
               {% endfor %}
             {% endif %}
           {% endfor %}
+        {% else %}
+          <tr><td colspan="3">No hotspot gaps</td></tr>
+        {% endif %}
         </tbody>
       </table>
       <br>
@@ -235,20 +263,26 @@
           <tr>
             <th scope="col">Gap</th>
             <th scope="col">Percent COSMIC</th>
+            <th scope="col">Counts COSMIC</th>
           </tr>
         </thead>
 
         <tbody>
+        {% if coverage_data.gaps_present_1000 %}
           {% for gene, values in coverage_data.regions.items %}
             {% if values.gaps_1000 %}
               {% for gap in values.gaps_1000 %}
               <tr>
                 <td>{{ gap.hgvs_c }}</td>
-                <td>N/A</td>
+                <td>{% firstof gap.percent_cosmic "N/A" %}</td>
+                <td>{% firstof gap.counts_cosmic "N/A" %}</td>
               </tr>
               {% endfor %}
             {% endif %}
           {% endfor %}
+        {% else %}
+          <tr><td colspan="3">No hotspot gaps</td></tr>
+        {% endif %}
         </tbody>
       </table>
 
@@ -278,6 +312,9 @@
   </thead>
 
   <tbody>
+  {% if fusion_data.no_calls %}
+    <tr><td colspan="7">No calls</td></tr>
+  {% else %}
     {% for v in fusion_data.fusion_calls %}
     {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
     <tr>
@@ -308,6 +345,7 @@
     </tr>
     {% endif %}
     {% endfor %}
+  {% endif %}
   </tbody>
 </table>
 <br>

@@ -165,20 +165,17 @@
                       <tr>
                         <th scope="col" class="col-5">HGVS</th>
                         <th scope="col" class="col-5">Genomic</th>
-                        <th scope="col" class="col-2">% COSMIC</th>
+                        <th scope="col" class="col-1">% COSMIC</th>
+                        <th scope="col" class="col-1">Counts COSMIC</th>
                       </tr>
                     </thead>
                     <tbody>
-                    {% for r in value.gaps_135 %}
+                    {% for gap in value.gaps_135 %}
                       <tr>
-                        <td>{{ r.hgvs_c }}</td>
-                        <td>{{ r.genomic }}</td>
-                        <!-- only show cosmic % when not none -->
-                        {% if r.percent_cosmic %}
-                          <td>{{ r.percent_cosmic }}%</td>
-                        {% else %}
-                          <td>N/A</td>
-                        {% endif %}
+                        <td>{{ gap.hgvs_c }}</td>
+                        <td>{{ gap.genomic }}</td>
+                        <td>{% firstof gap.percent_cosmic "N/A" %}</td>
+                        <td>{% firstof gap.counts_cosmic "N/A" %}</td>
                       </tr>
                     {% endfor %}
                     </tbody>
@@ -199,20 +196,17 @@
                       <tr>
                         <th scope="col" class="col-5">HGVS</th>
                         <th scope="col" class="col-5">Genomic</th>
-                        <th scope="col" class="col-2">% COSMIC</th>
+                        <th scope="col" class="col-1">% COSMIC</th>
+                        <th scope="col" class="col-1">Counts COSMIC</th>
                       </tr>
                     </thead>
                     <tbody>
-                    {% for r in value.gaps_270 %}
+                    {% for gap in value.gaps_270 %}
                       <tr>
-                        <td>{{ r.hgvs_c }}</td>
-                        <td>{{ r.genomic }}</td>
-                        <!-- only show cosmic % when not none -->
-                        {% if r.percent_cosmic %}
-                          <td>{{ r.percent_cosmic }}%</td>
-                        {% else %}
-                          <td>N/A</td>
-                        {% endif %}
+                        <td>{{ gap.hgvs_c }}</td>
+                        <td>{{ gap.genomic }}</td>
+                        <td>{% firstof gap.percent_cosmic "N/A" %}</td>
+                        <td>{% firstof gap.counts_cosmic "N/A" %}</td>
                       </tr>
                     {% endfor %}
                     </tbody>
@@ -237,16 +231,12 @@
                       </tr>
                     </thead>
                     <tbody>
-                    {% for r in value.gaps_1000 %}
+                    {% for gap in value.gaps_1000 %}
                       <tr>
-                        <td>{{ r.hgvs_c }}</td>
-                        <td>{{ r.genomic }}</td>
-                        <!-- only show cosmic % when not none -->
-                        {% if r.percent_cosmic %}
-                          <td>{{ r.percent_cosmic }}%</td>
-                        {% else %}
-                          <td>N/A</td>
-                        {% endif %}
+                        <td>{{ gap.hgvs_c }}</td>
+                        <td>{{ gap.genomic }}</td>
+                        <td>{% firstof gap.percent_cosmic "N/A" %}</td>
+                        <td>{% firstof gap.counts_cosmic "N/A" %}</td>
                       </tr>
                     {% endfor %}
                     </tbody>

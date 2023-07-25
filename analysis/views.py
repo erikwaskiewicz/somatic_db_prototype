@@ -8,17 +8,14 @@ from django.utils import timezone
 from django.template.loader import get_template
 from django.template import Context
 
-
 from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, ConfirmPolyForm, AddNewPolyForm, ManualVariantCheckForm, ReopenForm
 from .models import *
-from .utils import link_callback, get_samples, unassign_check, reopen_check, signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, create_myeloid_coverage_summary, get_poly_list
-
+from .utils import get_samples, unassign_check, reopen_check, signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, create_myeloid_coverage_summary, get_poly_list
 
 import json
 import os
+import pdfkit
 
-from xhtml2pdf import pisa 
-    
 
 def signup(request):
     """
@@ -254,22 +251,47 @@ def analysis_sheet(request, sample_id):
     if request.method == 'GET':
 
         if 'download-report' in request.GET:
-            filename=f"{context['sample_data']['worksheet_id']}_{context['sample_data']['sample_id']}_{context['sample_data']['panel']}.pdf"
-
-            # Create a Django response object, and specify content_type as pdf
-            response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = f'attachment; filename="{filename}"'
+            filename = f"{context['sample_data']['worksheet_id']}_{context['sample_data']['sample_id']}_{context['sample_data']['panel']}.pdf"
 
             # find the template and render it.
             template = get_template('analysis/download_report.html')
             html = template.render(context)
 
-            # create a pdf
-            pisa_status = pisa.CreatePDF(
-                html, dest=response, link_callback=link_callback
-            )
+            # create a pdf, options taken from https://wkhtmltopdf.org/usage/wkhtmltopdf.txt
+            options = {
+                'orientation': 'Landscape',
+                'footer-left': f'Sample - {context["sample_data"]["sample_id"]}',
+                'footer-center': f'Worksheet - {context["sample_data"]["worksheet_id"]} ({context["sample_data"]["panel_obj"].get_assay_display()})',
+                'footer-right': 'Page [page] of [topage]',
+                'footer-line': '',
+                'footer-font-size': '10',
+                'footer-spacing': '10',
+                'page-size': 'Letter',
+                'margin-top': '2cm',
+                'margin-right': '2cm',
+                'margin-bottom': '3cm',
+                'margin-left': '2cm',
+                'encoding': 'UTF-8',
+            }
+            pdf = pdfkit.from_string(html, options=options)
+
+            # Create a Django response object, and specify content_type as pdf
+            response = HttpResponse(pdf, content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename={filename}'
 
             return response
+
+        if 'download-xml' in request.GET:
+            # create XML from template and context info
+            filename = f"{context['sample_data']['worksheet_id']}_{context['sample_data']['sample_id']}_{context['sample_data']['panel']}.xml"
+            template = get_template('analysis/lims_xml.xml')
+            html = template.render(context)
+
+            # return XML
+            response = HttpResponse(html, content_type='application/xml')
+            response['Content-Disposition'] = f'attachment; filename={filename}'
+            return response
+
 
     # submit buttons
     if request.method == 'POST':
@@ -570,34 +592,26 @@ def ajax(request):
 
 
 @login_required
-def view_polys(request):
+def view_polys(request, list_name):
     """
     Page to view all confirmed polys and add and check new ones
 
     """
-    #Get all poly lists
-    poly_list = VariantList.objects.filter(list_type='P')
+    # get poly list and pull out list of confirmed polys and polys to be checked
+    poly_list = VariantList.objects.get(name=list_name, list_type='P')
+    confirmed_list, checking_list = get_poly_list(poly_list, request.user)
 
-    # pull out list of confirmed polys and polys to be checked - this will initially make a list of lists - then convert into a single list! 
-    confirmed_list = []
-    checking_list = []
-
-    for i in poly_list:
-        
-        temp_confirmed_list, temp_checking_list = get_poly_list(i, request.user)
-        confirmed_list.append(temp_confirmed_list)
-        checking_list.append(temp_checking_list)
-    
-    #Flatten the list of lists    
-    confirmed_list_final = [item for sublist in confirmed_list for item in sublist]
-    checking_list_final = [item for sublist in checking_list for item in sublist]
+    # set genome build
+    genome = poly_list.genome_build
 
     # make context dictionary
     context = {
         'success': [],
         'warning': [],
-        'confirmed_list': confirmed_list_final,
-        'checking_list': checking_list_final,
+        'list_name': list_name,
+        'genome_build': genome,
+        'confirmed_list': confirmed_list,
+        'checking_list': checking_list,
         'confirm_form': ConfirmPolyForm(),
         'add_new_form': AddNewPolyForm(),
     }
@@ -623,30 +637,14 @@ def view_polys(request):
                 variant_to_variant_list_obj.check_comment = comment
                 variant_to_variant_list_obj.save()
 
-                # get genomic coords
+                # get genomic coords for confirmation popup
                 variant_obj = variant_to_variant_list_obj.variant
                 variant = variant_obj.variant
 
                 # reload context
-                #Get all poly lists
-                poly_list = VariantList.objects.filter(list_type='P')
-
-                # pull out list of confirmed polys and polys to be checked - this will initially make a list of lists - then convert into a single list! 
-                confirmed_list = []
-                checking_list = []
-
-                for i in poly_list:
-        
-                    temp_confirmed_list, temp_checking_list = get_poly_list(i, request.user)
-                    confirmed_list.append(temp_confirmed_list)
-                    checking_list.append(temp_checking_list)
-    
-                #Flatten the list of lists    
-                confirmed_list_final = [item for sublist in confirmed_list for item in sublist]
-                checking_list_final = [item for sublist in checking_list for item in sublist]
-                
-                context['confirmed_list'] = confirmed_list_final
-                context['checking_list'] = checking_list_final
+                confirmed_list, checking_list = get_poly_list(poly_list, request.user)
+                context['confirmed_list'] = confirmed_list
+                context['checking_list'] = checking_list
                 context['success'].append(f'Variant {variant} added to poly list')
 
         # if add new poly button is pressed
@@ -658,19 +656,11 @@ def view_polys(request):
                 # get form data
                 variant = add_new_form.cleaned_data['variant']
                 comment = add_new_form.cleaned_data['comment']
-                genome = add_new_form.cleaned_data['genome']
             
                 # wrap in try/ except to handle when a variant doesnt match the input
                 try:
                     # load in variant and variant to list objects
                     variant_obj = Variant.objects.get(variant=variant, genome_build=genome)
-                   
-                    if genome == '37':
-                        poly_list = VariantList.objects.get(name='build_37_polys')
-      
-                    elif genome == '38':
-                        poly_list = VariantList.objects.get(name='build_38_polys')
-                        
                     variant_to_variant_list_obj, created = VariantToVariantList.objects.get_or_create(
                         variant_list = poly_list,
                         variant = variant_obj,
@@ -691,29 +681,21 @@ def view_polys(request):
                         context['warning'].append(f'Variant {variant} is already in the poly list')
 
                     # reload context
-                    #Get all poly lists
-                    poly_list = VariantList.objects.filter(list_type='P')
-
-                    # pull out list of confirmed polys and polys to be checked - this will initially make a list of lists - then convert into a single list! 
-                    confirmed_list = []
-                    checking_list = []
- 
-                    for i in poly_list:
-        
-                        temp_confirmed_list, temp_checking_list = get_poly_list(i, request.user)
-                        confirmed_list.append(temp_confirmed_list)
-                        checking_list.append(temp_checking_list)
-    
-                    #Flatten the list of lists    
-                    confirmed_list_final = [item for sublist in confirmed_list for item in sublist]
-                    checking_list_final = [item for sublist in checking_list for item in sublist]
-        
-                    context['confirmed_list'] = confirmed_list_final
-                    context['checking_list'] = checking_list_final
+                    confirmed_list, checking_list = get_poly_list(poly_list, request.user)
+                    context['confirmed_list'] = confirmed_list
+                    context['checking_list'] = checking_list
 
                 # throw error if there isnt a variant matching the input
                 except Variant.DoesNotExist:
-                    context['warning'].append(f'Cannot find variant matching {variant}') 
+                    context['warning'].append(f'Cannot find variant matching {variant}, have you selected the correct genome build?')
 
     # render the page
     return render(request, 'analysis/view_polys.html', context)
+
+
+@login_required
+def options_page(request):
+    """
+    Display a page of all other options e.g. poly lists
+    """
+    return render(request, 'analysis/options_page.html', {})

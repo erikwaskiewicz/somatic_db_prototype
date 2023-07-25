@@ -1,0 +1,18 @@
+[
+{
+    "model": "analysis.variantlist",
+    "pk": "build_37_polys",
+    "fields": {
+        "list_type": "P",
+        "genome_build": 37
+    }
+},
+{
+    "model": "analysis.variantlist",
+    "pk": "build_38_polys",
+    "fields": {
+        "list_type": "P",
+        "genome_build": 38
+    }
+}
+]
