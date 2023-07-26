@@ -579,14 +579,25 @@ def get_coverage_data(sample_obj, depth_cutoffs):
         gaps_analysis_obj = GapsAnalysis.objects.filter(gene=gene_coverage_obj)
         for gap in gaps_analysis_obj:
 
+            # error handling for COSMIC numbers as zero evaluates to None
+            if gap.percent_cosmic != None or gap.percent_cosmic == 0:
+                percent_cosmic = str(gap.percent_cosmic) + '%'
+            else:
+                percent_cosmic = 'N/A'
+
+            if gap.counts_cosmic != None or gap.counts_cosmic == 0:
+                counts_cosmic = str(gap.counts_cosmic)
+            else:
+                counts_cosmic = 'N/A'
+
             # gaps at 135x
             if gap.coverage_cutoff == 135:
                 gaps_present_135 = True
                 gaps_dict = {
                     'genomic': gap.genomic(),
                     'hgvs_c': gap.hgvs_c,
-                    'percent_cosmic': gap.percent_cosmic,
-                    'counts_cosmic': gap.counts_cosmic,
+                    'percent_cosmic': percent_cosmic,
+                    'counts_cosmic': counts_cosmic,
                 }
                 gaps_135.append(gaps_dict)
 
@@ -596,8 +607,8 @@ def get_coverage_data(sample_obj, depth_cutoffs):
                 gaps_dict = {
                     'genomic': gap.genomic(),
                     'hgvs_c': gap.hgvs_c,
-                    'percent_cosmic': gap.percent_cosmic,
-                    'counts_cosmic': gap.counts_cosmic,
+                    'percent_cosmic': percent_cosmic,
+                    'counts_cosmic': counts_cosmic,
                 }
                 gaps_270.append(gaps_dict)
 
@@ -607,8 +618,8 @@ def get_coverage_data(sample_obj, depth_cutoffs):
                 gaps_dict = {
                     'genomic': gap.genomic(),
                     'hgvs_c': gap.hgvs_c,
-                    'percent_cosmic': gap.percent_cosmic,
-                    'counts_cosmic': gap.counts_cosmic,
+                    'percent_cosmic': percent_cosmic,
+                    'counts_cosmic': counts_cosmic,
                 }
                 gaps_1000.append(gaps_dict)
 

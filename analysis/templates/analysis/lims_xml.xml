@@ -63,7 +63,7 @@
                 {% for gap in values.gaps_135 %}
                 <gap>
                     <region_name>{{ gap.hgvs_c }}</region_name>
-                    <cosmic>{% firstof gap.percent_cosmic "N/A" %}</cosmic>
+                    <cosmic>{{ gap.percent_cosmic }}</cosmic>
                 </gap>
                 {% endfor %}
                 {% endfor %}
@@ -73,7 +73,7 @@
                 {% for gap in values.gaps_270 %}
                 <gap>
                     <region_name>{{ gap.hgvs_c }}</region_name>
-                    <cosmic>{% firstof gap.percent_cosmic "N/A" %}</cosmic>
+                    <cosmic>{{ gap.percent_cosmic }}</cosmic>
                 </gap>
                 {% endfor %}
                 {% endfor %}
@@ -83,7 +83,7 @@
                 {% for gap in values.gaps_1000 %}
                 <gap>
                     <region_name>{{ gap.hgvs_c }}</region_name>
-                    <cosmic>{% firstof gap.percent_cosmic "N/A" %}</cosmic>
+                    <cosmic>{{ gap.percent_cosmic }}</cosmic>
                 </gap>
                 {% endfor %}
                 {% endfor %}

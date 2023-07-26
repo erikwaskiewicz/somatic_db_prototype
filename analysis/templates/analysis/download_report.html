@@ -202,8 +202,8 @@
         {% for gap in values.gaps_135 %}
         <tr>
           <td>{{ gap.hgvs_c }}</td>
-          <td>{% firstof gap.percent_cosmic "N/A" %}</td>
-          <td>{% firstof gap.counts_cosmic "N/A" %}</td>
+          <td>{{ gap.percent_cosmic }}</td>
+          <td>{{ gap.counts_cosmic }}</td>
         </tr>
         {% endfor %}
       {% endfor %}
@@ -231,8 +231,8 @@
         {% for gap in values.gaps_270 %}
         <tr>
           <td>{{ gap.hgvs_c }}</td>
-          <td>{% firstof gap.percent_cosmic "N/A" %}</td>
-          <td>{% firstof gap.counts_cosmic "N/A" %}</td>
+          <td>{{ gap.percent_cosmic }}</td>
+          <td>{{ gap.counts_cosmic }}</td>
         </tr>
         {% endfor %}
       {% endfor %}
@@ -260,8 +260,8 @@
         {% for gap in values.gaps_1000 %}
         <tr>
           <td>{{ gap.hgvs_c }}</td>
-          <td>{% firstof gap.percent_cosmic "N/A" %}</td>
-          <td>{% firstof gap.counts_cosmic "N/A" %}</td>
+          <td>{{ gap.percent_cosmic }}</td>
+          <td>{{ gap.counts_cosmic }}</td>
         </tr>
         {% endfor %}
       {% endfor %}
