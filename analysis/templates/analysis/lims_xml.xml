@@ -39,6 +39,8 @@
             <variant>
                 <genes>{{ v.fusion_genes }}</genes>
                 <hgvs>{{ v.fusion_hgvs }}</hgvs>
+                <vaf>{{ v.vaf }}</vaf>
+                <igv_outcome>{{ v.final_decision }}</igv_outcome>
             </variant>
             {% endif %}
             {% endfor %}

@@ -497,13 +497,21 @@ def get_fusion_info(sample_data, sample_obj):
         if fusion_object.fusion_instance.get_final_decision_display() in ['Genuine', 'Miscalled']:
             reportable_list.append(fusion_object)
 
+        # only get VAF when panel setting says so, otherwise return none
+        panel = sample_obj.panel
+        if panel.show_fusion_vaf:
+            vaf = fusion_object.fusion_instance.vaf()
+        else:
+            vaf = None
+
+        # combine all into context dict
         fusion_calls_dict = {
             'pk': fusion_object.pk,
             'fusion_instance_pk': fusion_object.fusion_instance.pk,
             'fusion_genes': fusion_object.fusion_instance.fusion_genes.fusion_genes,
             'fusion_hgvs': fusion_object.fusion_instance.hgvs,
             'fusion_supporting_reads': fusion_object.fusion_instance.fusion_supporting_reads,
-            'vaf': fusion_object.fusion_instance.vaf(),
+            'vaf': vaf,
             'left_breakpoint': fusion_object.fusion_instance.fusion_genes.left_breakpoint,
             'right_breakpoint': fusion_object.fusion_instance.fusion_genes.right_breakpoint,
             'genome_build': fusion_object.fusion_instance.fusion_genes.genome_build,

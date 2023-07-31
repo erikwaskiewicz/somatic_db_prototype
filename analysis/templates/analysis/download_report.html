@@ -144,13 +144,13 @@
       <tr>
         <td>{{ gene }}</td>
         {% if '135' in coverage_data.depth_cutoffs %}
-        <td>{{ values.percent_135x }}</td>
+        <td>{{ values.percent_135x }}%</td>
         {% endif %}
         {% if '270' in coverage_data.depth_cutoffs %}
-        <td>{{ values.percent_270x }}</td>
+        <td>{{ values.percent_270x }}%</td>
         {% endif %}
         {% if '1000' in coverage_data.depth_cutoffs %}
-        <td>{{ values.percent_1000x }}</td>
+        <td>{{ values.percent_1000x }}%</td>
         {% endif %}
       </tr>
       {% endfor %}
@@ -284,12 +284,13 @@
   <table>
     <thead>
       <tr>
-        <th style="width: 15%">Fusion</th>
+        <th style="width: 12%">Fusion</th>
         <th style="width: 7%">Fusion supporting reads</th>
+        {% if sample_data.panel_obj.show_fusion_vaf %}<th style="width: 7%">VAF</th>{% endif %}
         <th style="width: 12%">Breakpoints</th>
         <th style="width: 25%">HGVS</th>
-        <th style="width: 10%">IGV</th>
-        <th style="width: 30%">Comments</th>
+        <th style="width: 8%">IGV</th>
+        <th style="width: 28%">Comments</th>
       </tr>
     </thead>
 
@@ -302,6 +303,7 @@
       <tr>
         <td>{{ v.fusion_genes }}</td>
         <td>{{ v.fusion_supporting_reads }}</td>
+        {% if sample_data.panel_obj.show_fusion_vaf %}<td>{{ v.vaf }}%</td>{% endif %}
         <td>{{ v.left_breakpoint }}<br>{{ v.right_breakpoint }}</td>
         <td>
           <!-- loop required because bug in xhtml will collpase whole column if hgvs is None -->
