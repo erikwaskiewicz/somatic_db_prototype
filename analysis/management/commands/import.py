@@ -17,7 +17,7 @@ class Command(BaseCommand):
     help = "Import a run"
 
 
-    def add_gaps_from_list(self, gap, cutoff, new_gene_coverage_obj, genome_build):
+    def add_gaps_from_list(self, gap, cutoff, new_gene_coverage_obj):
         """
         Use in coverage upload section to add specific gaps for a list in the coverage JSON
         TODO remove when coverage2json updated, called on lines 390, 400, 410
@@ -42,12 +42,11 @@ class Command(BaseCommand):
             pos_end = gap[2],
             coverage_cutoff = cutoff,
             percent_cosmic = gap[6],
-            genome_build = genome_build,
         )
         new_gap_obj.save()
 
 
-    def add_gaps_from_dict(self, gap, cutoff, new_gene_coverage_obj, genome_build):
+    def add_gaps_from_dict(self, gap, cutoff, new_gene_coverage_obj):
         """
         Use in coverage upload section to add specific gaps for a list in the coverage JSON
         """
@@ -82,7 +81,6 @@ class Command(BaseCommand):
             coverage_cutoff = cutoff,
             percent_cosmic = perc_cosmic,
             counts_cosmic = counts_cosmic,
-            genome_build = genome_build,
         )
         new_gap_obj.save()
 
@@ -431,28 +429,28 @@ class Command(BaseCommand):
                 if '135' in coverage_thresholds:
                     for gap in values['gaps_135']:
                         if isinstance(r, list):
-                            self.add_gaps_from_list(gap, '135', new_gene_coverage_obj, genome_build)
+                            self.add_gaps_from_list(gap, '135', new_gene_coverage_obj)
 
                         elif isinstance(r, dict):
-                            self.add_gaps_from_dict(gap, '135', new_gene_coverage_obj, genome_build)
+                            self.add_gaps_from_dict(gap, '135', new_gene_coverage_obj)
 
                 # gaps 270x
                 if '270' in coverage_thresholds:
                     for gap in values['gaps_270']:
                         if isinstance(r, list):
-                            self.add_gaps_from_list(gap, '270', new_gene_coverage_obj), genome_build
+                            self.add_gaps_from_list(gap, '270', new_gene_coverage_obj)
 
                         elif isinstance(r, dict):
-                            self.add_gaps_from_dict(gap, '270', new_gene_coverage_obj, genome_build)
+                            self.add_gaps_from_dict(gap, '270', new_gene_coverage_obj)
 
                 # gaps 1000x
                 if '1000' in coverage_thresholds:
                     for gap in values['gaps_1000']:
                         if isinstance(r, list):
-                            self.add_gaps_from_list(gap, '1000', new_gene_coverage_obj, genome_build)
+                            self.add_gaps_from_list(gap, '1000', new_gene_coverage_obj)
 
                         elif isinstance(r, dict):
-                            self.add_gaps_from_dict(gap, '1000', new_gene_coverage_obj, genome_build)
+                            self.add_gaps_from_dict(gap, '1000', new_gene_coverage_obj)
 
             # logging
             print(f'INFO\t{datetime.now()}\timport.py\tFinished uploading coverage data successfully')

@@ -173,13 +173,7 @@
                     {% for gap in value.gaps_135 %}
                       <tr>
                         <td>{{ gap.hgvs_c }}</td>
-                        <td>{{ gap.genomic }}
-                        {% if gap.genome_build == 37 %}
-        <span class = "badge badge-info badge-pill">GRCh{{ gap.genome_build }}</span>
-        {% elif gap.genome_build == 38 %}
-        <span class = "badge badge-success badge-pill">GRCh{{ gap.genome_build }}</span>
-        {% endif %}
-                        </td>
+                        <td>{{ gap.genomic }}</td>
                         <td>{{ gap.percent_cosmic }}</td>
                         <td>{{ gap.counts_cosmic }}</td>
                       </tr>
@@ -210,13 +204,7 @@
                     {% for gap in value.gaps_270 %}
                       <tr>
                         <td>{{ gap.hgvs_c }}</td>
-                        <td>{{ gap.genomic }}
-                        {% if gap.genome_build == 37 %}
-        <span class = "badge badge-info badge-pill">GRCh{{ gap.genome_build }}</span>
-        {% elif gap.genome_build == 38 %}
-        <span class = "badge badge-success badge-pill">GRCh{{ gap.genome_build }}</span>
-        {% endif %}
-        		 </td>
+                        <td>{{ gap.genomic }}</td>
                         <td>{{ gap.percent_cosmic }}</td>
                         <td>{{ gap.counts_cosmic }}</td>
                       </tr>
@@ -246,13 +234,7 @@
                     {% for gap in value.gaps_1000 %}
                       <tr>
                         <td>{{ gap.hgvs_c }}</td>
-                        <td>{{ gap.genomic }}
-                        {% if gap.genome_build == 37 %}
-        <span class = "badge badge-info badge-pill">GRCh{{ gap.genome_build }}</span>
-        {% elif gap.genome_build == 38 %}
-        <span class = "badge badge-success badge-pill">GRCh{{ gap.genome_build }}</span>
-        {% endif %}
-        		</td>
+                        <td>{{ gap.genomic }}</td>
                         <td>{{ gap.percent_cosmic }}</td>
                         <td>{{ gap.counts_cosmic }}</td>
                       </tr>

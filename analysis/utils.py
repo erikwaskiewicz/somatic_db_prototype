@@ -598,7 +598,6 @@ def get_coverage_data(sample_obj, depth_cutoffs):
                     'hgvs_c': gap.hgvs_c,
                     'percent_cosmic': percent_cosmic,
                     'counts_cosmic': counts_cosmic,
-                    'genome_build': gap.genome_build,
                 }
                 gaps_135.append(gaps_dict)
 
@@ -610,7 +609,6 @@ def get_coverage_data(sample_obj, depth_cutoffs):
                     'hgvs_c': gap.hgvs_c,
                     'percent_cosmic': percent_cosmic,
                     'counts_cosmic': counts_cosmic,
-                    'genome_build': gap.genome_build,
                 }
                 gaps_270.append(gaps_dict)
 
@@ -622,7 +620,6 @@ def get_coverage_data(sample_obj, depth_cutoffs):
                     'hgvs_c': gap.hgvs_c,
                     'percent_cosmic': percent_cosmic,
                     'counts_cosmic': counts_cosmic,
-                    'genome_build': gap.genome_build,
                 }
                 gaps_1000.append(gaps_dict)
 
