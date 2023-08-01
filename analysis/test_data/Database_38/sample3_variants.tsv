@@ -1,0 +1,2 @@
+gene	chr	pos	ref	alt	vaf	depth	hgvs_p	hgvs_c	consequence	exon	alt_reads	in_ntc	ntc_vaf	ntc_depth	ntc_alt_reads	gnomad_popmax_AF
+TET2	chr4	105269704	A	G	0.7099999785423279	256	NP_001120680.1:p.His1380Arg	NM_001127208.3:c.4139A>G	missense_variant	9/11	182	False				-1.0

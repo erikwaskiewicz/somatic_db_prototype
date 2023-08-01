@@ -5,41 +5,6 @@ from django.utils import timezone
 from django.db import transaction
 
 
-
-def link_callback(uri, rel):
-    """
-    Convert HTML URIs to absolute system paths so xhtml2pdf can access those
-    resources 
-    taken straight from https://xhtml2pdf.readthedocs.io/en/latest/usage.html#using-xhtml2pdf-in-django
-    TODO - try removing this, I dont think it's being used, intentation is wrong so would error if its called
-    """
-    result = finders.find(uri)
-    if result:
-            if not isinstance(result, (list, tuple)):
-                    result = [result]
-            result = list(os.path.realpath(path) for path in result)
-            path=result[0]
-    else:
-            sUrl = settings.STATIC_URL        # Typically /static/
-            sRoot = settings.STATIC_ROOT      # Typically /home/userX/project_static/
-            mUrl = settings.MEDIA_URL         # Typically /media/
-            mRoot = settings.MEDIA_ROOT       # Typically /home/userX/project_static/media/
-
-            if uri.startswith(mUrl):
-                    path = os.path.join(mRoot, uri.replace(mUrl, ""))
-            elif uri.startswith(sUrl):
-                    path = os.path.join(sRoot, uri.replace(sUrl, ""))
-            else:
-                    return uri
-
-    # make sure that file exists
-    if not os.path.isfile(path):
-            raise Exception(
-                    'media URI must start with %s or %s' % (sUrl, mUrl)
-            )
-    return path
-
-    
 def get_samples(samples):
     """
     Create context dictionary of all sample analyses for rendering the worksheet page
@@ -120,6 +85,24 @@ def unassign_check(sample_analysis_obj):
 
     return True
 
+
+@transaction.atomic
+def reopen_check(current_user, sample_analysis_obj):
+    """
+    Allow the person who closed the case to reopen it to the previous check
+    """
+    
+    # get the latest check
+    all_checks = sample_analysis_obj.get_checks()
+    latest_check = all_checks['current_check_object']
+
+    latest_check.status = 'P'
+    latest_check.user = current_user
+    latest_check.save()
+    sample_analysis_obj.save()
+
+    return True
+        
 
 @transaction.atomic
 def signoff_check(user, current_step_obj, sample_obj, status='C', complete=False):
@@ -340,37 +323,19 @@ def get_variant_info(sample_data, sample_obj):
 
     variant_calls = []
     polys_list = []
-
-    # TODO this bit isnt used yet - removed to speed up db
-    # get list of other samples on the run
-    #current_run_obj = sample_obj.worksheet.run
-    #current_run_samples = SampleAnalysis.objects.filter(worksheet__run = current_run_obj)
-    # remove dups
-    #sample_objects = set([ s.sample for s in current_run_samples ])
+    reportable_list = []
 
     for sample_variant in sample_variants:
 
         variant_obj = sample_variant.variant_instance.variant
 
-        # count how many times variant is present in other samples on the run
-        #this_run_count = 0
-        #for s in sample_objects:
-        #    qs = VariantInstance.objects.filter(
-        #        sample = s,
-        #        variant = variant_obj,
-        #    )
-        #    if qs:
-        #        this_run_count += 1
-	
-	#Set poly list based on genome build
+        # set poly list based on genome build
         if variant_obj.genome_build == 37:
-             
              poly_list_name = "build_37_polys"
-        
+
         elif variant_obj.genome_build == 38:
-            
             poly_list_name = "build_38_polys"
-	
+
         # get whether the variant falls within a poly/ known list
         # TODO - will have to handle multiple poly/ known lists in future
         previous_classifications = []
@@ -406,6 +371,10 @@ def get_variant_info(sample_data, sample_obj):
             latest_check.save()
         var_comment_form = VariantCommentForm(pk=latest_check.pk, comment=latest_check.comment)
 
+        # if variant is to appear on report tab, add to list
+        if sample_variant.variant_instance.get_final_decision_display() in ['Genuine', 'Miscalled']:
+            reportable_list.append(variant_obj.variant)
+
         # get list of comments for variant
         variant_comments_list = []
         for v in variant_checks:
@@ -429,10 +398,9 @@ def get_variant_info(sample_data, sample_obj):
             'exon': sample_variant.variant_instance.exon,
             'hgvs_c': sample_variant.variant_instance.hgvs_c,
             'hgvs_p': sample_variant.variant_instance.hgvs_p,
+            'transcript': sample_variant.variant_instance.hgvs_c.split(':')[0],
             'gnomad_popmax': sample_variant.variant_instance.gnomad_popmax,
             'this_run': {
-                #'count': this_run_count, 
-                #'total': len(sample_objects),
                 'ntc': sample_variant.variant_instance.in_ntc,
                 'alt_count_ntc': sample_variant.variant_instance.alt_count_ntc,
                 'total_count_ntc': sample_variant.variant_instance.total_count_ntc,
@@ -463,10 +431,16 @@ def get_variant_info(sample_data, sample_obj):
         else:
             variant_calls.append(variant_calls_dict)
 
+    # set true or false for whether there are reportable variants
+    if len(reportable_list) == 0:
+        no_calls = True
+    else:
+        no_calls = False
 
     variant_data = {
         'variant_calls': variant_calls, 
         'polys': polys_list,
+        'no_calls': no_calls,
         'check_options': VariantCheck.DECISION_CHOICES,
     }
 
@@ -474,26 +448,18 @@ def get_variant_info(sample_data, sample_obj):
 
 
 
-def get_fusion_info(sample_data,sample_obj):
+def get_fusion_info(sample_data, sample_obj):
     """
     Get information on all fusions in a sample analysis to generate the fusion portion of the context dictionary
 
     """
 
-    fusions = FusionPanelAnalysis.objects.filter(sample_analysis= sample_obj)
+    fusions = FusionPanelAnalysis.objects.filter(sample_analysis=sample_obj)
 
     fusion_calls = []
+    reportable_list = []
+
     for fusion_object in fusions:
-
-        # TODO this is only needed for seeing variants in other runs - removed to speed up DB
-        #this_run = FusionAnalysis.objects.filter(
-        #    fusion_genes=fusion_object.fusion_instance.fusion_genes,
-        #    sample__worksheet__run__run_id=sample_data.get('run_id')
-        #)
-        #this_run_count = this_run.count()
-
-        #total_runs = FusionAnalysis.objects.filter(sample__worksheet__run__run_id=sample_data.get('run_id'))
-        #total_runs_count = total_runs.count()
 
         # get checks for each variant
         fusion_checks = FusionCheck.objects.filter(fusion_analysis=fusion_object)
@@ -515,7 +481,7 @@ def get_fusion_info(sample_data,sample_obj):
 
         fusion_comment_form = FusionCommentForm(
             pk=latest_check.pk, 
-            hgvs= fusion_object.fusion_instance.hgvs, 
+            hgvs=fusion_object.fusion_instance.hgvs, 
             comment=latest_check.comment
         )
 
@@ -527,41 +493,51 @@ def get_fusion_info(sample_data,sample_obj):
                     { 'comment': v.comment, 'user': v.check_object.user, 'updated': v.comment_updated, }
                 )
 
-        # TODO this is only needed if they want to see the number of reference reads
-        #if fusion_object.fusion_instance.fusion_caller == 'Splice':
-        #    reference_reads = fusion_object.fusion_instance.ref_reads_1
-        #elif fusion_object.fusion_instance.fusion_caller == 'Fusion':
-        #    reference_reads = f'{fusion_object.fusion_instance.ref_reads_1} | {fusion_object.fusion_instance.ref_reads_2}'
+        # if variant is to appear on report tab, add to list
+        if fusion_object.fusion_instance.get_final_decision_display() in ['Genuine', 'Miscalled']:
+            reportable_list.append(fusion_object)
 
+        # only get VAF when panel setting says so, otherwise return none
+        panel = sample_obj.panel
+        if panel.show_fusion_vaf:
+            vaf = fusion_object.fusion_instance.vaf()
+        else:
+            vaf = None
+
+        # combine all into context dict
         fusion_calls_dict = {
             'pk': fusion_object.pk,
             'fusion_instance_pk': fusion_object.fusion_instance.pk,
             'fusion_genes': fusion_object.fusion_instance.fusion_genes.fusion_genes,
             'fusion_hgvs': fusion_object.fusion_instance.hgvs,
             'fusion_supporting_reads': fusion_object.fusion_instance.fusion_supporting_reads,
-            'vaf': fusion_object.fusion_instance.vaf(),
+            'vaf': vaf,
             'left_breakpoint': fusion_object.fusion_instance.fusion_genes.left_breakpoint,
             'right_breakpoint': fusion_object.fusion_instance.fusion_genes.right_breakpoint,
             'genome_build': fusion_object.fusion_instance.fusion_genes.genome_build,
-            #'reference_reads': reference_reads,
             'this_run': {
-                #'count': this_run_count, 
-                #'total': total_runs_count,
                 'ntc': fusion_object.fusion_instance.in_ntc,
-            },   
+            },
             'checks': fusion_checks_list,
             'latest_check': latest_check,
             'latest_checks_agree': last_two_checks_agree,
             'comment_form': fusion_comment_form,
             'comments': fusion_comments_list,
             'final_decision': fusion_object.fusion_instance.get_final_decision_display()
-                
-
         }
-
         fusion_calls.append(fusion_calls_dict)
 
-    fusion_data = {'fusion_calls': fusion_calls, 'check_options': FusionCheck.DECISION_CHOICES, }
+    # set true or false for whether there are reportable variants
+    if len(reportable_list) == 0:
+        no_calls = True
+    else:
+        no_calls = False
+
+    fusion_data = {
+        'fusion_calls': fusion_calls,
+        'no_calls': no_calls,
+        'check_options': FusionCheck.DECISION_CHOICES,
+    }
 
     return fusion_data
 
@@ -574,6 +550,11 @@ def get_coverage_data(sample_obj, depth_cutoffs):
     """
     # get list of target depths from panel object
     target_depths = depth_cutoffs.split(',')
+
+    # will set to true in loop below when it hits a gap
+    gaps_present_135 = False
+    gaps_present_270 = False
+    gaps_present_1000 = False
 
     # create a coverage dictionary
     coverage_data = {
@@ -606,30 +587,47 @@ def get_coverage_data(sample_obj, depth_cutoffs):
         gaps_analysis_obj = GapsAnalysis.objects.filter(gene=gene_coverage_obj)
         for gap in gaps_analysis_obj:
 
+            # error handling for COSMIC numbers as zero evaluates to None
+            if gap.percent_cosmic != None or gap.percent_cosmic == 0:
+                percent_cosmic = str(gap.percent_cosmic) + '%'
+            else:
+                percent_cosmic = 'N/A'
+
+            if gap.counts_cosmic != None or gap.counts_cosmic == 0:
+                counts_cosmic = str(gap.counts_cosmic)
+            else:
+                counts_cosmic = 'N/A'
+
             # gaps at 135x
             if gap.coverage_cutoff == 135:
+                gaps_present_135 = True
                 gaps_dict = {
                     'genomic': gap.genomic(),
                     'hgvs_c': gap.hgvs_c,
-                    'percent_cosmic': gap.percent_cosmic
+                    'percent_cosmic': percent_cosmic,
+                    'counts_cosmic': counts_cosmic,
                 }
                 gaps_135.append(gaps_dict)
 
             # gaps at 270x
             elif gap.coverage_cutoff == 270:
+                gaps_present_270 = True
                 gaps_dict = {
                     'genomic': gap.genomic(),
                     'hgvs_c': gap.hgvs_c,
-                    'percent_cosmic': gap.percent_cosmic
+                    'percent_cosmic': percent_cosmic,
+                    'counts_cosmic': counts_cosmic,
                 }
                 gaps_270.append(gaps_dict)
 
             # gaps at 1000x
             elif gap.coverage_cutoff == 1000:
+                gaps_present_1000 = True
                 gaps_dict = {
                     'genomic': gap.genomic(),
                     'hgvs_c': gap.hgvs_c,
-                    'percent_cosmic': gap.percent_cosmic
+                    'percent_cosmic': percent_cosmic,
+                    'counts_cosmic': counts_cosmic,
                 }
                 gaps_1000.append(gaps_dict)
 
@@ -648,6 +646,9 @@ def get_coverage_data(sample_obj, depth_cutoffs):
         }
 
         coverage_data['regions'][gene_coverage_obj.gene.gene] = gene_dict
+        coverage_data['gaps_present_135'] = gaps_present_135
+        coverage_data['gaps_present_270'] = gaps_present_270
+        coverage_data['gaps_present_1000'] = gaps_present_1000
 
     return coverage_data
 

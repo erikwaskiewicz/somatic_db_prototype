@@ -37,48 +37,88 @@
           <td>{{ analysis.checks.current_status }}</td>
           <td>{{ analysis.checks.assigned_to }}</td>
           <td style="text-align:right">
+
+            <!-- NOTE: order is important in the if loop below -->
+
+            <!-- button when analysis is complete and the logged in user did the most recent check -->
+            {% if analysis.checks.current_status == 'Complete' and request.user == analysis.checks.current_check_object.user %}
+            <div class="btn-group btn-block">
+              <a class="btn btn-info btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">Complete</a>
+              <button type="button btn-block" class="btn btn-info dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" data-toggle="modal" data-target="#reopen-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.current_check_object.user }}">
+                  Reopen Previous Check
+                </a>
+              </div>
+            </div>
             
             <!-- button when analysis is complete -->
-            {% if analysis.checks.current_status == 'Complete' %}
+            {% elif analysis.checks.current_status == 'Complete' %}
             <a class="btn btn-light btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">View</a>
 
-            <!-- buttons when analysis is a fail -->
-            {% elif 'Fail' in analysis.checks.current_status %}
-              {% if analysis.checks.current_status == 'Fail' %}
+            <!-- button when analysis is a fail and the logged in user did the most recent check -->
+            {% elif analysis.checks.current_status == 'Fail' and request.user == analysis.checks.current_check_object.user %}
+            <div class="btn-group btn-block">
               <a class="btn btn-danger btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">Fail</a>
+              <button type="button btn-block" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" data-toggle="modal" data-target="#reopen-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.current_check_object.user }}">
+                  Reopen Previous Check
+                </a>
+              </div>
+            </div>
 
-              {% elif analysis.checks.current_status == 'Fail - 2nd check required' %}
-                {% if analysis.checks.assigned_to == None %}
-                <a class="btn btn-warning btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}" role="button">Fail (check required)</a>
+            <!-- button when analysis is a fail -->
+            {% elif analysis.checks.current_status == 'Fail' %}
+            <a class="btn btn-danger btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">Fail</a>
 
-                {% else %}
-                <div class="btn-group btn-block">
-                  <a class="btn btn-warning btn-block btn-disabled" href="#" role="button">Fail - assigned to {{ analysis.checks.assigned_to }}</a>
-                  <button type="button btn-block" class="btn btn-warning dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="sr-only">Toggle Dropdown</span>
-                  </button>
-                  <div class="dropdown-menu">
-                    <a class="dropdown-item" data-toggle="modal" data-target="#unassign-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.assigned_to }}" data-status="{{ analysis.checks.current_status }}">
-                      Unassign
-                    </a>
-                  </div>
-                </div>
-                {% endif %}
-              {% endif %}
+            <!-- button when second check for fail required but unassigned -->
+            {% elif analysis.checks.current_status == 'Fail - 2nd check required' and analysis.checks.assigned_to == None %}
+            <a class="btn btn-warning btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}" role="button">Fail (check required)</a>
 
-            <!-- buttons when no one is assigned to an analysis, 1st analysis gets extra check-->
-            {% elif analysis.checks.assigned_to == None %}
-              {% if analysis.checks.current_status == 'IGV check 1' %}
-              <a class="btn btn-secondary btn-block" href="#" data-toggle="modal" data-target="#check-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-ws="{{ worksheet }}" data-run="{{ run_id }}">
-                Assign to me & analyse
-              </a>
+            <!-- button when second check for fail required and assigned to current user -->
+            {% elif analysis.checks.current_status == 'Fail - 2nd check required' and analysis.checks.assigned_to == request.user %}
+            <div class="btn-group btn-block">
+              <a class="btn btn-warning btn-block btn-disabled" href="{% url 'analysis_sheet' analysis.analysis_id %}" role="button">Fail - analyse 2nd check</a>
+              <button type="button btn-block" class="btn btn-warning dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" data-toggle="modal" data-target="#unassign-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.assigned_to }}" data-status="{{ analysis.checks.current_status }}">
+                  Unassign
+                </a>
+              </div>
+            </div>
 
-              {% else %}
-              <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}" role="button">Assign to me & analyse</a>
+            <!-- button when second check for fail required and assigned to someone else -->
+            {% elif analysis.checks.current_status == 'Fail - 2nd check required' and analysis.checks.assigned_to != request.user %}
+            <div class="btn-group btn-block">
+              <a class="btn btn-warning btn-block btn-disabled" href="#" role="button">Fail - assigned to {{ analysis.checks.assigned_to }}</a>
+              <button type="button btn-block" class="btn btn-warning dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" data-toggle="modal" data-target="#unassign-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.assigned_to }}" data-status="{{ analysis.checks.current_status }}">
+                  Unassign
+                </a>
+              </div>
+            </div>
 
-              {% endif %}
+            <!-- button when no one is assigned to an analysis 1st check (goes to check modal for 1st check only)-->
+            {% elif analysis.checks.assigned_to == None and analysis.checks.current_status == 'IGV check 1' %}
+            <a class="btn btn-secondary btn-block" href="#" data-toggle="modal" data-target="#check-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-ws="{{ worksheet }}" data-run="{{ run_id }}">
+              Assign to me & analyse
+            </a>
 
-            <!-- button if analysis is assigned to someone -->
+            <!-- button when no one is assigned to an analysis after 1st check -->
+            {% elif analysis.checks.assigned_to == None and analysis.checks.current_status != 'IGV check 1' %}
+            <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}" role="button">Assign to me & analyse</a>
+
+            <!-- button if analysis is assigned to someone else -->
             {% elif analysis.checks.assigned_to != request.user %}
             <div class="btn-group btn-block">
               <a class="btn btn-light btn-block btn-disabled" href="#" role="button">Assigned to {{ analysis.checks.assigned_to }}</a>
@@ -92,7 +132,8 @@
               </div>
             </div>
 
-            {% else %}
+            <!-- button if analysis is assigned to current user -->
+            {% elif analysis.checks.assigned_to == request.user %}
             <div class="btn-group btn-block">
               <a class="btn btn-success btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}" role="button">
                 Analyse
@@ -108,6 +149,7 @@
             </div>
 
             {% endif %}
+
           </td>
         </tr>
         {% endfor %}
@@ -164,6 +206,45 @@
   </div>
 </div>
 
+<!-- Reopen modal -->
+<div class="modal fade" id="reopen-modal" tabindex="-1" role="dialog" aria-labelledby="reopen-modal-label" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reopen-modal-label">Reopen Most Recent Check</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger">
+          <strong>Warning!</strong> Are you sure you want to continue?<br>
+          This sample will be reopened at its previous check. 
+        </div>
+
+        <table class="table table-sm table-striped table-hover">
+          <tbody>
+            <tr>
+              <th>Sample</td>
+              <td class="modal-sample"></td>
+            </tr>
+            <tr>
+              <th>Panel</td>
+              <td class="modal-panel"></td>
+            </tr>
+            <tr>
+              <th>Assigned to</td>
+              <td class="modal-assigned"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        {% crispy reopen_form %}
+
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Check modal -->
 <div class="modal fade" id="check-modal" tabindex="-1" role="dialog" aria-labelledby="check-modal-label" aria-hidden="true">
@@ -246,7 +327,14 @@
 
 <script>
     $(document).ready( function() {
-      
+
+        // remove anthing after the hash in the URL, to prevent carrying over from a previous analysis (see issue #47)
+        var uri = window.location.toString();
+        if (uri.indexOf("#") > 0) {
+            var clean_uri = uri.substring(0, uri.indexOf("#"));
+            window.history.replaceState({}, document.title, clean_uri);
+        }
+
         // Inititialise DataTable
         $('#samples-table').DataTable({
             paging: true,
@@ -291,6 +379,25 @@
 
         // put sample PK into hidden form so that it can be passed to backend
         document.getElementById ('id_unassign').value = pk;
+    })
+
+    // pull analysis PK into the reopen modal
+    $('#reopen-modal').on('show.bs.modal', function (event) {
+        // extract variables from button tags
+        var button = $(event.relatedTarget);
+        var pk = button.data('pk');
+        var sample = button.data('sample');
+        var panel = button.data('panel');
+        var assigned = button.data('user');
+        var modal = $(this);
+
+        // fill out table of sample details
+        modal.find('.modal-sample').text(sample);
+        modal.find('.modal-panel').text(panel);
+        modal.find('.modal-assigned').text(assigned);
+
+        // put sample PK into hidden form so that it can be passed to backend
+        document.getElementById ('id_reopen').value = pk;
     })
 
     // pull analysis PK into the check modal

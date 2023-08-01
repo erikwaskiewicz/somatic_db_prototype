@@ -1,5 +1,5 @@
 fusion,exons,reference_reads_1,reference_reads_2,fusion_supporting_reads,left_breakpoint,right_breakpoint,type,in_ntc,spanning_reads,spanning_reads_dedup,split_reads,split_reads_dedup,fusion_caller,fusion_score
-TPM3-NTRK1,,0,2,159,chr1:154142876,chr1:156844361,Fusion,False,403,26,377,133,RnaFusionFilter,0.978
+TPM3-NTRK1,,0,NA,159,chr1:154142876,chr1:156844361,Fusion,False,403,26,377,133,RnaFusionFilter,0.978
 LMNA-NTRK1,,0,517,247,chr1:156100562,chr1:156844696,Fusion,False,1475,144,653,103,RnaFusionFilter,0.887
 SLC45A3-BRAF,,0,1070,518,chr1:205649521,chr7:140494266,Fusion,False,565,30,5054,488,RnaFusionFilter,0.833
 EML4-ALK,,749,9,75,chr2:42522654,chr2:29446394,Fusion,False,1059,14,645,61,RnaFusionFilter,0.89

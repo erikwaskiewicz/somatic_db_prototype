@@ -5,15 +5,19 @@
 <nav class="breadcrumb flex-nowrap" aria-label="breadcrumb">
   <div class="container">
     <a class="breadcrumb-item active" href="{% url 'home' %}"><span class="fa fa-home"></span></a>
-    <a class="breadcrumb-item active">Variant lists</a>
-    <a class="breadcrumb-item active" aria-current="page">Poly list</a>
+    <a class="breadcrumb-item active" href="{% url 'options_page' %}">Options</a>
+    <a class="breadcrumb-item active" aria-current="page">{{ list_name }}</a>
   </div>
 </nav>
 {% endblock %}
 
 {% block content %}
 <div class="container">
-  <h5>Poly list</h5>
+  {% if genome_build == 37 %}
+  <h5>Build 37 poly list <span class="badge badge-info">GRCh37</span></h5>
+  {% elif genome_build == 38 %}
+  <h5>Build 38 poly list <span class="badge badge-success">GRCh38</span></h5>
+  {% endif %}
   <br>
 
   <div class="card-body bg-light">
@@ -293,7 +297,11 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="add-modal-label">Add a new poly</h5>
+        {% if genome_build == 37 %}
+        <h5 class="modal-title" id="add-modal-label">Add a new poly <span class="badge badge-info">GRCh{{ genome_build }}</span></h5>
+        {% elif genome_build == 38 %}
+        <h5 class="modal-title" id="add-modal-label">Add a new poly <span class="badge badge-success">GRCh{{ genome_build }}</span></h5>
+        {% endif %}
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>

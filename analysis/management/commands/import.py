@@ -50,12 +50,27 @@ class Command(BaseCommand):
         """
         Use in coverage upload section to add specific gaps for a list in the coverage JSON
         """
-        # error handling for COSMIC
-        if gap['percent_cosmic'] == 'N/A':
+        # handle weird inputs for COSMIC percent
+        if 'percent_cosmic' not in gap.keys():
+            perc_cosmic = None
+        elif gap['percent_cosmic'] == 'N/A':
+            perc_cosmic = None
+        elif np.isnan(gap['percent_cosmic']):
             perc_cosmic = None
         else:
             perc_cosmic = gap['percent_cosmic']
 
+        # handle weird inputs for COSMIC counts
+        if 'counts_cosmic' not in gap.keys():
+            counts_cosmic = None
+        elif gap['counts_cosmic'] == 'N/A':
+            counts_cosmic = None
+        elif np.isnan(gap['counts_cosmic']):
+            counts_cosmic = None
+        else:
+            counts_cosmic = gap['counts_cosmic']
+
+        # add gap to database
         new_gap_obj = GapsAnalysis(
             gene = new_gene_coverage_obj,
             hgvs_c = gap['hgvs_c'],
@@ -65,6 +80,7 @@ class Command(BaseCommand):
             pos_end = gap['pos_end'],
             coverage_cutoff = cutoff,
             percent_cosmic = perc_cosmic,
+            counts_cosmic = counts_cosmic,
         )
         new_gap_obj.save()
 
@@ -172,6 +188,16 @@ class Command(BaseCommand):
             genome_build = 37
         else:
             raise IOError(f'Genome build {genome} is neither GRCh37 or GRCh38')
+            
+        #Check that worksheet not already uploaded with another sequencing run
+        exist_worksheets = Worksheet.objects.filter(ws_id = ws)
+        
+        if len(exist_worksheets) != 0:
+        
+        	for worksheet in exist_worksheets:
+        	
+        		if worksheet.run.run_id != run_id:
+        			raise IOError(f'Worksheet {ws} uploaded already on another sequencing run {worksheet.run.run_id}. Please edit worksheet ID and try again e.g. {ws}R')
 
 
         # ---------------------------------------------------------------------------------------------------------
@@ -297,6 +323,9 @@ class Command(BaseCommand):
                         # if gnomad frequency not there, make it None
                         if 'gnomad_popmax_AF' not in v:
                             v['gnomad_popmax_AF'] = None
+                            
+                        if v['in_ntc'] == '':
+                        	v['in_ntc'] = False
 
                         # make new instance of variant
                         new_var_instance = VariantInstance(
