@@ -1,0 +1,8 @@
+O2:
+  type: oncogenic
+O3:
+  type: oncogenic
+B1:
+  type: benign
+B4:
+  type: benign
