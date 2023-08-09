@@ -29,10 +29,18 @@ class Worksheet(models.Model):
     def __str__(self):
         return self.ws_id
 
-    def get_status(self):
+    def get_status_and_samples(self):
+        # get all sample analysis objects
         samples = SampleAnalysis.objects.filter(worksheet = self)
-        l = [ s.get_checks()['current_status'] for s in samples ]
-        return ' | '.join( set(l) )
+
+        # get list of all unique statuses and concatenate
+        all_status = [ s.get_checks()['current_status'] for s in samples ]
+        status = ' | '.join( set(all_status) )
+        
+        # get all sample IDs
+        sample_list = [i.sample.sample_id for i in samples]
+
+        return status, sample_list
 
 
 class Sample(models.Model):
@@ -153,11 +161,19 @@ class SampleAnalysis(models.Model):
         elif len(num_fails) > 1:
             current_status = 'Fail'
                 
+        # split out 1st and last checks for LIMS XML
+        first_check = all_checks[0].user
+        final_check = list(all_checks)[-1].user
+        extra_checks = ', '.join([str(c.user) for c in list(all_checks)[1:-1]])
+
         return {
             'current_status': current_status,
             'assigned_to': assigned_to,
             'current_check_object': current_check_object,
             'all_checks': all_checks,
+            'first_check': first_check,
+            'final_check': final_check,
+            'extra_checks': extra_checks,
         }
 
 
@@ -396,6 +412,7 @@ class GapsAnalysis(models.Model):
     pos_end = models.IntegerField()
     coverage_cutoff = models.IntegerField()
     percent_cosmic = models.DecimalField(decimal_places=2, max_digits=5, blank=True, null=True)
+    counts_cosmic = models.IntegerField(blank=True, null=True)
 
     def genomic(self):
         return f'{self.chr_start}:{self.pos_start}_{self.chr_end}:{self.pos_end}'

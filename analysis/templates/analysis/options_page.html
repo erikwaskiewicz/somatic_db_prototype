@@ -1,0 +1,44 @@
+{% extends 'analysis/base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block breadcrumbs %}
+<nav class="breadcrumb flex-nowrap" aria-label="breadcrumb">
+  <div class="container">
+    <a class="breadcrumb-item active" href="{% url 'home' %}" aria-current="page"><span class="fa fa-home"></span></a>
+    <a class="breadcrumb-item active" aria-current="page">Options</a>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- Variant lists section ----------------------------------------------------->
+  <br>
+  <h5>Variant lists</h5>
+
+  <div class="card-columns">
+
+    <!-- build 37 polys -->
+    <div class="card bg-light">
+      <div class="card-body">
+        <h5 class="card-title">Build 37 poly list <span class="badge badge-info">GRCh37</span></h5>
+        <p class="card-text">View and edit the known poly list for <b>build 37</b>. These will be classed as polys in all assays.</p>
+        <a class="btn btn-info" href="{% url 'view_polys' 'build_37_polys' %}">View</a>
+      </div>
+    </div>
+    
+    <!-- build 38 polys -->
+    <div class="card bg-light">
+      <div class="card-body">
+        <h5 class="card-title">Build 38 poly list <span class="badge badge-success">GRCh38</span></h5>
+        <p class="card-text">View and edit the known poly list for <b>build 38</b>. These will be classed as polys in all assays.</p>
+        <a class="btn btn-info" href="{% url 'view_polys' 'build_38_polys' %}">View</a>
+      </div>
+    </div>
+    <!-- you can copy and paste the above card and it'll autowrap on the page -->
+  </div>
+
+</div>
+{% endblock %}

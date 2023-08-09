@@ -1,0 +1,2 @@
+gene	chr	pos	ref	alt	vaf	depth	hgvs_p	hgvs_c	consequence	exon	alt_reads	in_ntc	ntc_vaf	ntc_depth	ntc_alt_reads	gnomad_popmax_AF
+TP53	chr17	7676154	G	C	0.42100000381469727	240	NP_000537.3:p.Pro72Arg	NM_000546.6:c.215C>G	missense_variant	4/11	101	False				0.7439249753952026

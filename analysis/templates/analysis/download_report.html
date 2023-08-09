@@ -1,27 +1,27 @@
 {% load humanize %}
 <head>
   <style>
-    @page {
-      size: letter landscape;
-      margin: 2cm;
+    table {
+      word-wrap: break-word;
+      width: 100%;
+      border-spacing: 0;
     }
-
-    h1 {  font-size: 20px;  }
-    h2 {  font-size: 15px;  }
-
-    table th,
-    table td {
-      padding:3px;
+    thead {
+      display: table-row-group;
+    }
+    th, td {
       vertical-align: top;
-      border-top: 1px solid #000;
-      border-bottom: 1px solid #000;
       text-align: left;
+      border-bottom: 1px solid #000;
     }
-
-    table thead th {
-      vertical-align: bottom;
+    th {
+      border-top: 1px solid #000;
       background-color: #D3D3D3;
-      border-bottom: 2px solid #000;
+    }
+    tr {
+      page-break-before: always;
+      page-break-after: always;
+      page-break-inside: avoid;
     }
     .alert {
       padding: 10px;
@@ -74,7 +74,7 @@
   {% if sample_data.panel_obj.show_snvs %}
   <h2>SNVs & indels - variant calls</h2>
 
-  <table class="table">
+  <table>
     <thead>
       <tr>
         <th style="width: 20%">Variant</th>
@@ -86,27 +86,34 @@
       </tr>
     </thead>
     <tbody>
-    {% for v in variant_data.variant_calls %}
+    <!-- say no calls if empty -->
+    {% if variant_data.no_calls %}
+      <tr><td colspan="7">No calls</td></tr>
 
-      {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
-      <tr>
-        <td>{{ v.genomic | truncatechars:20 }}</td>
-        <td>{{ v.gene }} ({{ v.exon }})</td>
-        <td>{{ v.hgvs_c }} ({{ v.hgvs_p }})</td>
-        {% if sample_data.panel_obj.assay == '3' %} <!-- 2dp for ctDNA, whole number for the rest-->
-        <td>{{ v.vaf.vaf }}%</td>
-        {% else %}
-        <td>{{ v.vaf.vaf_rounded }}%</td>
+    <!-- otherwise list all genuine or miscalled variants -->
+    {% else%}
+      {% for v in variant_data.variant_calls %}
+        {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
+        <tr>
+          <td>{{ v.genomic | truncatechars:20 }}</td>
+          <td>{{ v.gene }} ({{ v.exon }})</td>
+          <td>{{ v.hgvs_c }} ({{ v.hgvs_p }})</td>
+          {% if sample_data.panel_obj.assay == '3' %} <!-- 2dp for ctDNA, whole number for the rest-->
+          <td>{{ v.vaf.vaf }}%</td>
+          {% else %}
+          <td>{{ v.vaf.vaf_rounded }}%</td>
+          {% endif %}
+          <td>{{ v.final_decision }}</td>
+          <td>
+            {% for c in v.comments %}
+            <i>{{ c.user }}:</i><br>{{ c.comment | wordwrap:50 | linebreaksbr }}<br>
+            {% endfor %}
+          </td>
+        </tr>
         {% endif %}
-        <td>{{ v.final_decision }}</td>
-        <td>
-          {% for c in v.comments %}
-          <i>{{ c.user }}:</i><br>{{ c.comment | wordwrap:50 | linebreaksbr }}<br>
-          {% endfor %}
-        </td>
-      </tr>
-      {% endif %}
-    {% endfor %}
+      {% endfor %}
+
+    {% endif %}
     </tbody>
   </table>
   <br>
@@ -137,13 +144,13 @@
       <tr>
         <td>{{ gene }}</td>
         {% if '135' in coverage_data.depth_cutoffs %}
-        <td>{{ values.percent_135x }}</td>
+        <td>{{ values.percent_135x }}%</td>
         {% endif %}
         {% if '270' in coverage_data.depth_cutoffs %}
-        <td>{{ values.percent_270x }}</td>
+        <td>{{ values.percent_270x }}%</td>
         {% endif %}
         {% if '1000' in coverage_data.depth_cutoffs %}
-        <td>{{ values.percent_1000x }}</td>
+        <td>{{ values.percent_1000x }}%</td>
         {% endif %}
       </tr>
       {% endfor %}
@@ -157,13 +164,19 @@
   <h2>Gaps summary</h2>
 
   <table>
+    <thead>
+      <tr>
+        <th>Regions with...</th>
+        <th></th>
+      </tr>
+    </thead>
     <tbody>
       <tr>
-        <td style="width: 25%"><b>Regions with 0% coverage</b></td>
+        <td style="width: 25%">0% coverage</td>
         <td style="width: 75%">{{ myeloid_coverage_summary.summary_0x }}</td>
       </tr>
       <tr>
-        <td><b>Regions with less than 270X depth</b></td>
+        <td>&lt;270X depth</td>
         <td>{{ myeloid_coverage_summary.summary_270x }}</td>
       </tr>
     </tbody>
@@ -177,18 +190,26 @@
   <table>
     <thead>
       <tr>
-        <th style="width: 100%">Hotspot gaps at 135X</th>
+        <th style="width: 50%">Hotspot gaps at 135X</th>
+        <th style="width: 25%">Percent COSMIC</th>
+        <th style="width: 25%">Counts COSMIC</th>
       </tr>
     </thead>
 
     <tbody>
+    {% if coverage_data.gaps_present_135 %}
       {% for gene, values in coverage_data.regions.items %}
         {% for gap in values.gaps_135 %}
         <tr>
           <td>{{ gap.hgvs_c }}</td>
+          <td>{{ gap.percent_cosmic }}</td>
+          <td>{{ gap.counts_cosmic }}</td>
         </tr>
         {% endfor %}
       {% endfor %}
+    {% else %}
+      <tr><td colspan="3">No hotspot gaps</td></tr>
+    {% endif %}
     </tbody>
   </table>
   <br>
@@ -198,18 +219,26 @@
   <table>
     <thead>
       <tr>
-        <th style="width: 100%">Hotspot gap at 270X</th>
+        <th style="width: 50%">Hotspot gap at 270X</th>
+        <th style="width: 25%">Percent COSMIC</th>
+        <th style="width: 25%">Counts COSMIC</th>
       </tr>
     </thead>
 
     <tbody>
+    {% if coverage_data.gaps_present_270 %}
       {% for gene, values in coverage_data.regions.items %}
         {% for gap in values.gaps_270 %}
         <tr>
           <td>{{ gap.hgvs_c }}</td>
+          <td>{{ gap.percent_cosmic }}</td>
+          <td>{{ gap.counts_cosmic }}</td>
         </tr>
         {% endfor %}
       {% endfor %}
+    {% else %}
+      <tr><td colspan="3">No hotspot gaps</td></tr>
+    {% endif %}
     </tbody>
   </table>
   <br>
@@ -219,18 +248,26 @@
   <table>
     <thead>
       <tr>
-        <th style="width: 100%">Hotspot gaps at 1000X</th>
+        <th style="width: 50%">Hotspot gaps at 1000X</th>
+        <th style="width: 25%">Percent COSMIC</th>
+        <th style="width: 25%">Counts COSMIC</th>
       </tr>
     </thead>
 
     <tbody>
+    {% if coverage_data.gaps_present_1000 %}
       {% for gene, values in coverage_data.regions.items %}
         {% for gap in values.gaps_1000 %}
         <tr>
           <td>{{ gap.hgvs_c }}</td>
+          <td>{{ gap.percent_cosmic }}</td>
+          <td>{{ gap.counts_cosmic }}</td>
         </tr>
         {% endfor %}
       {% endfor %}
+    {% else %}
+      <tr><td colspan="3">No hotspot gaps</td></tr>
+    {% endif %}
     </tbody>
   </table>
   <br>
@@ -247,21 +284,26 @@
   <table>
     <thead>
       <tr>
-        <th style="width: 15%">Fusion</th>
+        <th style="width: 12%">Fusion</th>
         <th style="width: 7%">Fusion supporting reads</th>
+        {% if sample_data.panel_obj.show_fusion_vaf %}<th style="width: 7%">VAF</th>{% endif %}
         <th style="width: 12%">Breakpoints</th>
         <th style="width: 25%">HGVS</th>
-        <th style="width: 10%">IGV</th>
-        <th style="width: 30%">Comments</th>
+        <th style="width: 8%">IGV</th>
+        <th style="width: 28%">Comments</th>
       </tr>
     </thead>
 
     <tbody>
-    {% for v in fusion_data.fusion_calls %}
+    {% if fusion_data.no_calls %}
+      <tr><td colspan="6">No calls</td></tr>
+    {% else %}
+      {% for v in fusion_data.fusion_calls %}
       {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
       <tr>
         <td>{{ v.fusion_genes }}</td>
         <td>{{ v.fusion_supporting_reads }}</td>
+        {% if sample_data.panel_obj.show_fusion_vaf %}<td>{{ v.vaf }}%</td>{% endif %}
         <td>{{ v.left_breakpoint }}<br>{{ v.right_breakpoint }}</td>
         <td>
           <!-- loop required because bug in xhtml will collpase whole column if hgvs is None -->
@@ -279,7 +321,8 @@
         </td>
       </tr>
       {% endif %}
-    {% endfor %}
+      {% endfor %}
+    {% endif %}
     </tbody>
   </table>
   <br>

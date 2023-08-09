@@ -20,6 +20,21 @@ class UnassignForm(forms.Form):
         )
 
 
+class ReopenForm(forms.Form):
+    """
+    Form that allows the user who closed the case to reopen the most recent check
+    """
+    reopen = forms.CharField(widget=forms.HiddenInput(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(ReopenForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', "I'm sure", css_class='btn btn-danger w-100')
+        )
+
+
 class PaperworkCheckForm(forms.Form):
     """
     Form that users tick after they have checked patient paperwork to confirm referral is correct
@@ -263,12 +278,7 @@ class AddNewPolyForm(forms.Form):
     Add a variant to the poly list
 
     """
-    GENOME_CHOICES = (
-        ('37', 'GRCh37'),
-        ('38', 'GRCh38'),
-    )
     variant = forms.CharField()
-    genome = forms.ChoiceField(choices=GENOME_CHOICES)
     comment = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 4}),
         label='Comments'

@@ -1,0 +1,5 @@
+gene	chr	pos	ref	alt	vaf	depth	hgvs_p	hgvs_c	consequence	exon	alt_reads	in_ntc	ntc_vaf	ntc_depth	ntc_alt_reads	gnomad_popmax_AF
+EGFR	chr7	55181370	G	A	0.9950000047683716	178	NP_005219.2:p.Gln787=	NM_005228.5:c.2361G>A	synonymous_variant	20/28	178					0.5917519927024841
+BRAF	chr7	140753336	A	T	0.3149999976158142	319	NP_004324.2:p.Val600Glu	NM_004333.6:c.1799T>A	missense_variant	15/18	100					-1.0
+PTEN	chr10	87952169	T	G	0.035999998450279236	195	NP_000305.3:p.Leu182Val	NM_000314.8:c.544T>G	missense_variant	6/9	7					-1.0
+TP53	chr17	7676154	G	C	0.9950000047683716	195	NP_000537.3:p.Pro72Arg	NM_000546.6:c.215C>G	missense_variant	4/11	195					0.7439249753952026

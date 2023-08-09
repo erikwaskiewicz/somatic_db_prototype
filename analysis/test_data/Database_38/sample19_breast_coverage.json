@@ -1,0 +1,148 @@
+{
+    "PIK3CA": {
+        "average_depth": 390,
+        "percent_135": 100,
+        "percent_270": 91,
+        "average_ntc": 0,
+        "percent_ntc": 0,
+        "genescreen_regions": [],
+        "hotspot_regions": [
+            {
+                "chr": "chr3",
+                "pos_start": 179210180,
+                "pos_end": 179210343,
+                "hgvs_c": "PIK3CA(NM_006218.4):c.1252-5_1404+5(exon8)",
+                "average_coverage": 311,
+                "percent_270": 76,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr3",
+                "pos_start": 179210191,
+                "pos_end": 179210194,
+                "hgvs_c": "PIK3CA(NM_006218.4):c.1258_1260(Cys420)",
+                "average_coverage": 245,
+                "percent_270": 0,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr3",
+                "pos_start": 179218204,
+                "pos_end": 179218339,
+                "hgvs_c": "PIK3CA(NM_006218.4):c.1540-5_1664+5(exon10)",
+                "average_coverage": 388,
+                "percent_270": 96,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr3",
+                "pos_start": 179218293,
+                "pos_end": 179218296,
+                "hgvs_c": "PIK3CA(NM_006218.4):c.1624_1626(Glu542)",
+                "average_coverage": 406,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr3",
+                "pos_start": 179218302,
+                "pos_end": 179218305,
+                "hgvs_c": "PIK3CA(NM_006218.4):c.1633_1635(Glu545)",
+                "average_coverage": 386,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr3",
+                "pos_start": 179218305,
+                "pos_end": 179218308,
+                "hgvs_c": "PIK3CA(NM_006218.4):c.1636_1638(Gln546)",
+                "average_coverage": 377,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr3",
+                "pos_start": 179234088,
+                "pos_end": 179234369,
+                "hgvs_c": "PIK3CA(NM_006218.4):c.2937-5_3207+5(exon21)",
+                "average_coverage": 437,
+                "percent_270": 98,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": "chr3",
+                "pos_start": 179234295,
+                "pos_end": 179234298,
+                "hgvs_c": "PIK3CA(NM_006218.4):c.3139_3141(His1047)",
+                "average_coverage": 470,
+                "percent_270": 100,
+                "percent_135": 100,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            }
+        ],
+        "gaps_135": [],
+        "gaps_270": [
+            {
+                "chr": 3,
+                "pos_start": 179210180,
+                "pos_end": 179210203,
+                "hgvs_c": "PIK3CA(NM_006218.4)c.1252-5_1269",
+                "gene": "PIK3CA",
+                "counts_cosmic": 144,
+                "percent_cosmic": 1.86
+            },
+            {
+                "chr": 3,
+                "pos_start": 179210191,
+                "pos_end": 179210194,
+                "hgvs_c": "PIK3CA(NM_006218.4)c.1258_1260",
+                "gene": "PIK3CA",
+                "counts_cosmic": 115,
+                "percent_cosmic": 1.49
+            },
+            {
+                "chr": 3,
+                "pos_start": 179210327,
+                "pos_end": 179210343,
+                "hgvs_c": "PIK3CA(NM_006218.4)c.1394_1404+5",
+                "gene": "PIK3CA",
+                "counts_cosmic": 0,
+                "percent_cosmic": 0.0
+            },
+            {
+                "chr": 3,
+                "pos_start": 179218204,
+                "pos_end": 179218209,
+                "hgvs_c": "PIK3CA(NM_006218.4)c.1540-5_1540-1",
+                "gene": "PIK3CA",
+                "counts_cosmic": 0,
+                "percent_cosmic": 0.0
+            },
+            {
+                "chr": 3,
+                "pos_start": 179234088,
+                "pos_end": 179234092,
+                "hgvs_c": "PIK3CA(NM_006218.4)c.2937-5_2937-2",
+                "gene": "PIK3CA",
+                "counts_cosmic": 0,
+                "percent_cosmic": 0.0
+            }
+        ]
+    }
+}
