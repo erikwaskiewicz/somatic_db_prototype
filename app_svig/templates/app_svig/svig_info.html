@@ -1,5 +1,22 @@
+{% load crispy_forms_tags %}
+
 <h5>Variant info</h5>
 
-add general variant info plus variables needed for S-VIG - e.g. variant type. 
+<p>add general variant info plus variables needed for S-VIG - e.g. variant type.</p>
 
-classfiy tab to be blanked out until this is completed
+<br><br>
+
+<h5>Previous classifications</h5>
+<p>TODO add table to show previous classifications</p>
+
+{% if classification.full_classification %}
+<div class="card-body bg-warning">
+    Full classification. TODO - option to reset
+</div>
+
+{% else %}
+<div class="card-body bg-light">
+{% crispy previous_class_form %}
+</div>
+
+{% endif %}

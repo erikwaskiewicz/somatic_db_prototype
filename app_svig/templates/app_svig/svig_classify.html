@@ -1,26 +1,133 @@
-<h5>Classify</h5>
-
 <div class="container-fluid">
+  {% if classification.full_classification %}
   <div class="row">
 
+    <!-- side bar -------------------------------------------------------------------->
     <div class="col-3">
-      <div class="card">
-        <div class="card-body">
-          <h5>Add shortcuts here</h5>
-          <br>
-        </div>
-      </div>
-    </div>
-    
-    <div class="col-9">
-      <div class="card">
-        <div class="card-body">
-    
-          <h5>Table of codes here</h5>
-          <br>
-        </div>
+      <div id="list-example" class="list-group sticky-top">
+        <li class="list-group-item">
+          Class: TODO
+        </li>
+        <li class="list-group-item">
+          Codes applied: TODO
+        </li>
+        <p></p>
+
+        <a class="list-group-item list-group-item-action" href="#list-item-1">
+          <div class="row">
+            <div class="col-10">Population databases</div>
+            <div class="col-2"><span class="fa fa-check"></span></div>
+          </div>
+        </a>
+        <a class="list-group-item list-group-item-action" href="#list-item-2">
+          <div class="row">
+            <div class="col-10">Mode of action</div>
+            <div class="col-2"><span class="fa fa-stopwatch"></span></div>
+          </div>
+        </a>
+        <a class="list-group-item list-group-item-action" href="#list-item-3">
+          <div class="row">
+            <div class="col-10">Cancer databases</div>
+            <div class="col-2"><span class="fa fa-stopwatch"></span></div>
+          </div>
+        </a>
+        <a class="list-group-item list-group-item-action" href="#list-item-4">
+          <div class="row">
+            <div class="col-10">Effect on protein</div>
+            <div class="col-2"><span class="fa fa-stopwatch"></span></div>
+          </div>
+        </a>
+        <a class="list-group-item list-group-item-action" href="#list-item-5">
+          <div class="row">
+            <div class="col-10">Computational tools</div>
+            <div class="col-2"><span class="fa fa-stopwatch"></span></div>
+          </div>
+        </a>
+        <a class="list-group-item list-group-item-action" href="#list-item-6">
+          <div class="row">
+            <div class="col-10">Functional studies</div>
+            <div class="col-2"><span class="fa fa-stopwatch"></span></div>
+          </div>
+        </a>
+
+        <p></p>
+        <button class="btn btn-block btn-lg btn-danger" type="button">Recalculate classification</button>
+
       </div>
     </div>
 
+
+    <!-- Main area ------------------------------------------------------------------------------->
+    <div class="col-9">
+      <div data-bs-spy="scroll" data-bs-target="#list-example" data-bs-offset="0" class="scrollspy-example" tabindex="0">
+
+        <!-- population databases section -->
+        <h4 id="list-item-1">Population databases</h4>
+        <table class="table table-bordered">
+          <tbody>
+            {% include 'app_svig/codes/O3_B4.html' %}
+          </tbody>
+        </table>
+        <br>
+
+        <!-- mode of action section -->
+        <h4 id="list-item-2">Mode of action</h4>
+        <table class="table table-bordered">
+          <tbody>
+            {% include 'app_svig/codes/O2.html' %}
+            {% include 'app_svig/codes/B1.html' %}
+          </tbody>
+        </table>
+        <br>
+
+        <!-- database section -->
+        <h4 id="list-item-3">Cancer databases</h4>
+        <table class="table table-bordered">
+          <tbody>
+            {% include 'app_svig/codes/example.html' %}
+            {% include 'app_svig/codes/example.html' %}
+          </tbody>
+        </table>
+        <br>
+
+        <!-- protein effect section -->
+        <h4 id="list-item-4">Effect on protein</h4>
+        <table class="table table-bordered">
+          <tbody>
+            {% include 'app_svig/codes/example.html' %}
+            {% include 'app_svig/codes/example.html' %}
+          </tbody>
+        </table>
+        <br>
+
+        <!-- computational tool section -->
+        <h4 id="list-item-5">Computational tools</h4>
+        <table class="table table-bordered">
+          <tbody>
+            {% include 'app_svig/codes/example.html' %}
+            {% include 'app_svig/codes/example.html' %}
+          </tbody>
+        </table>
+        <br>
+
+        <!-- functional study section-->
+        <h4 id="list-item-6">Functional studies</h4>
+        <table class="table table-bordered">
+          <tbody>
+            {% include 'app_svig/codes/example.html' %}
+            {% include 'app_svig/codes/example.html' %}
+          </tbody>
+        </table>
+        <br>
+
+      </div>
+    </div>
   </div>
+
+  {% else %}
+  <div class="card card-body bg-warning">
+    Please complete Variant details tab first
+  </div>
+
+  {% endif %}
 </div>

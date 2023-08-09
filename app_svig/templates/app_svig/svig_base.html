@@ -6,7 +6,7 @@
   <div class="container">
     <a class="breadcrumb-item active" href="{% url 'home' %}" aria-current="page"><span class="fa fa-home"></span></a>
     <a class="breadcrumb-item active" href="{% url 'view-all-svig' %}" aria-current="page">S-VIG</a>
-    <a class="breadcrumb-item active" aria-current="page">{{ classification }}</a>
+    <a class="breadcrumb-item active" aria-current="page">{{ classification }} (#{{ classification.id }})</a>
   </div>
 </nav>
 {% endblock %}
@@ -18,17 +18,15 @@
     <thead>
       <tr>
         <th scope="col">Sample</th>
-        <th scope="col">Name</th>
         <th scope="col">Referral</th>
         <th scope="col">Worksheet</th>
         <th scope="col">Status</th>
-        <th scope="col">Assigned to</th>
+        <th scope="col">Class</th>
       </tr>
     </thead>
     <tbody>
       
       <tr>
-        <td></td>
         <td></td>
         <td></td>
         <td></td>
