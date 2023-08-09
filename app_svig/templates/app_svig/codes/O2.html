@@ -2,18 +2,14 @@
   <th class="col-1">O2</th>
   <th class="col-8">Null variant in a tumour surpressor gene</th>
   <th class="col-3">
-    <div class="dropdown">
-      <button class="btn btn-lg btn-block btn-danger dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        O2 stand-alone
-      </button>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <a class="dropdown-item" href="#">Not applied</a>
-        <a class="dropdown-item" href="#">O3 Moderate (+2)</a>
-        <a class="dropdown-item" href="#">B1 Stand-alone</a>
-        <a class="dropdown-item" href="#">B1 Strong (-4)</a>
-        <a class="dropdown-item" href="#">B1 Supporting (-1)</a>
-      </div>
-    </div>
+    <select size="1" id="code_o2" name="code_o2" class="btn btn-lg btn-block btn-danger">
+      <option value="O2_NA">Not applied</option>
+      <option value="O2_SA" selected>O2 Stand-alone</option>
+      <option value="O2_VS">O2 Very strong (+8)</option>
+      <option value="O2_ST">O2 Strong (+4)</option>
+      <option value="O2_MO">O2 Moderate (+2)</option>
+      <option value="O2_SU">O2 Supporting (+1)</option>
+    </select>
   </th>
 </tr>
 <tr>
