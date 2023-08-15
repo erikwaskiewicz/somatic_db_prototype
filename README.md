@@ -4,6 +4,10 @@
 
 See [here](docs/common_errors.md) for common issues
 
+### Schema
+Database schemas are available for:
+- the TSO500 [analysis](analysis_schema.png) database
+
 
 ### Setting up a local version of the database
 
