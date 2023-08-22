@@ -68,6 +68,8 @@ class Panel(models.Model):
         ('1', 'TSO500 DNA'),
         ('2', 'TSO500 RNA'),
         ('3', 'TSO500 ctDNA'),
+        ('4', 'CRM'),
+        ('5', 'BRCA'),
     )
     panel_name = models.CharField(max_length=50)
     pretty_print = models.CharField(max_length=100)
@@ -79,7 +81,7 @@ class Panel(models.Model):
     # snv settings
     show_snvs = models.BooleanField()
     show_myeloid_gaps_summary = models.BooleanField(default=False)
-    depth_cutoffs = models.CharField(max_length=50, blank=True, null=True) # either 135,270 or 1000, comma seperated, no spaces
+    depth_cutoffs = models.CharField(max_length=50, blank=True, null=True) # either 135,270, 500 or 1000, comma seperated, no spaces
     vaf_cutoff = models.DecimalField(decimal_places=5, max_digits=10, blank=True, null=True) # formatted as e.g. 1.4%, not 0.014
     manual_review_required = models.BooleanField(default=False)
     manual_review_desc = models.CharField(max_length=200, blank=True, null=True) # pipe seperated, no spaces
@@ -351,6 +353,7 @@ class GeneCoverageAnalysis(models.Model):
     av_coverage = models.IntegerField()
     percent_135x = models.IntegerField(blank=True, null=True)
     percent_270x = models.IntegerField(blank=True, null=True)
+    percent_500x = models.IntegerField(blank=True, null=True)
     percent_1000x = models.IntegerField(blank=True, null=True)
     av_ntc_coverage = models.IntegerField()
     percent_ntc = models.IntegerField()
@@ -375,6 +378,7 @@ class RegionCoverageAnalysis(models.Model):
     average_coverage = models.IntegerField()
     percent_135x = models.IntegerField(blank=True, null=True)
     percent_270x = models.IntegerField(blank=True, null=True)
+    percent_500x = models.IntegerField(blank=True, null=True)
     percent_1000x = models.IntegerField(blank=True, null=True)
     ntc_coverage = models.IntegerField()
     percent_ntc = models.IntegerField()
