@@ -1,10 +1,19 @@
-from auditlog.registry import auditlog
 from django.db import models
+from django.contrib.auth.models import User
 
+from auditlog.registry import auditlog
 import decimal
 
 
-# Create your models here.
+class UserSettings(models.Model):
+    """
+    Extend the user model for specific settings
+
+    """
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    lims_initials = models.CharField(max_length=10)
+
+
 class Run(models.Model):
     """
     A sequencing run
@@ -83,6 +92,7 @@ class Panel(models.Model):
     live = models.BooleanField()
     assay = models.CharField(max_length=1, choices=ASSAY_CHOICES)
     genome_build = models.IntegerField(default=37)
+    lims_test_code = models.CharField(max_length=30)
 
     # snv settings
     show_snvs = models.BooleanField()
