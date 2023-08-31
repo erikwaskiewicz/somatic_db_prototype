@@ -5,12 +5,9 @@
         <sample_id>{{ sample_data.sample_id }}</sample_id>
         <referral>{{ sample_data.panel_obj.panel_name }}</referral>
         <awmgs_db_pk>{{ sample_data.sample_pk }}</awmgs_db_pk>
-        <first_checker>{{ sample_data.checks.first_check }}</first_checker>
-        <final_checker>{{ sample_data.checks.final_check }}</final_checker>
-        <additional_checkers>{{ sample_data.checks.extra_checks }}</additional_checkers>
         <test_code>{{ sample_data.test_code }}</test_code>
         <pass_fail>{% if sample_data.checks.current_status == "Complete" %}Pass{% else %}{{ sample_data.checks.current_status }}{% endif %}</pass_fail>
-        <checkers>TODO</checkers>
+        <checkers>{{ sample_data.checks.lims_checks }}</checkers>
     </sample_info>
 
     <results>

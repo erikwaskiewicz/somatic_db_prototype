@@ -171,19 +171,20 @@ class SampleAnalysis(models.Model):
         elif len(num_fails) > 1:
             current_status = 'Fail'
                 
-        # split out 1st and last checks for LIMS XML
-        first_check = all_checks[0].user
-        final_check = list(all_checks)[-1].user
-        extra_checks = ', '.join([str(c.user) for c in list(all_checks)[1:-1]])
+        # make list of checks initials for LIMS XML
+        lims_checks = []
+        for c in all_checks:
+            if c.user:
+                lims_initials = c.user.usersettings.lims_initials
+                if lims_initials not in lims_checks:
+                    lims_checks.append(lims_initials)
 
         return {
             'current_status': current_status,
             'assigned_to': assigned_to,
             'current_check_object': current_check_object,
             'all_checks': all_checks,
-            'first_check': first_check,
-            'final_check': final_check,
-            'extra_checks': extra_checks,
+            'lims_checks': ','.join(lims_checks),
         }
 
 
