@@ -2,6 +2,7 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit
 from crispy_forms.bootstrap import Field, FieldWithButtons, StrictButton
+from django.contrib.auth.forms import PasswordChangeForm
 
 
 class UnassignForm(forms.Form):
@@ -309,4 +310,19 @@ class ChangeLimsInitials(forms.Form):
         self.helper.form_method = 'POST'
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-25')
+        )
+
+
+class EditedPasswordChangeForm(PasswordChangeForm):
+    """
+    Add a submit button to the base password change form
+
+    """
+    def __init__(self, *args, **kwargs):
+        super(PasswordChangeForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'password-change-form'
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Change password', css_class='btn btn-danger w-100')
         )

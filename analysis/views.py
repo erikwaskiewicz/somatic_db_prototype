@@ -1,14 +1,14 @@
 from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, update_session_auth_hash
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 from django.template.loader import get_template
 from django.template import Context
 
-from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, ConfirmPolyForm, AddNewPolyForm, ManualVariantCheckForm, ReopenForm, ChangeLimsInitials
+from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, ConfirmPolyForm, AddNewPolyForm, ManualVariantCheckForm, ReopenForm, ChangeLimsInitials, EditedPasswordChangeForm
 from .models import *
 from .utils import get_samples, unassign_check, reopen_check, signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, create_myeloid_coverage_summary, get_poly_list
 
@@ -712,7 +712,7 @@ def user_settings(request):
     #  If any buttons are pressed
     if request.method == 'POST':
 
-        # if confirm poly button is pressed
+        # if LIMS initials button is pressed
         if 'lims_initials' in request.POST:
 
             lims_form = ChangeLimsInitials(request.POST)
@@ -723,4 +723,48 @@ def user_settings(request):
                 request.user.usersettings.lims_initials = new_lims_initials
                 request.user.usersettings.save()
 
-    return render(request, 'analysis/user_settings.html', {'lims_form': lims_form})
+    return render(request, 'analysis/user_settings.html', {'lims_form': lims_form,})
+
+
+@login_required
+def change_password(request):
+    """
+    Form to change the password for the logged in user
+    """
+    password_form = EditedPasswordChangeForm(request.user)
+    warning, success = [], []
+
+    context = {
+        'password_form': password_form,
+        'warning': warning,
+        'success': success,
+    }
+
+    #----------------------------------------------------------
+    #  If any buttons are pressed
+    if request.method == 'POST':
+
+        # if password reset button is pressed
+        if 'old_password' in request.POST:
+
+            password_form = EditedPasswordChangeForm(user=request.user, data=request.POST)
+            if password_form.is_valid():
+
+                # get new password
+                password_form.save()
+                new_password = password_form.cleaned_data['new_password1']
+
+                # reset password
+                request.user.set_password(new_password)
+                request.user.save()
+
+                # prevent user from being logged out
+                update_session_auth_hash(request, password_form.user)
+                success.append('Password changed')
+
+            # show any form validation errors
+            else:
+                context['password_form'] = password_form
+                warning.append("Couldn't change password, please fix errors in form below")
+
+    return render(request, 'analysis/change_password.html', context)
