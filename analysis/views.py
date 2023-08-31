@@ -699,3 +699,11 @@ def options_page(request):
     Display a page of all other options e.g. poly lists
     """
     return render(request, 'analysis/options_page.html', {})
+
+
+@login_required
+def user_settings(request):
+    """
+    Display a page of user setting options
+    """
+    return render(request, 'analysis/user_settings.html', {})

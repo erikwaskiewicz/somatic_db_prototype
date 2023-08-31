@@ -82,11 +82,15 @@
         <ul class="navbar-nav ml-auto">
 
           {% if request.user.is_authenticated %}
-          <li class="nav-item">
-            <span class="navbar-text">{{request.user}}</span>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout' %}">logout</a>
+          <li class="nav-item dropdown">
+            <a class="btn btn-info btn-outline-light dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="fa fa-user"></span> {{ request.user }}
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="{% url 'user_settings' %}">Manage {{ request.user }} user</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="{% url 'logout' %}">Log out</a>
+            </div>
           </li>
 
           {% else %}

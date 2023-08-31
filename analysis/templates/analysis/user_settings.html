@@ -1,0 +1,24 @@
+{% extends 'analysis/base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block breadcrumbs %}
+<nav class="breadcrumb flex-nowrap" aria-label="breadcrumb">
+  <div class="container">
+    <a class="breadcrumb-item active" href="{% url 'home' %}" aria-current="page"><span class="fa fa-home"></span></a>
+    <a class="breadcrumb-item active" href="{% url 'options_page' %}">Options</a>
+    <a class="breadcrumb-item active" aria-current="page">User settings</a>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <br>
+  <h5>User settings</h5>
+
+  
+
+</div>
+{% endblock %}
