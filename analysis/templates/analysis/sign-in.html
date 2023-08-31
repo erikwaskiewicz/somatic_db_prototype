@@ -1,20 +1,24 @@
 {% extends 'analysis/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block breadcrumbs %}
+<br>
+{% endblock %}
+
 {% block content %}
 
 <div class="container">
   <br>
 
   <div class="card bg-light">
-    <div class="card-header">
-      Login
-    </div>
+    <div class="card-header">Login</div>
     <div class="card-body">
       <form class="form-horizontal" method="post">{% csrf_token %}
-        {{ form.as_p }}
+        {{ form|crispy }}
         <br>
 
         <div class="form-actions">
-          <button type="submit" class="btn btn-primary">Submit</button>
+          <button type="submit" class="btn btn-info w-100">Login</button>
         </div>
       </form>
     </div>
@@ -23,9 +27,8 @@
   <br>
 
   <div class="alert alert-success">
-    <a href="{% url 'signup' %}" > Register An Account </a>
+    <a href="{% url 'signup' %}">Register for an account</a>
   </div>
 
 </div>
-
 {% endblock %}
