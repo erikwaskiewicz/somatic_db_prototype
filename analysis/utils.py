@@ -399,6 +399,8 @@ def get_variant_info(sample_data, sample_obj):
             'exon': sample_variant.variant_instance.exon,
             'hgvs_c': sample_variant.variant_instance.hgvs_c,
             'hgvs_p': sample_variant.variant_instance.hgvs_p,
+            'hgvs_c_short': sample_variant.variant_instance.hgvs_c.split(':')[1],
+            'hgvs_p_short': sample_variant.variant_instance.hgvs_p.split(':')[1],
             'transcript': sample_variant.variant_instance.hgvs_c.split(':')[0],
             'gnomad_popmax': sample_variant.variant_instance.gnomad_popmax,
             'this_run': {

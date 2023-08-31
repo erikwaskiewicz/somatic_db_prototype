@@ -22,8 +22,8 @@
                 <variant_ID>{{ v.genomic }}</variant_ID>
                 <gene>{{ v.gene }}</gene>
                 <refseq_transcript>{{ v.transcript }}</refseq_transcript>
-                <hgvs_c>{{ v.hgvs_c }}</hgvs_c>
-                <hgvs_p>{{ v.hgvs_p }}</hgvs_p>
+                <hgvs_c>{{ v.hgvs_c_short }}</hgvs_c>
+                <hgvs_p>{{ v.hgvs_p_short }}</hgvs_p>
                 <exon>{{ v.exon }}</exon>
                 <genome_build>{{ sample_data.genome_build }}</genome_build>
                 {% if sample_data.panel_obj.assay == '3' %}  {# VAF rounded to 2dp for ctDNA, whole number for the rest #}
