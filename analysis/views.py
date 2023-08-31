@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.template.loader import get_template
 from django.template import Context
 
-from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, ConfirmPolyForm, AddNewPolyForm, ManualVariantCheckForm, ReopenForm
+from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, ConfirmPolyForm, AddNewPolyForm, ManualVariantCheckForm, ReopenForm, ChangeLimsInitials
 from .models import *
 from .utils import get_samples, unassign_check, reopen_check, signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, create_myeloid_coverage_summary, get_poly_list
 
@@ -706,4 +706,21 @@ def user_settings(request):
     """
     Display a page of user setting options
     """
-    return render(request, 'analysis/user_settings.html', {})
+    lims_form = ChangeLimsInitials()
+
+    #----------------------------------------------------------
+    #  If any buttons are pressed
+    if request.method == 'POST':
+
+        # if confirm poly button is pressed
+        if 'lims_initials' in request.POST:
+
+            lims_form = ChangeLimsInitials(request.POST)
+            if lims_form.is_valid():
+
+                # get form data and change LIMS data
+                new_lims_initials = lims_form.cleaned_data['lims_initials']
+                request.user.usersettings.lims_initials = new_lims_initials
+                request.user.usersettings.save()
+
+    return render(request, 'analysis/user_settings.html', {'lims_form': lims_form})

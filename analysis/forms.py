@@ -293,3 +293,20 @@ class AddNewPolyForm(forms.Form):
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-25')
         )
+
+
+class ChangeLimsInitials(forms.Form):
+    """
+    Add/ change the patient name
+
+    """
+    lims_initials = forms.CharField()
+
+    def __init__(self, *args, **kwargs):
+        super(ChangeLimsInitials, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'lims-initials-form'
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Submit', css_class='btn btn-info w-25')
+        )
