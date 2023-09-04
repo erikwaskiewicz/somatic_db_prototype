@@ -2,7 +2,7 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit
 from crispy_forms.bootstrap import Field, FieldWithButtons, StrictButton
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm, UserCreationForm
 
 
 class UnassignForm(forms.Form):
@@ -301,7 +301,7 @@ class ChangeLimsInitials(forms.Form):
     Add/ change the patient name
 
     """
-    lims_initials = forms.CharField()
+    lims_initials = forms.CharField(label='LIMS initials')
 
     def __init__(self, *args, **kwargs):
         super(ChangeLimsInitials, self).__init__(*args, **kwargs)
@@ -325,4 +325,23 @@ class EditedPasswordChangeForm(PasswordChangeForm):
         self.helper.form_method = 'POST'
         self.helper.add_input(
             Submit('submit', 'Change password', css_class='btn btn-danger w-100')
+        )
+
+
+
+class EditedUserCreationForm(UserCreationForm):
+    """
+    Add a submit button to the base password change form
+
+    """
+    lims_initials = forms.CharField(label='LIMS initials')
+
+    def __init__(self, *args, **kwargs):
+        super(UserCreationForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.fields['lims_initials'].help_text = 'Input initials as displayed in LIMS, this must match for integration between SVD and LIMS. If unsure then input as ?, it can be edited within user settings.'
+        self.helper.form_id = 'signup-form'
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Submit', css_class='btn btn-info w-100')
         )
