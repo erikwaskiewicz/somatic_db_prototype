@@ -1,22 +1,58 @@
 {% load crispy_forms_tags %}
 
-<h5>Variant info</h5>
+<h5>Sample info</h5>
+<br>
 
-<p>add general variant info plus variables needed for S-VIG - e.g. variant type.</p>
-
+<table class="table table-hover">
+  <tbody>
+    <tr>
+      <th>Sample ID</th>
+      <td>TODO</td>
+    </tr>
+    <tr>
+      <th>Worksheet</th>
+      <td>TODO</td>
+    </tr>
+    <tr>
+      <th>SVD panel</th>
+      <td>TODO</td>
+    </tr>
+    <tr>
+      <th>Specific tumour type</th>
+      <td>AML</td>
+    </tr>
+  </tbody>
+</table>
 <br><br>
 
-<h5>Previous classifications</h5>
-<p>TODO add table to show previous classifications</p>
+<h5>Variant info</h5>
+<br>
 
-{% if classification.full_classification %}
-<div class="card-body bg-warning">
-    Full classification. TODO - option to reset
-</div>
+<table class="table table-hover">
+  <tbody>
+    <tr>
+      <th>Genomic co-ords</th>
+      <td>TODO</td>
+    </tr>
+    <tr>
+      <th>HGVS c.</th>
+      <td>TODO</td>
+    </tr>
+    <tr>
+      <th>HGVS p.</th>
+      <td>TODO</td>
+    </tr>
+    <tr>
+      <th>Variant consequence</th>
+      <td>TODO</td>
+    </tr>
+    <tr>
+      <th>Mode of action</th>
+      <td>TODO</td>
+    </tr>
+  </tbody>
+</table>
 
-{% else %}
-<div class="card-body bg-light">
-{% crispy previous_class_form %}
-</div>
+<p>TODO - form to confirm all correct and edit if needs be</p>
 
-{% endif %}
+<p>TODO - annotations and versions of sources. Possibly ability to edit?</p>

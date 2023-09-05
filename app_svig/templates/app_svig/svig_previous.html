@@ -1,0 +1,134 @@
+{% load crispy_forms_tags %}
+
+<p>TODO - only able to complete this step once 1st tab finalised</p>
+
+<br>
+<div id="accordion">
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Seen ??? times previously in specific tumour type
+        </button>
+      </h5>
+    </div>
+
+    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="card-body">
+        <table class="table table-hover">
+          <thead>
+            <th>Variant</th>
+            <th>Date</th>
+            <th>Class</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td>TODO</td>
+              <td>TODO</td>
+              <td>TODO</td>
+            </tr>
+            <tr>
+              <td>TODO</td>
+              <td>TODO</td>
+              <td>TODO</td>
+            </tr>
+            <tr>
+              <td>TODO</td>
+              <td>TODO</td>
+              <td>TODO</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingTwo">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          Seen ??? times previously in myeloid tumour subtype
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+      <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+              <th>Variant</th>
+              <th>Date</th>
+              <th>Class</th>
+            </thead>
+            <tbody>
+              <tr>
+                <td>TODO</td>
+                <td>TODO</td>
+                <td>TODO</td>
+              </tr>
+              <tr>
+                <td>TODO</td>
+                <td>TODO</td>
+                <td>TODO</td>
+              </tr>
+              <tr>
+                <td>TODO</td>
+                <td>TODO</td>
+                <td>TODO</td>
+              </tr>
+            </tbody>
+          </table>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingThree">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          Seen ??? times previously in all other tumour types
+        </button>
+      </h5>
+    </div>
+    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+      <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+              <th>Variant</th>
+              <th>Date</th>
+              <th>Class</th>
+            </thead>
+            <tbody>
+              <tr>
+                <td>TODO</td>
+                <td>TODO</td>
+                <td>TODO</td>
+              </tr>
+              <tr>
+                <td>TODO</td>
+                <td>TODO</td>
+                <td>TODO</td>
+              </tr>
+              <tr>
+                <td>TODO</td>
+                <td>TODO</td>
+                <td>TODO</td>
+              </tr>
+            </tbody>
+          </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<br><br>
+
+{% if classification.full_classification %}
+<div class="card-body bg-warning">
+    Full classification. TODO - option to reset
+</div>
+
+{% else %}
+<div class="card-body bg-light">
+{% crispy previous_class_form %}
+</div>
+
+{% endif %}
