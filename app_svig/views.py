@@ -1,8 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.template.loader import render_to_string
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 
 from .models import *
 from .forms import *
+
+import json
 
 # Create your views here.
 @login_required
@@ -16,6 +20,9 @@ def view_classifications(request):
 
 @login_required
 def classify(request, classification):
+    """
+
+    """
     classification_obj = Classification.objects.get(id = classification)
     previous_class_form = PreviousClassificationForm()
     reopen_previous_class_form = ResetPreviousClassificationsForm()
@@ -78,5 +85,28 @@ def classify(request, classification):
             reopen_previous_class_form = ResetPreviousClassificationsForm(request.POST)
             if reopen_previous_class_form.is_valid():
                 print('reset')
+                classification_obj.full_classification = False
+                classification_obj.save()
+                #TODO - remove svig codes for this check
 
     return render(request, 'app_svig/svig_base.html', context)
+
+
+def ajax_svig(request):
+    """
+    Generates a new chunk of HTML for the classifation summary box on the S-VIG tab (within a div called class-box)
+    """
+    if request.is_ajax():
+
+        selections = json.loads(request.POST.get('selections'))
+        print(selections)
+
+        #TODO - calculate final class and score and pass in context below
+        context = {
+            'score': '5',
+            'final_class': 'Benign',
+            'final_class_css': 'info',
+        }
+
+        html = render_to_string('app_svig/ajax/classification.html', context)
+        return HttpResponse(html)

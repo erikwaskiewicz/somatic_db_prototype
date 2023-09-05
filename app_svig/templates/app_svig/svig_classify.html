@@ -6,9 +6,11 @@
     <div class="col-3">
       <div id="list-example" class="list-group sticky-top">
 
-        <button class="btn btn-block btn-lg btn-disabled btn-danger" type="button">
-          Current class:<br><b>Oncogenic  </b><span class="badge badge-light">4</span>
-        </button>
+        <div id="class-box" >
+          <button class="btn btn-block btn-lg btn-disabled btn-danger" type="button">
+            Current class:<br><b>Oncogenic  </b><span class="badge badge-light">4</span>
+          </button>
+        </div>
         <p></p>
         <button class="btn btn-block btn-lg btn-outline-dark calculate-class" type="button">Recalculate classification</button>
         <p></p>
@@ -84,7 +86,7 @@
         </table>
         <br>
 
-        <!-- database section -->
+        <!-- database section --
         <h4 id="list-item-3">Cancer databases</h4>
         <table class="table table-bordered">
           <tbody>
@@ -94,7 +96,7 @@
         </table>
         <br>
 
-        <!-- protein effect section -->
+        <!-- protein effect section --
         <h4 id="list-item-4">Effect on protein</h4>
         <table class="table table-bordered">
           <tbody>
@@ -104,7 +106,7 @@
         </table>
         <br>
 
-        <!-- computational tool section -->
+        <!-- computational tool section --
         <h4 id="list-item-5">Computational tools</h4>
         <table class="table table-bordered">
           <tbody>
@@ -114,7 +116,7 @@
         </table>
         <br>
 
-        <!-- functional study section-->
+        <!-- functional study section--
         <h4 id="list-item-6">Functional studies</h4>
         <table class="table table-bordered">
           <tbody>
@@ -122,7 +124,7 @@
             {% include 'app_svig/codes/example.html' %}
           </tbody>
         </table>
-        <br>
+        <br>-->
 
       </div>
     </div>
@@ -153,8 +155,26 @@
         code_list.push(c)
       });
     });
-    console.log(code_list);
-    //TODO send with ajax
+
+    // pass dict to JS form for AJAX POST
+    var formData = new FormData();
+      formData.append('csrfmiddlewaretoken',document.getElementsByName('csrfmiddlewaretoken')[0].value);
+      formData.append('selections', JSON.stringify(code_list));
+      formData.append('classification_pk', "{{ classification.pk }}");
+
+      $.ajax({
+          url: "{% url 'ajax-svig' %}",
+          type: 'POST',
+          data: formData,
+          contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
+          processData: false, // NEEDED, DON'T OMIT THIS
+          success: function(data) {
+              $("#class-box").html(data);
+          },
+          failure: function(data) {
+              alert('Got an error');
+          }
+      });
   });
 
 </script>
