@@ -24,6 +24,7 @@ def classify(request, classification):
 
     """
     classification_obj = Classification.objects.get(id = classification)
+    check_obj = Check.objects.filter(classification = classification_obj)[0] #TODO this probably needs to be more robust for multiple checks/might be wrong
     previous_class_form = PreviousClassificationForm()
     reopen_previous_class_form = ResetPreviousClassificationsForm()
 
@@ -52,6 +53,7 @@ def classify(request, classification):
 
     context = {
         'classification': classification_obj,
+        'check': check_obj,
         'previous_class_form': previous_class_form,
         'reopen_previous_class_form': reopen_previous_class_form,
         'sample_info': sample_info,
@@ -94,18 +96,21 @@ def classify(request, classification):
 
 def ajax_svig(request):
     """
-    Generates a new chunk of HTML for the classifation summary box on the S-VIG tab (within a div called class-box)
+    Generates a new chunk of HTML for the classification summary box on the S-VIG tab (within a div called class-box)
     """
     if request.is_ajax():
 
         selections = json.loads(request.POST.get('selections'))
-        print(selections)
+        check_pk = request.POST.get('check_pk')
+        check_obj = Check.objects.get(id=check_pk)
+        score, final_class, css_class = check_obj.update_codes(selections)
 
-        #TODO - calculate final class and score and pass in context below
+
+        #TODO - calculate final class and score and pass in context below, save answers to db
         context = {
-            'score': '5',
-            'final_class': 'Benign',
-            'final_class_css': 'info',
+            'score': score,
+            'final_class': final_class,
+            'final_class_css': css_class,
         }
 
         html = render_to_string('app_svig/ajax/classification.html', context)

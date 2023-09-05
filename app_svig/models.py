@@ -3,6 +3,7 @@ from somatic_variant_db.settings import BASE_DIR, SVIG_CODE_VERSION
 
 import yaml
 import os
+from collections import OrderedDict
 
 
 # Create your models here.
@@ -50,6 +51,76 @@ class Check(models.Model):
     def classify(self):
         print('classify')
         # TODO collect all code answers and classify
+
+    def get_codes(self):
+        codes = CodeAnswer.objects.filter(check_object=self)
+        return codes
+
+
+    def update_codes(self, selections):
+        #TODO split into smaller functions
+
+        # empty variables to store output
+        selections_dict = {}
+        score_counter = 0
+
+        # dict of how many points per code strength, this could be in settings/svig config
+        score_dict = {'SA': 100, 'VS': 8, 'ST': 4, 'MO': 2, 'SU': 1}
+
+        # loop through selections and tidy up into dict
+        for s in selections:
+            c, v = s.split('_')
+
+            code_type = c[0]
+
+            if v == 'NA':
+                applied = False
+                strength = None
+            else:
+                applied = True
+                strength = v
+                if code_type == 'B':
+                    score_counter -= score_dict[strength]
+                elif code_type == 'O':
+                    score_counter += score_dict[strength]
+            selections_dict[c] = {
+                'applied': applied,
+                'strength': strength,
+            }
+
+        # work out class from score counter
+        class_list = OrderedDict({
+            'Likely benign': -6,
+            'VUS': 0,
+            'Likely oncogenic': 6,
+            'Oncogenic': 10,
+        })
+
+        # loop through in order until the score no longer meets the threshold
+        classification = 'Benign'
+        for c, score in class_list.items():
+            if score_counter >= score:
+                classification = c
+
+        # for colouring the classification display
+        class_css_list = {
+            'Benign': 'info',
+            'Likely benign': 'info',
+            'VUS': 'warning',
+            'Likely oncogenic': 'danger',
+            'Oncogenic': 'danger',
+        }
+        css_class = class_css_list[classification]
+
+        # save results to db
+        codes = self.get_codes()
+        for c in codes:
+            #TODO might need to only save if model updates if hit on db is too high
+            c.applied = selections_dict[c.code]['applied']
+            c.applied_strength = selections_dict[c.code]['strength']
+            c.save()
+
+        return score_counter, classification, css_class
 
 
 class CodeAnswer(models.Model):

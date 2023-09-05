@@ -161,6 +161,7 @@
       formData.append('csrfmiddlewaretoken',document.getElementsByName('csrfmiddlewaretoken')[0].value);
       formData.append('selections', JSON.stringify(code_list));
       formData.append('classification_pk', "{{ classification.pk }}");
+      formData.append('check_pk', "{{ check.pk }}");
 
       $.ajax({
           url: "{% url 'ajax-svig' %}",
