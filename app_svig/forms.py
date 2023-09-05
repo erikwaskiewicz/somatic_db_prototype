@@ -22,3 +22,19 @@ class PreviousClassificationForm(forms.Form):
         self.helper.add_input(
             Submit('submit', "Submit", css_class='btn btn-info w-100')
         )
+
+
+class ResetPreviousClassificationsForm(forms.Form):
+    """
+    Form that users tick after they have checked patient paperwork to confirm referral is correct
+    """
+    confirm = forms.BooleanField(required=True, label="Confirm that you want to reopen and that any S-VIG analysis you've done so far will be wiped")
+    reset_previous = forms.CharField(widget=forms.HiddenInput(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(ResetPreviousClassificationsForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Reopen', css_class='btn btn-danger w-100')
+        )

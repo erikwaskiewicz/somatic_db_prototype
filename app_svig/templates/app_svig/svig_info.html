@@ -6,24 +6,24 @@
 <table class="table table-hover">
   <tbody>
     <tr>
-      <th>Sample ID</th>
-      <td>TODO</td>
+      <th class="col-4">Sample ID</th>
+      <td class="col-8">{{ sample_info.sample_id }}</td>
     </tr>
     <tr>
       <th>Worksheet</th>
-      <td>TODO</td>
+      <td>{{ sample_info.worksheet_id }}</td>
     </tr>
     <tr>
       <th>SVD panel</th>
-      <td>TODO</td>
+      <td>{{ sample_info.svd_panel }}</td>
     </tr>
     <tr>
       <th>Specific tumour type</th>
-      <td>AML</td>
+      <td>{{ sample_info.specific_tumour_type }}</td>
     </tr>
   </tbody>
 </table>
-<br><br>
+<br>
 
 <h5>Variant info</h5>
 <br>
@@ -31,24 +31,24 @@
 <table class="table table-hover">
   <tbody>
     <tr>
-      <th>Genomic co-ords</th>
-      <td>TODO</td>
+      <th class="col-4">Genomic co-ords</th>
+      <td class="col-8">{{ variant_info.genomic }} <span class="badge badge-{{ variant_info.build_css_tag }} badge-pill">GRCh{{ variant_info.build }}</span></td>
     </tr>
     <tr>
       <th>HGVS c.</th>
-      <td>TODO</td>
+      <td>{{ variant_info.hgvs_c }}</td>
     </tr>
     <tr>
       <th>HGVS p.</th>
-      <td>TODO</td>
+      <td>{{ variant_info.hgvs_p }}</td>
     </tr>
     <tr>
       <th>Variant consequence</th>
-      <td>TODO</td>
+      <td>{{ variant_info.consequence }}</td>
     </tr>
     <tr>
       <th>Mode of action</th>
-      <td>TODO</td>
+      <td>{{ variant_info.mode_action }}</td>
     </tr>
   </tbody>
 </table>

@@ -122,12 +122,15 @@
 <br><br>
 
 {% if classification.full_classification %}
-<div class="card-body bg-warning">
-    Full classification. TODO - option to reset
+<h5>You have selected to perform a full S-VIG classification</h5>
+<div class="alert alert-danger">
+    <h5>Reopen?</h5>
+    <p><b>Warning!</b> This will remove any S-VIG work you've done</p>
+    {% crispy reopen_previous_class_form %}
 </div>
 
 {% else %}
-<div class="card-body bg-light">
+<div class="card card-body bg-light">
 {% crispy previous_class_form %}
 </div>
 
