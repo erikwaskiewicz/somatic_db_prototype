@@ -331,7 +331,7 @@ class EditedPasswordChangeForm(PasswordChangeForm):
 
 class EditedUserCreationForm(UserCreationForm):
     """
-    Add a submit button to the base password change form
+    Add LIMS initials to the base user creation form
 
     """
     lims_initials = forms.CharField(label='LIMS initials')
@@ -339,7 +339,7 @@ class EditedUserCreationForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super(UserCreationForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.fields['lims_initials'].help_text = 'Input initials as displayed in LIMS, this must match for integration between SVD and LIMS. If unsure then input as ?, it can be edited within user settings.'
+        self.fields['lims_initials'].help_text = 'Input initials as displayed in LIMS, this must match for integration between SVD and LIMS. If unsure then input as ?, it can be edited within user settings in future.'
         self.helper.form_id = 'signup-form'
         self.helper.form_method = 'POST'
         self.helper.add_input(
