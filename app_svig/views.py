@@ -51,9 +51,14 @@ def classify(request, classification):
         'mode_action': 'TODO',
     }
 
+    current_score, current_class, class_css = check_obj.classify()
+
     context = {
         'classification': classification_obj,
         'check': check_obj,
+        'current_class': current_class,
+        'current_score': current_score,
+        'class_css': class_css,
         'previous_class_form': previous_class_form,
         'reopen_previous_class_form': reopen_previous_class_form,
         'sample_info': sample_info,
@@ -108,9 +113,9 @@ def ajax_svig(request):
 
         #TODO - calculate final class and score and pass in context below, save answers to db
         context = {
-            'score': score,
-            'final_class': final_class,
-            'final_class_css': css_class,
+            'current_score': score,
+            'current_class': final_class,
+            'class_css': css_class,
         }
 
         html = render_to_string('app_svig/ajax/classification.html', context)

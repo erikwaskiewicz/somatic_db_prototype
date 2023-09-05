@@ -49,8 +49,44 @@ class Check(models.Model):
     classification = models.ForeignKey('Classification', on_delete=models.CASCADE)
 
     def classify(self):
-        print('classify')
-        # TODO collect all code answers and classify
+        # dict of how many points per code strength, this could be in settings/svig config
+        score_dict = {'SA': 100, 'VS': 8, 'ST': 4, 'MO': 2, 'SU': 1}
+        score_counter = 0
+
+        codes = self.get_codes()
+        for c in codes:
+            if c.applied:
+                code_type = c.code[0]
+                if code_type == 'B':
+                    score_counter -= score_dict[c.applied_strength]
+                elif code_type == 'O':
+                    score_counter += score_dict[c.applied_strength]
+
+        # work out class from score counter
+        class_list = OrderedDict({
+            'Likely benign': -6,
+            'VUS': 0,
+            'Likely oncogenic': 6,
+            'Oncogenic': 10,
+        })
+
+        # loop through in order until the score no longer meets the threshold
+        classification = 'Benign'
+        for c, score in class_list.items():
+            if score_counter >= score:
+                classification = c
+
+        # for colouring the classification display
+        class_css_list = {
+            'Benign': 'info',
+            'Likely benign': 'info',
+            'VUS': 'warning',
+            'Likely oncogenic': 'danger',
+            'Oncogenic': 'danger',
+        }
+        css_class = class_css_list[classification]
+
+        return score_counter, classification, css_class
 
     def get_codes(self):
         codes = CodeAnswer.objects.filter(check_object=self)
