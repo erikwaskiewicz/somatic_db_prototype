@@ -2,67 +2,6 @@
   {% if classification.full_classification %}
   <div class="row">
 
-    <!-- side bar -------------------------------------------------------------------->
-    <div class="col-3">
-      <div id="list-example" class="list-group sticky-top">
-
-        <div id="class-box" >
-          <button class="btn btn-block btn-lg btn-disabled btn-{{ class_css }}" type="button">
-            Current class:<br><b>{{ current_class }} </b><span class="badge badge-light">{{ current_score }}</span>
-          </button>
-        </div>
-        <p></p>
-        <button class="btn btn-block btn-lg btn-outline-dark calculate-class" type="button">Recalculate classification</button>
-        <p></p>
-        <p></p>
-        <p></p>
-
-        <a class="list-group-item list-group-item-action" href="#list-item-1">
-          <div class="row">
-            <div class="col-10">
-              Population databases
-              <br><span class="badge badge-pill badge-info">B4_S</span>
-            </div>
-            <div class="col-2"><span class="fa fa-check" style="color:#1ab81a"></span></div>
-          </div>
-        </a>
-        <a class="list-group-item list-group-item-action" href="#list-item-2">
-          <div class="row">
-            <div class="col-10">
-              Mode of action
-              <br><span class="badge badge-pill badge-danger">O2_SA</span>
-            </div>
-            <div class="col-2"><span class="fa fa-check" style="color:#1ab81a"></span></div>
-          </div>
-        </a>
-        <a class="list-group-item list-group-item-action" href="#list-item-3">
-          <div class="row">
-            <div class="col-10">Cancer databases</div>
-            <div class="col-2"><span class="fa fa-stopwatch"></span></div>
-          </div>
-        </a>
-        <a class="list-group-item list-group-item-action" href="#list-item-4">
-          <div class="row">
-            <div class="col-10">Effect on protein</div>
-            <div class="col-2"><span class="fa fa-stopwatch"></span></div>
-          </div>
-        </a>
-        <a class="list-group-item list-group-item-action" href="#list-item-5">
-          <div class="row">
-            <div class="col-10">Computational tools</div>
-            <div class="col-2"><span class="fa fa-stopwatch"></span></div>
-          </div>
-        </a>
-        <a class="list-group-item list-group-item-action" href="#list-item-6">
-          <div class="row">
-            <div class="col-10">Functional studies</div>
-            <div class="col-2"><span class="fa fa-stopwatch"></span></div>
-          </div>
-        </a>
-      </div>
-    </div>
-
-
     <!-- Main area ------------------------------------------------------------------------------->
     <div class="col-9">
       <div data-bs-spy="scroll" data-bs-target="#list-example" data-bs-offset="0" class="scrollspy-example" tabindex="0">
@@ -128,10 +67,71 @@
 
       </div>
     </div>
+
+
+    <!-- side bar -------------------------------------------------------------------->
+    <div class="col-3">
+      <div id="list-example" class="list-group sticky-top">
+
+        <div id="class-box" >
+          <button class="btn btn-block btn-lg btn-disabled btn-{{ class_css }}" type="button">
+            Current class:<br><b>{{ current_class }} </b><span class="badge badge-light">{{ current_score }}</span>
+          </button>
+        </div>
+        <p></p>
+        <button class="btn btn-block btn-lg btn-outline-dark calculate-class" type="button">Recalculate classification</button>
+        <p></p>
+        <p></p>
+        <p></p>
+
+        <a class="list-group-item list-group-item-action" href="#list-item-1">
+          <div class="row">
+            <div class="col-10">
+              Population databases
+              <br><span class="badge badge-pill badge-info">B4_S</span>
+            </div>
+            <div class="col-2"><span class="fa fa-check" style="color:#1ab81a"></span></div>
+          </div>
+        </a>
+        <a class="list-group-item list-group-item-action" href="#list-item-2">
+          <div class="row">
+            <div class="col-10">
+              Mode of action
+              <br><span class="badge badge-pill badge-danger">O2_SA</span>
+            </div>
+            <div class="col-2"><span class="fa fa-check" style="color:#1ab81a"></span></div>
+          </div>
+        </a>
+        <a class="list-group-item list-group-item-action" href="#list-item-3">
+          <div class="row">
+            <div class="col-10">Cancer databases</div>
+            <div class="col-2"><span class="fa fa-stopwatch"></span></div>
+          </div>
+        </a>
+        <a class="list-group-item list-group-item-action" href="#list-item-4">
+          <div class="row">
+            <div class="col-10">Effect on protein</div>
+            <div class="col-2"><span class="fa fa-stopwatch"></span></div>
+          </div>
+        </a>
+        <a class="list-group-item list-group-item-action" href="#list-item-5">
+          <div class="row">
+            <div class="col-10">Computational tools</div>
+            <div class="col-2"><span class="fa fa-stopwatch"></span></div>
+          </div>
+        </a>
+        <a class="list-group-item list-group-item-action" href="#list-item-6">
+          <div class="row">
+            <div class="col-10">Functional studies</div>
+            <div class="col-2"><span class="fa fa-stopwatch"></span></div>
+          </div>
+        </a>
+      </div>
+    </div>
   </div>
 
   {% else %}
-  <div class="card card-body bg-warning">
+  <div class="alert alert-warning">
     Please complete Variant details tab first
   </div>
 
@@ -220,7 +220,6 @@
   $(document).ready(function(){
     // function that will happen when code change drop downs change in value (wont trigger if same value selected twice)
     $('.code-dropdown').change(function(e){
-      console.log('test')
       // get target element
       c = e.target;
 
