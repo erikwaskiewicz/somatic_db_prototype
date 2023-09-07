@@ -88,6 +88,7 @@ class Check(models.Model):
 
         return score_counter, classification, css_class
 
+
     def get_codes(self):
         codes = CodeAnswer.objects.filter(check_object=self)
         return codes
@@ -159,6 +160,60 @@ class Check(models.Model):
         return score_counter, classification, css_class
 
 
+    def codes_to_dict(self):
+        """
+        This might not be needed/ will need changing
+        """
+        # TODO get all codes in format on views page
+        # hard coded list of combined codes
+        # make combined entry and remove the respective single ones
+        codes = self.get_codes()
+        all_dict = {}
+
+        for c in codes:
+            if c.applied:
+                if c.code_type() == 'Benign':
+                    css_class = 'info'
+                elif c.code_type() == 'Oncogenic':
+                    css_class = 'danger'
+                strength = c.applied_strength
+            else:
+                css_class = 'secondary'
+                strength = 'NA'
+            all_dict[c.code] = {
+                'code': f'code_{c.code.lower()}',
+                'value': f'{c.code}_{strength}',
+                'applied': c.applied,
+                'css_class': css_class,
+            }
+
+
+        combinations = ['O3_B4']
+        for c in combinations:
+            code1, code2 = c.split('_')
+
+            temp_dict = {
+                'code': f'code_{c.lower()}',
+            }
+            if all_dict[code1]['applied']:
+                temp_dict['value'] = f'{all_dict[code1]["value"]}|{all_dict[code2]["value"]}'
+                temp_dict['css_class'] = all_dict[code1]['css_class']
+
+            elif all_dict[code2]['applied']:
+                temp_dict['value'] = f'{all_dict[code1]["value"]}|{all_dict[code2]["value"]}'
+                temp_dict['css_class'] = all_dict[code2]['css_class']
+
+            else:
+                temp_dict['value'] = f'{all_dict[code1]["value"]}|{all_dict[code2]["value"]}'
+                temp_dict['css_class'] = 'secondary'
+
+            del all_dict[code1]
+            del all_dict[code2]
+            all_dict[c] = temp_dict
+
+        return all_dict
+
+
 class CodeAnswer(models.Model):
     """
     A check of an individual code
@@ -169,5 +224,10 @@ class CodeAnswer(models.Model):
     applied = models.BooleanField(default=False)
     applied_strength = models.CharField(max_length=20, blank=True, null=True)
 
+    def code_type(self):
+        if self.code[0] == 'B':
+            return 'Benign'
+        elif self.code[0] == 'O':
+            return 'Oncogenic'
 
 #class Annotation(models.Model):
