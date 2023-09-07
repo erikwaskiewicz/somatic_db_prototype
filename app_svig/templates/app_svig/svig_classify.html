@@ -138,9 +138,47 @@
   {% endif %}
 </div>
 
+<!-- gets the all_codes variable and wraps in a script tag that can be fetched further down -->
+{{ all_codes|json_script:"all_codes" }}
 
 
 <script>
+  // function to update the css on a code based on whether a oncogenic/benign code is applied
+  function update_css(target, css_class) {
+    target.classList.remove('btn-info', 'btn-secondary', 'btn-danger')
+    target.classList.add("btn-" + css_class);
+
+    row_element = target.parentElement.parentElement;
+    row_element.classList.remove('table-info', 'table-secondary', 'table-danger')
+    row_element.classList.add("table-" + css_class);
+  };
+
+  // function to extract the new css class when a dropdown is changed
+  function get_new_css(value) {
+    var new_css = 'secondary'
+    var new_code = value.split('_');
+        if (new_code[1].match('NA')){
+          new_css = 'secondary';
+        } else if (new_code[0][0].match('B')){
+          new_css = 'info';
+        } else {
+          new_css = 'danger';
+        }
+    return new_css
+  }
+
+  // preset each dropdown
+  // get the all codes variable from all_codes variable called in main html
+  const initial_codes = JSON.parse(document.getElementById('all_codes').textContent);
+
+  // loop through each code, get the dropdown element, preselect and add css classes
+  initial_codes.forEach(c => {
+    drop_down = document.getElementById(c.code);
+    drop_down.value = c.value;
+    update_css(drop_down, c.css_class);
+  });
+
+
   $(".calculate-class").click(function(){
     // pull out all html objects starting with code_*, these are the dropdowns
     let codes = document.querySelectorAll('[id^="code_"]')
@@ -177,5 +215,46 @@
           }
       });
   });
+
+
+  $(document).ready(function(){
+    // function that will happen when code change drop downs change in value (wont trigger if same value selected twice)
+    $('.code-dropdown').change(function(e){
+      console.log('test')
+      // get target element
+      c = e.target;
+
+      // get new selected value
+      new_value = c.selectedOptions[0].value;
+
+      // handle when dropdown can select two different codes
+      if (new_value.includes('|')){
+        // find which code was applied
+        codes_split = new_value.split('|')
+        if (codes_split[0].split('_')[1].match('NA') && codes_split[1].split('_')[1].match('NA')) {
+          new_css = 'secondary';
+        }
+        else if (codes_split[0].split('_')[1].match('NA')) {
+          new_css = get_new_css(codes_split[1]);
+        } else {
+          new_css = get_new_css(codes_split[0]);
+        }
+
+      // handle when there is a single code per dropdown
+      } else {
+        new_css = get_new_css(new_value)
+      }
+
+      // update the css using variables from above
+      update_css(e.target, new_css);
+
+      // TODO - trigger recalculate button rather than having to rememeber to press it each time
+    });
+
+    // And now fire change event when the DOM is ready
+    $('.code-dropdown').trigger('change');
+
+  });
+
 
 </script>

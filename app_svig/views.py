@@ -53,12 +53,32 @@ def classify(request, classification):
 
     current_score, current_class, class_css = check_obj.classify()
 
+    # TODO this needs to be made from db
+    all_codes = [
+        {
+            'code': 'code_o3_b4',
+            'value': 'O3_NA|B4_ST',
+            'css_class': 'info',
+        },
+        {
+            'code': 'code_o2',
+            'value': 'O2_ST',
+            'css_class': 'danger',
+        },
+        {
+            'code': 'code_b1',
+            'value': 'B1_NA',
+            'css_class': 'secondary',
+        },
+    ]
+
     context = {
         'classification': classification_obj,
         'check': check_obj,
         'current_class': current_class,
         'current_score': current_score,
         'class_css': class_css,
+        'all_codes': all_codes,
         'previous_class_form': previous_class_form,
         'reopen_previous_class_form': reopen_previous_class_form,
         'sample_info': sample_info,
