@@ -138,6 +138,26 @@
   {% endif %}
 </div>
 
+
+<!-- guidence modal -->
+<div class="modal fade" id="guidence-modal" tabindex="-1" role="dialog" aria-labelledby="guidence-modal-label" aria-hidden="true">
+  <div class="modal-dialog modal-lg"role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="guidence-modal-label">S-VIG guidence</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        TODO
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <!-- gets the all_codes variable and wraps in a script tag that can be fetched further down -->
 {{ all_codes|json_script:"all_codes" }}
 
@@ -172,11 +192,11 @@
   const initial_codes = JSON.parse(document.getElementById('all_codes').textContent);
 
   // loop through each code, get the dropdown element, preselect and add css classes
-  initial_codes.forEach(c => {
+  for (const [key, c] of Object.entries(initial_codes)) {
     drop_down = document.getElementById(c.code);
     drop_down.value = c.value;
     update_css(drop_down, c.css_class);
-  });
+  };
 
 
   $(".calculate-class").click(function(){
