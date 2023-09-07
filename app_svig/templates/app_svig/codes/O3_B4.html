@@ -1,7 +1,7 @@
 <tr>
   <th class="col-1">O3<br>B4</th>
-  <th class="col-8">Absent or very rare in population database (e.g. gnomAD)<br>Variant is present at a high level in a general population database (e.g. gnomAD)</th>
-  <th class="col-3">
+  <th class="col-7">Absent or very rare in population database (e.g. gnomAD)<br>Variant is present at a high level in a general population database (e.g. gnomAD)</th>
+  <th class="col-4">
     <select size="1" id="code_o3_b4" name="code_o3_b4" class="btn btn-lg btn-block code-dropdown">
       <option value="O3_NA|B4_NA">Not applied</option>
       <option value="O3_MO|B4_NA">O3 Moderate (+2)</option>
@@ -16,8 +16,11 @@
   <td colspan="2">
     {% include 'app_svig/annotations/gnomad.html' %}
 
-    <a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-      More/ less info...
+    <a class="btn btn-light" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+      Detailed info O3
+    </a>
+    <a class="btn btn-light" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+      Detailed info B4
     </a>
 
     <div class="collapse" id="collapseExample">
