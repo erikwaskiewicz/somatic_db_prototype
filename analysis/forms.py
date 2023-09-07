@@ -298,7 +298,7 @@ class AddNewPolyForm(forms.Form):
 
 class ChangeLimsInitials(forms.Form):
     """
-    Add/ change the patient name
+    Add/ change the user initials as displayed in LIMS
 
     """
     lims_initials = forms.CharField(label='LIMS initials')
