@@ -309,6 +309,7 @@ def get_sample_info(sample_obj):
         'percent_reads_ntc': sample_obj.percent_reads_ntc(),
         'checks': sample_obj.get_checks(),
         'genome_build': sample_obj.genome_build,
+        'test_code': sample_obj.panel.lims_test_code,
     }
     return sample_data
 
@@ -387,6 +388,22 @@ def get_variant_info(sample_data, sample_obj):
         vaf = sample_variant.variant_instance.vaf()
         vaf_rounded = vaf.quantize(decimal.Decimal('1'), rounding=decimal.ROUND_HALF_UP)
 
+        # split out transcript and c./p., wrap in try/except because sometimes its empty
+        try:
+            hgvs_c_short = sample_variant.variant_instance.hgvs_c.split(':')[1]
+        except IndexError:
+            hgvs_c_short = ''
+
+        try:
+            hgvs_p_short = sample_variant.variant_instance.hgvs_p.split(':')[1]
+        except IndexError:
+            hgvs_p_short = ''
+
+        try:
+            transcript = sample_variant.variant_instance.hgvs_c.split(':')[0]
+        except IndexError:
+            transcript = ''
+
         #Create a variant calls dictionary to pass to analysis-snvs.html
         variant_calls_dict = {
             'pk': sample_variant.pk,
@@ -398,7 +415,9 @@ def get_variant_info(sample_data, sample_obj):
             'exon': sample_variant.variant_instance.exon,
             'hgvs_c': sample_variant.variant_instance.hgvs_c,
             'hgvs_p': sample_variant.variant_instance.hgvs_p,
-            'transcript': sample_variant.variant_instance.hgvs_c.split(':')[0],
+            'hgvs_c_short': hgvs_c_short,
+            'hgvs_p_short': hgvs_p_short,
+            'transcript': transcript,
             'gnomad_popmax': sample_variant.variant_instance.gnomad_popmax,
             'this_run': {
                 'ntc': sample_variant.variant_instance.in_ntc,

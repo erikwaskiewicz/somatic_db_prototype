@@ -1,16 +1,20 @@
 from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate
-from django.contrib.auth.forms import UserCreationForm
-from django.core.exceptions import PermissionDenied
+from django.contrib.auth import authenticate, update_session_auth_hash
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.utils import timezone
 from django.template.loader import get_template
 from django.template import Context
 
-from .forms import NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, ConfirmPolyForm, AddNewPolyForm, ManualVariantCheckForm, ReopenForm
+from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, 
+    CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, 
+    ConfirmPolyForm, AddNewPolyForm, ManualVariantCheckForm, ReopenForm, ChangeLimsInitials, 
+    EditedPasswordChangeForm, EditedUserCreationForm)
+from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
+    get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, 
+    create_myeloid_coverage_summary)
 from .models import *
-from .utils import get_samples, unassign_check, reopen_check, signoff_check, make_next_check, get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, create_myeloid_coverage_summary, get_poly_list
 
 import json
 import os
@@ -23,22 +27,32 @@ def signup(request):
     User accounts are inactive by default - an admin must activate it using the admin page.
     """
 
-    form = UserCreationForm()
+    signup_form = EditedUserCreationForm()
     warnings = []
 
     if request.method == 'POST':
 
-        form = UserCreationForm(request.POST)
+        signup_form = EditedUserCreationForm(request.POST)
 
-        if form.is_valid():
+        if signup_form.is_valid():
+            signup_form.save()
 
-            form.save()
+            # get data from form
+            username = signup_form.cleaned_data.get('username')
+            raw_password = signup_form.cleaned_data.get('password1')
+            lims_initials = signup_form.cleaned_data.get('lims_initials')
 
-            username = form.cleaned_data.get('username')
-            raw_password = form.cleaned_data.get('password1')
+            # save user object and authenticate
             user = authenticate(username=username, password=raw_password)
             user.is_active = False
             user.save()
+
+            # add lims initials
+            usersettings = UserSettings(
+                user = user,
+                lims_initials = lims_initials
+            )
+            usersettings.save()
 
             return redirect('home')
             #TODO - add some kind of confirmation
@@ -46,7 +60,7 @@ def signup(request):
         else:
             warnings.append('Could not create an account, check that your password meets the requirements below')
 
-    return render(request, 'analysis/sign-up.html', {'form': form, 'warning': warnings})
+    return render(request, 'analysis/sign-up.html', {'signup_form': signup_form, 'warning': warnings})
 
 
 @login_required
@@ -699,3 +713,83 @@ def options_page(request):
     Display a page of all other options e.g. poly lists
     """
     return render(request, 'analysis/options_page.html', {})
+
+
+@login_required
+def user_settings(request):
+    """
+    Display a page of user setting options
+    """
+    lims_form = ChangeLimsInitials()
+
+    #----------------------------------------------------------
+    #  If any buttons are pressed
+    if request.method == 'POST':
+
+        # if LIMS initials button is pressed
+        if 'lims_initials' in request.POST:
+
+            lims_form = ChangeLimsInitials(request.POST)
+            if lims_form.is_valid():
+
+                # get form data and change LIMS data
+                new_lims_initials = lims_form.cleaned_data['lims_initials']
+
+                # update value if it already exists
+                try:
+                    request.user.usersettings.lims_initials = new_lims_initials
+                    request.user.usersettings.save()
+
+                # add new record if it doesnt exist
+                except ObjectDoesNotExist:
+                    user = UserSettings(
+                        user = request.user,
+                        lims_initials = new_lims_initials
+                    )
+                    user.save()
+
+    return render(request, 'analysis/user_settings.html', {'lims_form': lims_form,})
+
+
+@login_required
+def change_password(request):
+    """
+    Form to change the password for the logged in user
+    """
+    password_form = EditedPasswordChangeForm(request.user)
+    warning, success = [], []
+
+    context = {
+        'password_form': password_form,
+        'warning': warning,
+        'success': success,
+    }
+
+    #----------------------------------------------------------
+    #  If any buttons are pressed
+    if request.method == 'POST':
+
+        # if password reset button is pressed
+        if 'old_password' in request.POST:
+
+            password_form = EditedPasswordChangeForm(user=request.user, data=request.POST)
+            if password_form.is_valid():
+
+                # get new password
+                password_form.save()
+                new_password = password_form.cleaned_data['new_password1']
+
+                # reset password
+                request.user.set_password(new_password)
+                request.user.save()
+
+                # prevent user from being logged out
+                update_session_auth_hash(request, password_form.user)
+                success.append('Password changed')
+
+            # show any form validation errors
+            else:
+                context['password_form'] = password_form
+                warning.append("Couldn't change password, please fix errors in form below")
+
+    return render(request, 'analysis/change_password.html', context)

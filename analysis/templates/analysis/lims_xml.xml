@@ -5,9 +5,9 @@
         <sample_id>{{ sample_data.sample_id }}</sample_id>
         <referral>{{ sample_data.panel_obj.panel_name }}</referral>
         <awmgs_db_pk>{{ sample_data.sample_pk }}</awmgs_db_pk>
-        <first_checker>{{ sample_data.checks.first_check }}</first_checker>
-        <final_checker>{{ sample_data.checks.final_check }}</final_checker>
-        <additional_checkers>{{ sample_data.checks.extra_checks }}</additional_checkers>
+        <test_code>{{ sample_data.test_code }}</test_code>
+        <pass_fail>{% if sample_data.checks.current_status == "Complete" %}Pass{% else %}{{ sample_data.checks.current_status }}{% endif %}</pass_fail>
+        <checkers>{{ sample_data.checks.lims_checks }}</checkers>
     </sample_info>
 
     <results>
@@ -16,11 +16,12 @@
             {% for v in variant_data.variant_calls %}
             {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
             <variant>
-                <id>{{ v.genomic }}</id>
+                <variant_ID>{{ v.genomic }}</variant_ID>
                 <gene>{{ v.gene }}</gene>
                 <refseq_transcript>{{ v.transcript }}</refseq_transcript>
-                <hgvs_c>{{ v.hgvs_c }}</hgvs_c>
-                <hgvs_p>{{ v.hgvs_p }}</hgvs_p>
+                <hgvs_c>{{ v.hgvs_c_short }}</hgvs_c>
+                <hgvs_p>{{ v.hgvs_p_short }}</hgvs_p>
+                <exon>{{ v.exon }}</exon>
                 <genome_build>{{ sample_data.genome_build }}</genome_build>
                 {% if sample_data.panel_obj.assay == '3' %}  {# VAF rounded to 2dp for ctDNA, whole number for the rest #}
                 <vaf>{{ v.vaf.vaf }}</vaf>
