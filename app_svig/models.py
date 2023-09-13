@@ -259,6 +259,8 @@ class Check(models.Model):
                 css_class = 'info'
             elif values['type'] == 'oncogenic':
                 css_class = 'danger'
+            if current_code.pending:
+                results_dict[current_category]['complete'] = False
             if current_code.applied:
                 temp_dict = {
                     'code': f'{current_code.code}_{current_code.applied_strength}',
