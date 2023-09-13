@@ -60,6 +60,7 @@ def classify(request, classification):
 
     # load in forms
     check_info_form = CheckInfoForm()
+    reopen_check_info_form = ResetCheckInfoForm()
     previous_class_form = PreviousClassificationForm()
     reopen_previous_class_form = ResetPreviousClassificationsForm()
 
@@ -100,6 +101,7 @@ def classify(request, classification):
         'variant_info': variant_info,
         'classification_info': classification_info,
         'check_info_form': check_info_form,
+        'reopen_check_info_form': reopen_check_info_form,
         'previous_class_form': previous_class_form,
         'reopen_previous_class_form': reopen_previous_class_form,
     }
@@ -126,6 +128,17 @@ def classify(request, classification):
                 check_obj.info_check = True
                 check_obj.save()
 
+        # button to reset sample/patient info tab
+        if 'reset_info_check' in request.POST:
+            reopen_check_info_form = ResetCheckInfoForm(request.POST)
+            if reopen_check_info_form.is_valid():
+                check_obj.info_check = False
+                check_obj.previous_classifications_check = False
+                check_obj.save()
+                classification_obj.full_classification = False
+                classification_obj.save()
+                check_obj.remove_codes()
+
         # button to select to use a previous classification or start a new one
         if 'use_previous_class' in request.POST:
             previous_class_form = PreviousClassificationForm(request.POST)
@@ -150,7 +163,7 @@ def classify(request, classification):
 
 
         # button to revert previous/new classification form
-        if 'reset_previous' in request.POST:
+        if 'reset_previous_class_check' in request.POST:
             reopen_previous_class_form = ResetPreviousClassificationsForm(request.POST)
             if reopen_previous_class_form.is_valid():
                 classification_obj.full_classification = False

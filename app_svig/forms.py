@@ -6,6 +6,7 @@ from crispy_forms.layout import Submit
 class NewClassification(forms.Form):
     """
     TODO remove this. just for adding a clean classification for testing
+
     """
 
     def __init__(self, *args, **kwargs):
@@ -19,10 +20,10 @@ class NewClassification(forms.Form):
 
 class CheckInfoForm(forms.Form):
     """
-    Form that users tick after they have checked patient paperwork to confirm referral is correct
+    Form that users tick to confirm they've checked the patient/variant info tab
+
     """
-    confirm = forms.BooleanField(required=True, label="Confirm that the information on this page is correct")
-    check_info_form = forms.CharField(widget=forms.HiddenInput(), required=False)
+    check_info_form = forms.BooleanField(required=True, label="Confirm that the information on this page is correct")
 
     def __init__(self, *args, **kwargs):
         super(CheckInfoForm, self).__init__(*args, **kwargs)
@@ -30,6 +31,22 @@ class CheckInfoForm(forms.Form):
         self.helper.form_method = 'POST'
         self.helper.add_input(
             Submit('submit', 'Confirm', css_class='btn btn-warning w-100')
+        )
+
+
+class ResetCheckInfoForm(forms.Form):
+    """
+    Form to reset the check info form
+
+    """
+    reset_info_check = forms.BooleanField(required=True, label="Confirm that you want to reopen and that any analysis you've done so far will be wiped")
+
+    def __init__(self, *args, **kwargs):
+        super(ResetCheckInfoForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Reopen', css_class='btn btn-danger w-100')
         )
 
 
@@ -43,7 +60,7 @@ class PreviousClassificationForm(forms.Form):
         (False, 'New classification'),
     )
     use_previous_class = forms.ChoiceField(choices=PREVIOUS_CLASS_CHOICES)
-    confirm = forms.BooleanField(required=True, label='Confirm decision')
+    confirm_use_previous_class = forms.BooleanField(required=True, label='Confirm decision')
 
     def __init__(self, *args, **kwargs):
         super(PreviousClassificationForm, self).__init__(*args, **kwargs)
@@ -56,10 +73,10 @@ class PreviousClassificationForm(forms.Form):
 
 class ResetPreviousClassificationsForm(forms.Form):
     """
-    Form that users tick after they have checked patient paperwork to confirm referral is correct
+    Form to reopen the previous classifications form
+
     """
-    confirm = forms.BooleanField(required=True, label="Confirm that you want to reopen and that any S-VIG analysis you've done so far will be wiped")
-    reset_previous = forms.CharField(widget=forms.HiddenInput(), required=False)
+    reset_previous_class_check = forms.BooleanField(required=True, label="Confirm that you want to reopen and that any S-VIG analysis you've done so far will be wiped")
 
     def __init__(self, *args, **kwargs):
         super(ResetPreviousClassificationsForm, self).__init__(*args, **kwargs)
