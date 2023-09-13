@@ -89,11 +89,17 @@
             <div class="col-10">
               Population databases
               <br>
-              {% for c in codes_by_category.population_db %}
+              {% for c in codes_by_category.population_db.applied_codes %}
               <span class="badge badge-pill badge-{{ c.css_class }}">{{ c.code }}</span>
               {% endfor %}
             </div>
-            <div class="col-2"><span class="fa fa-check" style="color:#1ab81a"></span></div>
+            <div class="col-2">
+              {% if codes_by_category.population_db.complete %}
+              <span class="fa fa-check" style="color:#1ab81a"></span>
+              {% else %}
+              <span class="fa fa-stopwatch"></span>
+              {% endif %}
+            </div>
           </div>
         </a>
         <a class="list-group-item list-group-item-action" href="#list-item-2">
@@ -101,13 +107,19 @@
             <div class="col-10">
               Mode of action
               <br>
-              {% for c in codes_by_category.mode_of_action %}
+              {% for c in codes_by_category.mode_of_action.applied_codes %}
               <span class="badge badge-pill badge-{{ c.css_class }}">{{ c.code }}</span>
               {% endfor %}
             </div>
-            <div class="col-2"><span class="fa fa-check" style="color:#1ab81a"></span></div>
+            <div class="col-2">
+              {% if codes_by_category.mode_of_action.complete %}
+              <span class="fa fa-check" style="color:#1ab81a"></span>
+              {% else %}
+              <span class="fa fa-stopwatch"></span>
+              {% endif %}
+            </div>
           </div>
-        </a>
+        </a><!-- TODO loops for all options -->
         <a class="list-group-item list-group-item-action" href="#list-item-3">
           <div class="row">
             <div class="col-10">Cancer databases</div>

@@ -229,7 +229,11 @@ class Check(models.Model):
             # add category to the list if it isnt there already
             current_category = values['category']
             if current_category not in results_dict.keys():
-                results_dict[current_category] = []
+                results_dict[current_category] = {
+                    'applied_codes': [],
+                    'complete': True
+                }
+                #TODO complete variable is hard coded at the mo, need to add pending option first
 
             # check if the code is applied and add to list if it is
             current_code = applied_codes.get(code=code)
@@ -243,7 +247,7 @@ class Check(models.Model):
                     'css_class': css_class,
                 }
                 
-                results_dict[current_category].append(temp_dict)
+                results_dict[current_category]['applied_codes'].append(temp_dict)
 
         return results_dict
 
