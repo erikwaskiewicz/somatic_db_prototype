@@ -63,10 +63,27 @@
 
   <!-- forms on side of page -->
   <div class="col-3">
+
+    <!-- forms when check is complete-->
+    {% if classification_info.current_check.info_check %}
+    <div class="alert alert-success">
+      <h5>Complete!</h5>
+      <p>You have confirmed that the information on this page is accurate</p>
+    </div>
+    <div class="alert alert-danger">
+      <h5>Reopen?</h5>
+      <p><b>Warning!</b> This will reset any work you've done on the Previous classifications and S-VIG tabs</p>
+      TODO
+    </div>
+
+    <!-- forms to complete check-->
+    {% else %}
     <div class="alert alert-warning">
       <h5>Please confirm that this page has been checked</h5>
       <br>
       {% crispy check_info_form %}
     </div>
+
+    {% endif %}
   </div>
 </div>

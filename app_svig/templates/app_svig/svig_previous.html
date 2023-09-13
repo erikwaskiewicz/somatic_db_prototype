@@ -1,4 +1,5 @@
 {% load crispy_forms_tags %}
+{% if classification_info.current_check.info_check %}
 <div class="row">
 
   <!-- Main area ------------------------------------------------------------------------------->
@@ -128,7 +129,10 @@
   <!-- forms on side of page -->
   <div class="col-3">
     {% if classification_info.classification_obj.full_classification %}
-    <h5>You have selected to perform a full S-VIG classification</h5>
+    <div class="alert alert-success">
+      <h5>Complete!</h5>
+      <p>You have selected to perform a full S-VIG classification</p>
+    </div>
     <div class="alert alert-danger">
       <h5>Reopen?</h5>
       <p><b>Warning!</b> This will remove any S-VIG work you've done</p>
@@ -145,3 +149,9 @@
     {% endif %}
   </div>
 </div>
+
+{% else %}
+<div class="alert alert-warning">
+  Please complete the Variant details tab first
+</div>
+{% endif %}

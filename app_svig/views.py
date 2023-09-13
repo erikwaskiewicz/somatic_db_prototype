@@ -123,8 +123,8 @@ def classify(request, classification):
         if 'check_info_form' in request.POST:
             check_info_form = CheckInfoForm(request.POST)
             if check_info_form.is_valid():
-                print(check_info_form)
-                # TODO update in models
+                check_obj.info_check = True
+                check_obj.save()
 
         # button to select to use a previous classification or start a new one
         if 'use_previous_class' in request.POST:

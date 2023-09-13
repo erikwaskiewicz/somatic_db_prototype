@@ -25,6 +25,9 @@ class Check(models.Model):
     A check of a classification
     """
     classification = models.ForeignKey('Classification', on_delete=models.CASCADE)
+    info_check = models.BooleanField(default=False)
+    previous_classifications_check = models.BooleanField(default=False)
+    check_complete = models.BooleanField(default=False)
 
     def make_new_codes(self):
         """
