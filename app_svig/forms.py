@@ -17,6 +17,22 @@ class NewClassification(forms.Form):
         )
 
 
+class CheckInfoForm(forms.Form):
+    """
+    Form that users tick after they have checked patient paperwork to confirm referral is correct
+    """
+    confirm = forms.BooleanField(required=True, label="Confirm that the information on this page is correct")
+    check_info_form = forms.CharField(widget=forms.HiddenInput(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(CheckInfoForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Confirm', css_class='btn btn-warning w-100')
+        )
+
+
 class PreviousClassificationForm(forms.Form):
     """
     Choose whether to use a previous class of start a new one
@@ -34,7 +50,7 @@ class PreviousClassificationForm(forms.Form):
         self.helper = FormHelper()
         self.helper.form_method = 'POST'
         self.helper.add_input(
-            Submit('submit', "Submit", css_class='btn btn-info w-100')
+            Submit('submit', "Submit", css_class='btn btn-warning w-100')
         )
 
 

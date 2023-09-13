@@ -59,6 +59,7 @@ def classify(request, classification):
     check_obj = Check.objects.filter(classification = classification_obj)[0] #TODO this probably needs to be more robust for multiple checks/might be wrong
 
     # load in forms
+    check_info_form = CheckInfoForm()
     previous_class_form = PreviousClassificationForm()
     reopen_previous_class_form = ResetPreviousClassificationsForm()
 
@@ -98,6 +99,7 @@ def classify(request, classification):
         'sample_info': sample_info,
         'variant_info': variant_info,
         'classification_info': classification_info,
+        'check_info_form': check_info_form,
         'previous_class_form': previous_class_form,
         'reopen_previous_class_form': reopen_previous_class_form,
     }
@@ -116,6 +118,13 @@ def classify(request, classification):
     # ------------------------------------------------------------------------
     # when buttons are pressed
     if request.method == 'POST':
+
+        # button to confirm smaple/variant tab has been checked
+        if 'check_info_form' in request.POST:
+            check_info_form = CheckInfoForm(request.POST)
+            if check_info_form.is_valid():
+                print(check_info_form)
+                # TODO update in models
 
         # button to select to use a previous classification or start a new one
         if 'use_previous_class' in request.POST:
