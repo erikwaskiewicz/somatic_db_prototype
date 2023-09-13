@@ -69,7 +69,7 @@ def classify(request, classification):
         'sample_id': classification_obj.variant.sample_analysis.sample.sample_id,
         'worksheet_id': classification_obj.variant.sample_analysis.worksheet.ws_id,
         'svd_panel': classification_obj.variant.sample_analysis.panel,
-        'specific_tumour_type': 'TODO e.g. AML, add to sample analysis model? And set options from panel model?',
+        'specific_tumour_type': 'TODO', # e.g. AML, add to sample analysis model? And set options from panel model?',
     }
 
     # get variant specific variables

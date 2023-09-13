@@ -17,23 +17,25 @@
   <table class="table table-bordered">
     <thead>
       <tr>
-        <th scope="col">Sample</th>
-        <th scope="col">Referral</th>
-        <th scope="col">Worksheet</th>
-        <th scope="col">Status</th>
-        <th scope="col">Class</th>
+        <th scope="col" class="col-4">Variant</th>
+        <th scope="col" class="col-2">Sample</th>
+        <th scope="col" class="col-2">Referral</th>
+        <th scope="col" class="col-2">Status</th>
+        <th scope="col" class="col-2">Comments</th>
       </tr>
     </thead>
     <tbody>
-      
       <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td>{{ variant_info.hgvs_c }}<br>{{ variant_info.hgvs_p }}</td>
+        <td>{{ sample_info.sample_id }}<br>{{ sample_info.worksheet_id }}</td>
+        <td>{{ sample_info.svd_panel }}<br>{{ sample_info.specific_tumour_type }}</td>
+        <td>1st check</td>
+        <td>
+          <a class="btn btn-light" data-toggle="modal" href="#comments-modal" role="button" aria-expanded="false" aria-controls="comments-modal">
+            View all comments
+          </a>
+        </td>
       </tr>
-
     </tbody>
   </table>
 </div>
@@ -72,7 +74,53 @@
 <div class="container" id="finalise">{% include 'app_svig/svig_finalise.html' %}</div>
 
 
+<!-- comments modal -->
+<div class="modal fade" id="comments-modal" tabindex="-1" role="dialog" aria-labelledby="comments-modal-label" aria-hidden="true">
+  <div class="modal-dialog" style="min-width:90%;" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="comments-modal-label">Comments</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>TODO form to add new comment</p>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th scope="col">Time</th>
+              <th scope="col">User</th>
+              <th scope="col">Object</th>
+              <th scope="col">Comment</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>TODO</td>
+              <td>TODO</td>
+              <td>TODO</td>
+              <td>TODO</td>
+            </tr>
+            <tr>
+              <td>TODO</td>
+              <td>TODO</td>
+              <td>TODO</td>
+              <td>TODO</td>
+            </tr>
+            <tr>
+              <td>TODO</td>
+              <td>TODO</td>
+              <td>TODO</td>
+              <td>TODO</td>
+            </tr>
+          </tbody>
+        </table>
 
+      </div>
+    </div>
+  </div>
+</div>
 
 <!--------------------------------------------------------------------------------------- 
     Javascript
