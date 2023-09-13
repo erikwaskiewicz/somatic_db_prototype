@@ -42,14 +42,12 @@ class Check(models.Model):
                 check_object = self
             )
 
-
     def get_codes(self):
         """
         Get all classification codes for the current check
         """
         codes = CodeAnswer.objects.filter(check_object=self)
         return codes
-
 
     def remove_codes(self):
         """
@@ -58,7 +56,6 @@ class Check(models.Model):
         codes = self.get_codes()
         for c in codes:
             c.delete()
-
 
     def classify(self):
         # dict of how many points per code strength, this could be in settings/svig config
@@ -99,7 +96,6 @@ class Check(models.Model):
         css_class = class_css_list[classification]
 
         return score_counter, classification, css_class
-
 
     def update_codes(self, selections):
         #TODO split into smaller functions
@@ -178,7 +174,6 @@ class Check(models.Model):
 
         return score_counter, classification, css_class
 
-
     def codes_to_dict(self):
         """
         This might not be needed/ will need changing
@@ -237,7 +232,6 @@ class Check(models.Model):
             all_dict[c] = temp_dict
 
         return all_dict
-
 
     def codes_by_category(self):
         results_dict = {}

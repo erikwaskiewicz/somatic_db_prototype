@@ -131,9 +131,14 @@ def classify(request, classification):
                     classification_obj.full_classification = True
                     classification_obj.save()
                     check_obj.make_new_codes()
+                    # TODO - stop this from resubmitting on refresh
 
                     # reload context
-                    context['classification'] = classification_obj
+                    current_score, current_class, class_css = check_obj.classify()
+                    context['classification_info']['current_class'] = current_class
+                    context['classification_info']['current_score'] = current_score
+                    context['classification_info']['class_css'] = class_css
+
 
         # button to revert previous/new classification form
         if 'reset_previous' in request.POST:
