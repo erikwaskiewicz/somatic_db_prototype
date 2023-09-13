@@ -233,9 +233,17 @@ class Check(models.Model):
 
             # check if the code is applied and add to list if it is
             current_code = applied_codes.get(code=code)
+            if values['type'] == 'benign':
+                css_class = 'info'
+            elif values['type'] == 'oncogenic':
+                css_class = 'danger'
             if current_code.applied:
-                code_str = f'{current_code.code}_{current_code.applied_strength}'
-                results_dict[current_category].append(code_str)
+                temp_dict = {
+                    'code': f'{current_code.code}_{current_code.applied_strength}',
+                    'css_class': css_class,
+                }
+                
+                results_dict[current_category].append(temp_dict)
 
         return results_dict
 

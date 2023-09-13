@@ -90,7 +90,7 @@
               Population databases
               <br>
               {% for c in codes_by_category.population_db %}
-              <span class="badge badge-pill badge-info">{{ c }}</span>
+              <span class="badge badge-pill badge-{{ c.css_class }}">{{ c.code }}</span>
               {% endfor %}
             </div>
             <div class="col-2"><span class="fa fa-check" style="color:#1ab81a"></span></div>
@@ -102,7 +102,7 @@
               Mode of action
               <br>
               {% for c in codes_by_category.mode_of_action %}
-              <span class="badge badge-pill badge-danger">{{ c }}</span>
+              <span class="badge badge-pill badge-{{ c.css_class }}">{{ c.code }}</span>
               {% endfor %}
             </div>
             <div class="col-2"><span class="fa fa-check" style="color:#1ab81a"></span></div>
