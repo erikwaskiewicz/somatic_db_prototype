@@ -55,17 +55,21 @@ def classify(request, classification):
 
     all_codes = check_obj.codes_to_dict()
 
-    context = {
-        'classification': classification_obj,
-        'check': check_obj,
+    classification_info = {
+        'classification_obj': classification_obj,
+        'current_check': check_obj,
         'current_class': current_class,
         'current_score': current_score,
         'class_css': class_css,
+    }
+
+    context = {
+        'sample_info': sample_info,
+        'variant_info': variant_info,
+        'classification_info': classification_info,
         'all_codes': all_codes,
         'previous_class_form': previous_class_form,
         'reopen_previous_class_form': reopen_previous_class_form,
-        'sample_info': sample_info,
-        'variant_info': variant_info,
     }
 
     # when buttons are pressed

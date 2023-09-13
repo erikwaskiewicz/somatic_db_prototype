@@ -1,5 +1,5 @@
 <div class="container-fluid">
-  {% if classification.full_classification %}
+  {% if classification_info.classification_obj.full_classification %}
   <div class="row">
 
     <!-- Main area ------------------------------------------------------------------------------->
@@ -74,8 +74,8 @@
       <div id="list-example" class="list-group sticky-top">
 
         <div id="class-box" >
-          <button class="btn btn-block btn-lg btn-disabled btn-{{ class_css }}" type="button">
-            Current class:<br><b>{{ current_class }} </b><span class="badge badge-light">{{ current_score }}</span>
+          <button class="btn btn-block btn-lg btn-disabled btn-{{ classification_info.class_css }}" type="button">
+            Current class:<br><b>{{ classification_info.current_class }} </b><span class="badge badge-light">{{ classification_info.current_score }}</span>
           </button>
         </div>
         <p></p>
@@ -218,8 +218,8 @@
     var formData = new FormData();
       formData.append('csrfmiddlewaretoken',document.getElementsByName('csrfmiddlewaretoken')[0].value);
       formData.append('selections', JSON.stringify(code_list));
-      formData.append('classification_pk', "{{ classification.pk }}");
-      formData.append('check_pk', "{{ check.pk }}");
+      formData.append('classification_pk', "{{ classification_info.classification_obj.pk }}");
+      formData.append('check_pk', "{{ classification_info.current_check.pk }}");
 
       $.ajax({
           url: "{% url 'ajax-svig' %}",
