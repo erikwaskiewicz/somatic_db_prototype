@@ -19,34 +19,46 @@ class Classification(models.Model):
     def __str__(self):
         return self.variant.variant_instance.hgvs_c
 
-    def make_new_classification(self):
-        """
-        make a set of code answers
-        TODO possily move to check obj as that might already be made?
-        """
-        # load in list of S-VIG codes from yaml
-        config_file = os.path.join(BASE_DIR, f'app_svig/config/svig_{SVIG_CODE_VERSION}.yaml')
-        with open(config_file) as f:
-            svig_codes = yaml.load(f, Loader=yaml.FullLoader)
-
-        # make 1st check object
-        check_obj = Check.objects.create(
-            classification = self
-        )
-
-        # loop through the codes and make code answer objects
-        for code in svig_codes:
-            CodeAnswer.objects.create(
-                code = code,
-                check_object = check_obj
-            )
-
 
 class Check(models.Model):
     """
     A check of a classification
     """
     classification = models.ForeignKey('Classification', on_delete=models.CASCADE)
+
+    def make_new_codes(self):
+        """
+        make a set of code answers against the current check
+        """
+        # load in list of S-VIG codes from yaml
+        config_file = os.path.join(BASE_DIR, f'app_svig/config/svig_{SVIG_CODE_VERSION}.yaml')
+        with open(config_file) as f:
+            svig_codes = yaml.load(f, Loader=yaml.FullLoader)
+
+        # loop through the codes and make code answer objects
+        for code in svig_codes:
+            CodeAnswer.objects.create(
+                code = code,
+                check_object = self
+            )
+
+
+    def get_codes(self):
+        """
+        Get all classification codes for the current check
+        """
+        codes = CodeAnswer.objects.filter(check_object=self)
+        return codes
+
+
+    def remove_codes(self):
+        """
+        remove the set of code answers for the current check
+        """
+        codes = self.get_codes()
+        for c in codes:
+            c.delete()
+
 
     def classify(self):
         # dict of how many points per code strength, this could be in settings/svig config
@@ -87,11 +99,6 @@ class Check(models.Model):
         css_class = class_css_list[classification]
 
         return score_counter, classification, css_class
-
-
-    def get_codes(self):
-        codes = CodeAnswer.objects.filter(check_object=self)
-        return codes
 
 
     def update_codes(self, selections):

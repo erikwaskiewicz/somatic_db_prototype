@@ -52,13 +52,17 @@ def view_classifications(request):
 @login_required
 def classify(request, classification):
     """
-
+    Page to perform S-VIG classifications
     """
+    # load in classification and check objects from url args
     classification_obj = Classification.objects.get(id = classification)
     check_obj = Check.objects.filter(classification = classification_obj)[0] #TODO this probably needs to be more robust for multiple checks/might be wrong
+
+    # load in forms
     previous_class_form = PreviousClassificationForm()
     reopen_previous_class_form = ResetPreviousClassificationsForm()
 
+    # get sample specific variables
     sample_info = {
         'sample_id': classification_obj.variant.sample_analysis.sample.sample_id,
         'worksheet_id': classification_obj.variant.sample_analysis.worksheet.ws_id,
@@ -66,6 +70,7 @@ def classify(request, classification):
         'specific_tumour_type': 'TODO e.g. AML, add to sample analysis model? And set options from panel model?',
     }
 
+    # get variant specific variables
     build = classification_obj.variant.variant_instance.variant.genome_build
     if build == 37:
         build_css_tag = 'info'
@@ -82,11 +87,13 @@ def classify(request, classification):
         'mode_action': 'TODO',
     }
 
+    # get variables for this classification
     classification_info = {
             'classification_obj': classification_obj,
             'current_check': check_obj,
     }
 
+    # load into context
     context = {
         'sample_info': sample_info,
         'variant_info': variant_info,
@@ -95,6 +102,7 @@ def classify(request, classification):
         'reopen_previous_class_form': reopen_previous_class_form,
     }
 
+    # load in extra classifation variables if its a full classification
     if classification_obj.full_classification:
         current_score, current_class, class_css = check_obj.classify()
 
@@ -104,6 +112,8 @@ def classify(request, classification):
         context['classification_info']['current_score'] = current_score
         context['classification_info']['class_css'] = class_css
 
+
+    # ------------------------------------------------------------------------
     # when buttons are pressed
     if request.method == 'POST':
 
@@ -117,11 +127,10 @@ def classify(request, classification):
                     #TODO change setting in classification obj and save link to reused classification
 
                 elif use_previous == 'False':
-                    print('no', use_previous)
-                    # TODO change setting in classification obj and load up codes
+                    # change setting in classification obj and load up codes linked to check
                     classification_obj.full_classification = True
                     classification_obj.save()
-                    classification_obj.make_new_classification()
+                    check_obj.make_new_codes()
 
                     # reload context
                     context['classification'] = classification_obj
@@ -130,10 +139,9 @@ def classify(request, classification):
         if 'reset_previous' in request.POST:
             reopen_previous_class_form = ResetPreviousClassificationsForm(request.POST)
             if reopen_previous_class_form.is_valid():
-                print('reset')
                 classification_obj.full_classification = False
                 classification_obj.save()
-                #TODO - remove svig codes for this check
+                check_obj.remove_codes()
 
     return render(request, 'app_svig/svig_base.html', context)
 
