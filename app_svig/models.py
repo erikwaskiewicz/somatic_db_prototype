@@ -214,6 +214,31 @@ class Check(models.Model):
         return all_dict
 
 
+    def codes_by_category(self):
+        results_dict = {}
+
+        # get applied codes
+        applied_codes = self.get_codes()
+
+        # load in list of S-VIG codes from yaml
+        config_file = os.path.join(BASE_DIR, f'app_svig/config/svig_{SVIG_CODE_VERSION}.yaml')
+        with open(config_file) as f:
+            svig_codes = yaml.load(f, Loader=yaml.FullLoader)
+
+        for code, values in svig_codes.items():
+            # add category to the list if it isnt there already
+            current_category = values['category']
+            if current_category not in results_dict.keys():
+                results_dict[current_category] = []
+
+            # check if the code is applied and add to list if it is
+            current_code = applied_codes.get(code=code)
+            if current_code.applied:
+                code_str = f'{current_code.code}_{current_code.applied_strength}'
+                results_dict[current_category].append(code_str)
+
+        return results_dict
+
 class CodeAnswer(models.Model):
     """
     A check of an individual code

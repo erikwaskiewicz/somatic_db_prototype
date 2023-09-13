@@ -1,8 +1,12 @@
 O2:
   type: oncogenic
+  category: mode_of_action
 O3:
   type: oncogenic
+  category: population_db
 B1:
   type: benign
+  category: mode_of_action
 B4:
   type: benign
+  category: population_db

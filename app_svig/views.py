@@ -63,11 +63,14 @@ def classify(request, classification):
         'class_css': class_css,
     }
 
+    codes_by_category = check_obj.codes_by_category()
+
     context = {
         'sample_info': sample_info,
         'variant_info': variant_info,
         'classification_info': classification_info,
         'all_codes': all_codes,
+        'codes_by_category': codes_by_category,
         'previous_class_form': previous_class_form,
         'reopen_previous_class_form': reopen_previous_class_form,
     }
