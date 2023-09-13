@@ -3,8 +3,12 @@ from django.template.loader import render_to_string
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 
-from .models import *
-from .forms import *
+from somatic_variant_db.settings import SVIG_CODE_VERSION
+
+from app_svig.models import *
+from app_svig.forms import *
+
+from analysis.models import VariantPanelAnalysis
 
 import json
 
@@ -13,9 +17,36 @@ import json
 def view_classifications(request):
     """
     """
-    all_classifications = Classification.objects.all()
+    new_classifications_form = NewClassification()
 
-    return render(request, 'app_svig/all_classifications.html', {'classifications': all_classifications})
+    context = {
+        'classifications': Classification.objects.all(),
+        'new_form': new_classifications_form,
+    }
+
+    # when buttons are pressed
+    if request.method == 'POST':
+
+        # only one button at the mo
+        new_classifications_form = NewClassification(request.POST)
+        if new_classifications_form.is_valid():
+            # get variant instance
+            var = VariantPanelAnalysis(id = 291)
+
+            new_classification_obj = Classification(
+                variant = var,
+                svig_version = SVIG_CODE_VERSION,
+            )
+            new_classification_obj.save()
+            new_check_obj = Check(
+                classification = new_classification_obj,
+            )
+            new_check_obj.save()
+
+            context['classifications'] = Classification.objects.all()
+
+
+    return render(request, 'app_svig/all_classifications.html', context)
 
 
 @login_required
@@ -54,7 +85,6 @@ def classify(request, classification):
     current_score, current_class, class_css = check_obj.classify()
 
     all_codes = check_obj.codes_to_dict()
-    print(all_codes)
 
     classification_info = {
         'classification_obj': classification_obj,

@@ -3,6 +3,20 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
 
+class NewClassification(forms.Form):
+    """
+    TODO remove this. just for adding a clean classification for testing
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(NewClassification, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'New', css_class='btn btn-info w-100')
+        )
+
+
 class PreviousClassificationForm(forms.Form):
     """
     Choose whether to use a previous class of start a new one
