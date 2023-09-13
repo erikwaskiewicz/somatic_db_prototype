@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 
 from .models import *
@@ -111,22 +111,40 @@ def classify(request, classification):
 
 def ajax_svig(request):
     """
-    Generates a new chunk of HTML for the classification summary box on the S-VIG tab (within a div called class-box)
+    Generates new chunks of HTML for the classification summary boxes on the S-VIG tab (within a div called class-box). 
+    Called in JS at bottom of svig_classify.html
     """
     if request.is_ajax():
-
+        # get variables from AJAX input
         selections = json.loads(request.POST.get('selections'))
         check_pk = request.POST.get('check_pk')
+
+        # load variables needed for new display
         check_obj = Check.objects.get(id=check_pk)
         score, final_class, css_class = check_obj.update_codes(selections)
+        codes_by_category = check_obj.codes_by_category()
 
+        # empty dict for new html
+        data = {}
 
-        #TODO - calculate final class and score and pass in context below, save answers to db
-        context = {
+        # make new classification box and add to results dict
+        class_box_context = {
             'current_score': score,
             'current_class': final_class,
             'class_css': css_class,
         }
+        class_box_html = render_to_string('app_svig/ajax/classification.html', class_box_context)
+        data['class_box'] = class_box_html
 
-        html = render_to_string('app_svig/ajax/classification.html', context)
-        return HttpResponse(html)
+        # make the code summary and complete true/false segments for each category of code and add to results dict
+        for category, value in codes_by_category.items():
+
+            # summary of codes applied
+            html = render_to_string('app_svig/ajax/category_summary.html', {'applied_codes': value['applied_codes']})
+            data[f'codes_summary_{category}'] = html
+
+            # complete yes/no
+            html = render_to_string('app_svig/ajax/category_complete.html', {'complete': value['complete']})
+            data[f'complete_{category}'] = html
+
+        return JsonResponse(data)

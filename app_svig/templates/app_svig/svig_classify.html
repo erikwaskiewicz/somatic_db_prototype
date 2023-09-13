@@ -89,16 +89,20 @@
             <div class="col-10">
               Population databases
               <br>
+              <div id="codes-summary-population_db">
               {% for c in codes_by_category.population_db.applied_codes %}
               <span class="badge badge-pill badge-{{ c.css_class }}">{{ c.code }}</span>
               {% endfor %}
+              </div>
             </div>
             <div class="col-2">
+              <div id="complete-population_db">
               {% if codes_by_category.population_db.complete %}
               <span class="fa fa-check" style="color:#1ab81a"></span>
               {% else %}
               <span class="fa fa-stopwatch"></span>
               {% endif %}
+              </div>
             </div>
           </div>
         </a>
@@ -107,16 +111,20 @@
             <div class="col-10">
               Mode of action
               <br>
+              <div id="codes-summary-mode_of_action">
               {% for c in codes_by_category.mode_of_action.applied_codes %}
               <span class="badge badge-pill badge-{{ c.css_class }}">{{ c.code }}</span>
               {% endfor %}
             </div>
+            </div>
             <div class="col-2">
+              <div id="complete-mode_of_action">
               {% if codes_by_category.mode_of_action.complete %}
               <span class="fa fa-check" style="color:#1ab81a"></span>
               {% else %}
               <span class="fa fa-stopwatch"></span>
               {% endif %}
+              </div>
             </div>
           </div>
         </a><!-- TODO loops for all options -->
@@ -246,7 +254,14 @@
           contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
           processData: false, // NEEDED, DON'T OMIT THIS
           success: function(data) {
-              $("#class-box").html(data);
+              $("#class-box").html(data.class_box);
+
+              $("#codes-summary-population_db").html(data.codes_summary_population_db);
+              $("#codes-summary-mode_of_action").html(data.codes_summary_mode_of_action);
+
+              $("#complete-population_db").html(data.complete_population_db);
+              $("#complete-mode_of_action").html(data.complete_mode_of_action);
+              //TODO add the other categories
           },
           failure: function(data) {
               alert('Got an error');
