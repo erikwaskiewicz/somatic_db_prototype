@@ -82,29 +82,27 @@ def classify(request, classification):
         'mode_action': 'TODO',
     }
 
-    current_score, current_class, class_css = check_obj.classify()
-
-    all_codes = check_obj.codes_to_dict()
-
     classification_info = {
-        'classification_obj': classification_obj,
-        'current_check': check_obj,
-        'current_class': current_class,
-        'current_score': current_score,
-        'class_css': class_css,
+            'classification_obj': classification_obj,
+            'current_check': check_obj,
     }
-
-    codes_by_category = check_obj.codes_by_category()
 
     context = {
         'sample_info': sample_info,
         'variant_info': variant_info,
         'classification_info': classification_info,
-        'all_codes': all_codes,
-        'codes_by_category': codes_by_category,
         'previous_class_form': previous_class_form,
         'reopen_previous_class_form': reopen_previous_class_form,
     }
+
+    if classification_obj.full_classification:
+        current_score, current_class, class_css = check_obj.classify()
+
+        context['all_codes'] = check_obj.codes_to_dict()
+        context['codes_by_category'] = check_obj.codes_by_category()
+        context['classification_info']['current_class'] = current_class
+        context['classification_info']['current_score'] = current_score
+        context['classification_info']['class_css'] = class_css
 
     # when buttons are pressed
     if request.method == 'POST':
