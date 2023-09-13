@@ -191,11 +191,11 @@
 <script>
   // function to update the css on a code based on whether a oncogenic/benign code is applied
   function update_css(target, css_class) {
-    target.classList.remove('btn-info', 'btn-secondary', 'btn-danger')
+    target.classList.remove('btn-info', 'btn-secondary', 'btn-danger', 'btn-warning')
     target.classList.add("btn-" + css_class);
 
     row_element = target.parentElement.parentElement;
-    row_element.classList.remove('table-info', 'table-secondary', 'table-danger')
+    row_element.classList.remove('table-info', 'table-secondary', 'table-danger', 'table-warning')
     row_element.classList.add("table-" + css_class);
   };
 
@@ -205,6 +205,8 @@
     var new_code = value.split('_');
         if (new_code[1].match('NA')){
           new_css = 'secondary';
+        } else if (new_code[1].match('PE')){
+          new_css = 'warning';
         } else if (new_code[0][0].match('B')){
           new_css = 'info';
         } else {

@@ -110,17 +110,28 @@ class Check(models.Model):
 
             code_type = c[0]
 
-            if v == 'NA':
+            if v == 'PE':
+                pending = True
                 applied = False
                 strength = None
+
+            elif v == 'NA':
+                pending = False
+                applied = False
+                strength = None
+
             else:
+                pending = False
                 applied = True
                 strength = v
+
                 if code_type == 'B':
                     score_counter -= score_dict[strength]
                 elif code_type == 'O':
                     score_counter += score_dict[strength]
+
             selections_dict[c] = {
+                'pending': pending,
                 'applied': applied,
                 'strength': strength,
             }
@@ -153,6 +164,7 @@ class Check(models.Model):
         codes = self.get_codes()
         for c in codes:
             #TODO might need to only save if model updates if hit on db is too high
+            c.pending = selections_dict[c.code]['pending']
             c.applied = selections_dict[c.code]['applied']
             c.applied_strength = selections_dict[c.code]['strength']
             c.save()
@@ -171,7 +183,10 @@ class Check(models.Model):
         all_dict = {}
 
         for c in codes:
-            if c.applied:
+            if c.pending:
+                css_class = 'warning'
+                strength = 'PE'
+            elif c.applied:
                 if c.code_type() == 'Benign':
                     css_class = 'info'
                 elif c.code_type() == 'Oncogenic':
@@ -205,7 +220,10 @@ class Check(models.Model):
 
             else:
                 temp_dict['value'] = f'{all_dict[code1]["value"]}|{all_dict[code2]["value"]}'
-                temp_dict['css_class'] = 'secondary'
+                if 'PE' in all_dict[code1]["value"]:
+                    temp_dict['css_class'] = 'warning'
+                elif 'NA' in all_dict[code1]["value"]:
+                    temp_dict['css_class'] = 'secondary'
 
             del all_dict[code1]
             del all_dict[code2]
@@ -251,6 +269,7 @@ class Check(models.Model):
 
         return results_dict
 
+
 class CodeAnswer(models.Model):
     """
     A check of an individual code
@@ -258,6 +277,7 @@ class CodeAnswer(models.Model):
     """
     code = models.CharField(max_length=20)
     check_object = models.ForeignKey('Check', on_delete=models.CASCADE)
+    pending = models.BooleanField(default=True)
     applied = models.BooleanField(default=False)
     applied_strength = models.CharField(max_length=20, blank=True, null=True)
 

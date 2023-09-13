@@ -54,6 +54,7 @@ def classify(request, classification):
     current_score, current_class, class_css = check_obj.classify()
 
     all_codes = check_obj.codes_to_dict()
+    print(all_codes)
 
     classification_info = {
         'classification_obj': classification_obj,
