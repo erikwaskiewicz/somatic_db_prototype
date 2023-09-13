@@ -1,187 +1,186 @@
-<div class="container-fluid">
-  {% if classification_info.classification_obj.full_classification %}
-  <div class="row">
+{% if classification_info.classification_obj.full_classification %}
+<div class="row">
 
-    <!-- Main area ------------------------------------------------------------------------------->
-    <div class="col-9">
-      <div data-bs-spy="scroll" data-bs-target="#list-example" data-bs-offset="0" class="scrollspy-example" tabindex="0">
+  <!-- Main area ------------------------------------------------------------------------------->
+  <div class="col-9">
+    <div data-bs-spy="scroll" data-bs-target="#list-example" data-bs-offset="0" class="scrollspy-example" tabindex="0">
 
-        <!-- population databases section -->
-        <h4 id="list-item-1">Population databases</h4>
-        <table class="table table-bordered">
-          <tbody>
-            {% include 'app_svig/codes/O3_B4.html' %}
-          </tbody>
-        </table>
-        <br>
+      <!-- population databases section -->
+      <h4 id="list-item-1">Population databases</h4>
+      <table class="table table-bordered">
+        <tbody>
+          {% include 'app_svig/codes/O3_B4.html' %}
+        </tbody>
+      </table>
+      <br>
 
-        <!-- mode of action section -->
-        <h4 id="list-item-2">Mode of action</h4>
-        <table class="table table-bordered">
-          <tbody>
-            {% include 'app_svig/codes/O2.html' %}
-            {% include 'app_svig/codes/B1.html' %}
-          </tbody>
-        </table>
-        <br>
+      <!-- mode of action section -->
+      <h4 id="list-item-2">Mode of action</h4>
+      <table class="table table-bordered">
+        <tbody>
+          {% include 'app_svig/codes/O2.html' %}
+          {% include 'app_svig/codes/B1.html' %}
+        </tbody>
+      </table>
+      <br>
 
-        <!-- database section --
-        <h4 id="list-item-3">Cancer databases</h4>
-        <table class="table table-bordered">
-          <tbody>
-            {% include 'app_svig/codes/example.html' %}
-            {% include 'app_svig/codes/example.html' %}
-          </tbody>
-        </table>
-        <br>
+      <!-- database section --
+      <h4 id="list-item-3">Cancer databases</h4>
+      <table class="table table-bordered">
+        <tbody>
+          {% include 'app_svig/codes/example.html' %}
+          {% include 'app_svig/codes/example.html' %}
+        </tbody>
+      </table>
+      <br>
 
-        <!-- protein effect section --
-        <h4 id="list-item-4">Effect on protein</h4>
-        <table class="table table-bordered">
-          <tbody>
-            {% include 'app_svig/codes/example.html' %}
-            {% include 'app_svig/codes/example.html' %}
-          </tbody>
-        </table>
-        <br>
+      <!-- protein effect section --
+      <h4 id="list-item-4">Effect on protein</h4>
+      <table class="table table-bordered">
+        <tbody>
+          {% include 'app_svig/codes/example.html' %}
+          {% include 'app_svig/codes/example.html' %}
+        </tbody>
+      </table>
+      <br>
 
-        <!-- computational tool section --
-        <h4 id="list-item-5">Computational tools</h4>
-        <table class="table table-bordered">
-          <tbody>
-            {% include 'app_svig/codes/example.html' %}
-            {% include 'app_svig/codes/example.html' %}
-          </tbody>
-        </table>
-        <br>
+      <!-- computational tool section --
+      <h4 id="list-item-5">Computational tools</h4>
+      <table class="table table-bordered">
+        <tbody>
+          {% include 'app_svig/codes/example.html' %}
+          {% include 'app_svig/codes/example.html' %}
+        </tbody>
+      </table>
+      <br>
 
-        <!-- functional study section--
-        <h4 id="list-item-6">Functional studies</h4>
-        <table class="table table-bordered">
-          <tbody>
-            {% include 'app_svig/codes/example.html' %}
-            {% include 'app_svig/codes/example.html' %}
-          </tbody>
-        </table>
-        <br>-->
+      <!-- functional study section--
+      <h4 id="list-item-6">Functional studies</h4>
+      <table class="table table-bordered">
+        <tbody>
+          {% include 'app_svig/codes/example.html' %}
+          {% include 'app_svig/codes/example.html' %}
+        </tbody>
+      </table>
+      <br>-->
 
-      </div>
     </div>
+  </div>
 
 
-    <!-- side bar -------------------------------------------------------------------->
-    <div class="col-3">
-      <div id="list-example" class="list-group sticky-top">
+  <!-- side bar -------------------------------------------------------------------->
+  <div class="col-3">
+    <div id="list-example" class="list-group sticky-top">
 
-        <div id="class-box" >
-          <button class="btn btn-block btn-lg btn-disabled btn-{{ classification_info.class_css }}" type="button">
-            Current class:<br><b>{{ classification_info.current_class }} </b><span class="badge badge-light">{{ classification_info.current_score }}</span>
-          </button>
+      <div id="class-box" >
+        <button class="btn btn-block btn-lg btn-disabled btn-{{ classification_info.class_css }}" type="button">
+          Current class:<br><b>{{ classification_info.current_class }} </b><span class="badge badge-light">{{ classification_info.current_score }}</span>
+        </button>
+      </div>
+      <p></p>
+      <button class="btn btn-block btn-lg btn-outline-dark calculate-class" type="button">Recalculate classification</button>
+      <p></p>
+      <p></p>
+      <p></p>
+
+      <a class="list-group-item list-group-item-action" href="#list-item-1">
+        <div class="row">
+          <div class="col-10">
+            Population databases
+            <br>
+            <div id="codes-summary-population_db">
+            {% for c in codes_by_category.population_db.applied_codes %}
+            <span class="badge badge-pill badge-{{ c.css_class }}">{{ c.code }}</span>
+            {% endfor %}
+            </div>
+          </div>
+          <div class="col-2">
+            <div id="complete-population_db">
+            {% if codes_by_category.population_db.complete %}
+            <span class="fa fa-check" style="color:#1ab81a"></span>
+            {% else %}
+            <span class="fa fa-stopwatch"></span>
+            {% endif %}
+            </div>
+          </div>
         </div>
-        <p></p>
-        <button class="btn btn-block btn-lg btn-outline-dark calculate-class" type="button">Recalculate classification</button>
-        <p></p>
-        <p></p>
-        <p></p>
-
-        <a class="list-group-item list-group-item-action" href="#list-item-1">
-          <div class="row">
-            <div class="col-10">
-              Population databases
-              <br>
-              <div id="codes-summary-population_db">
-              {% for c in codes_by_category.population_db.applied_codes %}
-              <span class="badge badge-pill badge-{{ c.css_class }}">{{ c.code }}</span>
-              {% endfor %}
-              </div>
-            </div>
-            <div class="col-2">
-              <div id="complete-population_db">
-              {% if codes_by_category.population_db.complete %}
-              <span class="fa fa-check" style="color:#1ab81a"></span>
-              {% else %}
-              <span class="fa fa-stopwatch"></span>
-              {% endif %}
-              </div>
+      </a>
+      <a class="list-group-item list-group-item-action" href="#list-item-2">
+        <div class="row">
+          <div class="col-10">
+            Mode of action
+            <br>
+            <div id="codes-summary-mode_of_action">
+            {% for c in codes_by_category.mode_of_action.applied_codes %}
+            <span class="badge badge-pill badge-{{ c.css_class }}">{{ c.code }}</span>
+            {% endfor %}
+          </div>
+          </div>
+          <div class="col-2">
+            <div id="complete-mode_of_action">
+            {% if codes_by_category.mode_of_action.complete %}
+            <span class="fa fa-check" style="color:#1ab81a"></span>
+            {% else %}
+            <span class="fa fa-stopwatch"></span>
+            {% endif %}
             </div>
           </div>
-        </a>
-        <a class="list-group-item list-group-item-action" href="#list-item-2">
-          <div class="row">
-            <div class="col-10">
-              Mode of action
-              <br>
-              <div id="codes-summary-mode_of_action">
-              {% for c in codes_by_category.mode_of_action.applied_codes %}
-              <span class="badge badge-pill badge-{{ c.css_class }}">{{ c.code }}</span>
-              {% endfor %}
-            </div>
-            </div>
-            <div class="col-2">
-              <div id="complete-mode_of_action">
-              {% if codes_by_category.mode_of_action.complete %}
-              <span class="fa fa-check" style="color:#1ab81a"></span>
-              {% else %}
-              <span class="fa fa-stopwatch"></span>
-              {% endif %}
-              </div>
-            </div>
-          </div>
-        </a><!-- TODO loops for all options -->
-        <a class="list-group-item list-group-item-action" href="#list-item-3">
-          <div class="row">
-            <div class="col-10">Cancer databases</div>
-            <div class="col-2"><span class="fa fa-stopwatch"></span></div>
-          </div>
-        </a>
-        <a class="list-group-item list-group-item-action" href="#list-item-4">
-          <div class="row">
-            <div class="col-10">Effect on protein</div>
-            <div class="col-2"><span class="fa fa-stopwatch"></span></div>
-          </div>
-        </a>
-        <a class="list-group-item list-group-item-action" href="#list-item-5">
-          <div class="row">
-            <div class="col-10">Computational tools</div>
-            <div class="col-2"><span class="fa fa-stopwatch"></span></div>
-          </div>
-        </a>
-        <a class="list-group-item list-group-item-action" href="#list-item-6">
-          <div class="row">
-            <div class="col-10">Functional studies</div>
-            <div class="col-2"><span class="fa fa-stopwatch"></span></div>
-          </div>
-        </a>
-      </div>
+        </div>
+      </a><!-- TODO loops for all options -->
+      <a class="list-group-item list-group-item-action" href="#list-item-3">
+        <div class="row">
+          <div class="col-10">Cancer databases</div>
+          <div class="col-2"><span class="fa fa-stopwatch"></span></div>
+        </div>
+      </a>
+      <a class="list-group-item list-group-item-action" href="#list-item-4">
+        <div class="row">
+          <div class="col-10">Effect on protein</div>
+          <div class="col-2"><span class="fa fa-stopwatch"></span></div>
+        </div>
+      </a>
+      <a class="list-group-item list-group-item-action" href="#list-item-5">
+        <div class="row">
+          <div class="col-10">Computational tools</div>
+          <div class="col-2"><span class="fa fa-stopwatch"></span></div>
+        </div>
+      </a>
+      <a class="list-group-item list-group-item-action" href="#list-item-6">
+        <div class="row">
+          <div class="col-10">Functional studies</div>
+          <div class="col-2"><span class="fa fa-stopwatch"></span></div>
+        </div>
+      </a>
     </div>
   </div>
+</div>
 
-  {% else %}
-  <div class="alert alert-warning">
-    Please complete Variant details tab first
-  </div>
+{% else %}
+<div class="alert alert-warning">
+  Please complete Variant details tab first
+</div>
 
-  {% endif %}
+{% endif %}
 </div>
 
 
 <!-- guidence modal -->
 <div class="modal fade" id="guidence-modal" tabindex="-1" role="dialog" aria-labelledby="guidence-modal-label" aria-hidden="true">
-  <div class="modal-dialog modal-lg"role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="guidence-modal-label">S-VIG guidence</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        TODO
+<div class="modal-dialog modal-lg"role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="guidence-modal-label">S-VIG guidence</h5>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      TODO
 
-      </div>
     </div>
   </div>
 </div>
+
 
 
 <!-- gets the all_codes variable and wraps in a script tag that can be fetched further down -->
