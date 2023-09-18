@@ -9,7 +9,10 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('login/', auth_views.LoginView.as_view(template_name='analysis/sign-in.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='analysis/sign-in.html'), name='logout'),
+
     path('options/', views.options_page, name='options_page'),
+    path('options/settings', views.user_settings, name='user_settings'),
+    path('change_password/', views.change_password, name='change_password'),
 
     path('view_worksheets/<str:query>', views.view_worksheets, name='view_worksheets'),
     path('worksheets/<str:worksheet_id>', views.view_samples, name='view_samples'),

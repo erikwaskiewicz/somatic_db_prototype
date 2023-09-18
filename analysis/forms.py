@@ -2,6 +2,7 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit
 from crispy_forms.bootstrap import Field, FieldWithButtons, StrictButton
+from django.contrib.auth.forms import PasswordChangeForm, UserCreationForm
 
 
 class UnassignForm(forms.Form):
@@ -292,4 +293,55 @@ class AddNewPolyForm(forms.Form):
         self.helper.form_method = 'POST'
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-25')
+        )
+
+
+class ChangeLimsInitials(forms.Form):
+    """
+    Add/ change the user initials as displayed in LIMS
+
+    """
+    lims_initials = forms.CharField(label='LIMS initials')
+
+    def __init__(self, *args, **kwargs):
+        super(ChangeLimsInitials, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'lims-initials-form'
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Submit', css_class='btn btn-info w-25')
+        )
+
+
+class EditedPasswordChangeForm(PasswordChangeForm):
+    """
+    Add a submit button to the base password change form
+
+    """
+    def __init__(self, *args, **kwargs):
+        super(PasswordChangeForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'password-change-form'
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Change password', css_class='btn btn-danger w-100')
+        )
+
+
+
+class EditedUserCreationForm(UserCreationForm):
+    """
+    Add LIMS initials to the base user creation form
+
+    """
+    lims_initials = forms.CharField(label='LIMS initials')
+
+    def __init__(self, *args, **kwargs):
+        super(UserCreationForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.fields['lims_initials'].help_text = 'Input initials as displayed in LIMS, this must match for integration between SVD and LIMS. If unsure then input as ?, it can be edited within user settings in future.'
+        self.helper.form_id = 'signup-form'
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Submit', css_class='btn btn-info w-100')
         )

@@ -1,4 +1,7 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import User
+
 from .models import *
 
 
@@ -8,6 +11,20 @@ Fields that can be searched by are defined in the search_fields variable
 Fields displayed on the admin page are defined in the list_display variable
 
 """
+
+# add user settings field to user admin page
+class UserSettingsInline(admin.StackedInline):
+    model = UserSettings
+    can_delete = False
+    verbose_name_plural = 'User Settings'
+
+
+class UserAdmin(BaseUserAdmin):
+    inlines = [UserSettingsInline]
+
+# Re-register UserAdmin
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
 
 
 class RunAdmin(admin.ModelAdmin):
