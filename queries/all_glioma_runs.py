@@ -2,7 +2,7 @@
 # Pull out all glioma samples in SVD
 #
 # Date: 23/03/23 - NT
-# Use: python manage.py shell < /home/ew/somatic_db/queries/all_glioma.py (with somatic_variant_db env activated)
+# Use: python manage.py shell < /home/ew/somatic_db/queries/all_glioma_runs.py (with somatic_variant_db env activated)
 
 from analysis.models import SampleAnalysis, Panel
 
