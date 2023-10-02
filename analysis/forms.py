@@ -273,6 +273,27 @@ class ConfirmPolyForm(forms.Form):
             Submit('submit', 'Submit', css_class='btn btn-info w-100')
         )
 
+class ConfirmArtefactForm(forms.Form):
+    """
+    Confirm that a variant should be added to the artefact list
+
+    """
+    confirm = forms.BooleanField(required=True, label='I agree that this variant is an artefact')
+    comment = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 4}),
+        label='Comments'
+    )
+    variant_pk = forms.CharField(widget=forms.HiddenInput(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(ConfirmArtefactForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.fields['comment'].widget.attrs['placeholder'] = 'Add comments or evidence to support this variant being a artefact\ne.g. filepaths to documented evidence, sample IDs to check...'
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Submit', css_class='btn btn-info w-100')
+        )
+
 
 class AddNewPolyForm(forms.Form):
     """
@@ -294,7 +315,33 @@ class AddNewPolyForm(forms.Form):
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-25')
         )
+        
+class AddNewArtefactForm(forms.Form):
+    """
+    Add a variant to the artefact list
+    """
+    ASSAY_CHOICES = (
+        ('1', 'TSO500 DNA'),
+        ('2', 'TSO500 RNA'),
+        ('3', 'TSO500 ctDNA'),
+    )
+   
+    variant = forms.CharField()
+    assay = forms.ChoiceField(choices=ASSAY_CHOICES)
+    comment = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 4}),
+        label='Comments'
+    )
 
+    def __init__(self, *args, **kwargs):
+        super(AddNewArtefactForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.fields['comment'].widget.attrs['placeholder'] = 'Add comments or evidence to support this variant being an artefact\ne.g. filepaths to documented evidence, sample IDs to check...'
+        self.fields['variant'].widget.attrs['placeholder'] = 'Must be in genomic format e.g. 7:140453136A>T'
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Submit', css_class='btn btn-info w-25')
+        )
 
 class ChangeLimsInitials(forms.Form):
     """

@@ -1,0 +1,390 @@
+{% extends 'analysis/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block breadcrumbs %}
+<nav class="breadcrumb flex-nowrap" aria-label="breadcrumb">
+  <div class="container">
+    <a class="breadcrumb-item active" href="{% url 'home' %}"><span class="fa fa-home"></span></a>
+    <a class="breadcrumb-item active" href="{% url 'options_page' %}">Options</a>
+    <a class="breadcrumb-item active" aria-current="page">{{ list_name }}</a>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  {% if genome_build == 37 %}
+  <h5>Build 37 artefact list <span class="badge badge-info">GRCh37</span></h5>
+  {% elif genome_build == 38 %}
+  <h5>Build 38 artefact list <span class="badge badge-success">GRCh38</span></h5>
+  {% endif %}
+  <br>
+
+  <div class="card-body bg-light">
+    <button class="btn btn-info w-100" type="button" data-toggle="modal" data-target="#add-modal" class="btn btn-info">Add new artefact</button>
+    <br>
+  </div>
+  <br>
+
+  {% if checking_list %}
+  <div class="alert alert-danger">
+    <div class="row">
+      <div class="col-8">
+        <p><span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
+        {{ checking_list | length }} variant(s) need checking before they are added to the artefact list</p>
+      </div>
+      <div class="col-4">
+        <button class="btn btn-danger w-100" type="button" data-toggle="collapse" data-target="#checking-list" aria-expanded="false" aria-controls="checking-list">Show/ hide checking list</button>
+      </div>
+    </div>
+    <br>
+
+    <div class="collapse" id="checking-list">
+      <div class="card-body bg-light">
+        <p><b>Artefacts requiring checks</b></p>
+        <table class="table" id="checks-table">
+          <thead>
+            <tr>
+              <th class="col-3" scope="col">Variant</th>
+              <th class="col-5" scope="col">Gene/ HGVS</th>
+              <th class="col-5" scope="col">Assay</th>
+              <th class="col-3" scope="col">Added by</th>
+              <th class="col-1" scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for v in checking_list %}
+            <tr>
+              <td>{{ v.variant }}</td>
+              <td>{{ v.gene }}<br>{{ v.hgvs_c }}<br>{{ v.hgvs_p }}</td>
+              <td>{{ v.assay }}</td>
+              <td>{{ v.upload_user }}<br>{{ v.upload_time }}</td>
+              <td style="text-align:right">
+                {% if v.able_to_sign_off %}
+                <button type="button" data-toggle="modal" data-target="#check-modal" data-pk="{{ v.variant_pk }}" data-coord="{{ v.variant }}"
+                  data-gene="{{ v.gene }}" data-hgvs_c="{{ v.hgvs_c }}" data-hgvs_p="{{ v.hgvs_p }}" data-assay="{{ v.assay }}" data-user="{{ v.upload_user }}"  
+                  data-time="{{ v.upload_time }}" data-comment="{{ v.upload_comment }}" class="btn btn-secondary">
+                  Check
+                </button>
+
+                {% else %}
+                <button type="button" class="btn btn-info" data-toggle="tootip" title="Cannot check your own submission!" disabled>Check</button>
+
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+  
+      </div>
+    </div>
+  </div>
+  <br>
+  <br>
+  {% endif %}
+
+  <p><b>Confirmed artefacts</b></p>
+  <table class="table" id="artefact-table">
+    <thead>
+      <tr>
+        <th class="col-3" scope="col">Variant</th>
+        <th class="col-1" scope="col">Gene</th>
+        <th class="col-5" scope="col">HGVS</th>
+        <th class="col-5" scope="col">Assay</th>
+        <th class="col-1" scope="col" style="text-align:right">Info</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in confirmed_list %}
+      <tr>
+        <td>{{ v.variant }}
+        {% if v.genome_build == 37 %}
+        <span class = "badge badge-info badge-pill">GRCh{{ v.genome_build }}
+        {% elif v.genome_build == 38 %}
+        <span class = "badge badge-success badge-pill">GRCh{{ v.genome_build }}
+        {% endif %}
+        </td>
+        <td>{{ v.gene }}</td>
+        <td>{{ v.hgvs_c }}<br>{{ v.hgvs_p }}</td>
+        <td>{{ v.assay }}</td>
+        <td style="text-align:right">
+          <button class="btn btn-light w-100" type="button" data-toggle="modal" data-target="#poly-info-{{ v.counter }}" class="btn btn-light">
+            <span class="fa fa-eye"></span>
+          </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <br>
+  <br>
+
+</div>
+<br>
+<br>
+
+
+{% for v in confirmed_list %}
+<div class="modal fade" id="poly-info-{{ v.counter }}" tabindex="-1" role="dialog" aria-labelledby="comments-modal-label" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="artefact-info-{{ v.counter }}-label">Sign-off information</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table" id="artefact-table">
+          <tbody>
+            <tr>
+              <td colspan="2"><b>Added by</b></td>
+            </tr>
+            <tr>
+              <td class="col-2"> User</td>
+              <td>{{ v.upload_user }}</td>
+            </tr>
+            <tr>
+              <td>Date</td>
+              <td>{{ v.upload_time }}</td>
+            </tr>
+            <tr>
+              <td>Comments</td>
+              <td>{{ v.upload_comment | wordwrap:80 | linebreaksbr }}</td>
+            </tr>
+            <tr>
+              <td colspan="2"><b>Checked by</b></td>
+            </tr>
+            <tr>
+              <td>User</td>
+              <td>{{ v.check_user }}</td>
+            </tr>
+            <tr>
+              <td>Date</td>
+              <td>{{ v.check_time }}</td>
+            </tr>
+            <tr>
+              <td>Comments</td>
+              <td>{{ v.check_comment | wordwrap:80 | linebreaksbr }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <br>
+
+        <button class="btn btn-light w-100" type="button" data-toggle="collapse" data-target="#dont-agree" aria-expanded="false" aria-controls="dont-agree">
+          Don't agree? Click here
+        </button>
+        <div class="collapse" id="dont-agree">
+
+          <p>Please discuss with whoever added the variant and agree whether this variant is an artefact or not.</p>
+          <p>If it is not an artefact, it will need to be removed by bioinformatics. Please copy & paste the following information and send to <b>bioinformatics@wales.nhs.uk</b>:</p>
+          <div class="card-body bg-light">
+
+            <table class="table table-sm">
+              <tbody>
+                <tr>
+                  <td>ISSUE CODE #2</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>VariantToVariantList PK: </td>
+                  <td>{{ v.variant_pk }}</td>
+                </tr>
+                <tr>
+                  <td>Variant: </td>
+                  <td>{{ v.variant }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+
+<!-- checking modal -->
+<div class="modal fade" id="check-modal" tabindex="-1" role="dialog" aria-labelledby="comments-modal-label" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="check-modal-label">Add to artefact list?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <div class="alert alert-warning">
+          <p>Artefacts are filtered out for <b>all referral types</b>, please make sure that all sections agree</p>
+        </div>
+
+        <p><b>Variant details</b></p>
+        <table class="table table-sm table-hover">
+          <tbody>
+            <tr>
+              <td>Genomic co-ordinates</td>
+              <td class="modal-coord"></td>
+            </tr>
+            <tr>
+              <td>Gene</td>
+              <td class="modal-gene"></td>
+            </tr>
+            <tr>
+              <td>HGVS c.</td>
+              <td class="modal-hgvs_c"></td>
+            </tr>
+            <tr>
+              <td>HGVS p.</td>
+              <td class="modal-hgvs_p"></td>
+            </tr>
+            <tr>
+              <td>Assay</td>
+              <td class="modal-assay"></td>
+            </tr>
+            <tr>
+              <td>Added by</td>
+              <td class="modal-user"></td>
+            </tr>
+            <tr>
+              <td>Added time</td>
+              <td class="modal-time"></td>
+            </tr>
+            <tr>
+              <td>Comments</td>
+              <td class="modal-comment"></td>
+            </tr>
+          </tbody>
+        </table>
+        <br>
+
+        <p><b>Confirm check</b></p>
+        {% crispy confirm_form %}
+        <br>
+
+
+        <button class="btn btn-light w-100" type="button" data-toggle="collapse" data-target="#dont-agree" aria-expanded="false" aria-controls="dont-agree">
+          Don't agree? Click here
+        </button>
+        <div class="collapse" id="dont-agree">
+
+          <p>Please discuss with whoever added the variant and agree whether this variant is an artefact or not.</p>
+          <p>If it is not an artefact, it will need to be removed by bioinformatics. Please copy & paste the following information and send to <b>bioinformatics@wales.nhs.uk</b>:</p>
+          <div class="card-body bg-light">
+
+            <table class="table table-sm">
+              <tbody>
+                <tr>
+                  <td>ISSUE CODE #2</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>VariantToVariantList PK: </td>
+                  <td class="modal-pk"></td>
+                </tr>
+                <tr>
+                  <td>Variant: </td>
+                  <td class="modal-coord"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- add new artefact modal -->
+<div class="modal fade" id="add-modal" tabindex="-1" role="dialog" aria-labelledby="comments-modal-label" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        {% if genome_build == 37 %}
+        <h5 class="modal-title" id="add-modal-label">Add a new artefact <span class="badge badge-info">GRCh{{ genome_build }}</span></h5>
+        {% elif genome_build == 38 %}
+        <h5 class="modal-title" id="add-modal-label">Add a new artefact <span class="badge badge-success">GRCh{{ genome_build }}</span></h5>
+        {% endif %}
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <div class="alert alert-warning">
+          <p>Artefacts are filtered out for <b>all referral types</b>, please make sure that all sections agree</p>
+        </div>
+
+        {% crispy add_new_form %}
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+
+$(document).ready( function() {
+
+  // Inititialise DataTable
+  $('#artefact-table').DataTable({
+      paging: true,
+      columns: [
+          {orderable: true},
+          {orderable: true},
+          {orderable: true},
+          {orderable: false},
+      ],
+      info: true,
+      pageLength: 10,
+      searching: true,
+      aaSorting: [],
+      language: {
+          searchPlaceholder: "Search by genomic variant, HGVS or gene name",
+          search: "",
+      },
+      initComplete: function () {
+          $('.dataTables_filter input[type="search"]').css({ 'width': '500px', 'display': 'inline-block' });
+      }
+  });
+  } );
+
+
+  $('#check-modal').on('show.bs.modal', function (event) {
+      // extract variables from button tags
+      var button = $(event.relatedTarget);
+      var pk = button.data('pk');
+      var coord = button.data('coord');
+      var gene = button.data('gene');
+      var hgvs_c = button.data('hgvs_c');
+      var hgvs_p = button.data('hgvs_p');
+      var user = button.data('user');
+      var time = button.data('time');
+      var comment = button.data('comment');
+      var modal = $(this);
+
+      // fill out table of variant details
+      modal.find('.modal-pk').text(pk);
+      modal.find('.modal-coord').text(coord);
+      modal.find('.modal-gene').text(gene);
+      modal.find('.modal-hgvs_c').text(hgvs_c);
+      modal.find('.modal-hgvs_p').text(hgvs_p);
+      modal.find('.modal-user').text(user);
+      modal.find('.modal-time').text(time);
+      modal.find('.modal-comment').text(comment);
+
+      // put variant PK into hidden form so that it can be passed to backend
+      document.getElementById ('id_variant_pk').value = pk;
+  })
+
+</script>
+
+{% endblock %}

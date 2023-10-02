@@ -9,7 +9,7 @@ from django.template import Context
 
 from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, 
     CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, 
-    ConfirmPolyForm, AddNewPolyForm, ManualVariantCheckForm, ReopenForm, ChangeLimsInitials, 
+    ConfirmPolyForm, ConfirmArtefactForm, AddNewPolyForm, AddNewArtefactForm, ManualVariantCheckForm, ReopenForm, ChangeLimsInitials, 
     EditedPasswordChangeForm, EditedUserCreationForm)
 from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
     get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, 
@@ -705,6 +705,110 @@ def view_polys(request, list_name):
 
     # render the page
     return render(request, 'analysis/view_polys.html', context)
+    
+@login_required
+def view_artefacts(request, list_name):
+    """
+    Page to view all confirmed artefacts and add and check new ones
+
+    """
+    # get artefact list and pull out list of confirmed polys and polys to be checked
+    artefact_list = VariantList.objects.get(name=list_name, list_type='A')
+    confirmed_list, checking_list = get_poly_list(artefact_list, request.user)
+
+    # set genome build
+    genome = artefact_list.genome_build
+
+    # make context dictionary
+    context = {
+        'success': [],
+        'warning': [],
+        'list_name': list_name,
+        'genome_build': genome,
+        'confirmed_list': confirmed_list,
+        'checking_list': checking_list,
+        'confirm_form': ConfirmArtefactForm(),
+        'add_new_form': AddNewArtefactForm(),
+    }
+
+    #----------------------------------------------------------
+    #  If any buttons are pressed
+    if request.method == 'POST':
+
+        # if confirm poly button is pressed
+        if 'variant_pk' in request.POST:
+
+            confirm_form = ConfirmArtefactForm(request.POST)
+            if confirm_form.is_valid():
+
+                # get form data
+                variant_pk = confirm_form.cleaned_data['variant_pk']
+                comment = confirm_form.cleaned_data['comment']
+
+                # update artefact list
+                variant_to_variant_list_obj = VariantToVariantList.objects.get(pk=variant_pk)
+                variant_to_variant_list_obj.check_user = request.user
+                variant_to_variant_list_obj.check_time = timezone.now()
+                variant_to_variant_list_obj.check_comment = comment
+                variant_to_variant_list_obj.save()
+
+                # get genomic coords for confirmation popup
+                variant_obj = variant_to_variant_list_obj.variant
+                variant = variant_obj.variant
+
+                # reload context
+                confirmed_list, checking_list = get_poly_list(artefact_list, request.user)
+                context['confirmed_list'] = confirmed_list
+                context['checking_list'] = checking_list
+                context['success'].append(f'Variant {variant} added to artefact list')
+
+        # if add new artefact button is pressed
+        if 'variant' in request.POST:
+            add_new_form = AddNewArtefactForm(request.POST)
+
+            if add_new_form.is_valid():
+
+                # get form data
+                variant = add_new_form.cleaned_data['variant']
+                assay = add_new_form.cleaned_data['assay']
+                comment = add_new_form.cleaned_data['comment']
+            
+                # wrap in try/ except to handle when a variant doesnt match the input
+                try:
+                    # load in variant and variant to list objects
+                    variant_obj = Variant.objects.get(variant=variant, genome_build=genome)
+                    variant_to_variant_list_obj, created = VariantToVariantList.objects.get_or_create(
+                        variant_list = artefact_list,
+                        variant = variant_obj,
+                    )
+
+                    # add user info if a new model is created
+                    if created:
+                        variant_to_variant_list_obj.upload_user = request.user
+                        variant_to_variant_list_obj.upload_time = timezone.now()
+                        variant_to_variant_list_obj.upload_comment = comment
+                        variant_to_variant_list_obj.assay = assay
+                        variant_to_variant_list_obj.save()
+
+                        # give success message
+                        context['success'].append(f'Variant {variant} added to artefact checking list')
+
+                    # throw error if already in poly list
+                    else:
+                        context['warning'].append(f'Variant {variant} is already in the artefact list')
+
+                    # reload context
+                    confirmed_list, checking_list = get_poly_list(artefact_list, request.user)
+                    context['confirmed_list'] = confirmed_list
+                    context['checking_list'] = checking_list
+
+                # throw error if there isnt a variant matching the input
+                except Variant.DoesNotExist:
+                    context['warning'].append(f'Cannot find variant matching {variant}, have you selected the correct genome build?')
+
+    # render the page
+    return render(request, 'analysis/view_artefacts.html', context)
+
 
 
 @login_required

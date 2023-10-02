@@ -324,6 +324,7 @@ def get_variant_info(sample_data, sample_obj):
 
     variant_calls = []
     polys_list = []
+    artefacts_list = []
     reportable_list = []
 
     for sample_variant in sample_variants:
@@ -336,6 +337,15 @@ def get_variant_info(sample_data, sample_obj):
 
         elif variant_obj.genome_build == 38:
             poly_list_name = "build_38_polys"
+        
+        print(sample_obj.panel.get_assay_display())
+        
+        
+        #Get Artefact list
+        if variant_obj.genome_build == 38 and sample_obj.panel.get_assay_display() == "TSO500 DNA":
+            artefact_list_name = "TSO500_DNA_b38_artefacts"
+        else:
+            artefact_list_name = ""
 
         # get whether the variant falls within a poly/ known list
         # TODO - will have to handle multiple poly/ known lists in future
@@ -347,6 +357,10 @@ def get_variant_info(sample_data, sample_obj):
                 # only add if polys have been checked twice
                 if l.signed_off():
                     previous_classifications.append('Poly')
+            elif l.variant_list.name == artefact_list_name:
+                # only add if artefacts have been checked twice
+                if l.signed_off():
+                    previous_classifications.append('Artefact')
 
         # get checks for each variant
         variant_checks = VariantCheck.objects.filter(variant_analysis=sample_variant).order_by('pk')
@@ -366,9 +380,12 @@ def get_variant_info(sample_data, sample_obj):
             if last2[0] != last2[1]:
                 last_two_checks_agree = False
 
-        # set decision if falls in poly list, otherwise the finilise sample validation will fail
+        # set decision if falls in poly or artefact list, otherwise the finilise sample validation will fail
         if 'Poly' in previous_classifications:
             latest_check.decision ='P'
+            latest_check.save()
+        elif 'Artefact' in previous_classifications:
+            latest_check.decision = 'A'
             latest_check.save()
         var_comment_form = VariantCommentForm(pk=latest_check.pk, comment=latest_check.comment)
 
@@ -447,6 +464,9 @@ def get_variant_info(sample_data, sample_obj):
         # add to poly list if appears in the poly variant list, otherwise add to variant calls list
         if 'Poly' in previous_classifications:
             polys_list.append(variant_calls_dict)
+            
+        elif 'Artefact' in previous_classifications:
+            artefacts_list.append(variant_calls_dict)
         else:
             variant_calls.append(variant_calls_dict)
 
@@ -459,6 +479,7 @@ def get_variant_info(sample_data, sample_obj):
     variant_data = {
         'variant_calls': variant_calls, 
         'polys': polys_list,
+        'artefacts': artefacts_list,
         'no_calls': no_calls,
         'check_options': VariantCheck.DECISION_CHOICES,
     }
@@ -843,7 +864,7 @@ def get_poly_list(poly_list_obj, user):
             genes.append(annotation.gene)
             hgvs_cs.append(annotation.hgvs_c)
             hgvs_ps.append(annotation.hgvs_p)
-
+        
         # format variant info info dictionary 
         formatted_variant = {
             'counter': n,
@@ -856,6 +877,7 @@ def get_poly_list(poly_list_obj, user):
             'upload_user': v.upload_user,
             'upload_time': v.upload_time,
             'upload_comment': v.upload_comment,
+            'assay': v.get_assay_display(),
             'check_user': v.check_user,
             'check_time': v.check_time,
             'check_comment': v.check_comment,

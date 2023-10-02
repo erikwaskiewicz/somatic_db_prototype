@@ -339,6 +339,11 @@ class VariantToVariantList(models.Model):
     Link variants to variant lists
 
     """
+    ASSAY_CHOICES = (
+        ('1', 'TSO500 DNA'),
+        ('2', 'TSO500 RNA'),
+        ('3', 'TSO500 ctDNA'),
+    )
     variant_list = models.ForeignKey('VariantList', on_delete=models.CASCADE)
     variant = models.ForeignKey('Variant', on_delete=models.CASCADE)
     classification = models.CharField(max_length=50, blank=True, null=True)
@@ -348,6 +353,7 @@ class VariantToVariantList(models.Model):
     check_user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True,  related_name='check_user')
     check_time = models.DateTimeField(blank=True, null=True)
     check_comment = models.CharField(max_length=500, blank=True, null=True)
+    assay = models.CharField(max_length=1, choices=ASSAY_CHOICES, default = 1)
 
     def signed_off(self):
         """
