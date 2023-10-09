@@ -366,6 +366,7 @@ $(document).ready( function() {
       var gene = button.data('gene');
       var hgvs_c = button.data('hgvs_c');
       var hgvs_p = button.data('hgvs_p');
+      var assay = button.data('assay');
       var user = button.data('user');
       var time = button.data('time');
       var comment = button.data('comment');
@@ -377,6 +378,7 @@ $(document).ready( function() {
       modal.find('.modal-gene').text(gene);
       modal.find('.modal-hgvs_c').text(hgvs_c);
       modal.find('.modal-hgvs_p').text(hgvs_p);
+      modal.find('.modal-assay').text(assay);
       modal.find('.modal-user').text(user);
       modal.find('.modal-time').text(time);
       modal.find('.modal-comment').text(comment);

@@ -338,9 +338,6 @@ def get_variant_info(sample_data, sample_obj):
         elif variant_obj.genome_build == 38:
             poly_list_name = "build_38_polys"
         
-        print(sample_obj.panel.get_assay_display())
-        
-        
         #Get Artefact list
         if variant_obj.genome_build == 38 and sample_obj.panel.get_assay_display() == "TSO500 DNA":
             artefact_list_name = "TSO500_DNA_b38_artefacts"
