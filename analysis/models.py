@@ -339,6 +339,13 @@ class VariantList(models.Model):
     genome_build = models.IntegerField(default=37)
     assay = models.CharField(blank=True, max_length=1, choices=ASSAY_CHOICES)
 
+    def header(self):
+        if self.genome_build == 37:
+            build_css = 'info'
+        elif self.genome_build == 38:
+            build_css = 'success'
+        return f'{self.get_assay_display()} {self.get_list_type_display()} list <span class="badge badge-{build_css}">GRCh{self.genome_build}</span>'
+
 
 class VariantToVariantList(models.Model):
     """

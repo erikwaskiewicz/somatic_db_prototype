@@ -821,7 +821,9 @@ def options_page(request):
     """
     Display a page of all other options e.g. poly lists
     """
-    return render(request, 'analysis/options_page.html', {})
+    variant_lists = VariantList.objects.all()
+
+    return render(request, 'analysis/options_page.html', {'variant_lists': variant_lists})
 
 
 @login_required

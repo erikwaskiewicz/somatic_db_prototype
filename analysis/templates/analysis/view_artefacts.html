@@ -51,7 +51,7 @@
           <tbody>
             {% for v in checking_list %}
             <tr>
-              <td>{{ v.variant }}<span class="badge badge-{{ build_tag }} badge-pill">GRCh{{ v.genome_build }}</td>
+              <td>{{ v.variant }}<br><span class="badge badge-{{ build_tag }} badge-pill">GRCh{{ v.genome_build }}</td>
               <td>{{ v.gene }}<br>{{ v.hgvs_c }}<br>{{ v.hgvs_p }}</td>
               <td>{{ v.vaf_cutoff }}</td>
               <td>{{ v.upload_user }}<br>{{ v.upload_time }}</td>
@@ -94,7 +94,7 @@
     <tbody>
       {% for v in confirmed_list %}
       <tr>
-        <td>{{ v.variant }}<span class="badge badge-{{ build_tag }} badge-pill">GRCh{{ v.genome_build }}</td>
+        <td>{{ v.variant }}<br><span class="badge badge-{{ build_tag }} badge-pill">GRCh{{ v.genome_build }}</td>
         <td>{{ v.gene }}</td>
         <td>{{ v.hgvs_c }}<br>{{ v.hgvs_p }}</td>
         <td>{{ v.vaf_cutoff }}</td>
