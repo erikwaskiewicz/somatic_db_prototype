@@ -323,9 +323,11 @@ def get_variant_info(sample_data, sample_obj):
     sample_variants = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
 
     variant_calls = []
-    polys_list = []
-    artefacts_list = []
     reportable_list = []
+
+    filtered_list = []
+    poly_count = 0
+    artefact_count = 0
 
     for sample_variant in sample_variants:
 
@@ -452,11 +454,12 @@ def get_variant_info(sample_data, sample_obj):
 
         # add to poly list if appears in the poly variant list, otherwise add to variant calls list
         if 'Poly' in previous_classifications:
-            polys_list.append(variant_calls_dict)
-            
-        elif 'Artefact' in previous_classifications:
-            artefacts_list.append(variant_calls_dict)
+            poly_count += 1
+            filtered_list.append((variant_calls_dict, 'Poly'))
 
+        elif 'Artefact' in previous_classifications:
+            artefact_count += 1
+            filtered_list.append((variant_calls_dict, 'Artefact'))
         else:
             variant_calls.append(variant_calls_dict)
 
@@ -466,10 +469,12 @@ def get_variant_info(sample_data, sample_obj):
     else:
         no_calls = False
 
+    # return as variantr data dictionary
     variant_data = {
         'variant_calls': variant_calls, 
-        'polys': polys_list,
-        'artefacts': artefacts_list,
+        'filtered_calls': filtered_list,
+        'poly_count': poly_count,
+        'artefact_count': artefact_count,
         'no_calls': no_calls,
         'check_options': VariantCheck.DECISION_CHOICES,
     }
