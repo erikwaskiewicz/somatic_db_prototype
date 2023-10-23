@@ -335,35 +335,25 @@ def get_variant_info(sample_data, sample_obj):
         vaf = sample_variant.variant_instance.vaf()
         vaf_rounded = vaf.quantize(decimal.Decimal('1'), rounding=decimal.ROUND_HALF_UP)
 
-        # set poly list based on genome build
-        if variant_obj.genome_build == 37:
-             poly_list_name = "build_37_polys"
+        # get poly/artefact lists relevent to this sample
+        poly_lists = VariantList.objects.filter(genome_build=variant_obj.genome_build, list_type='P')
+        artefact_lists = VariantList.objects.filter(genome_build=variant_obj.genome_build, list_type='A', assay = sample_obj.panel.assay)
+        variant_lists = poly_lists | artefact_lists
 
-        elif variant_obj.genome_build == 38:
-            poly_list_name = "build_38_polys"
-        
-        #Get Artefact list
-        if variant_obj.genome_build == 38 and sample_obj.panel.get_assay_display() == "TSO500 DNA":
-            artefact_list_name = "TSO500_DNA_b38_artefacts"
-        else:
-            artefact_list_name = ""
-
-        # get whether the variant falls within a poly/ known list
-        # TODO - will have to handle multiple poly/ known lists in future
+        # get whether the variant falls within a poly/ artefact list
         previous_classifications = []
         for l in VariantToVariantList.objects.filter(variant=variant_obj):
-            if l.variant_list.name == 'TSO500_known':
-                previous_classifications.append(l.classification)
-            elif l.variant_list.name == poly_list_name:
-                # only add if polys have been checked twice
-                if l.signed_off():
+
+            # if signed off and in one of the variant lists for this sample
+            if l.signed_off() and (l.variant_list in variant_lists):
+
+                if l.variant_list.list_type == 'P':
                     previous_classifications.append('Poly')
-            elif l.variant_list.name == artefact_list_name:
-                # only add if artefacts have been checked twice and above the VAF cutoff
-                if l.signed_off() and l.vaf_cutoff == None:
-                    previous_classifications.append('Artefact')
-                elif l.signed_off() and vaf < l.vaf_cutoff:
-                    previous_classifications.append('Artefact')
+
+                elif l.variant_list.list_type == 'A':
+                    # only add if above the VAF cutoff or there is no cutoff
+                    if l.vaf_cutoff == None or vaf < l.vaf_cutoff:
+                        previous_classifications.append('Artefact')
 
         # get checks for each variant
         variant_checks = VariantCheck.objects.filter(variant_analysis=sample_variant).order_by('pk')
@@ -443,7 +433,7 @@ def get_variant_info(sample_data, sample_obj):
             },   
             'previous_runs': {
                 'known': ' | '.join(previous_classifications),
-                'count': 'N/A', #previous_runs,
+                'count': 'N/A',
             },
             'vaf': {
                 'vaf': vaf,
@@ -466,6 +456,7 @@ def get_variant_info(sample_data, sample_obj):
             
         elif 'Artefact' in previous_classifications:
             artefacts_list.append(variant_calls_dict)
+
         else:
             variant_calls.append(variant_calls_dict)
 
