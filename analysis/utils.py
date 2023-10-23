@@ -360,7 +360,9 @@ def get_variant_info(sample_data, sample_obj):
                     previous_classifications.append('Poly')
             elif l.variant_list.name == artefact_list_name:
                 # only add if artefacts have been checked twice and above the VAF cutoff
-                if l.signed_off() and vaf < l.vaf_cutoff:
+                if l.signed_off() and l.vaf_cutoff == None:
+                    previous_classifications.append('Artefact')
+                elif l.signed_off() and vaf < l.vaf_cutoff:
                     previous_classifications.append('Artefact')
 
         # get checks for each variant
