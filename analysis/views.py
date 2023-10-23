@@ -718,6 +718,11 @@ def view_artefacts(request, list_name):
 
     # set genome build
     genome = artefact_list.genome_build
+    if genome == 37:
+        build_tag = 'info'
+    elif genome == 38:
+        build_tag = 'success'
+    assay = artefact_list.get_assay_display()
 
     # make context dictionary
     context = {
@@ -725,6 +730,8 @@ def view_artefacts(request, list_name):
         'warning': [],
         'list_name': list_name,
         'genome_build': genome,
+        'build_tag': build_tag,
+        'assay': assay,
         'confirmed_list': confirmed_list,
         'checking_list': checking_list,
         'confirm_form': ConfirmArtefactForm(),
@@ -770,7 +777,6 @@ def view_artefacts(request, list_name):
 
                 # get form data
                 variant = add_new_form.cleaned_data['variant']
-                assay = add_new_form.cleaned_data['assay']
                 comment = add_new_form.cleaned_data['comment']
             
                 # wrap in try/ except to handle when a variant doesnt match the input
@@ -787,7 +793,6 @@ def view_artefacts(request, list_name):
                         variant_to_variant_list_obj.upload_user = request.user
                         variant_to_variant_list_obj.upload_time = timezone.now()
                         variant_to_variant_list_obj.upload_comment = comment
-                        variant_to_variant_list_obj.assay = assay
                         variant_to_variant_list_obj.save()
 
                         # give success message

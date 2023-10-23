@@ -864,6 +864,12 @@ def get_poly_list(poly_list_obj, user):
             hgvs_cs.append(annotation.hgvs_c)
             hgvs_ps.append(annotation.hgvs_p)
         
+        # tidy up vaf formatting
+        if v.vaf_cutoff == None or v.vaf_cutoff == 0:
+            vaf_cutoff = 'None'
+        else:
+            vaf_cutoff = str(v.vaf_cutoff.quantize(decimal.Decimal('1'), rounding=decimal.ROUND_HALF_UP)) + '%'
+
         # format variant info info dictionary 
         formatted_variant = {
             'counter': n,
@@ -876,7 +882,7 @@ def get_poly_list(poly_list_obj, user):
             'upload_user': v.upload_user,
             'upload_time': v.upload_time,
             'upload_comment': v.upload_comment,
-            'assay': v.get_assay_display(),
+            'vaf_cutoff': vaf_cutoff,
             'check_user': v.check_user,
             'check_time': v.check_time,
             'check_comment': v.check_comment,

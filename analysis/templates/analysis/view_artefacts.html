@@ -13,15 +13,12 @@
 
 {% block content %}
 <div class="container">
-  {% if genome_build == 37 %}
-  <h5>Build 37 artefact list <span class="badge badge-info">GRCh37</span></h5>
-  {% elif genome_build == 38 %}
-  <h5>Build 38 artefact list <span class="badge badge-success">GRCh38</span></h5>
-  {% endif %}
+  <h5>{{ assay }} build {{ genome_build }} artefact list <span class="badge badge-{{ build_tag }}">GRCh{{ genome_build }}</span></h5>
+<p>TODO - format vaf cutoff in modals and add build tags ############################################################################</p>
   <br>
 
   <div class="card-body bg-light">
-    <button class="btn btn-info w-100" type="button" data-toggle="modal" data-target="#add-modal" class="btn btn-info">Add new artefact</button>
+    <button class="btn btn-info w-100" type="button" data-toggle="modal" data-target="#add-modal">Add new artefact</button>
     <br>
   </div>
   <br>
@@ -47,7 +44,7 @@
             <tr>
               <th class="col-3" scope="col">Variant</th>
               <th class="col-5" scope="col">Gene/ HGVS</th>
-              <th class="col-5" scope="col">Assay</th>
+              <th class="col-5" scope="col">VAF cutoff</th>
               <th class="col-3" scope="col">Added by</th>
               <th class="col-1" scope="col"></th>
             </tr>
@@ -55,14 +52,14 @@
           <tbody>
             {% for v in checking_list %}
             <tr>
-              <td>{{ v.variant }}</td>
+              <td>{{ v.variant }}<span class="badge badge-{{ build_tag }} badge-pill">GRCh{{ v.genome_build }}</td>
               <td>{{ v.gene }}<br>{{ v.hgvs_c }}<br>{{ v.hgvs_p }}</td>
-              <td>{{ v.assay }}</td>
+              <td>{{ v.vaf_cutoff }}</td>
               <td>{{ v.upload_user }}<br>{{ v.upload_time }}</td>
               <td style="text-align:right">
                 {% if v.able_to_sign_off %}
                 <button type="button" data-toggle="modal" data-target="#check-modal" data-pk="{{ v.variant_pk }}" data-coord="{{ v.variant }}"
-                  data-gene="{{ v.gene }}" data-hgvs_c="{{ v.hgvs_c }}" data-hgvs_p="{{ v.hgvs_p }}" data-assay="{{ v.assay }}" data-user="{{ v.upload_user }}"  
+                  data-gene="{{ v.gene }}" data-hgvs_c="{{ v.hgvs_c }}" data-hgvs_p="{{ v.hgvs_p }}" data-vaf_cutoff="{{ v.vaf_cutoff }}" data-user="{{ v.upload_user }}"
                   data-time="{{ v.upload_time }}" data-comment="{{ v.upload_comment }}" class="btn btn-secondary">
                   Check
                 </button>
@@ -91,25 +88,19 @@
         <th class="col-3" scope="col">Variant</th>
         <th class="col-1" scope="col">Gene</th>
         <th class="col-5" scope="col">HGVS</th>
-        <th class="col-5" scope="col">Assay</th>
+        <th class="col-5" scope="col">VAF cutoff</th>
         <th class="col-1" scope="col" style="text-align:right">Info</th>
       </tr>
     </thead>
     <tbody>
       {% for v in confirmed_list %}
       <tr>
-        <td>{{ v.variant }}
-        {% if v.genome_build == 37 %}
-        <span class = "badge badge-info badge-pill">GRCh{{ v.genome_build }}
-        {% elif v.genome_build == 38 %}
-        <span class = "badge badge-success badge-pill">GRCh{{ v.genome_build }}
-        {% endif %}
-        </td>
+        <td>{{ v.variant }}<span class="badge badge-{{ build_tag }} badge-pill">GRCh{{ v.genome_build }}</td>
         <td>{{ v.gene }}</td>
         <td>{{ v.hgvs_c }}<br>{{ v.hgvs_p }}</td>
-        <td>{{ v.assay }}</td>
+        <td>{{ v.vaf_cutoff }}</td>
         <td style="text-align:right">
-          <button class="btn btn-light w-100" type="button" data-toggle="modal" data-target="#poly-info-{{ v.counter }}" class="btn btn-light">
+          <button class="btn btn-light w-100" type="button" data-toggle="modal" data-target="#poly-info-{{ v.counter }}">
             <span class="fa fa-eye"></span>
           </button>
         </td>
@@ -242,8 +233,12 @@
               <td class="modal-hgvs_p"></td>
             </tr>
             <tr>
+              <td>VAF cutoff</td>
+              <td class="modal-vaf_cutoff"></td>
+            </tr>
+            <tr>
               <td>Assay</td>
-              <td class="modal-assay"></td>
+              <td>{{ assay }}</td>
             </tr>
             <tr>
               <td>Added by</td>
@@ -305,11 +300,7 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        {% if genome_build == 37 %}
-        <h5 class="modal-title" id="add-modal-label">Add a new artefact <span class="badge badge-info">GRCh{{ genome_build }}</span></h5>
-        {% elif genome_build == 38 %}
-        <h5 class="modal-title" id="add-modal-label">Add a new artefact <span class="badge badge-success">GRCh{{ genome_build }}</span></h5>
-        {% endif %}
+        <h5 class="modal-title" id="add-modal-label">Add a new artefact <span class="badge badge-{{ build_tag }}">GRCh{{ genome_build }}</span></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -366,7 +357,7 @@ $(document).ready( function() {
       var gene = button.data('gene');
       var hgvs_c = button.data('hgvs_c');
       var hgvs_p = button.data('hgvs_p');
-      var assay = button.data('assay');
+      var vaf_cutoff = button.data('vaf_cutoff');
       var user = button.data('user');
       var time = button.data('time');
       var comment = button.data('comment');
@@ -378,7 +369,7 @@ $(document).ready( function() {
       modal.find('.modal-gene').text(gene);
       modal.find('.modal-hgvs_c').text(hgvs_c);
       modal.find('.modal-hgvs_p').text(hgvs_p);
-      modal.find('.modal-assay').text(assay);
+      modal.find('.modal-vaf_cutoff').text(vaf_cutoff);
       modal.find('.modal-user').text(user);
       modal.find('.modal-time').text(time);
       modal.find('.modal-comment').text(comment);

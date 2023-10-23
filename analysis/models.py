@@ -348,7 +348,7 @@ class VariantToVariantList(models.Model):
     variant_list = models.ForeignKey('VariantList', on_delete=models.CASCADE)
     variant = models.ForeignKey('Variant', on_delete=models.CASCADE)
     classification = models.CharField(max_length=50, blank=True, null=True)
-    vaf_cutoff = models.DecimalField(decimal_places=5, max_digits=10, blank=True, null=True)
+    vaf_cutoff = models.DecimalField(decimal_places=5, max_digits=10, default=0)
     upload_user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True, related_name='upload_user')
     upload_time = models.DateTimeField(blank=True, null=True)
     upload_comment = models.CharField(max_length=500, blank=True, null=True)
