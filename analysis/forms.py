@@ -288,7 +288,7 @@ class ConfirmArtefactForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(ConfirmArtefactForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.fields['comment'].widget.attrs['placeholder'] = 'Add comments or evidence to support this variant being a artefact\ne.g. filepaths to documented evidence, sample IDs to check...'
+        self.fields['comment'].help_text = 'Add comments or evidence to support this variant being a artefact\ne.g. filepaths to documented evidence, sample IDs to check...'
         self.helper.form_method = 'POST'
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-100')
@@ -330,9 +330,9 @@ class AddNewArtefactForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(AddNewArtefactForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.fields['comment'].widget.attrs['placeholder'] = 'Add comments or evidence to support this variant being an artefact\ne.g. filepaths to documented evidence, sample IDs to check...'
-        self.fields['variant'].widget.attrs['placeholder'] = 'Must be in genomic format e.g. 7:140453136A>T'
-        self.fields['vaf_cutoff'].initial = 0
+        self.fields['comment'].help_text = 'Add comments or evidence to support this variant being an artefact\ne.g. filepaths to documented evidence, sample IDs to check...'
+        self.fields['variant'].help_text = 'Must be in genomic format e.g. 7:140453136A>T'
+        self.fields['vaf_cutoff'].initial = 0.0
         self.fields['vaf_cutoff'].help_text = 'Only variants below this value will be filtered as artefacts. If no cutoff is required then leave as 0.'
         self.helper.form_method = 'POST'
         self.helper.add_input(
