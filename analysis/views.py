@@ -778,7 +778,8 @@ def view_artefacts(request, list_name):
                 # get form data
                 variant = add_new_form.cleaned_data['variant']
                 comment = add_new_form.cleaned_data['comment']
-            
+                vaf_cutoff = add_new_form.cleaned_data['vaf_cutoff']
+
                 # wrap in try/ except to handle when a variant doesnt match the input
                 try:
                     # load in variant and variant to list objects
@@ -793,6 +794,7 @@ def view_artefacts(request, list_name):
                         variant_to_variant_list_obj.upload_user = request.user
                         variant_to_variant_list_obj.upload_time = timezone.now()
                         variant_to_variant_list_obj.upload_comment = comment
+                        variant_to_variant_list_obj.vaf_cutoff = vaf_cutoff
                         variant_to_variant_list_obj.save()
 
                         # give success message
