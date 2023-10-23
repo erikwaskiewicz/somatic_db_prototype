@@ -331,6 +331,10 @@ def get_variant_info(sample_data, sample_obj):
 
         variant_obj = sample_variant.variant_instance.variant
 
+        # get VAF and round to nearest whole number - used in artefact list so must be on top
+        vaf = sample_variant.variant_instance.vaf()
+        vaf_rounded = vaf.quantize(decimal.Decimal('1'), rounding=decimal.ROUND_HALF_UP)
+
         # set poly list based on genome build
         if variant_obj.genome_build == 37:
              poly_list_name = "build_37_polys"
@@ -355,8 +359,8 @@ def get_variant_info(sample_data, sample_obj):
                 if l.signed_off():
                     previous_classifications.append('Poly')
             elif l.variant_list.name == artefact_list_name:
-                # only add if artefacts have been checked twice
-                if l.signed_off():
+                # only add if artefacts have been checked twice and above the VAF cutoff
+                if l.signed_off() and vaf < l.vaf_cutoff:
                     previous_classifications.append('Artefact')
 
         # get checks for each variant
@@ -397,10 +401,6 @@ def get_variant_info(sample_data, sample_obj):
                 variant_comments_list.append(
                     { 'comment': v.comment, 'user': v.check_object.user, 'updated': v.comment_updated, }
                 )
-
-        # get VAF and round to nearest whole number
-        vaf = sample_variant.variant_instance.vaf()
-        vaf_rounded = vaf.quantize(decimal.Decimal('1'), rounding=decimal.ROUND_HALF_UP)
 
         # split out transcript and c./p., wrap in try/except because sometimes its empty
         try:

@@ -329,9 +329,15 @@ class VariantList(models.Model):
         ('K', 'Known'),
         ('A', 'Artefact'),
     )
+    ASSAY_CHOICES = (
+        ('1', 'TSO500 DNA'),
+        ('2', 'TSO500 RNA'),
+        ('3', 'TSO500 ctDNA'),
+    )
     name = models.CharField(max_length=50, primary_key=True)
     list_type = models.CharField(max_length=1, choices=TYPE_CHOICES)
     genome_build = models.IntegerField(default=37)
+    assay = models.CharField(blank=True, max_length=1, choices=ASSAY_CHOICES)
 
 
 class VariantToVariantList(models.Model):
@@ -339,21 +345,16 @@ class VariantToVariantList(models.Model):
     Link variants to variant lists
 
     """
-    ASSAY_CHOICES = (
-        ('1', 'TSO500 DNA'),
-        ('2', 'TSO500 RNA'),
-        ('3', 'TSO500 ctDNA'),
-    )
     variant_list = models.ForeignKey('VariantList', on_delete=models.CASCADE)
     variant = models.ForeignKey('Variant', on_delete=models.CASCADE)
     classification = models.CharField(max_length=50, blank=True, null=True)
+    vaf_cutoff = models.DecimalField(decimal_places=5, max_digits=10, blank=True, null=True)
     upload_user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True, related_name='upload_user')
     upload_time = models.DateTimeField(blank=True, null=True)
     upload_comment = models.CharField(max_length=500, blank=True, null=True)
     check_user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True,  related_name='check_user')
     check_time = models.DateTimeField(blank=True, null=True)
     check_comment = models.CharField(max_length=500, blank=True, null=True)
-    assay = models.CharField(max_length=1, choices=ASSAY_CHOICES, default = 1)
 
     def signed_off(self):
         """
