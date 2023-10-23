@@ -37,22 +37,20 @@
         <a class="btn btn-info" href="{% url 'view_polys' 'build_38_polys' %}">View</a>
       </div>
     </div>
-    <!-- you can copy and paste the above card and it'll autowrap on the page -->
-  </div>
-  
-  <div>
-  <!-- Artefacts -->
+
+    <!-- TSO500 b38 artefacts -->
     <div class="card bg-light">
       <div class="card-body">
-        <h5 class="card-title">Build 38 artefact list <span class="badge badge-success">GRCh38</span></h5>
+        <h5 class="card-title">TSO500 DNA artefact list <span class="badge badge-success">GRCh38</span></h5>
         <p class="card-text">View and edit the known artefact list for <b>TSO500 DNA build 38</b>. These will be classed as artefacts in TSO500 DNA assays.</p>
         <a class="btn btn-info" href="{% url 'view_artefacts' 'TSO500_DNA_b38_artefacts' %}">View</a>
       </div>
     </div>
     <!-- you can copy and paste the above card and it'll autowrap on the page -->
+    <!-- TODO we can probably add some fields to the models and replace with a loop of all variant lists -->
   </div>
 
-  <!-- Variant lists section ----------------------------------------------------->
+  <!-- system settings section ----------------------------------------------------->
   <br><br>
   <h5>System settings</h5>
 
