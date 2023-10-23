@@ -331,7 +331,17 @@ def get_variant_info(sample_data, sample_obj):
 
     for sample_variant in sample_variants:
 
+        # load instance of variant
         variant_obj = sample_variant.variant_instance.variant
+
+        # get checks for each variant
+        variant_checks = VariantCheck.objects.filter(variant_analysis=sample_variant).order_by('pk')
+        variant_checks_list = [ v.get_decision_display() for v in variant_checks ]
+        latest_check = variant_checks.latest('pk')
+
+        # marker to tell whether a variant should be filtered downstream
+        filter_call = False
+        filter_reason = ''
 
         # get VAF and round to nearest whole number - used in artefact list so must be on top
         vaf = sample_variant.variant_instance.vaf()
@@ -343,24 +353,31 @@ def get_variant_info(sample_data, sample_obj):
         variant_lists = poly_lists | artefact_lists
 
         # get whether the variant falls within a poly/ artefact list
-        previous_classifications = []
         for l in VariantToVariantList.objects.filter(variant=variant_obj):
 
             # if signed off and in one of the variant lists for this sample
             if l.signed_off() and (l.variant_list in variant_lists):
 
                 if l.variant_list.list_type == 'P':
-                    previous_classifications.append('Poly')
+                    poly_count += 1
+                    filter_call = True
+                    filter_reason = 'Poly'
 
                 elif l.variant_list.list_type == 'A':
                     # only add if above the VAF cutoff or there is no cutoff
-                    if l.vaf_cutoff == None or vaf < l.vaf_cutoff:
-                        previous_classifications.append('Artefact')
+                    if l.vaf_cutoff == None or l.vaf_cutoff == 0.0 or vaf < l.vaf_cutoff:
+                        artefact_count += 1
+                        filter_call = True
+                        if vaf < l.vaf_cutoff:
+                            vaf_cutoff_rounded = l.vaf_cutoff.quantize(decimal.Decimal('1'), rounding=decimal.ROUND_HALF_UP)
+                            filter_reason = f'Artefact at <{vaf_cutoff_rounded}%'
+                        else:
+                            filter_reason = 'Artefact'
 
-        # get checks for each variant
-        variant_checks = VariantCheck.objects.filter(variant_analysis=sample_variant).order_by('pk')
-        variant_checks_list = [ v.get_decision_display() for v in variant_checks ]
-        latest_check = variant_checks.latest('pk')
+                # set the check to match the variant list outcome
+                latest_check.decision = l.variant_list.list_type
+                latest_check.save()
+                var_comment_form = VariantCommentForm(pk=latest_check.pk, comment=latest_check.comment)
 
         # remove Not analysed from checks list
         variant_checks_analysed = []
@@ -374,15 +391,6 @@ def get_variant_info(sample_data, sample_obj):
             last2 = variant_checks_analysed[-2:]
             if last2[0] != last2[1]:
                 last_two_checks_agree = False
-
-        # set decision if falls in poly or artefact list, otherwise the finilise sample validation will fail
-        if 'Poly' in previous_classifications:
-            latest_check.decision ='P'
-            latest_check.save()
-        elif 'Artefact' in previous_classifications:
-            latest_check.decision = 'A'
-            latest_check.save()
-        var_comment_form = VariantCommentForm(pk=latest_check.pk, comment=latest_check.comment)
 
         # if variant is to appear on report tab, add to list
         if sample_variant.variant_instance.get_final_decision_display() in ['Genuine', 'Miscalled']:
@@ -434,7 +442,7 @@ def get_variant_info(sample_data, sample_obj):
                 'vaf_ntc': sample_variant.variant_instance.vaf_ntc(),
             },   
             'previous_runs': {
-                'known': ' | '.join(previous_classifications),
+                'known': 'N/A',
                 'count': 'N/A',
             },
             'vaf': {
@@ -453,13 +461,8 @@ def get_variant_info(sample_data, sample_obj):
         }
 
         # add to poly list if appears in the poly variant list, otherwise add to variant calls list
-        if 'Poly' in previous_classifications:
-            poly_count += 1
-            filtered_list.append((variant_calls_dict, 'Poly'))
-
-        elif 'Artefact' in previous_classifications:
-            artefact_count += 1
-            filtered_list.append((variant_calls_dict, 'Artefact'))
+        if filter_call == True:
+            filtered_list.append((variant_calls_dict, filter_reason))
         else:
             variant_calls.append(variant_calls_dict)
 
@@ -862,7 +865,7 @@ def get_poly_list(poly_list_obj, user):
         
         # tidy up vaf formatting
         if v.vaf_cutoff == None or v.vaf_cutoff == 0:
-            vaf_cutoff = 'None'
+            vaf_cutoff = 'N/A'
         else:
             vaf_cutoff = str(v.vaf_cutoff.quantize(decimal.Decimal('1'), rounding=decimal.ROUND_HALF_UP)) + '%'
 
@@ -872,9 +875,9 @@ def get_poly_list(poly_list_obj, user):
             'variant_pk': v.id,
             'variant': v.variant.variant,
             'genome_build': v.variant.genome_build,
-            'gene': '|'.join(set(genes)),
-            'hgvs_c': '|'.join(set(hgvs_cs)),
-            'hgvs_p': '|'.join(set(hgvs_ps)),
+            'gene': ' | '.join(set(genes)),
+            'hgvs_c': ' | '.join(set(hgvs_cs)),
+            'hgvs_p': ' | '.join(set(hgvs_ps)),
             'upload_user': v.upload_user,
             'upload_time': v.upload_time,
             'upload_comment': v.upload_comment,
