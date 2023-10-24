@@ -1,0 +1,56 @@
+[
+{
+    "model": "analysis.variantlist",
+    "pk": "GeneRead_BRCA_b37_artefacts",
+    "fields": {
+        "list_type": "A",
+        "genome_build": 37,
+        "assay": "5"
+    }
+},
+{
+    "model": "analysis.variantlist",
+    "pk": "GeneRead_CRM_b37_artefacts",
+    "fields": {
+        "list_type": "A",
+        "genome_build": 37,
+        "assay": "4"
+    }
+},
+{
+    "model": "analysis.variantlist",
+    "pk": "TSO500_DNA_b38_artefacts",
+    "fields": {
+        "list_type": "A",
+        "genome_build": 38,
+        "assay": "1"
+    }
+},
+{
+    "model": "analysis.variantlist",
+    "pk": "TSO500_ctDNA_b37_artefacts",
+    "fields": {
+        "list_type": "A",
+        "genome_build": 37,
+        "assay": "3"
+    }
+},
+{
+    "model": "analysis.variantlist",
+    "pk": "build_37_polys",
+    "fields": {
+        "list_type": "P",
+        "genome_build": 37,
+        "assay": ""
+    }
+},
+{
+    "model": "analysis.variantlist",
+    "pk": "build_38_polys",
+    "fields": {
+        "list_type": "P",
+        "genome_build": 38,
+        "assay": ""
+    }
+}
+]
