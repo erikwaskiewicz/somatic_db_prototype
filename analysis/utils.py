@@ -319,16 +319,18 @@ def get_variant_info(sample_data, sample_obj):
     Get information on all variants in a sample analysis to generate the variant portion of the context dictionary
 
     """
-
+    # load in all variants in sample
     sample_variants = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
 
+    # make empty variables for storing results
     variant_calls = []
     reportable_list = []
-
     filtered_list = []
     poly_count = 0
     artefact_count = 0
 
+
+    # loop through each sample variant
     for sample_variant in sample_variants:
 
         # load instance of variant
@@ -358,11 +360,13 @@ def get_variant_info(sample_data, sample_obj):
             # if signed off and in one of the variant lists for this sample
             if l.signed_off() and (l.variant_list in variant_lists):
 
+                # if its a poly
                 if l.variant_list.list_type == 'P':
                     poly_count += 1
                     filter_call = True
                     filter_reason = 'Poly'
 
+                # if its an artefact
                 elif l.variant_list.list_type == 'A':
                     # only add if above the VAF cutoff or there is no cutoff
                     if l.vaf_cutoff == None or l.vaf_cutoff == 0.0 or vaf < l.vaf_cutoff:
@@ -370,7 +374,7 @@ def get_variant_info(sample_data, sample_obj):
                         filter_call = True
                         if vaf < l.vaf_cutoff:
                             vaf_cutoff_rounded = l.vaf_cutoff.quantize(decimal.Decimal('1'), rounding=decimal.ROUND_HALF_UP)
-                            filter_reason = f'Artefact at <{vaf_cutoff_rounded}%'
+                            filter_reason = f'Artefact at <{vaf_cutoff_rounded}% VAF'
                         else:
                             filter_reason = 'Artefact'
 
@@ -420,6 +424,11 @@ def get_variant_info(sample_data, sample_obj):
         except IndexError:
             transcript = ''
 
+        # handle when missing from gnomad
+        gnomad_popmax = sample_variant.variant_instance.gnomad_popmax
+        if gnomad_popmax == -1.00000:
+            gnomad_popmax = 'Not found'
+
         #Create a variant calls dictionary to pass to analysis-snvs.html
         variant_calls_dict = {
             'pk': sample_variant.pk,
@@ -434,17 +443,13 @@ def get_variant_info(sample_data, sample_obj):
             'hgvs_c_short': hgvs_c_short,
             'hgvs_p_short': hgvs_p_short,
             'transcript': transcript,
-            'gnomad_popmax': sample_variant.variant_instance.gnomad_popmax,
+            'gnomad_popmax': gnomad_popmax,
             'this_run': {
                 'ntc': sample_variant.variant_instance.in_ntc,
                 'alt_count_ntc': sample_variant.variant_instance.alt_count_ntc,
                 'total_count_ntc': sample_variant.variant_instance.total_count_ntc,
                 'vaf_ntc': sample_variant.variant_instance.vaf_ntc(),
             },   
-            'previous_runs': {
-                'known': 'N/A',
-                'count': 'N/A',
-            },
             'vaf': {
                 'vaf': vaf,
                 'vaf_rounded': vaf_rounded,
