@@ -63,12 +63,19 @@ bash scripts/upload.sh analysis/test_data/Database_37/samples_dna_ws_2.csv run_2
 bash scripts/upload.sh analysis/test_data/Database_37/samples_rna_ws_1.csv run_1
 bash scripts/upload.sh analysis/test_data/Database_37/samples_ctdna_ws_1.csv
 bash scripts/upload.sh analysis/test_data/Database_38/samples_database_test38_DNA.csv
+bash scripts/upload.sh analysis/test_data/Database_37/samples_crm_ws_1.csv run_3
 ```
 
 Run the database locally:
 ```
 python manage.py runserver
 ```
+
+You may get a Django error when clicking into a sample analysis that ends with the following:
+```
+django.contrib.auth.models.User.usersettings.RelatedObjectDoesNotExist: User has no usersettings.
+```
+In this case, click into the User model within the admin page and make sure there is something in the 'LIMS initials' field at the bottom.
 
 
 ### Setting up postgres
