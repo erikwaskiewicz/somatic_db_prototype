@@ -851,7 +851,7 @@ def get_poly_list(poly_list_obj, user):
 
     """
     # get all variant objects from the poly list
-    variants = VariantToVariantList.objects.filter(variant_list=poly_list_obj)
+    variants = VariantToVariantList.objects.filter(variant_list=poly_list_obj).order_by("variant__variant")
 
     # make empty lists before collecting data from loop
     confirmed_list = []
