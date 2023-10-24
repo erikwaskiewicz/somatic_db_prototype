@@ -362,26 +362,29 @@ def get_variant_info(sample_data, sample_obj):
 
                 # if its a poly
                 if l.variant_list.list_type == 'P':
+                    # set variables and update variant check
                     poly_count += 1
                     filter_call = True
                     filter_reason = 'Poly'
+                    latest_check.decision = 'P'
+                    latest_check.save()
 
                 # if its an artefact
                 elif l.variant_list.list_type == 'A':
                     # only add if above the VAF cutoff or there is no cutoff
                     if l.vaf_cutoff == None or l.vaf_cutoff == 0.0 or vaf < l.vaf_cutoff:
+                        # set variables and update variant check
                         artefact_count += 1
                         filter_call = True
+                        latest_check.decision = 'A'
+                        latest_check.save()
+
+                        # add VAF cutoff to reason for filtering
                         if vaf < l.vaf_cutoff:
                             vaf_cutoff_rounded = l.vaf_cutoff.quantize(decimal.Decimal('1'), rounding=decimal.ROUND_HALF_UP)
                             filter_reason = f'Artefact at <{vaf_cutoff_rounded}% VAF'
                         else:
                             filter_reason = 'Artefact'
-
-                # set the check to match the variant list outcome
-                latest_check.decision = l.variant_list.list_type
-                latest_check.save()
-                var_comment_form = VariantCommentForm(pk=latest_check.pk, comment=latest_check.comment)
 
         # remove Not analysed from checks list
         variant_checks_analysed = []
@@ -407,6 +410,9 @@ def get_variant_info(sample_data, sample_obj):
                 variant_comments_list.append(
                     { 'comment': v.comment, 'user': v.check_object.user, 'updated': v.comment_updated, }
                 )
+
+        # load comments into variant comment form
+        var_comment_form = VariantCommentForm(pk=latest_check.pk, comment=latest_check.comment)
 
         # split out transcript and c./p., wrap in try/except because sometimes its empty
         try:
