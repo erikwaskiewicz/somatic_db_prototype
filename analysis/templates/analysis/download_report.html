@@ -153,7 +153,7 @@
         <td>{{ values.percent_270x }}%</td>
         {% endif %}
         {% if '500' in coverage_data.depth_cutoffs %}
-        <td>{{ values.percent_500x }}</td>
+        <td>{{ values.percent_500x }}%</td>
         {% endif %}
         {% if '1000' in coverage_data.depth_cutoffs %}
         <td>{{ values.percent_1000x }}%</td>
@@ -208,7 +208,7 @@
         {% for gap in values.gaps_135 %}
         <tr>
           <td>{{ gap.hgvs_c }}</td>
-          <td>{{ gap.percent_cosmic }}</td>
+          <td>{{ gap.percent_cosmic }}%</td>
           <td>{{ gap.counts_cosmic }}</td>
         </tr>
         {% endfor %}
@@ -237,7 +237,7 @@
         {% for gap in values.gaps_270 %}
         <tr>
           <td>{{ gap.hgvs_c }}</td>
-          <td>{{ gap.percent_cosmic }}</td>
+          <td>{{ gap.percent_cosmic }}%</td>
           <td>{{ gap.counts_cosmic }}</td>
         </tr>
         {% endfor %}
@@ -266,7 +266,7 @@
         {% for gap in values.gaps_500 %}
         <tr>
           <td>{{ gap.hgvs_c }}</td>
-          <td>{{ gap.percent_cosmic }}</td>
+          <td>{{ gap.percent_cosmic }}%</td>
           <td>{{ gap.counts_cosmic }}</td>
         </tr>
         {% endfor %}
@@ -295,7 +295,7 @@
         {% for gap in values.gaps_1000 %}
         <tr>
           <td>{{ gap.hgvs_c }}</td>
-          <td>{{ gap.percent_cosmic }}</td>
+          <td>{{ gap.percent_cosmic }}%</td>
           <td>{{ gap.counts_cosmic }}</td>
         </tr>
         {% endfor %}
