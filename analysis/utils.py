@@ -603,6 +603,7 @@ def get_coverage_data(sample_obj, depth_cutoffs):
     # will set to true in loop below when it hits a gap
     gaps_present_135 = False
     gaps_present_270 = False
+    gaps_present_500 = False
     gaps_present_1000 = False
 
     # create a coverage dictionary
@@ -672,10 +673,12 @@ def get_coverage_data(sample_obj, depth_cutoffs):
 
             # gaps at 500x
             elif gap.coverage_cutoff == 500:
+                gaps_present_500 = True
                 gaps_dict = {
                     'genomic': gap.genomic(),
                     'hgvs_c': gap.hgvs_c,
-                    'percent_cosmic': gap.percent_cosmic
+                    'percent_cosmic': gap.percent_cosmic,
+                    'counts_cosmic': counts_cosmic,
                 }
                 gaps_500.append(gaps_dict)
 
@@ -709,6 +712,7 @@ def get_coverage_data(sample_obj, depth_cutoffs):
         coverage_data['regions'][gene_coverage_obj.gene.gene] = gene_dict
         coverage_data['gaps_present_135'] = gaps_present_135
         coverage_data['gaps_present_270'] = gaps_present_270
+        coverage_data['gaps_present_500'] = gaps_present_500
         coverage_data['gaps_present_1000'] = gaps_present_1000
 
     return coverage_data
