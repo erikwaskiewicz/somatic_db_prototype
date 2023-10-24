@@ -44,10 +44,10 @@ Create the superuser, this should be called `admin` to work with upload scripts:
 python manage.py createsuperuser
 ```
 
-Load fixtures for the panels and poly list objects:
+Load fixtures for the panels and variant list objects:
 ```
 python manage.py loaddata panels.json
-python manage.py loaddata poly_lists.json
+python manage.py loaddata variant_lists.json
 ```
 
 Optional - Load in poly lists (`--both_checks` flag will bypass the need for two checks on each poly, for dev work only):
