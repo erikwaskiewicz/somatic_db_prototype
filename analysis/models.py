@@ -85,8 +85,8 @@ class Panel(models.Model):
         ('1', 'TSO500 DNA'),
         ('2', 'TSO500 RNA'),
         ('3', 'TSO500 ctDNA'),
-        ('4', 'CRM'),
-        ('5', 'BRCA'),
+        ('4', 'GeneRead CRM'),
+        ('5', 'GeneRead BRCA'),
     )
     panel_name = models.CharField(max_length=50)
     pretty_print = models.CharField(max_length=100)
@@ -331,15 +331,10 @@ class VariantList(models.Model):
         ('K', 'Known'),
         ('A', 'Artefact'),
     )
-    ASSAY_CHOICES = (
-        ('1', 'TSO500 DNA'),
-        ('2', 'TSO500 RNA'),
-        ('3', 'TSO500 ctDNA'),
-    )
     name = models.CharField(max_length=50, primary_key=True)
     list_type = models.CharField(max_length=1, choices=TYPE_CHOICES)
     genome_build = models.IntegerField(default=37)
-    assay = models.CharField(blank=True, max_length=1, choices=ASSAY_CHOICES)
+    assay = models.CharField(blank=True, max_length=1, choices=Panel.ASSAY_CHOICES)
 
     def header(self):
         if self.genome_build == 37:

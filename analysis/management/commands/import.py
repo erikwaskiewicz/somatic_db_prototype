@@ -177,8 +177,8 @@ class Command(BaseCommand):
             'TSO500_DNA': '1',
             'TSO500_RNA': '2',
             'TSO500_ctDNA': '3',
-            'CRM': '4',
-            'BRCA': '5',
+            'GeneRead_CRM': '4',
+            'GeneRead_BRCA': '5',
         }
         if assay not in assay_choices.keys():
             print(f'ERROR\t{datetime.now()}\timport.py\tUnknown assay - {assay}')
