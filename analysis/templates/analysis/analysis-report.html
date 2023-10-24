@@ -132,6 +132,9 @@
             {% if '270' in coverage_data.depth_cutoffs %}
             <th scope="col">Percent 270X</th>
             {% endif %}
+            {% if '500' in coverage_data.depth_cutoffs %}
+            <th scope="col">Percent 500X</th>
+            {% endif %}
             {% if '1000' in coverage_data.depth_cutoffs %}
             <th scope="col">Percent 1000X</th>
             {% endif %}
@@ -148,6 +151,9 @@
             {% endif %}
             {% if '270' in coverage_data.depth_cutoffs %}
             <td>{{ values.percent_270x }}%</td>
+            {% endif %}
+            {% if '500' in coverage_data.depth_cutoffs %}
+            <td>{{ values.percent_500x }}%</td>
             {% endif %}
             {% if '1000' in coverage_data.depth_cutoffs %}
             <td>{{ values.percent_1000x }}%</td>
