@@ -415,7 +415,7 @@ class Command(BaseCommand):
                 )
                 new_gene_coverage_obj.save()
 
-                    # genescreen region
+                # genescreen region
                 if 'genescreen_regions' in values:
                     for r in values['genescreen_regions']:
                         if isinstance(r, list):
@@ -425,7 +425,7 @@ class Command(BaseCommand):
                             self.add_regions_from_dict(r, 'G', new_gene_coverage_obj)
 
 
-                    # hotspot regions
+                # hotspot regions
                 if 'hotspot_regions' in values:
                     for r in values['hotspot_regions']:
                         if isinstance(r, list):
@@ -470,8 +470,8 @@ class Command(BaseCommand):
                             elif isinstance(r, dict):
                                 self.add_gaps_from_dict(gap, '1000', new_gene_coverage_obj)
 
-                # logging
-                print(f'INFO\t{datetime.now()}\timport.py\tFinished uploading coverage data successfully')
+            # logging
+            print(f'INFO\t{datetime.now()}\timport.py\tFinished uploading coverage data successfully')
 
 
             # ---------------------------------------------------------------------------------------------------------
