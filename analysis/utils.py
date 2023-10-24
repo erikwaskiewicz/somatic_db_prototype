@@ -623,6 +623,7 @@ def get_coverage_data(sample_obj, depth_cutoffs):
                 'hotspot_or_genescreen': region.get_hotspot_display(),
                 'percent_135x': region.percent_135x,
                 'percent_270x': region.percent_270x,
+                'percent_500x': region.percent_500x,
                 'percent_1000x': region.percent_1000x,
                 'ntc_coverage': region.ntc_coverage,
                 'percent_ntc': region.percent_ntc,
@@ -631,7 +632,7 @@ def get_coverage_data(sample_obj, depth_cutoffs):
 
         # create a dictionary of gaps in the sample for the given gene, split by depths
         # TODO - not a great long term fix, need to update models to handle different depths
-        gaps_135, gaps_270, gaps_1000 = [], [], []
+        gaps_135, gaps_270, gaps_500, gaps_1000 = [], [], [], []
 
         gaps_analysis_obj = GapsAnalysis.objects.filter(gene=gene_coverage_obj)
         for gap in gaps_analysis_obj:
@@ -669,6 +670,15 @@ def get_coverage_data(sample_obj, depth_cutoffs):
                 }
                 gaps_270.append(gaps_dict)
 
+            # gaps at 500x
+            elif gap.coverage_cutoff == 500:
+                gaps_dict = {
+                    'genomic': gap.genomic(),
+                    'hgvs_c': gap.hgvs_c,
+                    'percent_cosmic': gap.percent_cosmic
+                }
+                gaps_500.append(gaps_dict)
+
             # gaps at 1000x
             elif gap.coverage_cutoff == 1000:
                 gaps_present_1000 = True
@@ -685,12 +695,14 @@ def get_coverage_data(sample_obj, depth_cutoffs):
             'av_coverage': gene_coverage_obj.av_coverage,
             'percent_135x': gene_coverage_obj.percent_135x,
             'percent_270x': gene_coverage_obj.percent_270x,
+            'percent_500x': gene_coverage_obj.percent_500x,
             'percent_1000x': gene_coverage_obj.percent_1000x,
             'av_ntc_coverage': gene_coverage_obj.av_ntc_coverage,
             'percent_ntc': gene_coverage_obj.percent_ntc,
             'regions': regions,
             'gaps_135': gaps_135,
             'gaps_270': gaps_270,
+            'gaps_500': gaps_500,
             'gaps_1000': gaps_1000,
         }
 

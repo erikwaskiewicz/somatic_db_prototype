@@ -133,6 +133,9 @@
         {% if '270' in coverage_data.depth_cutoffs %}
         <th>Percent 270X</th>
         {% endif %}
+        {% if '500' in coverage_data.depth_cutoffs %}
+        <th>Percent 500X</th>
+        {% endif %}
         {% if '1000' in coverage_data.depth_cutoffs %}
         <th>Percent 1000X</th>
         {% endif %}
@@ -148,6 +151,9 @@
         {% endif %}
         {% if '270' in coverage_data.depth_cutoffs %}
         <td>{{ values.percent_270x }}%</td>
+        {% endif %}
+        {% if '500' in coverage_data.depth_cutoffs %}
+        <td>{{ values.percent_500x }}</td>
         {% endif %}
         {% if '1000' in coverage_data.depth_cutoffs %}
         <td>{{ values.percent_1000x }}%</td>
@@ -239,6 +245,27 @@
     {% else %}
       <tr><td colspan="3">No hotspot gaps</td></tr>
     {% endif %}
+    </tbody>
+  </table>
+  <br>
+  {% endif %}
+
+  {% if '5000' in coverage_data.depth_cutoffs %}
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 100%">Hotspot gap at 500X</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for gene, values in coverage_data.regions.items %}
+        {% for gap in values.gaps_500 %}
+        <tr>
+          <td>{{ gap.hgvs_c }}</td>
+        </tr>
+        {% endfor %}
+      {% endfor %}
     </tbody>
   </table>
   <br>
