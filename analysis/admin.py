@@ -119,7 +119,7 @@ admin.site.register(VariantCheck, VariantCheckAdmin)
 
 
 class VariantListAdmin(admin.ModelAdmin):
-    list_display = ('name', 'list_type')
+    list_display = ('name', 'list_type', 'genome_build', 'assay')
     search_fields = ['name',]
     # can't search by list_type because of choice field
 
@@ -127,7 +127,7 @@ admin.site.register(VariantList, VariantListAdmin )
 
 
 class VariantToVariantListAdmin(admin.ModelAdmin):
-    list_display = ('id', 'variant_list', 'variant', 'classification')
+    list_display = ('id', 'variant_list', 'variant', 'classification', 'vaf_cutoff')
     search_fields = ['id', 'variant_list__name', 'variant__genomic_37', 'classification']
 
 admin.site.register(VariantToVariantList, VariantToVariantListAdmin)

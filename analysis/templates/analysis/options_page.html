@@ -20,27 +20,27 @@
 
   <div class="card-columns">
 
-    <!-- build 37 polys -->
+    <!-- loop through each list and make card -->
+    {% for list in variant_lists %}
     <div class="card bg-light">
       <div class="card-body">
-        <h5 class="card-title">Build 37 poly list <span class="badge badge-info">GRCh37</span></h5>
-        <p class="card-text">View and edit the known poly list for <b>build 37</b>. These will be classed as polys in all assays.</p>
-        <a class="btn btn-info" href="{% url 'view_polys' 'build_37_polys' %}">View</a>
+        <h5 class="card-title">{{ list.header | safe }}</h5>
+        {% if list.list_type == 'P' %}
+        <p class="card-text">View and edit the known poly list for <b>build {{ list.genome_build }}</b>. These will be classed as polys in all assays.</p>
+        <a class="btn btn-info" href="{% url 'view_polys' list.name %}">View</a>
+
+        {% elif list.list_type == 'A' %}
+        <p class="card-text">View and edit the known artefact list for <b>{{ list.get_assay_display }} build {{ list.genome_build }}</b>. These will be classed as artefacts in all {{ list.get_assay_display }} assays.</p>
+        <a class="btn btn-info" href="{% url 'view_artefacts' list.name %}">View</a>
+
+        {% endif %}
       </div>
     </div>
-    
-    <!-- build 38 polys -->
-    <div class="card bg-light">
-      <div class="card-body">
-        <h5 class="card-title">Build 38 poly list <span class="badge badge-success">GRCh38</span></h5>
-        <p class="card-text">View and edit the known poly list for <b>build 38</b>. These will be classed as polys in all assays.</p>
-        <a class="btn btn-info" href="{% url 'view_polys' 'build_38_polys' %}">View</a>
-      </div>
-    </div>
-    <!-- you can copy and paste the above card and it'll autowrap on the page -->
+    {% endfor %}
+
   </div>
 
-  <!-- Variant lists section ----------------------------------------------------->
+  <!-- system settings section ----------------------------------------------------->
   <br><br>
   <h5>System settings</h5>
 
