@@ -19,12 +19,14 @@
     <div class="container">
       <div class="row">
         <div class="col-8">
+          {% if query == 'training' %}
+          <strong>Showing all non-diagnostic worksheets (training or validation cases)</strong><br>Click to view all worksheets (this will take some time to load).
+          {% elif query == 'recent' %}
           <strong>Showing the most recent 30 worksheets</strong><br>Click to view all worksheets (this will take some time to load).
+          {% endif %}
         </div>
         <div class="col-4">
-          <a class="btn btn-warning w-100" href="{% url 'view_worksheets' 'all' %}" role="button">
-              View all
-          </a>
+          <a class="btn btn-warning w-100" href="{% url 'view_worksheets' 'all' %}" role="button">View all</a>
         </div>
       </div>
     </div>

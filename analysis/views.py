@@ -82,6 +82,10 @@ def view_worksheets(request, query):
         worksheets = Worksheet.objects.filter(diagnostic=True).order_by('-run')[:30]
         filtered = True
 
+    elif query == 'training':
+        worksheets = Worksheet.objects.filter(diagnostic=False).order_by('-run')
+        filtered = True
+
     elif query == 'all':
         worksheets = Worksheet.objects.all().order_by('-run')
         filtered = False
@@ -120,6 +124,7 @@ def view_worksheets(request, query):
     context = {
         'worksheets': ws_list,
         'filtered': filtered,
+        'query': query,
     }
 
     return render(request, 'analysis/view_worksheets.html', context)
