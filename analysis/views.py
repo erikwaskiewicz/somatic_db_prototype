@@ -760,7 +760,8 @@ def view_polys(request, list_name):
 
     # render the page
     return render(request, 'analysis/view_polys.html', context)
-    
+
+
 @login_required
 def view_artefacts(request, list_name):
     """
@@ -870,7 +871,6 @@ def view_artefacts(request, list_name):
 
     # render the page
     return render(request, 'analysis/view_artefacts.html', context)
-
 
 
 @login_required
