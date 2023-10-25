@@ -7,7 +7,7 @@
   <div class="container">
     <a class="breadcrumb-item active" href="{% url 'home' %}"><span class="fa fa-home"></span></a>
     <a class="breadcrumb-item active" href="{% url 'view_worksheets' 'recent' %}" aria-current="page">Worksheets</a>
-    <a class="breadcrumb-item active" href="{% url 'view_samples' sample_data.worksheet_id %}">{{ sample_data.worksheet_id }}</a>
+    <a class="breadcrumb-item active" href="{% url 'view_ws_samples' sample_data.worksheet_id %}">{{ sample_data.worksheet_id }}</a>
     <a class="breadcrumb-item active" aria-current="page">{{ sample_data.sample_id }}</a>
   </div>
 </nav>

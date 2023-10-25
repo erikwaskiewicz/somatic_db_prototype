@@ -15,9 +15,11 @@ urlpatterns = [
     path('change_password/', views.change_password, name='change_password'),
 
     path('view_worksheets/<str:query>', views.view_worksheets, name='view_worksheets'),
-    path('worksheets/<str:worksheet_id>', views.view_samples, name='view_samples'),
+    path('worksheets/<str:worksheet_id>', views.view_samples, name='view_ws_samples'),
     path('analysis/<str:sample_id>', views.analysis_sheet, name='analysis_sheet'),
     path('ajax/submit_variant_selections/', views.ajax, name='ajax'),
+
+    path('samples/user/<str:user_pk>', views.view_samples, name='view_user_samples'),
 
     path('variant_lists/polys/<str:list_name>', views.view_polys, name='view_polys'),
     path('variant_lists/artefacts/<str:list_name>', views.view_artefacts, name='view_artefacts'),

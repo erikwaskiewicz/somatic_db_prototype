@@ -143,16 +143,40 @@ def view_worksheets(request, query):
 
 
 @login_required
-def view_samples(request, worksheet_id):
+def view_samples(request, worksheet_id=None, user_pk=None):
     """
-    Displays all samples with a worksheet and links to the analysis 
-    for the sample
+    Displays a list of samples from either:
+     - a worksheet: all samples on a worksheet
+     - a user: all samples assigned to a user
+    Only one of the optional args will ever be passed in, each from different URLs, 
+    this will control whether a worksheet or a user is displayed
     """
-    samples = SampleAnalysis.objects.filter(worksheet = worksheet_id)
-    sample_dict = get_samples(samples)
-    ws_obj = Worksheet.objects.get(ws_id = worksheet_id)
-    run_id = ws_obj.run
+    # error if both variables used, shouldnt be able to do this
+    if user_pk and worksheet_id:
+        raise Http404('Invalid URL, both worksheet_id and user_pk were parsed')
 
+    # if all samples per user required
+    # TODO - this still not coded in
+    elif user_pk:
+        samples = []
+        run_id, assay = '', ''
+
+    # if all samples on a worksheet required
+    elif worksheet_id:
+        samples = SampleAnalysis.objects.filter(worksheet = worksheet_id)
+        ws_obj = Worksheet.objects.get(ws_id = worksheet_id)
+        run_id = ws_obj.run
+        assay = ws_obj.assay
+
+    # error if neither variables available
+    else:
+        raise Http404('Invalid URL, neither worksheet_id or user_pk were parsed')
+
+    sample_dict = get_samples(samples)
+
+    ####################################
+    #  If any buttons are pressed
+    ####################################
     if request.method == 'POST':
         # if unassign modal button is pressed
         if 'unassign' in request.POST:
@@ -166,7 +190,7 @@ def view_samples(request, worksheet_id):
                 unassign_check(sample_analysis_obj)
 
                 # redirect to force refresh, otherwise form could accidentally be resubmitted when refreshing the page
-                return redirect('view_samples', worksheet_id)
+                return redirect('view_ws_samples', worksheet_id)
             
         # if reopen modal button is pressed
         if 'reopen' in request.POST:
@@ -181,7 +205,7 @@ def view_samples(request, worksheet_id):
                 reopen_check(current_user, sample_analysis_obj)
 
                 # redirect to force refresh
-                return redirect('view_samples', worksheet_id)
+                return redirect('view_ws_samples', worksheet_id)
 
         # if someone starts a first check
         if 'paperwork_check' in request.POST:
@@ -201,7 +225,7 @@ def view_samples(request, worksheet_id):
     context = {
         'worksheet': worksheet_id,
         'run_id': run_id,
-        'assay': ws_obj.assay,
+        'assay': assay,
         'samples': sample_dict,
         'unassign_form': UnassignForm(),
         'check_form': PaperworkCheckForm(),
@@ -519,7 +543,7 @@ def analysis_sheet(request, sample_id):
                             submitted, err = signoff_check(request.user, current_step_obj, sample_obj)
                             if submitted:
                                 make_next_check(sample_obj, 'IGV')
-                                return redirect('view_samples', sample_data['worksheet_id'])
+                                return redirect('view_ws_samples', sample_data['worksheet_id'])
                             else:
                                 context['warning'].append(err)
                             
@@ -550,7 +574,7 @@ def analysis_sheet(request, sample_id):
                             else:
                                 submitted, err = signoff_check(request.user, current_step_obj, sample_obj, complete=True)
                                 if submitted:
-                                    return redirect('view_samples', sample_data['worksheet_id'])
+                                    return redirect('view_ws_samples', sample_data['worksheet_id'])
 
                                 # throw warning if not all variants are checked
                                 else:
@@ -562,7 +586,7 @@ def analysis_sheet(request, sample_id):
                         submitted, err = signoff_check(request.user, current_step_obj, sample_obj)
                         if submitted:
                             make_next_check(sample_obj, 'IGV')
-                            return redirect('view_samples', sample_data['worksheet_id'])
+                            return redirect('view_ws_samples', sample_data['worksheet_id'])
                         else:
                             context['warning'].append(err)
 
@@ -575,12 +599,12 @@ def analysis_sheet(request, sample_id):
                         if current_step == 'IGV check 1':
                             signoff_check(request.user, current_step_obj, sample_obj, status='F')
                             make_next_check(sample_obj, 'IGV')
-                            return redirect('view_samples', sample_data['worksheet_id'])
+                            return redirect('view_ws_samples', sample_data['worksheet_id'])
 
                         # otherwise sign off and make sample failed
                         else:
                             signoff_check(request.user, current_step_obj, sample_obj, status='F')
-                            return redirect('view_samples', sample_data['worksheet_id'])
+                            return redirect('view_ws_samples', sample_data['worksheet_id'])
 
 
     # render the pages
