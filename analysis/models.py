@@ -61,6 +61,15 @@ class Sample(models.Model):
     sample_name = models.CharField(max_length=200, blank=True, null=True)
     sample_name_check = models.BooleanField(default=False)
 
+    def get_worksheets(self):
+        # get all worksheets that the sample appears on
+        sample_analyses = SampleAnalysis.objects.filter(sample=self)
+        worksheets = []
+        for s in sample_analyses:
+            if s.worksheet not in worksheets:
+                worksheets.append(s.worksheet)
+        return worksheets
+
 
 def make_bedfile_path(instance, filename):
     """

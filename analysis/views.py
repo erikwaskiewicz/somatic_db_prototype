@@ -77,23 +77,24 @@ def ajax_num_assigned_user(request, user_pk):
     AJAX call for the number of uncompleted checks assigned to a user
     Loaded in the background when the home page is loaded
     """
-    # get user object and work out count of uncompleted checks assigned to user
-    user_obj = get_object_or_404(User, pk=user_pk)
-    num_checks = Check.objects.filter(user=user_obj, status='P').count()
+    if request.is_ajax():
+        # get user object and work out count of uncompleted checks assigned to user
+        user_obj = get_object_or_404(User, pk=user_pk)
+        num_checks = Check.objects.filter(user=user_obj, status='P').count()
 
-    # sort out css colouring, green if no checks, yellow if one or more
-    if num_checks == 0:
-        css_class = 'success'
-    else:
-        css_class = 'warning'
+        # sort out css colouring, green if no checks, yellow if one or more
+        if num_checks == 0:
+            css_class = 'success'
+        else:
+            css_class = 'warning'
 
-    # return as json object
-    out_dict = {
-        'num_checks': num_checks,
-        'css_class': css_class,
-    }
+        # return as json object
+        out_dict = {
+            'num_checks': num_checks,
+            'css_class': css_class,
+        }
 
-    return JsonResponse(out_dict)
+        return JsonResponse(out_dict)
 
 
 def ajax_num_pending_worksheets(request):
@@ -101,24 +102,59 @@ def ajax_num_pending_worksheets(request):
     AJAX call for the number of uncompleted worksheets
     Loaded in the background when the home page is loaded
     """
-    # get all worksheets then filter for only ones that have a current IGV check in them
-    all_worksheets = Worksheet.objects.filter(diagnostic=True).order_by('-run')
-    pending_worksheets = [w for w in all_worksheets if 'IGV' in w.get_status_and_samples()[0]]
-    num_pending = len(pending_worksheets)
+    if request.is_ajax():
+        # get all worksheets then filter for only ones that have a current IGV check in them
+        all_worksheets = Worksheet.objects.filter(diagnostic=True).order_by('-run')
+        pending_worksheets = [w for w in all_worksheets if 'IGV' in w.get_status_and_samples()[0]]
+        num_pending = len(pending_worksheets)
 
-    # sort out css colouring, green if no checks, yellow if one or more
-    if num_pending == 0:
-        css_class = 'success'
-    else:
-        css_class = 'warning'
+        # sort out css colouring, green if no checks, yellow if one or more
+        if num_pending == 0:
+            css_class = 'success'
+        else:
+            css_class = 'warning'
 
-    # return as json object
-    out_dict = {
-        'num_pending': num_pending,
-        'css_class': css_class,
-    }
+        # return as json object
+        out_dict = {
+            'num_pending': num_pending,
+            'css_class': css_class,
+        }
 
-    return JsonResponse(out_dict)
+        return JsonResponse(out_dict)
+
+
+def ajax_autocomplete(request):
+    """
+    Get a list of worksheets for autocompleting the search bar on the home page
+    """
+    if request.is_ajax():
+        # get search term from ajax
+        query_string = request.GET.get('term', '')
+        results = []
+
+        # use to search for worksheets
+        ws_queryset = Worksheet.objects.filter(ws_id__icontains=query_string)
+        sample_queryset = Sample.objects.filter(sample_id__icontains=query_string)
+
+        # process query results from worksheet objects
+        for record in ws_queryset:
+            results.append({
+                'ws': record.ws_id,
+                'sample': None,
+            })
+
+        # process query results from sample objects
+        for record in sample_queryset:
+            for ws in record.get_worksheets():
+                results.append({
+                    'ws': ws.ws_id,
+                    'sample': record.sample_id,
+                })
+
+        # return to template
+        data = json.dumps(results)
+
+        return HttpResponse(data, 'application/json')
 
 
 @login_required
