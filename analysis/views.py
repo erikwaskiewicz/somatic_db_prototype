@@ -77,15 +77,27 @@ def view_worksheets(request, query):
     Displays all worksheets and links to the page to show all samples 
     within the worksheet
     """
-    # based on URL, either query 30 most recent or all results
+    # based on URL, do a different query
+    # 30 most recent worksheets
     if query == 'recent':
         worksheets = Worksheet.objects.filter(diagnostic=True).order_by('-run')[:30]
         filtered = True
 
+    # all worksheets that arent diagnostic
     elif query == 'training':
         worksheets = Worksheet.objects.filter(diagnostic=False).order_by('-run')
         filtered = True
 
+    # all worksheets with an IGV check still open
+    elif query == 'pending':
+        # TODO this will load in all worksheets first, is there a quicker way?
+        all_worksheets = Worksheet.objects.filter(diagnostic=True).order_by('-run')
+
+        # only include worksheets that have a current IGV check in them
+        worksheets = [w for w in all_worksheets if 'IGV' in w.get_status_and_samples()[0]]
+        filtered = True
+
+    # all worksheets
     elif query == 'all':
         worksheets = Worksheet.objects.all().order_by('-run')
         filtered = False
