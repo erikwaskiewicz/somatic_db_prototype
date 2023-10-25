@@ -1,0 +1,86 @@
+{% extends 'analysis/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block breadcrumbs %}
+<br>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  
+  <div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <h1 class="display-4"><i class="fa fa-dna"></i> Somatic Variant Database</h1>
+
+      <hr class="my-4">
+      <p class="lead">Search for worksheets by worksheet or sample ID:</p>
+      <form>
+        <div class="form-row">
+          <div class="col-10">
+            <input class="form-control form-control-lg" type="text" placeholder="Worksheets will start to autofill after 4 characters are typed">
+          </div>
+          <div class="col-2">
+            <button type="submit" class="btn btn-secondary btn-lg w-100"><i class="fa fa-search"></i> Search</button>
+          </div>
+        </div>
+      </form>
+      
+    </div>
+  </div>
+</div>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-5">
+
+      <div class="alert alert-success" role="alert">
+        <div class="row">
+          <div class="col-10"><h5><span class="badge badge-pill badge-success">0</span> Analyses assigned to me</h5></div>
+          <div class="col-2"><button type="button" class="btn btn-light w-100"><i class="fa fa-search"></i></button></div>
+        </div>
+      </div>
+
+      <div class="alert alert-warning" role="alert">
+        <div class="row">
+          <div class="col-10"><h5><span class="badge badge-pill badge-warning">9</span> Worksheets not completed</h5></div>
+          <div class="col-2"><button type="button" class="btn btn-light w-100"><i class="fa fa-search"></i></button></div>
+        </div>
+      </div>
+
+      <div class="alert alert-secondary" role="alert">
+        <h5>Quick links</h5>
+        <br>
+        <p><a class="btn btn-info w-100" href="{% url 'view_worksheets' 'recent' %}">Recent worksheets</a></p>
+        <p><a class="btn btn-info w-100" href="{% url 'view_worksheets' 'recent' %}">All training/ validation worksheets</a></p>
+        <p><a class="btn btn-info w-100" href="{% url 'view_worksheets' 'all' %}">All worksheets (slow loading)</a></p>
+      </div>
+
+    </div>
+
+    <div class="col-7">
+
+      <div class="alert alert-info" role="alert">
+        <h5>Please send us your feedback!</h5>
+        <p>This is the first iteration of a homepage for the SVD, designed so that you can find the worksheets or samples you need as soon as possible and try to avoid some of the long loading times when loading all worksheets.</p>
+        <p>New features:</p>
+        <ul>
+          <li>Search bar above to find specific worksheets</li>
+          <li>Any samples currently assined to you will appear in 1st box to the left, box will be yellow/green depending if you do/dont have anything assigned to you</li>
+          <li>View any worksheet that has samples that arent completed in 2nd box to the left, again colur coded as above</li>
+          <li>Quick links for common searches</li>
+        </ul> 
+        <p>Ideas for future:</p>
+        <ul>
+          <li>Expand search/ quick link options - let us know of any common searches you would like to add</li>
+          <li>An advanced search option for more specific queries</li>
+          <li>Dashboard with summary statistics of e.g. how many samples last month, split by referral/assay etc... Let us know if you've got any ideas of things that would be good to include</li>
+        </ul> 
+        <p>If you have comments on the above or any new ideas on anything you'd like to be included then please email bioinformatics.team@wales.nhs.uk</p>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+{% endblock %}

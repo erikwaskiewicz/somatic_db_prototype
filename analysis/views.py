@@ -66,9 +66,9 @@ def signup(request):
 @login_required
 def home(request):
     """
-    TODO - no home page yet, just redirect to list of worksheets
+    Landing page of webapp, contains search bar and quick links to other parts of the app
     """
-    return redirect('view_worksheets', 'recent')
+    return render(request, 'analysis/home.html', {})
 
 
 @login_required
