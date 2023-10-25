@@ -34,16 +34,16 @@
   <div class="row">
     <div class="col-5">
 
-      <div class="alert alert-success" role="alert">
+      <div id="num_assigned_alert" class="alert alert-warning" role="alert">
         <div class="row">
-          <div class="col-10"><h5><span class="badge badge-pill badge-success">0</span> Analyses assigned to me</h5></div>
+          <div class="col-10"><h5><span id="num_assigned_text" class="badge badge-pill badge-warning">?</span> Analyses assigned to me</h5></div>
           <div class="col-2"><a class="btn btn-light w-100" href="{% url 'view_user_samples' request.user.pk %}"><i class="fa fa-search"></i></a></div>
         </div>
       </div>
 
-      <div class="alert alert-warning" role="alert">
+      <div id="num_pending_alert" class="alert alert-warning" role="alert">
         <div class="row">
-          <div class="col-10"><h5><span class="badge badge-pill badge-warning">9</span> Worksheets not completed</h5></div>
+          <div class="col-10"><h5><span id="num_pending_text" class="badge badge-pill badge-warning">?</span> Worksheets not completed</h5></div>
           <div class="col-2"><a class="btn btn-light w-100" href="{% url 'view_worksheets' 'pending' %}"><i class="fa fa-search"></i></a></div>
         </div>
       </div>
@@ -83,4 +83,52 @@
 
   </div>
 </div>
+
+<script>
+  $(document).ready(function(){
+      $.ajax({
+          url: "{% url 'ajax-num-assigned' request.user.pk %}",
+          type: 'GET',
+          success: function(data) {
+              // set number of checks value and CSS
+              num_checks_span = document.getElementById("num_assigned_text")
+              num_checks_span.innerHTML = data.num_checks;
+              num_checks_span.classList.remove("badge-warning");
+              num_checks_span.classList.add("badge-" + data.css_class);
+
+              // set background colour of the box
+              num_checks_alert = document.getElementById("num_assigned_alert");
+              num_checks_alert.classList.remove("alert-warning");
+              num_checks_alert.classList.add("alert-" + data.css_class);
+          },
+          failure: function(data) {
+              alert('Got an error');
+          }
+      });
+
+
+      $.ajax({
+          url: "{% url 'ajax-num-pending' %}",
+          type: 'GET',
+          success: function(data) {
+              // set number of checks value and CSS
+              num_checks_span = document.getElementById("num_pending_text")
+              num_checks_span.innerHTML = data.num_pending;
+              num_checks_span.classList.remove("badge-warning");
+              num_checks_span.classList.add("badge-" + data.css_class);
+
+              // set background colour of the box
+              num_checks_alert = document.getElementById("num_pending_alert");
+              num_checks_alert.classList.remove("alert-warning");
+              num_checks_alert.classList.add("alert-" + data.css_class);
+          },
+          failure: function(data) {
+              alert('Got an error');
+          }
+      });
+
+
+  });
+</script>
+
 {% endblock %}

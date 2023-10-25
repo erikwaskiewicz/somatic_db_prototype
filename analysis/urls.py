@@ -20,6 +20,8 @@ urlpatterns = [
     path('ajax/submit_variant_selections/', views.ajax, name='ajax'),
 
     path('samples/user/<str:user_pk>', views.view_samples, name='view_user_samples'),
+    path('ajax/get_num_assigned/<str:user_pk>', views.ajax_num_assigned_user, name='ajax-num-assigned'),
+    path('ajax/get_num_pending', views.ajax_num_pending_worksheets, name='ajax-num-pending'),
 
     path('variant_lists/polys/<str:list_name>', views.view_polys, name='view_polys'),
     path('variant_lists/artefacts/<str:list_name>', views.view_artefacts, name='view_artefacts'),
