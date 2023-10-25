@@ -23,6 +23,8 @@ def get_samples(samples):
                 'sample_id': sample_id,
                 'panels': [{
                     'analysis_id': s.pk,
+                    'worksheet': s.worksheet,
+                    'assay': s.panel.get_assay_display(),
                     'panel': s.panel,
                     'checks': s.get_checks(),
                 }]
@@ -32,6 +34,8 @@ def get_samples(samples):
         else:
             sample_dict[sample_id]['panels'].append({
                     'analysis_id': s.pk,
+                    'worksheet': s.worksheet,
+                    'assay': s.panel.get_assay_display(),
                     'panel': s.panel,
                     'checks': s.get_checks(),
                 }

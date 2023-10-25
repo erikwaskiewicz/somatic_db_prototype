@@ -5,25 +5,58 @@
 <nav class="breadcrumb flex-nowrap" aria-label="breadcrumb">
   <div class="container">
     <a class="breadcrumb-item active" href="{% url 'home' %}"><span class="fa fa-home"></span></a>
+    {% if template == 'user' %}
+    <a class="breadcrumb-item active" aria-current="page">Samples: {{ username }}</a>
+
+    {% elif template == 'worksheet' %}
     <a class="breadcrumb-item active" href="{% url 'view_worksheets' 'recent' %}" aria-current="page">Worksheets</a>
     <a class="breadcrumb-item active" aria-current="page">{{ worksheet }}</a>
+  
+    {% endif %}
   </div>
 </nav>
 {% endblock %}
 
 {% block content %}
 <div class="container">
-  <h5>Samples {{ worksheet }}</h5>
+  {% if template == 'user' %}
+  <h5>All samples assigned to <b>{{ username }}</b></h5>
+
+  {% elif template == 'worksheet' %}
+  <h5>All samples on worksheet <b>{{ worksheet }}</b></h5>
+  <br>
+
+  <table class="table table-sm">
+    <tbody>
+      <tr>
+        <th class="col-3">Worksheet ID</th>
+        <td class="col-9">{{ worksheet }}</td>
+      </tr>
+      <tr>
+        <th>Run ID</th>
+        <td>{{ run_id }}</td>
+      </tr>
+      <tr>
+        <th>Assay</th>
+        <td>{{ assay }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  {% endif %}
   <br>
 
   <table class="table" id="samples-table">
     <thead>
       <tr>
         <th scope="col">Sample ID</th>
+        {% if template == 'user' %}
+        <th scope="col">WS ID</th>
         <th scope="col">Assay</th>
+        {% endif %}
         <th scope="col">Panel</th>
         <th scope="col">Status</th>
-        <th scope="col">Assigned to</th>
+        {% if template == 'worksheet' %}<th scope="col">Assigned to</th>{% endif %}
         <th scope="col"></th>
       </tr>
     </thead>
@@ -32,10 +65,13 @@
         {% for analysis in sample_info.panels %}
         <tr>
           <td>{{ sample }}</td>
-          <td>{{ assay }}</td>
+          {% if template == 'user' %}
+          <td>{{ analysis.worksheet }}</td>
+          <td>{{ analysis.assay }}</td>
+          {% endif %}
           <td>{{ analysis.panel }}</td>
           <td>{{ analysis.checks.current_status }}</td>
-          <td>{{ analysis.checks.assigned_to }}</td>
+          {% if template == 'worksheet' %}<td>{{ analysis.checks.assigned_to }}</td>{% endif %}
           <td style="text-align:right">
 
             <!-- NOTE: order is important in the if loop below -->
@@ -47,7 +83,7 @@
               <button type="button btn-block" class="btn btn-info dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
-              <div class="dropdown-menu">
+              <div class="dropdown-menu dropdown-menu-right">
                 <a class="dropdown-item" data-toggle="modal" data-target="#reopen-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.current_check_object.user }}">
                   Reopen Previous Check
                 </a>
@@ -65,7 +101,7 @@
               <button type="button btn-block" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
-              <div class="dropdown-menu">
+              <div class="dropdown-menu dropdown-menu-right">
                 <a class="dropdown-item" data-toggle="modal" data-target="#reopen-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.current_check_object.user }}">
                   Reopen Previous Check
                 </a>
@@ -87,7 +123,7 @@
               <button type="button btn-block" class="btn btn-warning dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
-              <div class="dropdown-menu">
+              <div class="dropdown-menu dropdown-menu-right">
                 <a class="dropdown-item" data-toggle="modal" data-target="#unassign-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.assigned_to }}" data-status="{{ analysis.checks.current_status }}">
                   Unassign
                 </a>
@@ -101,7 +137,7 @@
               <button type="button btn-block" class="btn btn-warning dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
-              <div class="dropdown-menu">
+              <div class="dropdown-menu dropdown-menu-right">
                 <a class="dropdown-item" data-toggle="modal" data-target="#unassign-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.assigned_to }}" data-status="{{ analysis.checks.current_status }}">
                   Unassign
                 </a>
@@ -125,7 +161,7 @@
               <button type="button btn-block" class="btn btn-light dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
-              <div class="dropdown-menu">
+              <div class="dropdown-menu dropdown-menu-right">
                 <a class="dropdown-item" data-toggle="modal" data-target="#unassign-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.assigned_to }}" data-status="{{ analysis.checks.current_status }}">
                   Unassign
                 </a>
@@ -141,7 +177,7 @@
               <button type="button btn-block" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
-              <div class="dropdown-menu">
+              <div class="dropdown-menu dropdown-menu-right">
                 <a class="dropdown-item" data-toggle="modal" data-target="#unassign-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.assigned_to }}" data-status="{{ analysis.checks.current_status }}">
                   Unassign
                 </a>

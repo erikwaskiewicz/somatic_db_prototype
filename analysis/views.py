@@ -6,6 +6,7 @@ from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.utils import timezone
 from django.template.loader import get_template
 from django.template import Context
+from django.shortcuts import get_object_or_404
 
 from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, 
     CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, 
@@ -88,7 +89,7 @@ def view_worksheets(request, query):
         worksheets = Worksheet.objects.filter(diagnostic=False).order_by('-run')
         filtered = True
 
-    # all worksheets with an IGV check still open
+    # all diagnostic worksheets with an IGV check still open
     elif query == 'pending':
         # TODO this will load in all worksheets first, is there a quicker way?
         all_worksheets = Worksheet.objects.filter(diagnostic=True).order_by('-run')
@@ -151,28 +152,48 @@ def view_samples(request, worksheet_id=None, user_pk=None):
     Only one of the optional args will ever be passed in, each from different URLs, 
     this will control whether a worksheet or a user is displayed
     """
+    # start context dictionary
+    context = {
+        'unassign_form': UnassignForm(),
+        'check_form': PaperworkCheckForm(),
+        'reopen_form': ReopenForm(),
+    }
+
     # error if both variables used, shouldnt be able to do this
     if user_pk and worksheet_id:
         raise Http404('Invalid URL, both worksheet_id and user_pk were parsed')
 
     # if all samples per user required
-    # TODO - this still not coded in
     elif user_pk:
-        samples = []
-        run_id, assay = '', ''
+
+        # get user object to get list of checks, then get the related samples
+        user_obj = get_object_or_404(User, pk=user_pk)
+        user_checks = Check.objects.filter(user=user_obj, status='P')
+        samples = [c.analysis for c in user_checks]
+
+        # get template specific variables needed for context
+        context['template'] = 'user'
+        context['username'] = user_obj.username
+        context['samples'] = get_samples(samples)
 
     # if all samples on a worksheet required
     elif worksheet_id:
+
+        # get list of samples
         samples = SampleAnalysis.objects.filter(worksheet = worksheet_id)
+
+        # get template specific variables needed for context
         ws_obj = Worksheet.objects.get(ws_id = worksheet_id)
-        run_id = ws_obj.run
-        assay = ws_obj.assay
+        context['template'] = 'worksheet'
+        context['worksheet'] = worksheet_id
+        context['run_id'] = ws_obj.run
+        context['assay'] = ws_obj.assay
+        context['samples'] = get_samples(samples)
 
     # error if neither variables available
     else:
         raise Http404('Invalid URL, neither worksheet_id or user_pk were parsed')
 
-    sample_dict = get_samples(samples)
 
     ####################################
     #  If any buttons are pressed
@@ -190,8 +211,11 @@ def view_samples(request, worksheet_id=None, user_pk=None):
                 unassign_check(sample_analysis_obj)
 
                 # redirect to force refresh, otherwise form could accidentally be resubmitted when refreshing the page
-                return redirect('view_ws_samples', worksheet_id)
-            
+                if context['template'] == 'worksheet':
+                    return redirect('view_ws_samples', worksheet_id)
+                elif context['template'] == 'user':
+                    return redirect('view_user_samples', user_pk)
+
         # if reopen modal button is pressed
         if 'reopen' in request.POST:
             reopen_form = ReopenForm(request.POST)
@@ -221,16 +245,6 @@ def view_samples(request, worksheet_id=None, user_pk=None):
 
                 return redirect('analysis_sheet', sample_analysis_obj.pk)
 
-    # render context
-    context = {
-        'worksheet': worksheet_id,
-        'run_id': run_id,
-        'assay': assay,
-        'samples': sample_dict,
-        'unassign_form': UnassignForm(),
-        'check_form': PaperworkCheckForm(),
-        'reopen_form': ReopenForm(),
-    }
 
     return render(request, 'analysis/view_samples.html', context)
 
