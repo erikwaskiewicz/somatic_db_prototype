@@ -69,8 +69,8 @@ def home(request):
     """
     Landing page of webapp, contains search bar and quick links to other parts of the app
     """
-    # TODO make jquery UI local static files
-    # TODO spinners when ajax loading
+    # TODO make jquery UI local static files + bootstrap too
+    # TODO spinners when ajax loading - done counts, need to do search bar
 
     return render(request, 'analysis/home.html', {})
 
