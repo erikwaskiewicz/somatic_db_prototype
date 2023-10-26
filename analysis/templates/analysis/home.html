@@ -13,18 +13,12 @@
       <h1 class="display-4"><i class="fa fa-dna"></i> Somatic Variant Database</h1>
 
       <hr class="my-4">
-      <p class="lead">Search for worksheets by worksheet or sample ID:</p>
+      <p class="lead">Find a worksheet:</p>
 
       <form method="POST">
         {% csrf_token %}
-        <div class="form-row">
-          <div class="col-10">
-            <input id="ws_search" name="ws_search" class="form-control form-control-lg" type="text">
-          </div>
-          <div class="col-2">
-            <button type="submit" class="btn btn-secondary btn-lg btn-submit w-100"><i class="fa fa-search"></i> Search</button>
-          </div>
-        </div>
+        <input id="ws_search" name="ws_search" class="form-control form-control-lg" type="text" placeholder="Start typing a worksheet or sample ID...">
+        <small class="form-text text-muted">Matching worksheets will autofill after 4 or more characters have been typed, the query will be quicker the more you type in.</small>
       </form>
 
     </div>
@@ -102,6 +96,9 @@
           // set value that is saved from dropdown - just the worksheet ID
           select: function( event, ui ) {
               $( "#ws_search" ).val( ui.item.ws );
+              // redirect to the worksheet when selected from the dropdown
+              // temp is added so that the URL is made on page load, then replaced with the correct variable by the javascript
+              window.location.href = '{% url "view_ws_samples" "temp" %}'.replace('temp', ui.item.ws);
               return false;
           }
       })

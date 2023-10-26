@@ -69,6 +69,11 @@ def home(request):
     """
     Landing page of webapp, contains search bar and quick links to other parts of the app
     """
+    # TODO make jquery UI local static files
+    # TODO spinners when ajax loading
+    # TODO tidy up table at top of worksheet page
+    # TODO datatables on worksheets page not working
+
     return render(request, 'analysis/home.html', {})
 
 
