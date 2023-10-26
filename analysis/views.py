@@ -71,8 +71,6 @@ def home(request):
     """
     # TODO make jquery UI local static files
     # TODO spinners when ajax loading
-    # TODO tidy up table at top of worksheet page
-    # TODO datatables on worksheets page not working
 
     return render(request, 'analysis/home.html', {})
 

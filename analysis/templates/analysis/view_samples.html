@@ -26,7 +26,7 @@
   <h5>All samples on worksheet <b>{{ worksheet }}</b></h5>
   <br>
 
-  <table class="table table-sm">
+  <table class="table table-bordered table-sm col-8">
     <tbody>
       <tr>
         <th class="col-3">Worksheet ID</th>
@@ -361,7 +361,13 @@
 
 
 
-<script>
+<script data-template="{{ template }}">
+
+    // get variable from data-attribute in script tag. Must be before document.ready
+    const data = document.currentScript.dataset;
+    const template = data.template;
+
+    // load these after the page has loaded
     $(document).ready( function() {
 
         // remove anthing after the hash in the URL, to prevent carrying over from a previous analysis (see issue #47)
@@ -371,17 +377,30 @@
             window.history.replaceState({}, document.title, clean_uri);
         }
 
-        // Inititialise DataTable
-        $('#samples-table').DataTable({
-            paging: true,
-            columns: [
+        // set columns list depending on template, datatables wont render if the length of columns is different
+        if (template == 'worksheet') {
+            var cols = [
+                {orderable: true},
+                {orderable: true},
+                {orderable: true},
+                {orderable: true},
+                {orderable: false},
+            ]
+        } else {
+            var cols = [
                 {orderable: true},
                 {orderable: true},
                 {orderable: true},
                 {orderable: true},
                 {orderable: true},
                 {orderable: false},
-            ],
+            ]
+        }
+
+        // Inititialise DataTable
+        $('#samples-table').DataTable({
+            paging: true,
+            columns: cols,
             info: true,
             pageLength: 25,
             searching: true,
