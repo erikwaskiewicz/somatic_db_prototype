@@ -118,7 +118,7 @@
               // temp is added so that the URL is made on page load, then replaced with the correct variable by the javascript
               window.location.href = '{% url "view_ws_samples" "temp" %}'.replace('temp', ui.item.ws);
               return false;
-          }
+          },
       })
       // reformat the list options
       .autocomplete('instance')._renderItem = function(ul, item) {

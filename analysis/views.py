@@ -70,7 +70,7 @@ def home(request):
     Landing page of webapp, contains search bar and quick links to other parts of the app
     """
     # TODO make jquery UI local static files + bootstrap too
-    # TODO spinners when ajax loading - done counts, need to do search bar
+    # TODO spinners when ajax loading - done counts, need to do search bar - example in firfox might need fontawesome updating
 
     return render(request, 'analysis/home.html', {})
 

@@ -72,7 +72,14 @@
       .pagination .page-item.active .page-link:hover {
         background-color: #5F9EA0;
       }
-      
+
+      .breadcrumbs-custom {
+        background-color: #d1dedf;
+      }
+      .breadcrumbs-custom a:link, .breadcrumbs-custom a:visited {
+        color: #6c757d !important;
+        
+      }
     </style>
 
   </head>
@@ -110,11 +117,6 @@
 
     <!-- insert breadcrumb section from child template -->
     {% block breadcrumbs %}
-    <nav class="breadcrumb flex-nowrap" aria-label="breadcrumb">
-      <div class="container">
-        <a class="breadcrumb-item active" href="{% url 'home' %}" aria-current="page"><span class="fa fa-home"></span></a>
-      </div>
-    </nav>
     {% endblock %}
 
 

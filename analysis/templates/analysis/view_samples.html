@@ -2,19 +2,22 @@
 {% load crispy_forms_tags %}
 
 {% block breadcrumbs %}
-<nav class="breadcrumb flex-nowrap" aria-label="breadcrumb">
+<div class="container-fluid breadcrumbs-custom">
   <div class="container">
-    <a class="breadcrumb-item active" href="{% url 'home' %}"><span class="fa fa-home"></span></a>
-    {% if template == 'user' %}
-    <a class="breadcrumb-item active" aria-current="page">Samples: {{ username }}</a>
+    <ol class="breadcrumb" style="background-color: transparent;">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}"><span class="fa fa-home"></span></a></li>
 
-    {% elif template == 'worksheet' %}
-    <a class="breadcrumb-item active" href="{% url 'view_worksheets' 'recent' %}" aria-current="page">Worksheets</a>
-    <a class="breadcrumb-item active" aria-current="page">{{ worksheet }}</a>
-  
-    {% endif %}
+        {% if template == 'user' %}
+        <li class="breadcrumb-item active">Samples: {{ username }}</li>
+
+        {% elif template == 'worksheet' %}
+        <li class="breadcrumb-item"><a href="{% url 'view_worksheets' 'recent' %}">Worksheets</a></li>
+        <li class="breadcrumb-item active">{{ worksheet }}</li>
+
+        {% endif %}
+    </ol>
   </div>
-</nav>
+</div>
 {% endblock %}
 
 {% block content %}

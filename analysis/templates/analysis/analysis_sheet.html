@@ -3,14 +3,16 @@
 
 
 {% block breadcrumbs %}
-<nav class="breadcrumb flex-nowrap" aria-label="breadcrumb">
+<div class="container-fluid breadcrumbs-custom">
   <div class="container">
-    <a class="breadcrumb-item active" href="{% url 'home' %}"><span class="fa fa-home"></span></a>
-    <a class="breadcrumb-item active" href="{% url 'view_worksheets' 'recent' %}" aria-current="page">Worksheets</a>
-    <a class="breadcrumb-item active" href="{% url 'view_ws_samples' sample_data.worksheet_id %}">{{ sample_data.worksheet_id }}</a>
-    <a class="breadcrumb-item active" aria-current="page">{{ sample_data.sample_id }}</a>
+    <ol class="breadcrumb" style="background-color: transparent;">
+      <li class="breadcrumb-item active"><a href="{% url 'home' %}"><span class="fa fa-home"></span></a></li>
+      <li class="breadcrumb-item"><a href="{% url 'view_worksheets' 'recent' %}">Worksheets</a></li>
+      <li class="breadcrumb-item active"><a href="{% url 'view_ws_samples' sample_data.worksheet_id %}">{{ sample_data.worksheet_id }}</a></li>
+      <li class="breadcrumb-item active">{{ sample_data.sample_id }}</li>
+    </ol>
   </div>
-</nav>
+</div>
 {% endblock %}
 
 {% block content %}
