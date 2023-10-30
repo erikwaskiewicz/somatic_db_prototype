@@ -12,7 +12,17 @@ $(document).ready(function(){
         source: ajax_search_url,
         minLength: 4,
         delay: 750,
-        // select what is displayed as you hover over ech option (raw worksheet ID)
+        // show the spinner when running the query
+        search: function( event, ui ) {
+            spinner = document.getElementById('loading_spinner');
+            spinner.classList.remove('spinner-hidden')
+        },
+        // hide the spinner when results are returned
+        response: function( event, ui ) {
+            spinner = document.getElementById('loading_spinner');
+            spinner.classList.add('spinner-hidden')
+        },
+        // select what is displayed as you hover over each option (raw worksheet ID)
         focus: function( event, ui ) {
             $( "#ws_search" ).val( ui.item.ws );
             return false;

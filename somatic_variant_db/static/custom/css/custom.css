@@ -54,3 +54,8 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination .page-item.active .
 .breadcrumbs-custom a:link, .breadcrumbs-custom a:visited {
     color: #6c757d !important;
 }
+
+/* hidden class for loading spinner */
+.spinner-hidden {
+    visibility: hidden;
+}
