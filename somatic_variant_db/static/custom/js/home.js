@@ -22,11 +22,6 @@ $(document).ready(function(){
             spinner = document.getElementById('loading_spinner');
             spinner.classList.add('spinner-hidden')
         },
-        // select what is displayed as you hover over each option (raw worksheet ID)
-        focus: function( event, ui ) {
-            $( "#ws_search" ).val( ui.item.ws );
-            return false;
-        },
         // set value that is saved from dropdown - just the worksheet ID
         select: function( event, ui ) {
             $( "#ws_search" ).val( ui.item.ws );
