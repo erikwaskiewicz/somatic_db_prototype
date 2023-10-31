@@ -104,9 +104,33 @@ def ajax_num_pending_worksheets(request):
     """
     if request.is_ajax():
         # get all worksheets then filter for only ones that have a current IGV check in them
-        all_worksheets = Worksheet.objects.filter(diagnostic=True).order_by('-run')
+        all_worksheets = Worksheet.objects.filter(signed_off=True, diagnostic=True).order_by('-run')
         pending_worksheets = [w for w in all_worksheets if 'IGV' in w.get_status_and_samples()[0]]
         num_pending = len(pending_worksheets)
+
+        # sort out css colouring, green if no checks, yellow if one or more
+        if num_pending == 0:
+            css_class = 'success'
+        else:
+            css_class = 'warning'
+
+        # return as json object
+        out_dict = {
+            'num_pending': num_pending,
+            'css_class': css_class,
+        }
+
+        return JsonResponse(out_dict)
+
+
+def ajax_num_worksheet_qc(request):
+    """
+    AJAX call for the number of worksheets waiting on bioinformatics QC
+    Loaded in the background when the home page is loaded
+    """
+    if request.is_ajax():
+        # get all worksheets that havent been signed off yet
+        num_pending = Worksheet.objects.filter(signed_off=False).count()
 
         # sort out css colouring, green if no checks, yellow if one or more
         if num_pending == 0:
@@ -133,7 +157,7 @@ def ajax_autocomplete(request):
         results = []
 
         # use to search for worksheets
-        ws_queryset = Worksheet.objects.filter(ws_id__icontains=query_string)
+        ws_queryset = Worksheet.objects.filter(signed_off=True, ws_id__icontains=query_string)
         sample_queryset = Sample.objects.filter(sample_id__icontains=query_string)
 
         # process query results from worksheet objects
@@ -166,26 +190,35 @@ def view_worksheets(request, query):
     # based on URL, do a different query
     # 30 most recent worksheets
     if query == 'recent':
-        worksheets = Worksheet.objects.filter(diagnostic=True).order_by('-run')[:30]
+        worksheets = Worksheet.objects.filter(signed_off=True, diagnostic=True).order_by('-run')[:30]
         filtered = True
 
     # all worksheets that arent diagnostic
     elif query == 'training':
-        worksheets = Worksheet.objects.filter(diagnostic=False).order_by('-run')
+        worksheets = Worksheet.objects.filter(signed_off=True, diagnostic=False).order_by('-run')
         filtered = True
 
     # all diagnostic worksheets with an IGV check still open
     elif query == 'pending':
         # TODO this will load in all worksheets first, is there a quicker way?
-        all_worksheets = Worksheet.objects.filter(diagnostic=True).order_by('-run')
+        all_worksheets = Worksheet.objects.filter(signed_off=True, diagnostic=True).order_by('-run')
 
         # only include worksheets that have a current IGV check in them
         worksheets = [w for w in all_worksheets if 'IGV' in w.get_status_and_samples()[0]]
         filtered = True
 
+    # worksheets waiting on bioinformatics QC
+    # TODO will need to test what happens if we add an extra sample to a worksheet
+    # TODO badge for training worksheets/ QC pending
+    # TODO QC page - edit worksheets page. status is currently a function, needs to be stored in DB
+    # TODO control QC by user group
+    elif query == 'qc':
+        worksheets = Worksheet.objects.filter(signed_off=False).order_by('-run')
+        filtered = True
+
     # all worksheets
     elif query == 'all':
-        worksheets = Worksheet.objects.all().order_by('-run')
+        worksheets = Worksheet.objects.filter(signed_off=True).order_by('-run')
         filtered = False
 
     # any other string will be chnaged to most recent, if left blank then it'll throw a 404 error

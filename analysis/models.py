@@ -30,11 +30,19 @@ class Worksheet(models.Model):
     An NGS worksheet, sometimes 1 run == 1 worksheet, sometimes there are multiple ws per run
 
     """
+    QC_CHOICES = (
+        ('-', 'Pending'),
+        ('P', 'QC pass'),
+        ('F', 'QC fail'),
+    )
     ws_id = models.CharField(max_length=50, primary_key=True)
     run = models.ForeignKey('Run', on_delete=models.CASCADE)
     assay = models.CharField(max_length=50)
     diagnostic = models.BooleanField(default=True)
     upload_time = models.DateTimeField(blank=True, null=True)
+    signed_off = models.BooleanField(default=False) # will need to swap to true for migrations
+    qc_pass_fail = models.CharField(max_length=1, default='-', choices=QC_CHOICES)
+    auto_qc_pk = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
         return self.ws_id
@@ -67,8 +75,9 @@ class Sample(models.Model):
         sample_analyses = SampleAnalysis.objects.filter(sample=self)
         worksheets = []
         for s in sample_analyses:
-            if s.worksheet not in worksheets:
-                worksheets.append(s.worksheet)
+            if s.worksheet.signed_off:
+                if s.worksheet not in worksheets:
+                    worksheets.append(s.worksheet)
         return worksheets
 
 
@@ -135,6 +144,12 @@ class SampleAnalysis(models.Model):
     then there will be multiple sample analysis objects
 
     """
+    QC_CHOICES = (
+        ('-', 'Pending'),
+        ('P', 'Pass'),
+        ('F1', 'QC fail'),
+        ('F2', 'Analysis fail'),
+    )
     worksheet = models.ForeignKey('Worksheet', on_delete=models.CASCADE)
     sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
     panel = models.ForeignKey('Panel', on_delete=models.CASCADE)
@@ -143,7 +158,7 @@ class SampleAnalysis(models.Model):
     total_reads_ntc = models.IntegerField(blank=True, null=True)
     genome_build = models.IntegerField(default=37)
     upload_time = models.DateTimeField(blank=True, null=True)
-
+    sample_pass_fail = models.CharField(max_length=2, default='-', choices=QC_CHOICES)
 
     def percent_reads_ntc(self):
         """
