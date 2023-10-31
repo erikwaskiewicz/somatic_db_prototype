@@ -34,6 +34,7 @@ class Worksheet(models.Model):
     run = models.ForeignKey('Run', on_delete=models.CASCADE)
     assay = models.CharField(max_length=50)
     diagnostic = models.BooleanField(default=True)
+    upload_time = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return self.ws_id
@@ -141,6 +142,8 @@ class SampleAnalysis(models.Model):
     total_reads = models.IntegerField(blank=True, null=True)
     total_reads_ntc = models.IntegerField(blank=True, null=True)
     genome_build = models.IntegerField(default=37)
+    upload_time = models.DateTimeField(blank=True, null=True)
+
 
     def percent_reads_ntc(self):
         """
