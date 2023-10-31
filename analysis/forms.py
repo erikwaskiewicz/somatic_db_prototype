@@ -52,6 +52,29 @@ class PaperworkCheckForm(forms.Form):
         )
 
 
+class RunQCForm(forms.Form):
+    """
+    Perform QC on a worksheet
+
+    """
+    QC_CHOICES = (
+        ('P', 'Pass'),
+        ('F', 'Fail'),
+
+    )
+    qc_result = forms.ChoiceField(choices=QC_CHOICES, label='Run QC pass or fail')
+    confirm = forms.BooleanField(required=True, label='Confirm that any individual sample fails have been failed below')
+    auto_qc_pk = forms.CharField(label='AutoQC primary key')
+
+    def __init__(self, *args, **kwargs):
+        super(RunQCForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Complete QC', css_class='btn btn-warning w-100')
+        )
+
+
 class NewVariantForm(forms.Form):
     """
     Manually add a SNV

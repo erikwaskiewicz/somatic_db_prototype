@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404
 from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, 
     CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, 
     ConfirmPolyForm, ConfirmArtefactForm, AddNewPolyForm, AddNewArtefactForm, ManualVariantCheckForm, ReopenForm, ChangeLimsInitials, 
-    EditedPasswordChangeForm, EditedUserCreationForm)
+    EditedPasswordChangeForm, EditedUserCreationForm, RunQCForm)
 from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
     get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, 
     create_myeloid_coverage_summary)
@@ -306,7 +306,16 @@ def view_samples(request, worksheet_id=None, user_pk=None):
         context['worksheet'] = worksheet_id
         context['run_id'] = ws_obj.run
         context['assay'] = ws_obj.assay
+        context['signed_off'] = ws_obj.signed_off
         context['samples'] = get_samples(samples)
+
+        if ws_obj.signed_off:
+            context['signoff_user'] = ws_obj.signed_off_user
+            context['signoff_time'] = ws_obj.signed_off_time
+            context['qc_result'] = ws_obj.get_qc_pass_fail_display()
+            context['autoqc_pk'] = f'/path/to/autoqc/{ws_obj.auto_qc_pk}'
+        else:
+            context['qc_form'] = RunQCForm()
 
     # error if neither variables available
     else:
@@ -363,6 +372,20 @@ def view_samples(request, worksheet_id=None, user_pk=None):
 
                 return redirect('analysis_sheet', sample_analysis_obj.pk)
 
+        if 'qc_result' in request.POST:
+            qc_form = RunQCForm(request.POST)
+            if qc_form.is_valid():
+                cleaned_data = qc_form.cleaned_data
+                # update values and redirect to worksheet page? Add QC user to models
+                ws_obj.signed_off = True
+                ws_obj.signed_off_time = timezone.now()
+                ws_obj.qc_pass_fail = cleaned_data['qc_result']
+                ws_obj.qc_user = request.user
+                ws_obj.auto_qc_pk = cleaned_data['auto_qc_pk']
+                ws_obj.save()
+
+                # redirect to force refresh
+                return redirect('view_ws_samples', worksheet_id)
 
     return render(request, 'analysis/view_samples.html', context)
 

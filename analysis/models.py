@@ -32,8 +32,8 @@ class Worksheet(models.Model):
     """
     QC_CHOICES = (
         ('-', 'Pending'),
-        ('P', 'QC pass'),
-        ('F', 'QC fail'),
+        ('P', 'Run QC pass'),
+        ('F', 'Run QC fail'),
     )
     ws_id = models.CharField(max_length=50, primary_key=True)
     run = models.ForeignKey('Run', on_delete=models.CASCADE)
@@ -41,6 +41,8 @@ class Worksheet(models.Model):
     diagnostic = models.BooleanField(default=True)
     upload_time = models.DateTimeField(blank=True, null=True)
     signed_off = models.BooleanField(default=False) # will need to swap to true for migrations
+    signed_off_time = models.DateTimeField(blank=True, null=True)
+    signed_off_user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True)
     qc_pass_fail = models.CharField(max_length=1, default='-', choices=QC_CHOICES)
     auto_qc_pk = models.CharField(max_length=20, blank=True, null=True)
 
