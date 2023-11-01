@@ -53,7 +53,10 @@
     <tbody>
       {% for ws in worksheets %}
       <tr>
-        <td>{{ ws.worksheet_id }}</td>
+        <td>{{ ws.worksheet_id }}&nbsp;
+          {% if not ws.signed_off %}<br><span class="badge badge-pill badge-warning">QC pending</span>{% endif %}
+          {% if not ws.diagnostic %}<br><span class="badge badge-pill badge-info">Training</span>{% endif %}
+        </td>
         <td>{{ ws.run_id }}</td>
         <td>{{ ws.assay }}</td>
         <td>{{ ws.status }}</td>

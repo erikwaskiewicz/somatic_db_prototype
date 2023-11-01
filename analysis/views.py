@@ -208,9 +208,7 @@ def view_worksheets(request, query):
         filtered = True
 
     # worksheets waiting on bioinformatics QC
-    # TODO will need to test what happens if we add an extra sample to a worksheet
-    # TODO badge for training worksheets/ QC pending
-    # TODO QC page - edit worksheets page. status is currently a function, needs to be stored in DB
+    # TODO sample status is currently a function, needs to be stored in DB
     # TODO control QC by user group
     elif query == 'qc':
         worksheets = Worksheet.objects.filter(signed_off=False).order_by('-run')
@@ -218,7 +216,7 @@ def view_worksheets(request, query):
 
     # all worksheets
     elif query == 'all':
-        worksheets = Worksheet.objects.filter(signed_off=True).order_by('-run')
+        worksheets = Worksheet.objects.all().order_by('-run')
         filtered = False
 
     # any other string will be chnaged to most recent, if left blank then it'll throw a 404 error
@@ -236,6 +234,8 @@ def view_worksheets(request, query):
         if w.diagnostic:
             diagnostics_ws_list.append({
                 'worksheet_id': w.ws_id,
+                'signed_off': w.signed_off,
+                'diagnostic': True,
                 'run_id': w.run.run_id,
                 'assay': w.assay,
                 'status': status,
@@ -244,6 +244,8 @@ def view_worksheets(request, query):
         else:
             other_ws_list.append({
                 'worksheet_id': w.ws_id,
+                'signed_off': w.signed_off,
+                'diagnostic': False,
                 'run_id': w.run.run_id,
                 'assay': w.assay,
                 'status': status,
@@ -305,6 +307,7 @@ def view_samples(request, worksheet_id=None, user_pk=None):
         ws_obj = Worksheet.objects.get(ws_id = worksheet_id)
         context['template'] = 'worksheet'
         context['worksheet'] = worksheet_id
+        context['diagnostic'] = ws_obj.diagnostic
         context['run_id'] = ws_obj.run
         context['assay'] = ws_obj.assay
         context['signed_off'] = ws_obj.signed_off

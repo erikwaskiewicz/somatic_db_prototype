@@ -38,7 +38,7 @@
     <tbody>
       <tr>
         <th class="col-3">Worksheet ID</th>
-        <td class="col-9">{{ worksheet }}</td>
+        <td class="col-9">{{ worksheet }} {% if not diagnostic %}<span class="badge badge-pill badge-info">Training</span>{% endif %}</td>
       </tr>
       <tr>
         <th>Run ID</th>
