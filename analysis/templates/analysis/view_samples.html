@@ -59,7 +59,10 @@
       </tr>
       <tr>
         <th>SVD signoff user</th>
-        <td>{{ signoff_user }} ({{ signoff_time }}) <a class="btn btn-info btn-sm w-25" style="float: right;" data-toggle="modal" data-target="#reopen-qc-modal" role="button">Reopen QC</td>
+        <td>
+          {{ signoff_user }} ({{ signoff_time }})&nbsp;
+          {% if in_qc_user_group %}<a class="btn btn-info btn-sm w-25" style="float: right;" data-toggle="modal" data-target="#reopen-qc-modal" role="button">Reopen QC</a>{% endif %}
+        </td>
       </tr>
       {% endif %}
     </tbody>
@@ -68,7 +71,7 @@
   <!-- signoff form, if user has permissions for QC-->
   {% if not signed_off and in_qc_user_group == True %}
   <div class="alert alert-warning">
-    <h5><span class="fa fa-clipboard-check"></span> QC pending</h5>
+    <h5><span class="fa fa-clipboard-check"></span> Worksheet QC pending</h5>
     <br>
     {% crispy qc_form %}
 
