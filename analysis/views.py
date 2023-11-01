@@ -188,7 +188,7 @@ def view_worksheets(request, query):
     within the worksheet
     """
     # check if user is in the qc user group
-    in_qc_user_group = request.user.groups.filter(name='qc').exists()
+    in_qc_user_group = request.user.groups.filter(name='qc_signoff').exists()
 
     # based on URL, do a different query
     # 30 most recent worksheets
@@ -277,7 +277,7 @@ def view_samples(request, worksheet_id=None, user_pk=None):
     this will control whether a worksheet or a user is displayed
     """
     # check if user is in the qc user group
-    in_qc_user_group = request.user.groups.filter(name='qc').exists()
+    in_qc_user_group = request.user.groups.filter(name='qc_signoff').exists()
 
     # start context dictionary
     context = {
