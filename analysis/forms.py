@@ -21,14 +21,14 @@ class UnassignForm(forms.Form):
         )
 
 
-class ReopenForm(forms.Form):
+class ReopenSampleAnalysisForm(forms.Form):
     """
     Form that allows the user who closed the case to reopen the most recent check
     """
-    reopen = forms.CharField(widget=forms.HiddenInput(), required=False)
+    reopen_analysis = forms.CharField(widget=forms.HiddenInput(), required=False)
 
     def __init__(self, *args, **kwargs):
-        super(ReopenForm, self).__init__(*args, **kwargs)
+        super(ReopenSampleAnalysisForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = 'POST'
         self.helper.add_input(
@@ -74,6 +74,20 @@ class RunQCForm(forms.Form):
             Submit('submit', 'Complete QC', css_class='btn btn-warning w-100')
         )
 
+
+class ReopenRunQCForm(forms.Form):
+    """
+    Form that allows user to send a worksheet back to QC
+    """
+    reopen_qc = forms.CharField(widget=forms.HiddenInput(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(ReopenRunQCForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', "I'm sure", css_class='btn btn-danger w-100')
+        )
 
 class NewVariantForm(forms.Form):
     """

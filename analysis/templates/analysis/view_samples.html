@@ -55,8 +55,7 @@
       </tr>
       <tr>
         <th>Signoff user</th>
-        <td>{{ signoff_user }} ({{ signoff_time }}) <a class="btn btn-info btn-sm w-25" style="float: right;" href="#" role="button">Reopen QC</td>
-          <!-- TODO make work, only visible to user group-->
+        <td>{{ signoff_user }} ({{ signoff_time }}) <a class="btn btn-info btn-sm w-25" style="float: right;" data-toggle="modal" data-target="#reopen-qc-modal" role="button">Reopen QC</td>
       </tr>
       {% endif %}
     </tbody>
@@ -269,7 +268,7 @@
   </div>
 </div>
 
-<!-- Reopen modal -->
+<!-- Reopen sample analysis modal -->
 <div class="modal fade" id="reopen-modal" tabindex="-1" role="dialog" aria-labelledby="reopen-modal-label" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -302,7 +301,7 @@
           </tbody>
         </table>
 
-        {% crispy reopen_form %}
+        {% crispy reopen_analysis_form %}
 
       </div>
     </div>
@@ -381,6 +380,30 @@
           </div>
           <p>Please note, by default <b>we will remove the incorrect version of the panel</b>, please let us know if you do not want this to happen.</p>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Reopen QC modal -->
+<div class="modal fade" id="reopen-qc-modal" tabindex="-1" role="dialog" aria-labelledby="reopen-qc-modal-label" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reopen-qc-modal-label">Reopen QC?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger">
+          <strong>Warning!</strong> Are you sure you want to continue?<br><br>
+          This worksheet will be sent back to QC
+        </div>
+
+        {% crispy reopen_qc_form %}
+
       </div>
     </div>
   </div>

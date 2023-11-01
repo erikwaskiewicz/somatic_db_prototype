@@ -10,8 +10,8 @@ from django.utils import timezone
 
 from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, 
     CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, 
-    ConfirmPolyForm, ConfirmArtefactForm, AddNewPolyForm, AddNewArtefactForm, ManualVariantCheckForm, ReopenForm, ChangeLimsInitials, 
-    EditedPasswordChangeForm, EditedUserCreationForm, RunQCForm)
+    ConfirmPolyForm, ConfirmArtefactForm, AddNewPolyForm, AddNewArtefactForm, ManualVariantCheckForm, ReopenSampleAnalysisForm, ChangeLimsInitials, 
+    EditedPasswordChangeForm, EditedUserCreationForm, RunQCForm, ReopenRunQCForm)
 from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
     get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, 
     create_myeloid_coverage_summary)
@@ -274,7 +274,8 @@ def view_samples(request, worksheet_id=None, user_pk=None):
     context = {
         'unassign_form': UnassignForm(),
         'check_form': PaperworkCheckForm(),
-        'reopen_form': ReopenForm(),
+        'reopen_analysis_form': ReopenSampleAnalysisForm(),
+        'reopen_qc_form': ReopenRunQCForm(),
     }
 
     # error if both variables used, shouldnt be able to do this
@@ -343,12 +344,12 @@ def view_samples(request, worksheet_id=None, user_pk=None):
                 elif context['template'] == 'user':
                     return redirect('view_user_samples', user_pk)
 
-        # if reopen modal button is pressed
-        if 'reopen' in request.POST:
-            reopen_form = ReopenForm(request.POST)
-            if reopen_form.is_valid():
+        # if reopen analysis modal button is pressed
+        if 'reopen_analysis' in request.POST:
+            reopen_analysis_form = ReopenSampleAnalysisForm(request.POST)
+            if reopen_analysis_form.is_valid():
                 # get sample analysis pk from form
-                sample_pk = reopen_form.cleaned_data['reopen']
+                sample_pk = reopen_analysis_form.cleaned_data['reopen_analysis']
                 sample_analysis_obj = SampleAnalysis.objects.get(pk=sample_pk)
 
                 # reopen the check
@@ -376,12 +377,29 @@ def view_samples(request, worksheet_id=None, user_pk=None):
             qc_form = RunQCForm(request.POST)
             if qc_form.is_valid():
                 cleaned_data = qc_form.cleaned_data
-                # update values and redirect to worksheet page? Add QC user to models
+
+                # update values
                 ws_obj.signed_off = True
                 ws_obj.signed_off_time = timezone.now()
                 ws_obj.signed_off_user = request.user
                 ws_obj.qc_pass_fail = cleaned_data['qc_result']
                 ws_obj.auto_qc_pk = cleaned_data['auto_qc_pk']
+                ws_obj.save()
+
+                # redirect to force refresh
+                return redirect('view_ws_samples', worksheet_id)
+
+        if 'reopen_qc' in request.POST:
+            reopen_qc_form = ReopenRunQCForm(request.POST)
+            if reopen_qc_form.is_valid():
+                cleaned_data = reopen_qc_form.cleaned_data
+
+                # remove QC values
+                ws_obj.signed_off = False
+                ws_obj.signed_off_time = None
+                ws_obj.signed_off_user = None
+                ws_obj.qc_pass_fail = '-'
+                ws_obj.auto_qc_pk = None
                 ws_obj.save()
 
                 # redirect to force refresh
