@@ -11,7 +11,7 @@ from django.utils import timezone
 from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, 
     CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, 
     ConfirmPolyForm, ConfirmArtefactForm, AddNewPolyForm, AddNewArtefactForm, ManualVariantCheckForm, ReopenSampleAnalysisForm, ChangeLimsInitials, 
-    EditedPasswordChangeForm, EditedUserCreationForm, RunQCForm, ReopenRunQCForm)
+    EditedPasswordChangeForm, EditedUserCreationForm, RunQCForm, ReopenRunQCForm, RemoveWorksheetForm)
 from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
     get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, 
     create_myeloid_coverage_summary)
@@ -284,6 +284,7 @@ def view_samples(request, worksheet_id=None, user_pk=None):
         'check_form': PaperworkCheckForm(),
         'reopen_analysis_form': ReopenSampleAnalysisForm(),
         'reopen_qc_form': ReopenRunQCForm(),
+        'remove_ws_form': RemoveWorksheetForm(),
         'in_qc_user_group': in_qc_user_group,
     }
 
@@ -382,6 +383,7 @@ def view_samples(request, worksheet_id=None, user_pk=None):
 
                 return redirect('analysis_sheet', sample_analysis_obj.pk)
 
+        # if QC signoff form submitted
         if 'qc_result' in request.POST:
             qc_form = RunQCForm(request.POST)
             if qc_form.is_valid():
@@ -397,6 +399,7 @@ def view_samples(request, worksheet_id=None, user_pk=None):
                 # redirect to force refresh
                 return redirect('view_ws_samples', worksheet_id)
 
+        # if QC reopened
         if 'reopen_qc' in request.POST:
             reopen_qc_form = ReopenRunQCForm(request.POST)
             if reopen_qc_form.is_valid():
@@ -411,6 +414,14 @@ def view_samples(request, worksheet_id=None, user_pk=None):
 
                 # redirect to force refresh
                 return redirect('view_ws_samples', worksheet_id)
+
+        # if worksheet needs removing due to QC fail
+        if 'remove_worksheet' in request.POST:
+            remove_ws_form = RemoveWorksheetForm(request.POST)
+            if remove_ws_form.is_valid():
+                ws_obj.delete()
+
+                return redirect('view_worksheets', 'qc')
 
     return render(request, 'analysis/view_samples.html', context)
 

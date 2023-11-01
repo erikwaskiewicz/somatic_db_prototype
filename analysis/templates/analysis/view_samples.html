@@ -27,6 +27,8 @@
 
 {% block content %}
 <div class="container">
+
+  <!-- header -->
   {% if template == 'user' %}
   <h5>All samples assigned to <b>{{ username }}</b></h5>
 
@@ -34,6 +36,7 @@
   <h5>All samples on worksheet <b>{{ worksheet }}</b></h5>
   <br>
 
+  <!-- worksheet summary table -->
   <table class="table table-bordered table-sm">
     <tbody>
       <tr>
@@ -48,6 +51,7 @@
         <th>Assay</th>
         <td>{{ assay }}</td>
       </tr>
+      <!-- extra rows only if worksheet QC is signed off -->
       {% if signed_off %}
       <tr>
         <th>Run QC</th>
@@ -61,13 +65,30 @@
     </tbody>
   </table>
 
+  <!-- signoff form, if user has permissions for QC-->
   {% if not signed_off and in_qc_user_group == True %}
   <div class="alert alert-warning">
     <h5><span class="fa fa-clipboard-check"></span> QC pending</h5>
     <br>
     {% crispy qc_form %}
+
+    <!-- remove worksheet button -->
+    <button class="btn btn-danger w-100" type="button" data-toggle="collapse" data-target="#qc-fail">
+      QC failed in AutoQC? Click here
+    </button>
+    <div class="collapse" id="qc-fail">
+      <br>
+      <p>If a sample is a whole run QC fail then if will need to be removed from SVD, submit the following form to delete the worksheet</p>
+      <p><strong>Warning! This will remove all analyses on all samples shown on this page, please double check before proceeding</strong></p>
+
+      {% crispy remove_ws_form %}
+    </div>
+
+
+
   </div>
 
+  <!-- warning box is user does not have permissions for QC-->
   {% elif not signed_off and in_qc_user_group == False %}
   <div class="alert alert-warning">
     <h5><span class="fa fa-clipboard-check"></span> QC pending</h5>
@@ -80,6 +101,7 @@
   {% endif %}
   <br>
 
+  <!-- table of samples -->
   <table class="table" id="samples-table">
     <thead>
       <tr>

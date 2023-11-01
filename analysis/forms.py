@@ -84,6 +84,22 @@ class ReopenRunQCForm(forms.Form):
             Submit('submit', "I'm sure", css_class='btn btn-danger w-100')
         )
 
+
+class RemoveWorksheetForm(forms.Form):
+    """
+    Form that removes a worksheet if QC has failed
+    """
+    remove_worksheet = forms.BooleanField(required=True, label='Confirm that you would like to delete the worksheet')
+
+    def __init__(self, *args, **kwargs):
+        super(RemoveWorksheetForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Remove worksheet', css_class='btn btn-danger w-25')
+        )
+
+
 class NewVariantForm(forms.Form):
     """
     Manually add a SNV
