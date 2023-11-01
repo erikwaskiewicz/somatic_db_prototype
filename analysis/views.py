@@ -187,6 +187,9 @@ def view_worksheets(request, query):
     Displays all worksheets and links to the page to show all samples 
     within the worksheet
     """
+    # check if user is in the qc user group
+    in_qc_user_group = request.user.groups.filter(name='qc').exists()
+
     # based on URL, do a different query
     # 30 most recent worksheets
     if query == 'recent':
@@ -258,6 +261,7 @@ def view_worksheets(request, query):
         'worksheets': ws_list,
         'filtered': filtered,
         'query': query,
+        'in_qc_user_group': in_qc_user_group,
     }
 
     return render(request, 'analysis/view_worksheets.html', context)
@@ -272,12 +276,16 @@ def view_samples(request, worksheet_id=None, user_pk=None):
     Only one of the optional args will ever be passed in, each from different URLs, 
     this will control whether a worksheet or a user is displayed
     """
+    # check if user is in the qc user group
+    in_qc_user_group = request.user.groups.filter(name='qc').exists()
+
     # start context dictionary
     context = {
         'unassign_form': UnassignForm(),
         'check_form': PaperworkCheckForm(),
         'reopen_analysis_form': ReopenSampleAnalysisForm(),
         'reopen_qc_form': ReopenRunQCForm(),
+        'in_qc_user_group': in_qc_user_group,
     }
 
     # error if both variables used, shouldnt be able to do this

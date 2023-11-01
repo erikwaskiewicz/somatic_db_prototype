@@ -61,12 +61,20 @@
     </tbody>
   </table>
 
-  {% if not signed_off %}
+  {% if not signed_off and in_qc_user_group == True %}
   <div class="alert alert-warning">
     <h5><span class="fa fa-clipboard-check"></span> QC pending</h5>
     <br>
     {% crispy qc_form %}
   </div>
+
+  {% elif not signed_off and in_qc_user_group == False %}
+  <div class="alert alert-warning">
+    <h5><span class="fa fa-clipboard-check"></span> QC pending</h5>
+    <br>
+    <p>You do not have permission to perform QC</p>
+  </div>
+
   {% endif %}
 
   {% endif %}
@@ -102,8 +110,12 @@
 
             <!-- NOTE: order is important in the if loop below -->
 
+            <!-- disable the button if the user doesnt have permission -->
+            {% if not signed_off and in_qc_user_group == False %}
+            <a class="btn btn-light btn-block disabled">QC pending</a>
+
             <!-- button when analysis is complete and the logged in user did the most recent check -->
-            {% if analysis.checks.current_status == 'Complete' and request.user == analysis.checks.current_check_object.user %}
+            {% elif analysis.checks.current_status == 'Complete' and request.user == analysis.checks.current_check_object.user %}
             <div class="btn-group btn-block">
               <a class="btn btn-info btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">Complete</a>
               <button type="button btn-block" class="btn btn-info dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
