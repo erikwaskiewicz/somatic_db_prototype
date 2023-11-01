@@ -51,10 +51,10 @@
       {% if signed_off %}
       <tr>
         <th>Run QC</th>
-        <td>{{ qc_result }} <a class="btn btn-info btn-sm w-25" style="float: right;" href="{{ autoqc_link }}" target="_blank" role="button">View in AutoQC</a></td>
+        <td>Run QC pass <a class="btn btn-info btn-sm w-25" style="float: right;" href="{{ autoqc_link }}" target="_blank" role="button">View in AutoQC</a></td>
       </tr>
       <tr>
-        <th>Signoff user</th>
+        <th>SVD signoff user</th>
         <td>{{ signoff_user }} ({{ signoff_time }}) <a class="btn btn-info btn-sm w-25" style="float: right;" data-toggle="modal" data-target="#reopen-qc-modal" role="button">Reopen QC</td>
       </tr>
       {% endif %}

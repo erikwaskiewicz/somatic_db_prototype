@@ -30,11 +30,6 @@ class Worksheet(models.Model):
     An NGS worksheet, sometimes 1 run == 1 worksheet, sometimes there are multiple ws per run
 
     """
-    QC_CHOICES = (
-        ('-', 'Pending'),
-        ('P', 'Run QC pass'),
-        ('F', 'Run QC fail'),
-    )
     ws_id = models.CharField(max_length=50, primary_key=True)
     run = models.ForeignKey('Run', on_delete=models.CASCADE)
     assay = models.CharField(max_length=50)
@@ -43,7 +38,6 @@ class Worksheet(models.Model):
     signed_off = models.BooleanField(default=False) # will need to swap to true for migrations
     signed_off_time = models.DateTimeField(blank=True, null=True)
     signed_off_user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True)
-    qc_pass_fail = models.CharField(max_length=1, default='-', choices=QC_CHOICES)
     auto_qc_pk = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):

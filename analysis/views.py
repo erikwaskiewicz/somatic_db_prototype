@@ -212,7 +212,6 @@ def view_worksheets(request, query):
 
     # worksheets waiting on bioinformatics QC
     # TODO sample status is currently a function, needs to be stored in DB
-    # TODO control QC by user group
     elif query == 'qc':
         worksheets = Worksheet.objects.filter(signed_off=False).order_by('-run')
         filtered = True
@@ -324,7 +323,6 @@ def view_samples(request, worksheet_id=None, user_pk=None):
         if ws_obj.signed_off:
             context['signoff_user'] = ws_obj.signed_off_user
             context['signoff_time'] = ws_obj.signed_off_time
-            context['qc_result'] = ws_obj.get_qc_pass_fail_display()
             context['autoqc_link'] = f'{settings.AUTOQC_URL}/{ws_obj.auto_qc_pk}'
         else:
             context['qc_form'] = RunQCForm()
@@ -393,7 +391,6 @@ def view_samples(request, worksheet_id=None, user_pk=None):
                 ws_obj.signed_off = True
                 ws_obj.signed_off_time = timezone.now()
                 ws_obj.signed_off_user = request.user
-                ws_obj.qc_pass_fail = cleaned_data['qc_result']
                 ws_obj.auto_qc_pk = cleaned_data['auto_qc_pk']
                 ws_obj.save()
 
@@ -409,7 +406,6 @@ def view_samples(request, worksheet_id=None, user_pk=None):
                 ws_obj.signed_off = False
                 ws_obj.signed_off_time = None
                 ws_obj.signed_off_user = None
-                ws_obj.qc_pass_fail = '-'
                 ws_obj.auto_qc_pk = None
                 ws_obj.save()
 

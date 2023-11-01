@@ -57,13 +57,8 @@ class RunQCForm(forms.Form):
     Perform QC on a worksheet
 
     """
-    QC_CHOICES = (
-        ('P', 'Pass'),
-        ('F', 'Fail'),
-
-    )
-    qc_result = forms.ChoiceField(choices=QC_CHOICES, label='Run QC pass or fail')
-    confirm = forms.BooleanField(required=True, label='Confirm that any individual sample fails have been failed below')
+    qc_result = forms.BooleanField(required=True, label='Run has been passed in AutoQC')
+    confirm = forms.BooleanField(required=True, label='All individual sample fails have been failed below')
     auto_qc_pk = forms.CharField(label='AutoQC primary key')
 
     def __init__(self, *args, **kwargs):
