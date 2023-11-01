@@ -1,12 +1,12 @@
-from django.shortcuts import render, redirect
-from django.http import Http404, HttpResponse, JsonResponse
-from django.contrib.auth.decorators import login_required
+from django.conf import settings
 from django.contrib.auth import authenticate, update_session_auth_hash
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
-from django.utils import timezone
-from django.template.loader import get_template
+from django.http import Http404, HttpResponse, JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template import Context
-from django.shortcuts import get_object_or_404
+from django.template.loader import get_template
+from django.utils import timezone
 
 from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, 
     CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, 
@@ -313,7 +313,7 @@ def view_samples(request, worksheet_id=None, user_pk=None):
             context['signoff_user'] = ws_obj.signed_off_user
             context['signoff_time'] = ws_obj.signed_off_time
             context['qc_result'] = ws_obj.get_qc_pass_fail_display()
-            context['autoqc_pk'] = f'/path/to/autoqc/{ws_obj.auto_qc_pk}'
+            context['autoqc_link'] = f'{settings.AUTOQC_URL}/{ws_obj.auto_qc_pk}'
         else:
             context['qc_form'] = RunQCForm()
 
@@ -379,8 +379,8 @@ def view_samples(request, worksheet_id=None, user_pk=None):
                 # update values and redirect to worksheet page? Add QC user to models
                 ws_obj.signed_off = True
                 ws_obj.signed_off_time = timezone.now()
+                ws_obj.signed_off_user = request.user
                 ws_obj.qc_pass_fail = cleaned_data['qc_result']
-                ws_obj.qc_user = request.user
                 ws_obj.auto_qc_pk = cleaned_data['auto_qc_pk']
                 ws_obj.save()
 

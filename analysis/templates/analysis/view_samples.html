@@ -34,7 +34,7 @@
   <h5>All samples on worksheet <b>{{ worksheet }}</b></h5>
   <br>
 
-  <table class="table table-bordered table-sm col-8">
+  <table class="table table-bordered table-sm">
     <tbody>
       <tr>
         <th class="col-3">Worksheet ID</th>
@@ -51,11 +51,12 @@
       {% if signed_off %}
       <tr>
         <th>Run QC</th>
-        <td>{{ qc_result }} <a class="btn btn-info btn-sm w-25" style="float: right;" href="{{ autoqc_pk }}" role="button">View in AutoQC</a></td><!-- TODO autoqc link -->
+        <td>{{ qc_result }} <a class="btn btn-info btn-sm w-25" style="float: right;" href="{{ autoqc_link }}" target="_blank" role="button">View in AutoQC</a></td>
       </tr>
       <tr>
         <th>Signoff user</th>
-        <td>{{ signoff_user }} ({{ signoff_time }}) <a class="btn btn-info btn-sm w-25" style="float: right;" href="#" role="button">Reopen QC</td> <!-- TODO make work, only visible to user group-->
+        <td>{{ signoff_user }} ({{ signoff_time }}) <a class="btn btn-info btn-sm w-25" style="float: right;" href="#" role="button">Reopen QC</td>
+          <!-- TODO make work, only visible to user group-->
       </tr>
       {% endif %}
     </tbody>
