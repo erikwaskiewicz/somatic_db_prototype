@@ -1,0 +1,1307 @@
+gene	chr	pos	ref	alt	vaf	depth	hgvs_p	hgvs_c	consequence	exon	alt_reads	in_ntc	ntc_vaf	ntc_depth	ntc_alt_reads	gnomad_popmax_af
+CSDE1	1	115256353	A	G	0.5	1161			downstream_gene_variant		61	False			
+CSDE1	1	115256353	A	G	0.5	1161			downstream_gene_variant		61	False			
+CSDE1	1	115256353	A	G	0.5	1161			downstream_gene_variant		61	False			
+CSDE1	1	115256353	A	G	0.5	1161			downstream_gene_variant		61	False			
+CSDE1	1	115256353	A	G	0.5	1161			downstream_gene_variant		61	False			
+NRAS	1	115256353	A	G	0.5	1161		NM_002524.4:c.290+68T>C	intron_variant		61	False			
+CSDE1	1	115256353	A	G	0.5	1161			downstream_gene_variant		61	False			
+CSDE1	1	115256353	A	G	0.5	1161			downstream_gene_variant		61	False			
+CSDE1	1	115256620	G	A	0.5	117			downstream_gene_variant		12	False			
+CSDE1	1	115256620	G	A	0.5	117			downstream_gene_variant		12	False			
+CSDE1	1	115256620	G	A	0.5	117			downstream_gene_variant		12	False			
+CSDE1	1	115256620	G	A	0.5	117			downstream_gene_variant		12	False			
+CSDE1	1	115256620	G	A	0.5	117			downstream_gene_variant		12	False			
+NRAS	1	115256620	G	A	0.5	117		NM_002524.4:c.112-21C>T	intron_variant		12	False			
+CSDE1	1	115256620	G	A	0.5	117			downstream_gene_variant		12	False			
+CSDE1	1	115256620	G	A	0.5	117			downstream_gene_variant		12	False			
+	1	115256620	G	A	0.5	117			regulatory_region_variant		12	False			
+CSDE1	1	115256669	G	A	0.5	117			downstream_gene_variant		77	False			
+CSDE1	1	115256669	G	A	0.5	117			downstream_gene_variant		77	False			
+CSDE1	1	115256669	G	A	0.5	117			downstream_gene_variant		77	False			
+CSDE1	1	115256669	G	A	0.5	117			downstream_gene_variant		77	False			
+CSDE1	1	115256669	G	A	0.5	117			downstream_gene_variant		77	False			
+NRAS	1	115256669	G	A	0.5	117		NM_002524.4:c.112-70C>T	intron_variant		77	False			
+CSDE1	1	115256669	G	A	0.5	117			downstream_gene_variant		77	False			
+CSDE1	1	115256669	G	A	0.5	117			downstream_gene_variant		77	False			
+	1	115256669	G	A	0.5	117			regulatory_region_variant		77	False			
+LY9	1	160786670	A	G	0.5	6945		NM_001261456.1:c.1342+17A>G	intron_variant		3841	False			
+LY9	1	160786670	A	G	0.5	6945		NM_001261457.1:c.1073-1338A>G	intron_variant		3841	False			
+LY9	1	160786670	A	G	0.5	6945		NM_002348.3:c.1342+17A>G	intron_variant		3841	False			
+LY9	1	160786670	A	G	0.5	6945		XM_005245161.1:c.1483+17A>G	intron_variant		3841	False			
+LY9	1	160786670	A	G	0.5	6945		XM_005245162.1:c.1483+17A>G	intron_variant		3841	False			
+LY9	1	160786670	A	G	0.5	6945		XM_005245163.1:c.1483+17A>G	intron_variant		3841	False			
+LY9	1	160786670	A	G	0.5	6945		XM_005245164.1:c.1342+17A>G	intron_variant		3841	False			
+LY9	1	160786670	A	G	0.5	6945		XM_005245165.1:c.1214-1338A>G	intron_variant		3841	False			
+LY9	1	160786670	A	G	0.5	6945		XM_005245166.1:c.1214-1338A>G	intron_variant		3841	False			
+LY9	1	160786670	A	G	0.5	6945		XM_005245167.1:c.596-1338A>G	intron_variant		3841	False			
+DDR2	1	162681151	T	G	1.0	3082		NM_001014796.1:c.-28+6230T>G	intron_variant		3078	False			
+DDR2	1	162681151	T	G	1.0	3082		NM_006182.2:c.-27-7676T>G	intron_variant		3078	False			
+DDR2	1	162681151	T	G	1.0	3082		XM_005245221.1:c.9+61T>G	intron_variant		3078	False			
+DDR2	1	162681151	T	G	1.0	3082		XM_005245222.1:c.-28+6230T>G	intron_variant		3078	False			
+DDR2	1	162711431	G	A	0.5	5229		NM_001014796.1:c.83-11454G>A	intron_variant		97	False			
+DDR2	1	162711431	G	A	0.5	5229		NM_006182.2:c.83-11454G>A	intron_variant		97	False			
+DDR2	1	162711431	G	A	0.5	5229	XP_005245277.1:p.Cys19Tyr	XM_005245220.1:c.56G>A	missense_variant	1/16	97	False			
+DDR2	1	162711431	G	A	0.5	5229		XM_005245221.1:c.119-11454G>A	intron_variant		97	False			
+DDR2	1	162711431	G	A	0.5	5229		XM_005245222.1:c.83-11454G>A	intron_variant		97	False			
+DDR2	1	162711431	G	A	0.5	5229		XM_005245223.1:c.11-11454G>A	intron_variant		97	False			
+DDR2	1	162722906	G	A	0.5	3217	NP_001014796.1:p.Gly35Asp	NM_001014796.1:c.104G>A	missense_variant	5/19	51	False			
+DDR2	1	162722906	G	A	0.5	3217	NP_006173.2:p.Gly35Asp	NM_006182.2:c.104G>A	missense_variant	4/18	51	False			
+DDR2	1	162722906	G	A	0.5	3217	XP_005245277.1:p.Gly50Asp	XM_005245220.1:c.149G>A	missense_variant	2/16	51	False			
+DDR2	1	162722906	G	A	0.5	3217	XP_005245278.1:p.Gly47Asp	XM_005245221.1:c.140G>A	missense_variant	3/17	51	False			
+DDR2	1	162722906	G	A	0.5	3217	XP_005245279.1:p.Gly35Asp	XM_005245222.1:c.104G>A	missense_variant	4/18	51	False			
+DDR2	1	162722906	G	A	0.5	3217	XP_005245280.1:p.Gly11Asp	XM_005245223.1:c.32G>A	missense_variant	2/16	51	False			
+DDR2	1	162725189	C	T	0.5	3449		NM_001014796.1:c.565+96C>T	intron_variant		51	False			
+DDR2	1	162725189	C	T	0.5	3449		NM_006182.2:c.565+96C>T	intron_variant		51	False			
+DDR2	1	162725189	C	T	0.5	3449		XM_005245220.1:c.610+96C>T	intron_variant		51	False			
+DDR2	1	162725189	C	T	0.5	3449		XM_005245221.1:c.601+96C>T	intron_variant		51	False			
+DDR2	1	162725189	C	T	0.5	3449		XM_005245222.1:c.565+96C>T	intron_variant		51	False			
+DDR2	1	162725189	C	T	0.5	3449		XM_005245223.1:c.493+96C>T	intron_variant		51	False			
+	1	162725189	C	T	0.5	3449			regulatory_region_variant		51	False			
+DDR2	1	162729508	G	A	0.5	3197		NM_001014796.1:c.672-78G>A	intron_variant		56	False			
+DDR2	1	162729508	G	A	0.5	3197		NM_006182.2:c.672-78G>A	intron_variant		56	False			
+DDR2	1	162729508	G	A	0.5	3197		XM_005245220.1:c.717-78G>A	intron_variant		56	False			
+DDR2	1	162729508	G	A	0.5	3197		XM_005245221.1:c.708-78G>A	intron_variant		56	False			
+DDR2	1	162729508	G	A	0.5	3197		XM_005245222.1:c.672-78G>A	intron_variant		56	False			
+DDR2	1	162729508	G	A	0.5	3197		XM_005245223.1:c.600-78G>A	intron_variant		56	False			
+DDR2	1	162735845	C	T	0.5	3555	NP_001014796.1:p.Thr385Ile	NM_001014796.1:c.1154C>T	missense_variant	11/19	52	False			
+DDR2	1	162735845	C	T	0.5	3555	NP_006173.2:p.Thr385Ile	NM_006182.2:c.1154C>T	missense_variant	10/18	52	False			
+DDR2	1	162735845	C	T	0.5	3555	XP_005245277.1:p.Thr400Ile	XM_005245220.1:c.1199C>T	missense_variant	8/16	52	False			
+DDR2	1	162735845	C	T	0.5	3555	XP_005245278.1:p.Thr397Ile	XM_005245221.1:c.1190C>T	missense_variant	9/17	52	False			
+DDR2	1	162735845	C	T	0.5	3555	XP_005245279.1:p.Thr385Ile	XM_005245222.1:c.1154C>T	missense_variant	10/18	52	False			
+DDR2	1	162735845	C	T	0.5	3555	XP_005245280.1:p.Thr361Ile	XM_005245223.1:c.1082C>T	missense_variant	8/16	52	False			
+DDR2	1	162735866	C	T	0.5	3561		NM_001014796.1:c.1162+13C>T	intron_variant		74	False			
+DDR2	1	162735866	C	T	0.5	3561		NM_006182.2:c.1162+13C>T	intron_variant		74	False			
+DDR2	1	162735866	C	T	0.5	3561		XM_005245220.1:c.1207+13C>T	intron_variant		74	False			
+DDR2	1	162735866	C	T	0.5	3561		XM_005245221.1:c.1198+13C>T	intron_variant		74	False			
+DDR2	1	162735866	C	T	0.5	3561		XM_005245222.1:c.1162+13C>T	intron_variant		74	False			
+DDR2	1	162735866	C	T	0.5	3561		XM_005245223.1:c.1090+13C>T	intron_variant		74	False			
+DDR2	1	162740327	T	C	1.0	1255		NM_001014796.1:c.1504+25T>C	intron_variant		1254	False			
+DDR2	1	162740327	T	C	1.0	1255		NM_006182.2:c.1504+25T>C	intron_variant		1254	False			
+DDR2	1	162740327	T	C	1.0	1255		XM_005245220.1:c.1549+25T>C	intron_variant		1254	False			
+DDR2	1	162740327	T	C	1.0	1255		XM_005245221.1:c.1540+25T>C	intron_variant		1254	False			
+DDR2	1	162740327	T	C	1.0	1255		XM_005245222.1:c.1504+25T>C	intron_variant		1254	False			
+DDR2	1	162740327	T	C	1.0	1255		XM_005245223.1:c.1432+25T>C	intron_variant		1254	False			
+DDR2	1	162742031	T	G	0.5	8629	NP_001014796.1:p.Phe574Leu	NM_001014796.1:c.1722T>G	missense_variant	14/19	131	False			
+DDR2	1	162742031	T	G	0.5	8629	NP_006173.2:p.Phe574Leu	NM_006182.2:c.1722T>G	missense_variant	13/18	131	False			
+DDR2	1	162742031	T	G	0.5	8629	XP_005245277.1:p.Phe589Leu	XM_005245220.1:c.1767T>G	missense_variant	11/16	131	False			
+DDR2	1	162742031	T	G	0.5	8629	XP_005245278.1:p.Phe586Leu	XM_005245221.1:c.1758T>G	missense_variant	12/17	131	False			
+DDR2	1	162742031	T	G	0.5	8629	XP_005245279.1:p.Phe574Leu	XM_005245222.1:c.1722T>G	missense_variant	13/18	131	False			
+DDR2	1	162742031	T	G	0.5	8629	XP_005245280.1:p.Phe550Leu	XM_005245223.1:c.1650T>G	missense_variant	11/16	131	False			
+DDR2	1	162743418	G	T	1.0	844		NM_001014796.1:c.1856+32G>T	intron_variant		843	False			
+DDR2	1	162743418	G	T	1.0	844		NM_006182.2:c.1856+32G>T	intron_variant		843	False			
+DDR2	1	162743418	G	T	1.0	844		XM_005245220.1:c.1901+32G>T	intron_variant		843	False			
+DDR2	1	162743418	G	T	1.0	844		XM_005245221.1:c.1892+32G>T	intron_variant		843	False			
+DDR2	1	162743418	G	T	1.0	844		XM_005245222.1:c.1856+32G>T	intron_variant		843	False			
+DDR2	1	162743418	G	T	1.0	844		XM_005245223.1:c.1784+32G>T	intron_variant		843	False			
+DDR2	1	162745537	G	A	0.5	3570	NP_001014796.1:p.Cys651Tyr	NM_001014796.1:c.1952G>A	missense_variant	16/19	54	False			
+DDR2	1	162745537	G	A	0.5	3570	NP_006173.2:p.Cys651Tyr	NM_006182.2:c.1952G>A	missense_variant	15/18	54	False			
+DDR2	1	162745537	G	A	0.5	3570	XP_005245277.1:p.Cys666Tyr	XM_005245220.1:c.1997G>A	missense_variant	13/16	54	False			
+DDR2	1	162745537	G	A	0.5	3570	XP_005245278.1:p.Cys663Tyr	XM_005245221.1:c.1988G>A	missense_variant	14/17	54	False			
+DDR2	1	162745537	G	A	0.5	3570	XP_005245279.1:p.Cys651Tyr	XM_005245222.1:c.1952G>A	missense_variant	15/18	54	False			
+DDR2	1	162745537	G	A	0.5	3570	XP_005245280.1:p.Cys627Tyr	XM_005245223.1:c.1880G>A	missense_variant	13/16	54	False			
+DDR2	1	162745929	C	T	0.5	5959	NP_001014796.1:p.Tyr684=	NM_001014796.1:c.2052C>T	synonymous_variant	17/19	86	False			
+DDR2	1	162745929	C	T	0.5	5959	NP_006173.2:p.Tyr684=	NM_006182.2:c.2052C>T	synonymous_variant	16/18	86	False			
+DDR2	1	162745929	C	T	0.5	5959	XP_005245277.1:p.Tyr699=	XM_005245220.1:c.2097C>T	synonymous_variant	14/16	86	False			
+DDR2	1	162745929	C	T	0.5	5959	XP_005245278.1:p.Tyr696=	XM_005245221.1:c.2088C>T	synonymous_variant	15/17	86	False			
+DDR2	1	162745929	C	T	0.5	5959	XP_005245279.1:p.Tyr684=	XM_005245222.1:c.2052C>T	synonymous_variant	16/18	86	False			
+DDR2	1	162745929	C	T	0.5	5959	XP_005245280.1:p.Tyr660=	XM_005245223.1:c.1980C>T	synonymous_variant	14/16	86	False			
+DDR2	1	162748588	C	A	1.0	4015		NM_001014796.1:c.2433+69C>A	intron_variant		4009	False			
+DDR2	1	162748588	C	A	1.0	4015		NM_006182.2:c.2433+69C>A	intron_variant		4009	False			
+DDR2	1	162748588	C	A	1.0	4015		XM_005245220.1:c.2478+69C>A	intron_variant		4009	False			
+DDR2	1	162748588	C	A	1.0	4015		XM_005245221.1:c.2469+69C>A	intron_variant		4009	False			
+DDR2	1	162748588	C	A	1.0	4015		XM_005245222.1:c.2433+69C>A	intron_variant		4009	False			
+DDR2	1	162748588	C	A	1.0	4015		XM_005245223.1:c.2361+69C>A	intron_variant		4009	False			
+DDR2	1	162749855	TTC	T	0.5	644		NM_001014796.1:c.2434-31_2434-30del	intron_variant		63	False			
+DDR2	1	162749855	TTC	T	0.5	644		NM_006182.2:c.2434-31_2434-30del	intron_variant		63	False			
+DDR2	1	162749855	TTC	T	0.5	644		XM_005245220.1:c.2479-31_2479-30del	intron_variant		63	False			
+DDR2	1	162749855	TTC	T	0.5	644		XM_005245221.1:c.2470-31_2470-30del	intron_variant		63	False			
+DDR2	1	162749855	TTC	T	0.5	644		XM_005245222.1:c.2434-31_2434-30del	intron_variant		63	False			
+DDR2	1	162749855	TTC	T	0.5	644		XM_005245223.1:c.2362-31_2362-30del	intron_variant		63	False			
+ALK	2	29436845	C	T	0.5	2315		NM_004304.4:c.3743+5G>A	splice_region_variant&intron_variant		37	False			
+	2	29436845	C	T	0.5	2315			regulatory_region_variant		37	False			
+ALK	2	29443583	G	A	0.5	3346	NP_004295.2:p.Arg1212Cys	NM_004304.4:c.3634C>T	missense_variant	23/29	49	False			
+ALK	2	29445250	G	A	0.5	2034	NP_004295.2:p.Gln1159Ter	NM_004304.4:c.3475C>T	stop_gained	22/29	41	False			
+	2	29445250	G	A	0.5	2034			regulatory_region_variant		41	False			
+ALK	2	29445333	C	T	0.5	1577		NM_004304.4:c.3450+50G>A	intron_variant		27	False			
+	2	29445333	C	T	0.5	1577			regulatory_region_variant		27	False			
+ALK	2	29446416	C	T	0.5	1207		NM_004304.4:c.3173-22G>A	intron_variant		24	False			
+	2	29446416	C	T	0.5	1207			regulatory_region_variant		24	False			
+CTNNB1	3	41265953	C	CT	0.5	1884		NM_001098209.1:c.14-55dup	intron_variant		59	False			
+CTNNB1	3	41265953	C	CT	0.5	1884		NM_001098210.1:c.14-55dup	intron_variant		59	False			
+CTNNB1	3	41265953	C	CT	0.5	1884		NM_001330729.1:c.-8-55dup	intron_variant		59	False			
+CTNNB1	3	41265953	C	CT	0.5	1884		NM_001904.3:c.14-55dup	intron_variant		59	False			
+CTNNB1	3	41265953	C	CT	0.5	1884		XM_005264886.1:c.14-55dup	intron_variant		59	False			
+CTNNB1	3	41265953	C	CT	0.5	1884		XM_005264887.1:c.14-55dup	intron_variant		59	False			
+CTNNB1	3	41265953	C	CT	0.5	1884		XM_005264888.1:c.14-55dup	intron_variant		59	False			
+	3	41265953	C	CT	0.5	1884			regulatory_region_variant		59	False			
+	3	41265953	C	CT	0.5	1884			regulatory_region_variant		59	False			
+CTNNB1	3	41265953	CT	C	0.5	1885		NM_001098209.1:c.14-55del	intron_variant		99	False			
+CTNNB1	3	41265953	CT	C	0.5	1885		NM_001098210.1:c.14-55del	intron_variant		99	False			
+CTNNB1	3	41265953	CT	C	0.5	1885		NM_001330729.1:c.-8-55del	intron_variant		99	False			
+CTNNB1	3	41265953	CT	C	0.5	1885		NM_001904.3:c.14-55del	intron_variant		99	False			
+CTNNB1	3	41265953	CT	C	0.5	1885		XM_005264886.1:c.14-55del	intron_variant		99	False			
+CTNNB1	3	41265953	CT	C	0.5	1885		XM_005264887.1:c.14-55del	intron_variant		99	False			
+CTNNB1	3	41265953	CT	C	0.5	1885		XM_005264888.1:c.14-55del	intron_variant		99	False			
+	3	41265953	CT	C	0.5	1885			regulatory_region_variant		99	False			
+	3	41265953	CT	C	0.5	1885			regulatory_region_variant		99	False			
+PIK3CA	3	178917412	CA	C	0.5	1627		NM_006218.2:c.353-58del	intron_variant		78	False			
+PIK3CA	3	178917412	CA	C	0.5	1627		NM_006218.3:c.353-58del	intron_variant		78	False			
+PIK3CA	3	178919173	G	A	0.5	5336	NP_006209.2:p.Val220Ile	NM_006218.2:c.658G>A	missense_variant	4/21	93	False			
+PIK3CA	3	178919173	G	A	0.5	5336	NP_006209.2:p.Val220Ile	NM_006218.3:c.658G>A	missense_variant	4/21	93	False			
+PIK3CA	3	178919397	A	AT	0.5	941		NM_006218.2:c.813+85dup	intron_variant		82	False			
+PIK3CA	3	178919397	A	AT	0.5	941		NM_006218.3:c.813+85dup	intron_variant		82	False			
+PIK3CA	3	178919397	AT	A	0.5	941		NM_006218.2:c.813+85del	intron_variant		259	False			
+PIK3CA	3	178919397	AT	A	0.5	941		NM_006218.3:c.813+85del	intron_variant		259	False			
+PIK3CA	3	178919397	ATTT	A	0.5	942		NM_006218.2:c.813+83_813+85del	intron_variant		35	False			
+PIK3CA	3	178919397	ATTT	A	0.5	942		NM_006218.3:c.813+83_813+85del	intron_variant		35	False			
+PIK3CA	3	178919397	ATT	A	0.5	941		NM_006218.2:c.813+84_813+85del	intron_variant		107	False			
+PIK3CA	3	178919397	ATT	A	0.5	941		NM_006218.3:c.813+84_813+85del	intron_variant		107	False			
+PIK3CA	3	178919418	C	T	0.5	939		NM_006218.2:c.813+90C>T	intron_variant		19	False			
+PIK3CA	3	178919418	C	T	0.5	939		NM_006218.3:c.813+90C>T	intron_variant		19	False			
+PIK3CA	3	178921639	C	A	0.5	4926		NM_006218.2:c.1059+62C>A	intron_variant		2357	False			
+PIK3CA	3	178921639	C	A	0.5	4926		NM_006218.3:c.1059+62C>A	intron_variant		2357	False			
+PIK3CA	3	178922274	C	A	0.5	5270		NM_006218.2:c.1060-17C>A	intron_variant		2591	False			
+PIK3CA	3	178922274	C	A	0.5	5270		NM_006218.3:c.1060-17C>A	intron_variant		2591	False			
+PIK3CA	3	178928087	G	A	0.5	12485	NP_006209.2:p.Leu455=	NM_006218.2:c.1365G>A	synonymous_variant	8/21	200	False			
+PIK3CA	3	178928087	G	A	0.5	12485	NP_006209.2:p.Leu455=	NM_006218.3:c.1365G>A	synonymous_variant	8/21	200	False			
+PIK3CA	3	178937025	T	C	0.5	6398	NP_006209.2:p.Leu569Pro	NM_006218.2:c.1706T>C	missense_variant	11/21	270	False			
+PIK3CA	3	178937025	T	C	0.5	6398	NP_006209.2:p.Leu569Pro	NM_006218.3:c.1706T>C	missense_variant	11/21	270	False			
+PIK3CA	3	178937630	TA	T	0.5	132		NM_006218.2:c.1912-96del	intron_variant		18	False			
+PIK3CA	3	178937630	TA	T	0.5	132		NM_006218.3:c.1912-96del	intron_variant		18	False			
+PIK3CA	3	178938735	CTA	C	0.5	4713		NM_006218.2:c.2016-27_2016-26del	intron_variant		277	False			
+PIK3CA	3	178938735	CTA	C	0.5	4713		NM_006218.3:c.2016-27_2016-26del	intron_variant		277	False			
+PIK3CA	3	178939018	T	C	0.5	676		NM_006218.2:c.2187+73T>C	intron_variant		279	False			
+PIK3CA	3	178939018	T	C	0.5	676		NM_006218.3:c.2187+73T>C	intron_variant		279	False			
+PIK3CA	3	178941853	C	CT	0.5	10165		NM_006218.2:c.2188-7dup	intron_variant		272	False			
+PIK3CA	3	178941853	C	CT	0.5	10165		NM_006218.3:c.2188-7dup	intron_variant		272	False			
+PIK3CA	3	178941853	CT	C	0.5	10167		NM_006218.2:c.2188-7del	intron_variant		650	False			
+PIK3CA	3	178941853	CT	C	0.5	10167		NM_006218.3:c.2188-7del	intron_variant		650	False			
+PIK3CA	3	178943762	A	G	0.5	15517	NP_006209.2:p.Asp810Gly	NM_006218.2:c.2429A>G	missense_variant	17/21	1083	False			
+PIK3CA	3	178943762	A	G	0.5	15517	NP_006209.2:p.Asp810Gly	NM_006218.3:c.2429A>G	missense_variant	17/21	1083	False			
+FGFR3	4	1803554	C	CAG	0.5	275		NM_000142.4:c.740-8_740-7insAG	splice_region_variant&intron_variant		13	False			
+FGFR3	4	1803554	C	CAG	0.5	275		NM_001163213.1:c.740-8_740-7insAG	splice_region_variant&intron_variant		13	False			
+FGFR3	4	1803554	C	CAG	0.5	275		NM_022965.3:c.740-8_740-7insAG	splice_region_variant&intron_variant		13	False			
+FGFR3	4	1803556	C	A	0.5	275		NM_000142.4:c.740-6C>A	splice_region_variant&intron_variant		13	False			
+FGFR3	4	1803556	C	A	0.5	275		NM_001163213.1:c.740-6C>A	splice_region_variant&intron_variant		13	False			
+FGFR3	4	1803556	C	A	0.5	275		NM_022965.3:c.740-6C>A	splice_region_variant&intron_variant		13	False			
+FGFR3	4	1803680	G	A	0.5	275	NP_000133.1:p.Gln286=	NM_000142.4:c.858G>A	synonymous_variant	7/18	14	False			
+FGFR3	4	1803680	G	A	0.5	275	NP_001156685.1:p.Gln286=	NM_001163213.1:c.858G>A	synonymous_variant	7/18	14	False			
+FGFR3	4	1803680	G	A	0.5	275	NP_075254.1:p.Gln286=	NM_022965.3:c.858G>A	synonymous_variant	7/16	14	False			
+	4	1803680	G	A	0.5	275			regulatory_region_variant		14	False			
+FGFR3	4	1803753	G	A	0.5	827		NM_000142.4:c.930+1G>A	splice_donor_variant		16	False			
+FGFR3	4	1803753	G	A	0.5	827		NM_001163213.1:c.930+1G>A	splice_donor_variant		16	False			
+FGFR3	4	1803753	G	A	0.5	827		NM_022965.3:c.930+1G>A	splice_donor_variant		16	False			
+	4	1803753	G	A	0.5	827			regulatory_region_variant		16	False			
+FGFR3	4	1803816	C	T	0.5	827		NM_000142.4:c.930+64C>T	intron_variant		17	False			
+FGFR3	4	1803816	C	T	0.5	827		NM_001163213.1:c.930+64C>T	intron_variant		17	False			
+FGFR3	4	1803816	C	T	0.5	827		NM_022965.3:c.930+64C>T	intron_variant		17	False			
+FGFR3	4	1803842	G	A	0.5	806		NM_000142.4:c.930+90G>A	intron_variant		19	False			
+FGFR3	4	1803842	G	A	0.5	806		NM_001163213.1:c.930+90G>A	intron_variant		19	False			
+FGFR3	4	1803842	G	A	0.5	806		NM_022965.3:c.930+90G>A	intron_variant		19	False			
+FGFR3	4	1806061	G	A	0.5	558	NP_000133.1:p.Glu360=	NM_000142.4:c.1080G>A	synonymous_variant	9/18	19	False			
+FGFR3	4	1806061	G	A	0.5	558	NP_001156685.1:p.Glu362=	NM_001163213.1:c.1086G>A	synonymous_variant	9/18	19	False			
+FGFR3	4	1806061	G	A	0.5	558		NM_022965.3:c.931-490G>A	intron_variant		19	False			
+FGFR3	4	1806145	G	A	0.5	2085	NP_000133.1:p.Leu388=	NM_000142.4:c.1164G>A	synonymous_variant	9/18	33	False			
+FGFR3	4	1806145	G	A	0.5	2085	NP_001156685.1:p.Leu390=	NM_001163213.1:c.1170G>A	synonymous_variant	9/18	33	False			
+FGFR3	4	1806145	G	A	0.5	2085		NM_022965.3:c.931-406G>A	intron_variant		33	False			
+FGFR3	4	1806265	C	T	0.5	498		NM_000142.4:c.1266+18C>T	intron_variant		12	False			
+FGFR3	4	1806265	C	T	0.5	498		NM_001163213.1:c.1272+18C>T	intron_variant		12	False			
+FGFR3	4	1806265	C	T	0.5	498		NM_022965.3:c.931-286C>T	intron_variant		12	False			
+FGFR3	4	1807894	G	A	1.0	214	NP_000133.1:p.Thr651=	NM_000142.4:c.1953G>A	synonymous_variant	14/18	213	False			
+FGFR3	4	1807894	G	A	1.0	214	NP_001156685.1:p.Thr653=	NM_001163213.1:c.1959G>A	synonymous_variant	14/18	213	False			
+FGFR3	4	1807894	G	A	1.0	214	NP_075254.1:p.Thr539=	NM_022965.3:c.1617G>A	synonymous_variant	12/16	213	False			
+PDGFRA	4	55141055	A	G	1.0	1644	NP_001334756.1:p.Pro567=	NM_001347827.1:c.1701A>G	synonymous_variant	12/17	1643	False			
+PDGFRA	4	55141055	A	G	1.0	1644	NP_001334757.1:p.Pro592=	NM_001347828.1:c.1776A>G	synonymous_variant	13/24	1643	False			
+PDGFRA	4	55141055	A	G	1.0	1644	NP_001334758.1:p.Pro567=	NM_001347829.1:c.1701A>G	synonymous_variant	12/23	1643	False			
+PDGFRA	4	55141055	A	G	1.0	1644	NP_001334759.1:p.Pro580=	NM_001347830.1:c.1740A>G	synonymous_variant	12/23	1643	False			
+PDGFRA	4	55141055	A	G	1.0	1644	NP_006197.1:p.Pro567=	NM_006206.4:c.1701A>G	synonymous_variant	12/23	1643	False			
+PDGFRA	4	55141055	A	G	1.0	1644	NP_006197.1:p.Pro567=	NM_006206.5:c.1701A>G	synonymous_variant	12/23	1643	False			
+PDGFRA	4	55141055	A	G	1.0	1644	XP_005265800.1:p.Pro567=	XM_005265743.1:c.1701A>G	synonymous_variant	12/23	1643	False			
+PDGFRA	4	55141055	A	G	1.0	1644	XP_005265801.1:p.Pro567=	XM_005265744.1:c.1701A>G	synonymous_variant	12/17	1643	False			
+	4	55141055	A	G	1.0	1644			regulatory_region_variant		1643	False			
+PDGFRA	4	55151958	T	TA	1.0	1686			downstream_gene_variant		1682	False			
+PDGFRA	4	55151958	T	TA	1.0	1686		NM_001347828.1:c.2515-50_2515-49insA	intron_variant		1682	False			
+PDGFRA	4	55151958	T	TA	1.0	1686		NM_001347829.1:c.2440-50_2440-49insA	intron_variant		1682	False			
+PDGFRA	4	55151958	T	TA	1.0	1686		NM_001347830.1:c.2479-50_2479-49insA	intron_variant		1682	False			
+PDGFRA	4	55151958	T	TA	1.0	1686		NM_006206.4:c.2440-50_2440-49insA	intron_variant		1682	False			
+PDGFRA	4	55151958	T	TA	1.0	1686		NM_006206.5:c.2440-50_2440-49insA	intron_variant		1682	False			
+PDGFRA	4	55151958	T	TA	1.0	1686		XM_005265743.1:c.2440-50_2440-49insA	intron_variant		1682	False			
+PDGFRA	4	55151958	T	TA	1.0	1686			downstream_gene_variant		1682	False			
+KIT	4	55592294	C	T	0.5	2888		NM_000222.2:c.1540+78C>T	intron_variant		53	False			
+KIT	4	55592294	C	T	0.5	2888		NM_001093772.1:c.1528+90C>T	intron_variant		53	False			
+KIT	4	55592294	C	T	0.5	2888		XM_005265740.1:c.1543+78C>T	intron_variant		53	False			
+KIT	4	55592294	C	T	0.5	2888		XM_005265741.1:c.1543+78C>T	intron_variant		53	False			
+KIT	4	55592294	C	T	0.5	2888		XM_005265742.1:c.1531+90C>T	intron_variant		53	False			
+KIT	4	55593787	C	T	0.5	2017		NM_000222.2:c.1774+79C>T	intron_variant		51	False			
+KIT	4	55593787	C	T	0.5	2017		NM_001093772.1:c.1762+79C>T	intron_variant		51	False			
+KIT	4	55593787	C	T	0.5	2017		XM_005265740.1:c.1777+79C>T	intron_variant		51	False			
+KIT	4	55593787	C	T	0.5	2017		XM_005265741.1:c.1777+79C>T	intron_variant		51	False			
+KIT	4	55593787	C	T	0.5	2017		XM_005265742.1:c.1765+79C>T	intron_variant		51	False			
+KIT	4	55595507	C	T	0.5	2431	NP_000213.1:p.Thr666Ile	NM_000222.2:c.1997C>T	missense_variant	14/21	51	False			
+KIT	4	55595507	C	T	0.5	2431	NP_001087241.1:p.Thr662Ile	NM_001093772.1:c.1985C>T	missense_variant	14/21	51	False			
+KIT	4	55595507	C	T	0.5	2431	XP_005265797.1:p.Thr667Ile	XM_005265740.1:c.2000C>T	missense_variant	14/21	51	False			
+KIT	4	55595507	C	T	0.5	2431	XP_005265798.1:p.Thr667Ile	XM_005265741.1:c.2000C>T	missense_variant	14/21	51	False			
+KIT	4	55595507	C	T	0.5	2431	XP_005265799.1:p.Thr663Ile	XM_005265742.1:c.1988C>T	missense_variant	14/21	51	False			
+	4	55595507	C	T	0.5	2431			regulatory_region_variant		51	False			
+KIT	4	55599306	T	C	0.5	2834	NP_000213.1:p.Phe811Ser	NM_000222.2:c.2432T>C	missense_variant	17/21	668	False			
+KIT	4	55599306	T	C	0.5	2834	NP_001087241.1:p.Phe807Ser	NM_001093772.1:c.2420T>C	missense_variant	17/21	668	False			
+KIT	4	55599306	T	C	0.5	2834	XP_005265797.1:p.Phe812Ser	XM_005265740.1:c.2435T>C	missense_variant	17/21	668	False			
+KIT	4	55599306	T	C	0.5	2834	XP_005265798.1:p.Phe811Ser	XM_005265741.1:c.2432T>C	missense_variant	17/21	668	False			
+KIT	4	55599306	T	C	0.5	2834	XP_005265799.1:p.Phe808Ser	XM_005265742.1:c.2423T>C	missense_variant	17/21	668	False			
+KIT	4	55599436	T	C	1.0	1630		NM_000222.2:c.2484+78T>C	intron_variant		1627	False			
+KIT	4	55599436	T	C	1.0	1630		NM_001093772.1:c.2472+78T>C	intron_variant		1627	False			
+KIT	4	55599436	T	C	1.0	1630		XM_005265740.1:c.2487+78T>C	intron_variant		1627	False			
+KIT	4	55599436	T	C	1.0	1630		XM_005265741.1:c.2484+78T>C	intron_variant		1627	False			
+KIT	4	55599436	T	C	1.0	1630		XM_005265742.1:c.2475+78T>C	intron_variant		1627	False			
+KIT	4	55599451	T	C	0.5	1632		NM_000222.2:c.2484+93T>C	intron_variant		49	False			
+KIT	4	55599451	T	C	0.5	1632		NM_001093772.1:c.2472+93T>C	intron_variant		49	False			
+KIT	4	55599451	T	C	0.5	1632		XM_005265740.1:c.2487+93T>C	intron_variant		49	False			
+KIT	4	55599451	T	C	0.5	1632		XM_005265741.1:c.2484+93T>C	intron_variant		49	False			
+KIT	4	55599451	T	C	0.5	1632		XM_005265742.1:c.2475+93T>C	intron_variant		49	False			
+FLT4	5	180055993	G	A	0.5	311	NP_002011.2:p.Pro331Leu	NM_002020.4:c.992C>T	missense_variant	8/30	11	False			
+FLT4	5	180055993	G	A	0.5	311	NP_891555.2:p.Pro331Leu	NM_182925.4:c.992C>T	missense_variant	8/30	11	False			
+FLT4	5	180055999	T	C	0.5	311	NP_002011.2:p.Glu329Gly	NM_002020.4:c.986A>G	missense_variant&splice_region_variant	8/30	60	False			
+FLT4	5	180055999	T	C	0.5	311	NP_891555.2:p.Glu329Gly	NM_182925.4:c.986A>G	missense_variant&splice_region_variant	8/30	60	False			
+SYNE1	6	152697706	C	T	0.5	906		NM_033071.3:c.9168-13G>A	intron_variant		510	False			
+SYNE1	6	152697706	C	T	0.5	906		NM_182961.3:c.9147-13G>A	intron_variant		510	False			
+SYNE1-AS1	6	152697706	C	T	0.5	906			upstream_gene_variant		510	False			
+SYNE1	6	152697706	C	T	0.5	906		XM_005266877.1:c.9147-13G>A	intron_variant		510	False			
+EGFR	7	55210100	G	A	0.5	1790	NP_001333826.1:p.Val70=	NM_001346897.1:c.210G>A	synonymous_variant	2/26	38	False			
+EGFR	7	55210100	G	A	0.5	1790	NP_001333827.1:p.Val70=	NM_001346898.1:c.210G>A	synonymous_variant	2/27	38	False			
+EGFR	7	55210100	G	A	0.5	1790	NP_001333828.1:p.Val70=	NM_001346899.1:c.210G>A	synonymous_variant	2/27	38	False			
+EGFR	7	55210100	G	A	0.5	1790	NP_001333829.1:p.Val17=	NM_001346900.1:c.51G>A	synonymous_variant	2/28	38	False			
+EGFR	7	55210100	G	A	0.5	1790		NM_001346941.1:c.89-13423G>A	intron_variant		38	False			
+EGFR	7	55210100	G	A	0.5	1790	NP_005219.2:p.Val70=	NM_005228.3:c.210G>A	synonymous_variant	2/28	38	False			
+EGFR	7	55210100	G	A	0.5	1790	NP_005219.2:p.Val70=	NM_005228.4:c.210G>A	synonymous_variant	2/28	38	False			
+EGFR	7	55210100	G	A	0.5	1790	NP_958439.1:p.Val70=	NM_201282.1:c.210G>A	synonymous_variant	2/16	38	False			
+EGFR	7	55210100	G	A	0.5	1790	NP_958440.1:p.Val70=	NM_201283.1:c.210G>A	synonymous_variant	2/10	38	False			
+EGFR	7	55210100	G	A	0.5	1790	NP_958441.1:p.Val70=	NM_201284.1:c.210G>A	synonymous_variant	2/16	38	False			
+EGFR	7	55210100	G	A	0.5	1790	XP_005271803.1:p.Val70=	XM_005271746.1:c.210G>A	synonymous_variant	2/27	38	False			
+EGFR	7	55210100	G	A	0.5	1790	XP_005271804.1:p.Val17=	XM_005271747.1:c.51G>A	synonymous_variant	2/28	38	False			
+EGFR	7	55210100	G	A	0.5	1790	XP_005271805.1:p.Val70=	XM_005271748.1:c.210G>A	synonymous_variant	2/17	38	False			
+EGFR	7	55241748	G	A	0.5	864		NM_001346897.1:c.2049+12G>A	intron_variant		25	False			
+EGFR	7	55241748	G	A	0.5	864		NM_001346898.1:c.2184+12G>A	intron_variant		25	False			
+EGFR	7	55241748	G	A	0.5	864		NM_001346899.1:c.2049+12G>A	intron_variant		25	False			
+EGFR	7	55241748	G	A	0.5	864		NM_001346900.1:c.2025+12G>A	intron_variant		25	False			
+EGFR	7	55241748	G	A	0.5	864		NM_001346941.1:c.1383+12G>A	intron_variant		25	False			
+EGFR	7	55241748	G	A	0.5	864		NM_005228.3:c.2184+12G>A	intron_variant		25	False			
+EGFR	7	55241748	G	A	0.5	864		NM_005228.4:c.2184+12G>A	intron_variant		25	False			
+EGFR	7	55241748	G	A	0.5	864			downstream_gene_variant		25	False			
+EGFR	7	55241748	G	A	0.5	864		XM_005271746.1:c.2049+12G>A	intron_variant		25	False			
+EGFR	7	55241748	G	A	0.5	864		XM_005271747.1:c.2025+12G>A	intron_variant		25	False			
+EGFR	7	55241748	G	A	0.5	864			downstream_gene_variant		25	False			
+	7	55241748	G	A	0.5	864			regulatory_region_variant		25	False			
+EGFR	7	55242481	A	G	0.5	2975	NP_001333826.1:p.Thr706Ala	NM_001346897.1:c.2116A>G	missense_variant	18/26	76	False			
+EGFR	7	55242481	A	G	0.5	2975	NP_001333827.1:p.Thr751Ala	NM_001346898.1:c.2251A>G	missense_variant	19/27	76	False			
+EGFR	7	55242481	A	G	0.5	2975	NP_001333828.1:p.Thr706Ala	NM_001346899.1:c.2116A>G	missense_variant	18/27	76	False			
+EGFR	7	55242481	A	G	0.5	2975	NP_001333829.1:p.Thr698Ala	NM_001346900.1:c.2092A>G	missense_variant	19/28	76	False			
+EGFR	7	55242481	A	G	0.5	2975	NP_001333870.1:p.Thr484Ala	NM_001346941.1:c.1450A>G	missense_variant	13/22	76	False			
+EGFR	7	55242481	A	G	0.5	2975	NP_005219.2:p.Thr751Ala	NM_005228.3:c.2251A>G	missense_variant	19/28	76	False			
+EGFR	7	55242481	A	G	0.5	2975	NP_005219.2:p.Thr751Ala	NM_005228.4:c.2251A>G	missense_variant	19/28	76	False			
+EGFR	7	55242481	A	G	0.5	2975			downstream_gene_variant		76	False			
+EGFR-AS1	7	55242481	A	G	0.5	2975			downstream_gene_variant		76	False			
+EGFR	7	55242481	A	G	0.5	2975	XP_005271803.1:p.Thr706Ala	XM_005271746.1:c.2116A>G	missense_variant	18/27	76	False			
+EGFR	7	55242481	A	G	0.5	2975	XP_005271804.1:p.Thr698Ala	XM_005271747.1:c.2092A>G	missense_variant	19/28	76	False			
+EGFR	7	55242481	A	G	0.5	2975			downstream_gene_variant		76	False			
+	7	55242481	A	G	0.5	2975			regulatory_region_variant		76	False			
+EGFR	7	55242574	C	T	0.5	1493		NM_001346897.1:c.2148+61C>T	intron_variant		45	False			
+EGFR	7	55242574	C	T	0.5	1493		NM_001346898.1:c.2283+61C>T	intron_variant		45	False			
+EGFR	7	55242574	C	T	0.5	1493		NM_001346899.1:c.2148+61C>T	intron_variant		45	False			
+EGFR	7	55242574	C	T	0.5	1493		NM_001346900.1:c.2124+61C>T	intron_variant		45	False			
+EGFR	7	55242574	C	T	0.5	1493		NM_001346941.1:c.1482+61C>T	intron_variant		45	False			
+EGFR	7	55242574	C	T	0.5	1493		NM_005228.3:c.2283+61C>T	intron_variant		45	False			
+EGFR	7	55242574	C	T	0.5	1493		NM_005228.4:c.2283+61C>T	intron_variant		45	False			
+EGFR	7	55242574	C	T	0.5	1493			downstream_gene_variant		45	False			
+EGFR-AS1	7	55242574	C	T	0.5	1493			downstream_gene_variant		45	False			
+EGFR	7	55242574	C	T	0.5	1493		XM_005271746.1:c.2148+61C>T	intron_variant		45	False			
+EGFR	7	55242574	C	T	0.5	1493		XM_005271747.1:c.2124+61C>T	intron_variant		45	False			
+EGFR	7	55242574	C	T	0.5	1493			downstream_gene_variant		45	False			
+	7	55242574	C	T	0.5	1493			regulatory_region_variant		45	False			
+EGFR	7	55249007	G	A	0.5	2426	NP_001333826.1:p.Val724Met	NM_001346897.1:c.2170G>A	missense_variant	19/26	38	False			
+EGFR	7	55249007	G	A	0.5	2426	NP_001333827.1:p.Val769Met	NM_001346898.1:c.2305G>A	missense_variant	20/27	38	False			
+EGFR	7	55249007	G	A	0.5	2426	NP_001333828.1:p.Val724Met	NM_001346899.1:c.2170G>A	missense_variant	19/27	38	False			
+EGFR	7	55249007	G	A	0.5	2426	NP_001333829.1:p.Val716Met	NM_001346900.1:c.2146G>A	missense_variant	20/28	38	False			
+EGFR	7	55249007	G	A	0.5	2426	NP_001333870.1:p.Val502Met	NM_001346941.1:c.1504G>A	missense_variant	14/22	38	False			
+EGFR	7	55249007	G	A	0.5	2426	NP_005219.2:p.Val769Met	NM_005228.3:c.2305G>A	missense_variant	20/28	38	False			
+EGFR	7	55249007	G	A	0.5	2426	NP_005219.2:p.Val769Met	NM_005228.4:c.2305G>A	missense_variant	20/28	38	False			
+EGFR-AS1	7	55249007	G	A	0.5	2426		NR_047551.1:n.1257C>T	non_coding_transcript_exon_variant	2/2	38	False			
+EGFR	7	55249007	G	A	0.5	2426	XP_005271803.1:p.Val724Met	XM_005271746.1:c.2170G>A	missense_variant	19/27	38	False			
+EGFR	7	55249007	G	A	0.5	2426	XP_005271804.1:p.Val716Met	XM_005271747.1:c.2146G>A	missense_variant	20/28	38	False			
+	7	55249007	G	A	0.5	2426			regulatory_region_variant		38	False			
+EGFR	7	55249063	G	A	0.5	765	NP_001333826.1:p.Gln742=	NM_001346897.1:c.2226G>A	synonymous_variant	19/26	408	False			
+EGFR	7	55249063	G	A	0.5	765	NP_001333827.1:p.Gln787=	NM_001346898.1:c.2361G>A	synonymous_variant	20/27	408	False			
+EGFR	7	55249063	G	A	0.5	765	NP_001333828.1:p.Gln742=	NM_001346899.1:c.2226G>A	synonymous_variant	19/27	408	False			
+EGFR	7	55249063	G	A	0.5	765	NP_001333829.1:p.Gln734=	NM_001346900.1:c.2202G>A	synonymous_variant	20/28	408	False			
+EGFR	7	55249063	G	A	0.5	765	NP_001333870.1:p.Gln520=	NM_001346941.1:c.1560G>A	synonymous_variant	14/22	408	False			
+EGFR	7	55249063	G	A	0.5	765	NP_005219.2:p.Gln787=	NM_005228.3:c.2361G>A	synonymous_variant	20/28	408	False			
+EGFR	7	55249063	G	A	0.5	765	NP_005219.2:p.Gln787=	NM_005228.4:c.2361G>A	synonymous_variant	20/28	408	False			
+EGFR-AS1	7	55249063	G	A	0.5	765		NR_047551.1:n.1201C>T	non_coding_transcript_exon_variant	2/2	408	False			
+EGFR	7	55249063	G	A	0.5	765	XP_005271803.1:p.Gln742=	XM_005271746.1:c.2226G>A	synonymous_variant	19/27	408	False			
+EGFR	7	55249063	G	A	0.5	765	XP_005271804.1:p.Gln734=	XM_005271747.1:c.2202G>A	synonymous_variant	20/28	408	False			
+	7	55249063	G	A	0.5	765			regulatory_region_variant		408	False			
+EGFR	7	55249215	G	A	0.5	2412		NM_001346897.1:c.2334+44G>A	intron_variant		49	False			
+EGFR	7	55249215	G	A	0.5	2412		NM_001346898.1:c.2469+44G>A	intron_variant		49	False			
+EGFR	7	55249215	G	A	0.5	2412		NM_001346899.1:c.2334+44G>A	intron_variant		49	False			
+EGFR	7	55249215	G	A	0.5	2412		NM_001346900.1:c.2310+44G>A	intron_variant		49	False			
+EGFR	7	55249215	G	A	0.5	2412		NM_001346941.1:c.1668+44G>A	intron_variant		49	False			
+EGFR	7	55249215	G	A	0.5	2412		NM_005228.3:c.2469+44G>A	intron_variant		49	False			
+EGFR	7	55249215	G	A	0.5	2412		NM_005228.4:c.2469+44G>A	intron_variant		49	False			
+EGFR-AS1	7	55249215	G	A	0.5	2412		NR_047551.1:n.1049C>T	non_coding_transcript_exon_variant	2/2	49	False			
+EGFR	7	55249215	G	A	0.5	2412		XM_005271746.1:c.2334+44G>A	intron_variant		49	False			
+EGFR	7	55249215	G	A	0.5	2412		XM_005271747.1:c.2310+44G>A	intron_variant		49	False			
+	7	55249215	G	A	0.5	2412			regulatory_region_variant		49	False			
+	7	55249215	G	A	0.5	2412			TF_binding_site_variant		49	False			
+	7	55249215	G	A	0.5	2412			TF_binding_site_variant		49	False			
+EGFR	7	55249236	G	A	0.5	2410		NM_001346897.1:c.2334+65G>A	intron_variant		45	False			
+EGFR	7	55249236	G	A	0.5	2410		NM_001346898.1:c.2469+65G>A	intron_variant		45	False			
+EGFR	7	55249236	G	A	0.5	2410		NM_001346899.1:c.2334+65G>A	intron_variant		45	False			
+EGFR	7	55249236	G	A	0.5	2410		NM_001346900.1:c.2310+65G>A	intron_variant		45	False			
+EGFR	7	55249236	G	A	0.5	2410		NM_001346941.1:c.1668+65G>A	intron_variant		45	False			
+EGFR	7	55249236	G	A	0.5	2410		NM_005228.3:c.2469+65G>A	intron_variant		45	False			
+EGFR	7	55249236	G	A	0.5	2410		NM_005228.4:c.2469+65G>A	intron_variant		45	False			
+EGFR-AS1	7	55249236	G	A	0.5	2410		NR_047551.1:n.1028C>T	non_coding_transcript_exon_variant	2/2	45	False			
+EGFR	7	55249236	G	A	0.5	2410		XM_005271746.1:c.2334+65G>A	intron_variant		45	False			
+EGFR	7	55249236	G	A	0.5	2410		XM_005271747.1:c.2310+65G>A	intron_variant		45	False			
+	7	55249236	G	A	0.5	2410			regulatory_region_variant		45	False			
+	7	55249236	G	A	0.5	2410			TF_binding_site_variant		45	False			
+EGFR	7	55266417	T	C	1.0	1662	NP_001333826.1:p.Thr858=	NM_001346897.1:c.2574T>C	synonymous_variant	22/26	1660	False			
+EGFR	7	55266417	T	C	1.0	1662	NP_001333827.1:p.Thr903=	NM_001346898.1:c.2709T>C	synonymous_variant	23/27	1660	False			
+EGFR	7	55266417	T	C	1.0	1662	NP_001333828.1:p.Thr858=	NM_001346899.1:c.2574T>C	synonymous_variant	22/27	1660	False			
+EGFR	7	55266417	T	C	1.0	1662	NP_001333829.1:p.Thr850=	NM_001346900.1:c.2550T>C	synonymous_variant	23/28	1660	False			
+EGFR	7	55266417	T	C	1.0	1662	NP_001333870.1:p.Thr636=	NM_001346941.1:c.1908T>C	synonymous_variant	17/22	1660	False			
+EGFR	7	55266417	T	C	1.0	1662	NP_005219.2:p.Thr903=	NM_005228.3:c.2709T>C	synonymous_variant	23/28	1660	False			
+EGFR	7	55266417	T	C	1.0	1662	NP_005219.2:p.Thr903=	NM_005228.4:c.2709T>C	synonymous_variant	23/28	1660	False			
+EGFR	7	55266417	T	C	1.0	1662	XP_005271803.1:p.Thr858=	XM_005271746.1:c.2574T>C	synonymous_variant	22/27	1660	False			
+EGFR	7	55266417	T	C	1.0	1662	XP_005271804.1:p.Thr850=	XM_005271747.1:c.2550T>C	synonymous_variant	23/28	1660	False			
+MET	7	116422040	A	C	0.5	437		NM_000245.2:c.3523-2A>C	splice_acceptor_variant		16	False			
+MET	7	116422040	A	C	0.5	437		NM_000245.3:c.3523-2A>C	splice_acceptor_variant		16	False			
+MET	7	116422040	A	C	0.5	437		NM_001127500.1:c.3577-2A>C	splice_acceptor_variant		16	False			
+MET	7	116422040	A	C	0.5	437		NM_001127500.2:c.3577-2A>C	splice_acceptor_variant		16	False			
+MET	7	116422040	A	C	0.5	437		NM_001324402.1:c.2233-2A>C	splice_acceptor_variant		16	False			
+MET	7	116422040	A	C	0.5	437		XM_005250353.1:c.3634-2A>C	splice_acceptor_variant		16	False			
+MET	7	116422040	A	C	0.5	437		XM_005250354.1:c.2233-2A>C	splice_acceptor_variant		16	False			
+	7	116422040	A	C	0.5	437			regulatory_region_variant		16	False			
+BRAF	7	140477790	C	T	0.5	9310		NM_004333.4:c.1517+1G>A	splice_donor_variant		138	False			
+BRAF	7	140477790	C	T	0.5	9310		XM_005250045.1:c.1517+1G>A	splice_donor_variant		138	False			
+BRAF	7	140477790	C	T	0.5	9310		XM_005250046.1:c.1517+1G>A	splice_donor_variant		138	False			
+BRAF	7	140477790	C	T	0.5	9310		XM_005250047.1:c.1517+1G>A	splice_donor_variant		138	False			
+BRAF	7	140477790	C	T	0.5	9310		XR_242190.1:n.1525+1G>A	splice_donor_variant&non_coding_transcript_variant		138	False			
+BRAF	7	140481576	G	A	0.5	3008		NM_004333.4:c.1315-83C>T	intron_variant		49	False			
+BRAF	7	140481576	G	A	0.5	3008		XM_005250045.1:c.1315-83C>T	intron_variant		49	False			
+BRAF	7	140481576	G	A	0.5	3008		XM_005250046.1:c.1315-83C>T	intron_variant		49	False			
+BRAF	7	140481576	G	A	0.5	3008		XM_005250047.1:c.1315-83C>T	intron_variant		49	False			
+BRAF	7	140481576	G	A	0.5	3008		XR_242190.1:n.1323-83C>T	intron_variant&non_coding_transcript_variant		49	False			
+RET	10	43609157	C	T	0.5	1246		NM_020630.4:c.1879+34C>T	intron_variant		31	False			
+RET	10	43609157	C	T	0.5	1246		NM_020975.4:c.1879+34C>T	intron_variant		31	False			
+	10	43609157	C	T	0.5	1246			regulatory_region_variant		31	False			
+RET	10	43613843	G	T	0.5	488	NP_065681.1:p.Leu769=	NM_020630.4:c.2307G>T	synonymous_variant	13/19	261	False			
+RET	10	43613843	G	T	0.5	488	NP_066124.1:p.Leu769=	NM_020975.4:c.2307G>T	synonymous_variant	13/20	261	False			
+RET	10	43615593	C	T	0.5	1679	NP_065681.1:p.Ser891Leu	NM_020630.4:c.2672C>T	missense_variant	15/19	31	False			
+RET	10	43615593	C	T	0.5	1679	NP_066124.1:p.Ser891Leu	NM_020975.4:c.2672C>T	missense_variant	15/20	31	False			
+PTEN	10	89624321	G	GC	0.5	10374		NM_000314.4:c.79+17dup	intron_variant		184	False			
+PTEN	10	89624321	G	GC	0.5	10374		NM_000314.6:c.80+17dup	intron_variant		184	False			
+KLLN	10	89624321	G	GC	0.5	10374			upstream_gene_variant		184	False			
+PTEN	10	89624321	G	GC	0.5	10374		NM_001304717.2:c.598+17dup	intron_variant		184	False			
+PTEN	10	89624321	G	GC	0.5	10374		NM_001304718.1:c.-626+17dup	intron_variant		184	False			
+	10	89624321	G	GC	0.5	10374		XR_246154.1:n.17dup	non_coding_transcript_exon_variant	1/3	184	False			
+	10	89624321	G	GC	0.5	10374			regulatory_region_variant		184	False			
+PTEN	10	89690743	CT	C	0.5	607		NM_000314.4:c.210-52del	intron_variant		27	False			
+PTEN	10	89690743	CT	C	0.5	607		NM_000314.6:c.211-52del	intron_variant		27	False			
+PTEN	10	89690743	CT	C	0.5	607		NM_001304717.2:c.729-52del	intron_variant		27	False			
+PTEN	10	89690743	CT	C	0.5	607		NM_001304718.1:c.-540-52del	intron_variant		27	False			
+PTEN	10	89692731	G	GT	0.5	3104		NM_000314.4:c.254-30dup	intron_variant		67	False			
+PTEN	10	89692731	G	GT	0.5	3104		NM_000314.6:c.255-30dup	intron_variant		67	False			
+PTEN	10	89692731	G	GT	0.5	3104		NM_001304717.2:c.773-30dup	intron_variant		67	False			
+PTEN	10	89692731	G	GT	0.5	3104		NM_001304718.1:c.-496-30dup	intron_variant		67	False			
+	10	89692731	G	GT	0.5	3104			regulatory_region_variant		67	False			
+PTEN	10	89692731	GT	G	0.5	3104		NM_000314.4:c.254-30del	intron_variant		184	False			
+PTEN	10	89692731	GT	G	0.5	3104		NM_000314.6:c.255-30del	intron_variant		184	False			
+PTEN	10	89692731	GT	G	0.5	3104		NM_001304717.2:c.773-30del	intron_variant		184	False			
+PTEN	10	89692731	GT	G	0.5	3104		NM_001304718.1:c.-496-30del	intron_variant		184	False			
+	10	89692731	GT	G	0.5	3104			regulatory_region_variant		184	False			
+PTEN	10	89692985	G	A	0.5	1287	NP_000305.3:p.Glu157Lys	NM_000314.4:c.469G>A	missense_variant	5/9	23	False			
+PTEN	10	89692985	G	A	0.5	1287	NP_000305.3:p.Glu157Lys	NM_000314.6:c.470G>A	missense_variant	5/9	23	False			
+PTEN	10	89692985	G	A	0.5	1287	NP_001291646.2:p.Glu330Lys	NM_001304717.2:c.988G>A	missense_variant	6/10	23	False			
+PTEN	10	89692985	G	A	0.5	1287		NM_001304718.1:c.-281G>A	5_prime_UTR_variant	4/9	23	False			
+	10	89692985	G	A	0.5	1287			regulatory_region_variant		23	False			
+PTEN	10	89711833	AT	A	0.5	2934		NM_000314.4:c.493-34del	intron_variant		104	False			
+PTEN	10	89711833	AT	A	0.5	2934		NM_000314.6:c.494-34del	intron_variant		104	False			
+PTEN	10	89711833	AT	A	0.5	2934		NM_001304717.2:c.1012-34del	intron_variant		104	False			
+PTEN	10	89711833	AT	A	0.5	2934		NM_001304718.1:c.-98-34del	intron_variant		104	False			
+PTEN	10	89711855	CT	C	0.5	2935		NM_000314.4:c.493-12del	intron_variant		61	False			
+PTEN	10	89711855	CT	C	0.5	2935		NM_000314.6:c.494-12del	intron_variant		61	False			
+PTEN	10	89711855	CT	C	0.5	2935		NM_001304717.2:c.1012-12del	intron_variant		61	False			
+PTEN	10	89711855	CT	C	0.5	2935		NM_001304718.1:c.-98-12del	intron_variant		61	False			
+PTEN	10	89711878	G	GT	0.5	2933	NP_000305.3:p.Thr167AsnfsTer13	NM_000314.4:c.497dup	frameshift_variant	6/9	851	False			
+PTEN	10	89711878	G	GT	0.5	2933	NP_000305.3:p.Thr167AsnfsTer13	NM_000314.6:c.498dup	frameshift_variant	6/9	851	False			
+PTEN	10	89711878	G	GT	0.5	2933	NP_001291646.2:p.Thr340AsnfsTer13	NM_001304717.2:c.1016dup	frameshift_variant	7/10	851	False			
+PTEN	10	89711878	G	GT	0.5	2933		NM_001304718.1:c.-94dup	5_prime_UTR_variant	6/9	851	False			
+PTEN	10	89717568	C	T	0.5	3715		NM_000314.4:c.635-42C>T	intron_variant		71	False			
+PTEN	10	89717568	C	T	0.5	3715		NM_000314.6:c.636-42C>T	intron_variant		71	False			
+PTEN	10	89717568	C	T	0.5	3715		NM_001304717.2:c.1154-42C>T	intron_variant		71	False			
+PTEN	10	89717568	C	T	0.5	3715		NM_001304718.1:c.45-42C>T	intron_variant		71	False			
+PTEN	10	89717817	G	A	0.5	1505		NM_000314.4:c.801+41G>A	intron_variant		26	False			
+PTEN	10	89717817	G	A	0.5	1505		NM_000314.6:c.802+41G>A	intron_variant		26	False			
+PTEN	10	89717817	G	A	0.5	1505		NM_001304717.2:c.1320+41G>A	intron_variant		26	False			
+PTEN	10	89717817	G	A	0.5	1505		NM_001304718.1:c.211+41G>A	intron_variant		26	False			
+PTEN	10	89720633	C	CT	0.5	124		NM_000314.4:c.802-3dup	intron_variant		10	False			
+PTEN	10	89720633	C	CT	0.5	124		NM_000314.6:c.803-3dup	intron_variant		10	False			
+PTEN	10	89720633	C	CT	0.5	124		NM_001304717.2:c.1321-3dup	intron_variant		10	False			
+PTEN	10	89720633	C	CT	0.5	124		NM_001304718.1:c.212-3dup	intron_variant		10	False			
+	10	89720633	C	CT	0.5	124			regulatory_region_variant		10	False			
+PTEN	10	89720633	CT	C	0.5	124		NM_000314.4:c.802-3del	intron_variant		38	False			
+PTEN	10	89720633	CT	C	0.5	124		NM_000314.6:c.803-3del	intron_variant		38	False			
+PTEN	10	89720633	CT	C	0.5	124		NM_001304717.2:c.1321-3del	intron_variant		38	False			
+PTEN	10	89720633	CT	C	0.5	124		NM_001304718.1:c.212-3del	intron_variant		38	False			
+	10	89720633	CT	C	0.5	124			regulatory_region_variant		38	False			
+PTEN	10	89720633	CTT	C	0.5	124		NM_000314.4:c.802-4_802-3del	intron_variant		10	False			
+PTEN	10	89720633	CTT	C	0.5	124		NM_000314.6:c.803-4_803-3del	intron_variant		10	False			
+PTEN	10	89720633	CTT	C	0.5	124		NM_001304717.2:c.1321-4_1321-3del	intron_variant		10	False			
+PTEN	10	89720633	CTT	C	0.5	124		NM_001304718.1:c.212-4_212-3del	intron_variant		10	False			
+	10	89720633	CTT	C	0.5	124			regulatory_region_variant		10	False			
+PTEN	10	89725230	A	AT	0.5	901		NM_000314.4:c.*10dup	3_prime_UTR_variant	9/9	21	False			
+PTEN	10	89725230	A	AT	0.5	901		NM_000314.6:c.*11dup	3_prime_UTR_variant	9/9	21	False			
+PTEN	10	89725230	A	AT	0.5	901		NM_001304717.2:c.*10dup	3_prime_UTR_variant	10/10	21	False			
+PTEN	10	89725230	A	AT	0.5	901		NM_001304718.1:c.*11dup	3_prime_UTR_variant	9/9	21	False			
+PTEN	10	89725230	AT	A	0.5	903		NM_000314.4:c.*10del	3_prime_UTR_variant	9/9	43	False			
+PTEN	10	89725230	AT	A	0.5	903		NM_000314.6:c.*11del	3_prime_UTR_variant	9/9	43	False			
+PTEN	10	89725230	AT	A	0.5	903		NM_001304717.2:c.*10del	3_prime_UTR_variant	10/10	43	False			
+PTEN	10	89725230	AT	A	0.5	903		NM_001304718.1:c.*11del	3_prime_UTR_variant	9/9	43	False			
+PTEN	10	89725293	CT	C	0.5	902		NM_000314.4:c.*75del	3_prime_UTR_variant	9/9	220	False			
+PTEN	10	89725293	CT	C	0.5	902		NM_000314.6:c.*76del	3_prime_UTR_variant	9/9	220	False			
+PTEN	10	89725293	CT	C	0.5	902		NM_001304717.2:c.*75del	3_prime_UTR_variant	10/10	220	False			
+PTEN	10	89725293	CT	C	0.5	902		NM_001304718.1:c.*76del	3_prime_UTR_variant	9/9	220	False			
+PTEN	10	89725293	C	CT	0.5	901		NM_000314.4:c.*75dup	3_prime_UTR_variant	9/9	62	False			
+PTEN	10	89725293	C	CT	0.5	901		NM_000314.6:c.*76dup	3_prime_UTR_variant	9/9	62	False			
+PTEN	10	89725293	C	CT	0.5	901		NM_001304717.2:c.*75dup	3_prime_UTR_variant	10/10	62	False			
+PTEN	10	89725293	C	CT	0.5	901		NM_001304718.1:c.*76dup	3_prime_UTR_variant	9/9	62	False			
+PTEN	10	89725293	CTT	C	0.5	902		NM_000314.4:c.*74_*75del	3_prime_UTR_variant	9/9	39	False			
+PTEN	10	89725293	CTT	C	0.5	902		NM_000314.6:c.*75_*76del	3_prime_UTR_variant	9/9	39	False			
+PTEN	10	89725293	CTT	C	0.5	902		NM_001304717.2:c.*74_*75del	3_prime_UTR_variant	10/10	39	False			
+PTEN	10	89725293	CTT	C	0.5	902		NM_001304718.1:c.*75_*76del	3_prime_UTR_variant	9/9	39	False			
+CADM1	11	115207176	C	G	0.5	2132		NM_001098517.1:c.125-96036G>C	intron_variant		1081	False			
+CADM1	11	115207176	C	G	0.5	2132		NM_001301043.1:c.125-96036G>C	intron_variant		1081	False			
+CADM1	11	115207176	C	G	0.5	2132		NM_001301044.1:c.125-96036G>C	intron_variant		1081	False			
+CADM1	11	115207176	C	G	0.5	2132		NM_001301045.1:c.125-96036G>C	intron_variant		1081	False			
+CADM1	11	115207176	C	G	0.5	2132		NM_014333.3:c.125-96036G>C	intron_variant		1081	False			
+LOC105369509	11	115207176	C	G	0.5	2132		NR_135108.1:n.42+2839C>G	intron_variant&non_coding_transcript_variant		1081	False			
+CADM1	11	115207176	C	G	0.5	2132		XM_005271491.1:c.125-96036G>C	intron_variant		1081	False			
+CADM1	11	115207176	C	G	0.5	2132		XM_005271492.1:c.125-96036G>C	intron_variant		1081	False			
+CADM1	11	115207176	C	G	0.5	2132		XM_005271493.1:c.125-96036G>C	intron_variant		1081	False			
+CADM1	11	115207176	C	G	0.5	2132		XM_005271494.1:c.125-96036G>C	intron_variant		1081	False			
+CADM1	11	115207176	C	G	0.5	2132		XM_005271495.1:c.125-96036G>C	intron_variant		1081	False			
+GNB3	12	6945914	C	G	0.5	1815			upstream_gene_variant		794	False			
+GNB3	12	6945914	C	G	0.5	1815			upstream_gene_variant		794	False			
+GNB3	12	6945914	C	G	0.5	1815			upstream_gene_variant		794	False			
+P3H3	12	6945914	C	G	0.5	1815		NM_014262.3:c.1458-235C>G	intron_variant		794	False			
+P3H3	12	6945914	C	G	0.5	1815		NM_014262.4:c.1456-235C>G	intron_variant		794	False			
+GNB3	12	6945914	C	G	0.5	1815			upstream_gene_variant		794	False			
+GNB3	12	6945914	C	G	0.5	1815			upstream_gene_variant		794	False			
+GNB3	12	6945914	C	G	0.5	1815			upstream_gene_variant		794	False			
+	12	6945914	C	G	0.5	1815			regulatory_region_variant		794	False			
+KRAS	12	25378716	GA	G	0.5	6324		NM_004985.3:c.291-10del	intron_variant		259	False			
+KRAS	12	25378716	GA	G	0.5	6324		NM_004985.4:c.291-10del	intron_variant		259	False			
+KRAS	12	25378716	GA	G	0.5	6324		NM_033360.2:c.291-10del	intron_variant		259	False			
+KRAS	12	25378716	GA	G	0.5	6324		NM_033360.3:c.291-10del	intron_variant		259	False			
+KRAS	12	25378716	GA	G	0.5	6324		XM_005253365.1:c.291-10del	intron_variant		259	False			
+KRAS	12	25380434	C	T	0.5	220		NM_004985.3:c.112-88G>A	intron_variant		8	False			
+KRAS	12	25380434	C	T	0.5	220		NM_004985.4:c.112-88G>A	intron_variant		8	False			
+KRAS	12	25380434	C	T	0.5	220		NM_033360.2:c.112-88G>A	intron_variant		8	False			
+KRAS	12	25380434	C	T	0.5	220		NM_033360.3:c.112-88G>A	intron_variant		8	False			
+KRAS	12	25380434	C	T	0.5	220		XM_005253365.1:c.112-88G>A	intron_variant		8	False			
+KRAS	12	25398289	T	G	0.5	5290	NP_004976.2:p.Gly10=	NM_004985.3:c.30A>C	synonymous_variant	2/5	72	False			
+KRAS	12	25398289	T	G	0.5	5290	NP_004976.2:p.Gly10=	NM_004985.4:c.30A>C	synonymous_variant	2/5	72	False			
+KRAS	12	25398289	T	G	0.5	5290	NP_203524.1:p.Gly10=	NM_033360.2:c.30A>C	synonymous_variant	2/6	72	False			
+KRAS	12	25398289	T	G	0.5	5290	NP_203524.1:p.Gly10=	NM_033360.3:c.30A>C	synonymous_variant	2/6	72	False			
+KRAS	12	25398289	T	G	0.5	5290	XP_005253422.1:p.Gly10=	XM_005253365.1:c.30A>C	synonymous_variant	2/5	72	False			
+AKT1	14	105246692	T	A	0.5	214		NM_001014431.1:c.46-139A>T	intron_variant		109	False			
+AKT1	14	105246692	T	A	0.5	214		NM_001014432.1:c.46-139A>T	intron_variant		109	False			
+AKT1	14	105246692	T	A	0.5	214		NM_005163.2:c.47-139A>T	intron_variant		109	False			
+AKT1	14	105246692	T	A	0.5	214		XM_005267401.1:c.47-139A>T	intron_variant		109	False			
+AKT1	14	105246692	T	A	0.5	214			upstream_gene_variant		109	False			
+MAP2K1	15	66774181	G	A	0.5	5642	NP_002746.1:p.Met219Ile	NM_002755.3:c.657G>A	missense_variant	6/11	84	False			
+MAP2K1	15	66774181	G	A	0.5	5642	XP_005254597.1:p.Met197Ile	XM_005254540.1:c.591G>A	missense_variant	6/11	84	False			
+MAP2K1	15	66774181	G	A	0.5	5642		XM_005254541.1:c.569-5385G>A	intron_variant		84	False			
+	15	66774181	G	A	0.5	5642			regulatory_region_variant		84	False			
+	15	66774181	G	A	0.5	5642			regulatory_region_variant		84	False			
+IDH2	15	90631780	G	A	0.5	2761		NM_001289910.1:c.378+39C>T	intron_variant		43	False			
+IDH2	15	90631780	G	A	0.5	2761		NM_001290114.1:c.144+39C>T	intron_variant		43	False			
+IDH2	15	90631780	G	A	0.5	2761		NM_002168.2:c.534+39C>T	intron_variant		43	False			
+IDH2	15	90631780	G	A	0.5	2761		NM_002168.3:c.534+39C>T	intron_variant		43	False			
+IDH2	15	90631780	G	A	0.5	2761		XM_005254893.1:c.378+39C>T	intron_variant		43	False			
+IDH2	15	90631780	G	A	0.5	2761		XM_005254894.1:c.144+39C>T	intron_variant		43	False			
+TP53	17	7572891	G	A	0.5	529		NM_000546.5:c.*36C>T	3_prime_UTR_variant	11/11	21	False			
+TP53	17	7572891	G	A	0.5	529		NM_001126112.2:c.*36C>T	3_prime_UTR_variant	11/11	21	False			
+TP53	17	7572891	G	A	0.5	529		NM_001126113.2:c.*237C>T	3_prime_UTR_variant	12/12	21	False			
+TP53	17	7572891	G	A	0.5	529		NM_001126114.2:c.*325C>T	3_prime_UTR_variant	12/12	21	False			
+TP53	17	7572891	G	A	0.5	529		NM_001126115.1:c.*36C>T	3_prime_UTR_variant	7/7	21	False			
+TP53	17	7572891	G	A	0.5	529		NM_001126116.1:c.*325C>T	3_prime_UTR_variant	8/8	21	False			
+TP53	17	7572891	G	A	0.5	529		NM_001126117.1:c.*237C>T	3_prime_UTR_variant	8/8	21	False			
+TP53	17	7572891	G	A	0.5	529		NM_001126118.1:c.*36C>T	3_prime_UTR_variant	10/10	21	False			
+TP53	17	7572891	G	A	0.5	529		NM_001276695.1:c.*237C>T	3_prime_UTR_variant	12/12	21	False			
+TP53	17	7572891	G	A	0.5	529		NM_001276696.1:c.*325C>T	3_prime_UTR_variant	12/12	21	False			
+TP53	17	7572891	G	A	0.5	529		NM_001276697.1:c.*36C>T	3_prime_UTR_variant	7/7	21	False			
+TP53	17	7572891	G	A	0.5	529		NM_001276698.1:c.*325C>T	3_prime_UTR_variant	8/8	21	False			
+TP53	17	7572891	G	A	0.5	529		NM_001276699.1:c.*237C>T	3_prime_UTR_variant	8/8	21	False			
+TP53	17	7572891	G	A	0.5	529		NM_001276760.1:c.*36C>T	3_prime_UTR_variant	11/11	21	False			
+TP53	17	7572891	G	A	0.5	529		NM_001276761.1:c.*36C>T	3_prime_UTR_variant	11/11	21	False			
+TP53	17	7572891	G	A	0.5	529		XM_005256778.1:c.*36C>T	3_prime_UTR_variant	12/12	21	False			
+TP53	17	7572891	G	A	0.5	529		XR_243565.1:n.1417C>T	non_coding_transcript_exon_variant	12/12	21	False			
+TP53	17	7572891	G	A	0.5	529		XR_243566.1:n.1490C>T	non_coding_transcript_exon_variant	12/12	21	False			
+TP53	17	7573893	G	A	0.5	271		NM_000546.5:c.1100+34C>T	intron_variant		22	False			
+TP53	17	7573893	G	A	0.5	271		NM_001126112.2:c.1100+34C>T	intron_variant		22	False			
+TP53	17	7573893	G	A	0.5	271		NM_001126113.2:c.*119+34C>T	intron_variant		22	False			
+TP53	17	7573893	G	A	0.5	271		NM_001126114.2:c.*207+34C>T	intron_variant		22	False			
+TP53	17	7573893	G	A	0.5	271		NM_001126115.1:c.704+34C>T	intron_variant		22	False			
+TP53	17	7573893	G	A	0.5	271		NM_001126116.1:c.*207+34C>T	intron_variant		22	False			
+TP53	17	7573893	G	A	0.5	271		NM_001126117.1:c.*119+34C>T	intron_variant		22	False			
+TP53	17	7573893	G	A	0.5	271		NM_001126118.1:c.983+34C>T	intron_variant		22	False			
+TP53	17	7573893	G	A	0.5	271		NM_001276695.1:c.*119+34C>T	intron_variant		22	False			
+TP53	17	7573893	G	A	0.5	271		NM_001276696.1:c.*207+34C>T	intron_variant		22	False			
+TP53	17	7573893	G	A	0.5	271		NM_001276697.1:c.623+34C>T	intron_variant		22	False			
+TP53	17	7573893	G	A	0.5	271		NM_001276698.1:c.*207+34C>T	intron_variant		22	False			
+TP53	17	7573893	G	A	0.5	271		NM_001276699.1:c.*119+34C>T	intron_variant		22	False			
+TP53	17	7573893	G	A	0.5	271		NM_001276760.1:c.983+34C>T	intron_variant		22	False			
+TP53	17	7573893	G	A	0.5	271		NM_001276761.1:c.983+34C>T	intron_variant		22	False			
+TP53	17	7573893	G	A	0.5	271		XM_005256778.1:c.1040+34C>T	intron_variant		22	False			
+TP53	17	7573893	G	A	0.5	271		XR_243565.1:n.1299+34C>T	intron_variant&non_coding_transcript_variant		22	False			
+TP53	17	7573893	G	A	0.5	271		XR_243566.1:n.1372+34C>T	intron_variant&non_coding_transcript_variant		22	False			
+TP53	17	7573899	G	A	0.5	271		NM_000546.5:c.1100+28C>T	intron_variant		13	False			
+TP53	17	7573899	G	A	0.5	271		NM_001126112.2:c.1100+28C>T	intron_variant		13	False			
+TP53	17	7573899	G	A	0.5	271		NM_001126113.2:c.*119+28C>T	intron_variant		13	False			
+TP53	17	7573899	G	A	0.5	271		NM_001126114.2:c.*207+28C>T	intron_variant		13	False			
+TP53	17	7573899	G	A	0.5	271		NM_001126115.1:c.704+28C>T	intron_variant		13	False			
+TP53	17	7573899	G	A	0.5	271		NM_001126116.1:c.*207+28C>T	intron_variant		13	False			
+TP53	17	7573899	G	A	0.5	271		NM_001126117.1:c.*119+28C>T	intron_variant		13	False			
+TP53	17	7573899	G	A	0.5	271		NM_001126118.1:c.983+28C>T	intron_variant		13	False			
+TP53	17	7573899	G	A	0.5	271		NM_001276695.1:c.*119+28C>T	intron_variant		13	False			
+TP53	17	7573899	G	A	0.5	271		NM_001276696.1:c.*207+28C>T	intron_variant		13	False			
+TP53	17	7573899	G	A	0.5	271		NM_001276697.1:c.623+28C>T	intron_variant		13	False			
+TP53	17	7573899	G	A	0.5	271		NM_001276698.1:c.*207+28C>T	intron_variant		13	False			
+TP53	17	7573899	G	A	0.5	271		NM_001276699.1:c.*119+28C>T	intron_variant		13	False			
+TP53	17	7573899	G	A	0.5	271		NM_001276760.1:c.983+28C>T	intron_variant		13	False			
+TP53	17	7573899	G	A	0.5	271		NM_001276761.1:c.983+28C>T	intron_variant		13	False			
+TP53	17	7573899	G	A	0.5	271		XM_005256778.1:c.1040+28C>T	intron_variant		13	False			
+TP53	17	7573899	G	A	0.5	271		XR_243565.1:n.1299+28C>T	intron_variant&non_coding_transcript_variant		13	False			
+TP53	17	7573899	G	A	0.5	271		XR_243566.1:n.1372+28C>T	intron_variant&non_coding_transcript_variant		13	False			
+TP53	17	7573902	C	T	0.5	270		NM_000546.5:c.1100+25G>A	intron_variant		20	False			
+TP53	17	7573902	C	T	0.5	270		NM_001126112.2:c.1100+25G>A	intron_variant		20	False			
+TP53	17	7573902	C	T	0.5	270		NM_001126113.2:c.*119+25G>A	intron_variant		20	False			
+TP53	17	7573902	C	T	0.5	270		NM_001126114.2:c.*207+25G>A	intron_variant		20	False			
+TP53	17	7573902	C	T	0.5	270		NM_001126115.1:c.704+25G>A	intron_variant		20	False			
+TP53	17	7573902	C	T	0.5	270		NM_001126116.1:c.*207+25G>A	intron_variant		20	False			
+TP53	17	7573902	C	T	0.5	270		NM_001126117.1:c.*119+25G>A	intron_variant		20	False			
+TP53	17	7573902	C	T	0.5	270		NM_001126118.1:c.983+25G>A	intron_variant		20	False			
+TP53	17	7573902	C	T	0.5	270		NM_001276695.1:c.*119+25G>A	intron_variant		20	False			
+TP53	17	7573902	C	T	0.5	270		NM_001276696.1:c.*207+25G>A	intron_variant		20	False			
+TP53	17	7573902	C	T	0.5	270		NM_001276697.1:c.623+25G>A	intron_variant		20	False			
+TP53	17	7573902	C	T	0.5	270		NM_001276698.1:c.*207+25G>A	intron_variant		20	False			
+TP53	17	7573902	C	T	0.5	270		NM_001276699.1:c.*119+25G>A	intron_variant		20	False			
+TP53	17	7573902	C	T	0.5	270		NM_001276760.1:c.983+25G>A	intron_variant		20	False			
+TP53	17	7573902	C	T	0.5	270		NM_001276761.1:c.983+25G>A	intron_variant		20	False			
+TP53	17	7573902	C	T	0.5	270		XM_005256778.1:c.1040+25G>A	intron_variant		20	False			
+TP53	17	7573902	C	T	0.5	270		XR_243565.1:n.1299+25G>A	intron_variant&non_coding_transcript_variant		20	False			
+TP53	17	7573902	C	T	0.5	270		XR_243566.1:n.1372+25G>A	intron_variant&non_coding_transcript_variant		20	False			
+TP53	17	7576599	G	A	0.5	2854		NM_000546.5:c.993+254C>T	intron_variant		44	False			
+TP53	17	7576599	G	A	0.5	2854		NM_001126112.2:c.993+254C>T	intron_variant		44	False			
+TP53	17	7576599	G	A	0.5	2854		NM_001126113.2:c.994-15C>T	intron_variant		44	False			
+TP53	17	7576599	G	A	0.5	2854		NM_001126114.2:c.*26C>T	3_prime_UTR_variant	10/12	44	False			
+TP53	17	7576599	G	A	0.5	2854		NM_001126115.1:c.597+254C>T	intron_variant		44	False			
+TP53	17	7576599	G	A	0.5	2854		NM_001126116.1:c.*26C>T	3_prime_UTR_variant	6/8	44	False			
+TP53	17	7576599	G	A	0.5	2854		NM_001126117.1:c.598-15C>T	intron_variant		44	False			
+TP53	17	7576599	G	A	0.5	2854		NM_001126118.1:c.876+254C>T	intron_variant		44	False			
+TP53	17	7576599	G	A	0.5	2854		NM_001276695.1:c.877-15C>T	intron_variant		44	False			
+TP53	17	7576599	G	A	0.5	2854		NM_001276696.1:c.*26C>T	3_prime_UTR_variant	10/12	44	False			
+TP53	17	7576599	G	A	0.5	2854		NM_001276697.1:c.516+254C>T	intron_variant		44	False			
+TP53	17	7576599	G	A	0.5	2854		NM_001276698.1:c.*26C>T	3_prime_UTR_variant	6/8	44	False			
+TP53	17	7576599	G	A	0.5	2854		NM_001276699.1:c.517-15C>T	intron_variant		44	False			
+TP53	17	7576599	G	A	0.5	2854		NM_001276760.1:c.876+254C>T	intron_variant		44	False			
+TP53	17	7576599	G	A	0.5	2854		NM_001276761.1:c.876+254C>T	intron_variant		44	False			
+TP53	17	7576599	G	A	0.5	2854		XM_005256778.1:c.933+254C>T	intron_variant		44	False			
+TP53	17	7576599	G	A	0.5	2854		XR_243565.1:n.1133-15C>T	intron_variant&non_coding_transcript_variant		44	False			
+TP53	17	7576599	G	A	0.5	2854		XR_243566.1:n.1191C>T	non_coding_transcript_exon_variant	10/12	44	False			
+	17	7576599	G	A	0.5	2854			regulatory_region_variant		44	False			
+TP53	17	7576823	C	T	0.5	7324		NM_000546.5:c.993+30G>A	intron_variant		111	False			
+TP53	17	7576823	C	T	0.5	7324		NM_001126112.2:c.993+30G>A	intron_variant		111	False			
+TP53	17	7576823	C	T	0.5	7324		NM_001126113.2:c.993+30G>A	intron_variant		111	False			
+TP53	17	7576823	C	T	0.5	7324		NM_001126114.2:c.993+30G>A	intron_variant		111	False			
+TP53	17	7576823	C	T	0.5	7324		NM_001126115.1:c.597+30G>A	intron_variant		111	False			
+TP53	17	7576823	C	T	0.5	7324		NM_001126116.1:c.597+30G>A	intron_variant		111	False			
+TP53	17	7576823	C	T	0.5	7324		NM_001126117.1:c.597+30G>A	intron_variant		111	False			
+TP53	17	7576823	C	T	0.5	7324		NM_001126118.1:c.876+30G>A	intron_variant		111	False			
+TP53	17	7576823	C	T	0.5	7324		NM_001276695.1:c.876+30G>A	intron_variant		111	False			
+TP53	17	7576823	C	T	0.5	7324		NM_001276696.1:c.876+30G>A	intron_variant		111	False			
+TP53	17	7576823	C	T	0.5	7324		NM_001276697.1:c.516+30G>A	intron_variant		111	False			
+TP53	17	7576823	C	T	0.5	7324		NM_001276698.1:c.516+30G>A	intron_variant		111	False			
+TP53	17	7576823	C	T	0.5	7324		NM_001276699.1:c.516+30G>A	intron_variant		111	False			
+TP53	17	7576823	C	T	0.5	7324		NM_001276760.1:c.876+30G>A	intron_variant		111	False			
+TP53	17	7576823	C	T	0.5	7324		NM_001276761.1:c.876+30G>A	intron_variant		111	False			
+TP53	17	7576823	C	T	0.5	7324		XM_005256778.1:c.933+30G>A	intron_variant		111	False			
+TP53	17	7576823	C	T	0.5	7324		XR_243565.1:n.1132+30G>A	intron_variant&non_coding_transcript_variant		111	False			
+TP53	17	7576823	C	T	0.5	7324		XR_243566.1:n.1132+30G>A	intron_variant&non_coding_transcript_variant		111	False			
+	17	7576823	C	T	0.5	7324			regulatory_region_variant		111	False			
+TP53	17	7576841	A	G	0.5	7321		NM_000546.5:c.993+12T>C	intron_variant		5346	False			
+TP53	17	7576841	A	G	0.5	7321		NM_001126112.2:c.993+12T>C	intron_variant		5346	False			
+TP53	17	7576841	A	G	0.5	7321		NM_001126113.2:c.993+12T>C	intron_variant		5346	False			
+TP53	17	7576841	A	G	0.5	7321		NM_001126114.2:c.993+12T>C	intron_variant		5346	False			
+TP53	17	7576841	A	G	0.5	7321		NM_001126115.1:c.597+12T>C	intron_variant		5346	False			
+TP53	17	7576841	A	G	0.5	7321		NM_001126116.1:c.597+12T>C	intron_variant		5346	False			
+TP53	17	7576841	A	G	0.5	7321		NM_001126117.1:c.597+12T>C	intron_variant		5346	False			
+TP53	17	7576841	A	G	0.5	7321		NM_001126118.1:c.876+12T>C	intron_variant		5346	False			
+TP53	17	7576841	A	G	0.5	7321		NM_001276695.1:c.876+12T>C	intron_variant		5346	False			
+TP53	17	7576841	A	G	0.5	7321		NM_001276696.1:c.876+12T>C	intron_variant		5346	False			
+TP53	17	7576841	A	G	0.5	7321		NM_001276697.1:c.516+12T>C	intron_variant		5346	False			
+TP53	17	7576841	A	G	0.5	7321		NM_001276698.1:c.516+12T>C	intron_variant		5346	False			
+TP53	17	7576841	A	G	0.5	7321		NM_001276699.1:c.516+12T>C	intron_variant		5346	False			
+TP53	17	7576841	A	G	0.5	7321		NM_001276760.1:c.876+12T>C	intron_variant		5346	False			
+TP53	17	7576841	A	G	0.5	7321		NM_001276761.1:c.876+12T>C	intron_variant		5346	False			
+TP53	17	7576841	A	G	0.5	7321		XM_005256778.1:c.933+12T>C	intron_variant		5346	False			
+TP53	17	7576841	A	G	0.5	7321		XR_243565.1:n.1132+12T>C	intron_variant&non_coding_transcript_variant		5346	False			
+TP53	17	7576841	A	G	0.5	7321		XR_243566.1:n.1132+12T>C	intron_variant&non_coding_transcript_variant		5346	False			
+	17	7576841	A	G	0.5	7321			regulatory_region_variant		5346	False			
+TP53	17	7576998	C	T	0.5	905		NM_000546.5:c.919+21G>A	intron_variant		18	False			
+TP53	17	7576998	C	T	0.5	905		NM_001126112.2:c.919+21G>A	intron_variant		18	False			
+TP53	17	7576998	C	T	0.5	905		NM_001126113.2:c.919+21G>A	intron_variant		18	False			
+TP53	17	7576998	C	T	0.5	905		NM_001126114.2:c.919+21G>A	intron_variant		18	False			
+TP53	17	7576998	C	T	0.5	905		NM_001126115.1:c.523+21G>A	intron_variant		18	False			
+TP53	17	7576998	C	T	0.5	905		NM_001126116.1:c.523+21G>A	intron_variant		18	False			
+TP53	17	7576998	C	T	0.5	905		NM_001126117.1:c.523+21G>A	intron_variant		18	False			
+TP53	17	7576998	C	T	0.5	905		NM_001126118.1:c.802+21G>A	intron_variant		18	False			
+TP53	17	7576998	C	T	0.5	905		NM_001276695.1:c.802+21G>A	intron_variant		18	False			
+TP53	17	7576998	C	T	0.5	905		NM_001276696.1:c.802+21G>A	intron_variant		18	False			
+TP53	17	7576998	C	T	0.5	905		NM_001276697.1:c.442+21G>A	intron_variant		18	False			
+TP53	17	7576998	C	T	0.5	905		NM_001276698.1:c.442+21G>A	intron_variant		18	False			
+TP53	17	7576998	C	T	0.5	905		NM_001276699.1:c.442+21G>A	intron_variant		18	False			
+TP53	17	7576998	C	T	0.5	905		NM_001276760.1:c.802+21G>A	intron_variant		18	False			
+TP53	17	7576998	C	T	0.5	905		NM_001276761.1:c.802+21G>A	intron_variant		18	False			
+TP53	17	7576998	C	T	0.5	905		XM_005256778.1:c.859+21G>A	intron_variant		18	False			
+TP53	17	7576998	C	T	0.5	905		XR_243565.1:n.1058+21G>A	intron_variant&non_coding_transcript_variant		18	False			
+TP53	17	7576998	C	T	0.5	905		XR_243566.1:n.1058+21G>A	intron_variant&non_coding_transcript_variant		18	False			
+TP53	17	7578517	G	A	0.5	6971	NP_000537.3:p.Ala138Val	NM_000546.5:c.413C>T	missense_variant	5/11	97	False			
+TP53	17	7578517	G	A	0.5	6971	NP_001119584.1:p.Ala138Val	NM_001126112.2:c.413C>T	missense_variant	5/11	97	False			
+TP53	17	7578517	G	A	0.5	6971	NP_001119585.1:p.Ala138Val	NM_001126113.2:c.413C>T	missense_variant	5/12	97	False			
+TP53	17	7578517	G	A	0.5	6971	NP_001119586.1:p.Ala138Val	NM_001126114.2:c.413C>T	missense_variant	5/12	97	False			
+TP53	17	7578517	G	A	0.5	6971	NP_001119587.1:p.Ala6Val	NM_001126115.1:c.17C>T	missense_variant	1/7	97	False			
+TP53	17	7578517	G	A	0.5	6971	NP_001119588.1:p.Ala6Val	NM_001126116.1:c.17C>T	missense_variant	1/8	97	False			
+TP53	17	7578517	G	A	0.5	6971	NP_001119589.1:p.Ala6Val	NM_001126117.1:c.17C>T	missense_variant	1/8	97	False			
+TP53	17	7578517	G	A	0.5	6971	NP_001119590.1:p.Ala99Val	NM_001126118.1:c.296C>T	missense_variant	4/10	97	False			
+TP53	17	7578517	G	A	0.5	6971	NP_001263624.1:p.Ala99Val	NM_001276695.1:c.296C>T	missense_variant	5/12	97	False			
+TP53	17	7578517	G	A	0.5	6971	NP_001263625.1:p.Ala99Val	NM_001276696.1:c.296C>T	missense_variant	5/12	97	False			
+TP53	17	7578517	G	A	0.5	6971		NM_001276697.1:c.-65C>T	5_prime_UTR_variant	1/7	97	False			
+TP53	17	7578517	G	A	0.5	6971		NM_001276698.1:c.-65C>T	5_prime_UTR_variant	1/8	97	False			
+TP53	17	7578517	G	A	0.5	6971		NM_001276699.1:c.-65C>T	5_prime_UTR_variant	1/8	97	False			
+TP53	17	7578517	G	A	0.5	6971	NP_001263689.1:p.Ala99Val	NM_001276760.1:c.296C>T	missense_variant	5/11	97	False			
+TP53	17	7578517	G	A	0.5	6971	NP_001263690.1:p.Ala99Val	NM_001276761.1:c.296C>T	missense_variant	5/11	97	False			
+TP53	17	7578517	G	A	0.5	6971	XP_005256835.1:p.Ala118Val	XM_005256778.1:c.353C>T	missense_variant	6/12	97	False			
+TP53	17	7578517	G	A	0.5	6971		XR_243565.1:n.552C>T	non_coding_transcript_exon_variant	5/12	97	False			
+TP53	17	7578517	G	A	0.5	6971		XR_243566.1:n.552C>T	non_coding_transcript_exon_variant	5/12	97	False			
+TP53	17	7578640	A	G	0.5	3142		NM_000546.5:c.376-86T>C	intron_variant		2467	False			
+TP53	17	7578640	A	G	0.5	3142		NM_001126112.2:c.376-86T>C	intron_variant		2467	False			
+TP53	17	7578640	A	G	0.5	3142		NM_001126113.2:c.376-86T>C	intron_variant		2467	False			
+TP53	17	7578640	A	G	0.5	3142		NM_001126114.2:c.376-86T>C	intron_variant		2467	False			
+TP53	17	7578640	A	G	0.5	3142		NM_001126115.1:c.-107T>C	5_prime_UTR_variant	1/7	2467	False			
+TP53	17	7578640	A	G	0.5	3142		NM_001126116.1:c.-107T>C	5_prime_UTR_variant	1/8	2467	False			
+TP53	17	7578640	A	G	0.5	3142		NM_001126117.1:c.-107T>C	5_prime_UTR_variant	1/8	2467	False			
+TP53	17	7578640	A	G	0.5	3142		NM_001126118.1:c.259-86T>C	intron_variant		2467	False			
+TP53	17	7578640	A	G	0.5	3142		NM_001276695.1:c.259-86T>C	intron_variant		2467	False			
+TP53	17	7578640	A	G	0.5	3142		NM_001276696.1:c.259-86T>C	intron_variant		2467	False			
+TP53	17	7578640	A	G	0.5	3142		NM_001276697.1:c.-188T>C	5_prime_UTR_variant	1/7	2467	False			
+TP53	17	7578640	A	G	0.5	3142		NM_001276698.1:c.-188T>C	5_prime_UTR_variant	1/8	2467	False			
+TP53	17	7578640	A	G	0.5	3142		NM_001276699.1:c.-188T>C	5_prime_UTR_variant	1/8	2467	False			
+TP53	17	7578640	A	G	0.5	3142		NM_001276760.1:c.259-86T>C	intron_variant		2467	False			
+TP53	17	7578640	A	G	0.5	3142		NM_001276761.1:c.259-86T>C	intron_variant		2467	False			
+TP53	17	7578640	A	G	0.5	3142		XM_005256778.1:c.316-86T>C	intron_variant		2467	False			
+TP53	17	7578640	A	G	0.5	3142		XR_243565.1:n.515-86T>C	intron_variant&non_coding_transcript_variant		2467	False			
+TP53	17	7578640	A	G	0.5	3142		XR_243566.1:n.515-86T>C	intron_variant&non_coding_transcript_variant		2467	False			
+TP53	17	7578645	C	T	0.5	3141		NM_000546.5:c.376-91G>A	intron_variant		671	False			
+TP53	17	7578645	C	T	0.5	3141		NM_001126112.2:c.376-91G>A	intron_variant		671	False			
+TP53	17	7578645	C	T	0.5	3141		NM_001126113.2:c.376-91G>A	intron_variant		671	False			
+TP53	17	7578645	C	T	0.5	3141		NM_001126114.2:c.376-91G>A	intron_variant		671	False			
+TP53	17	7578645	C	T	0.5	3141		NM_001126115.1:c.-112G>A	5_prime_UTR_variant	1/7	671	False			
+TP53	17	7578645	C	T	0.5	3141		NM_001126116.1:c.-112G>A	5_prime_UTR_variant	1/8	671	False			
+TP53	17	7578645	C	T	0.5	3141		NM_001126117.1:c.-112G>A	5_prime_UTR_variant	1/8	671	False			
+TP53	17	7578645	C	T	0.5	3141		NM_001126118.1:c.259-91G>A	intron_variant		671	False			
+TP53	17	7578645	C	T	0.5	3141		NM_001276695.1:c.259-91G>A	intron_variant		671	False			
+TP53	17	7578645	C	T	0.5	3141		NM_001276696.1:c.259-91G>A	intron_variant		671	False			
+TP53	17	7578645	C	T	0.5	3141		NM_001276697.1:c.-193G>A	5_prime_UTR_variant	1/7	671	False			
+TP53	17	7578645	C	T	0.5	3141		NM_001276698.1:c.-193G>A	5_prime_UTR_variant	1/8	671	False			
+TP53	17	7578645	C	T	0.5	3141		NM_001276699.1:c.-193G>A	5_prime_UTR_variant	1/8	671	False			
+TP53	17	7578645	C	T	0.5	3141		NM_001276760.1:c.259-91G>A	intron_variant		671	False			
+TP53	17	7578645	C	T	0.5	3141		NM_001276761.1:c.259-91G>A	intron_variant		671	False			
+TP53	17	7578645	C	T	0.5	3141		XM_005256778.1:c.316-91G>A	intron_variant		671	False			
+TP53	17	7578645	C	T	0.5	3141		XR_243565.1:n.515-91G>A	intron_variant&non_coding_transcript_variant		671	False			
+TP53	17	7578645	C	T	0.5	3141		XR_243566.1:n.515-91G>A	intron_variant&non_coding_transcript_variant		671	False			
+TP53	17	7579472	G	C	0.5	841	NP_000537.3:p.Pro72Arg	NM_000546.5:c.215C>G	missense_variant	4/11	382	False			
+TP53	17	7579472	G	C	0.5	841	NP_001119584.1:p.Pro72Arg	NM_001126112.2:c.215C>G	missense_variant	4/11	382	False			
+TP53	17	7579472	G	C	0.5	841	NP_001119585.1:p.Pro72Arg	NM_001126113.2:c.215C>G	missense_variant	4/12	382	False			
+TP53	17	7579472	G	C	0.5	841	NP_001119586.1:p.Pro72Arg	NM_001126114.2:c.215C>G	missense_variant	4/12	382	False			
+TP53	17	7579472	G	C	0.5	841			upstream_gene_variant		382	False			
+TP53	17	7579472	G	C	0.5	841			upstream_gene_variant		382	False			
+TP53	17	7579472	G	C	0.5	841			upstream_gene_variant		382	False			
+TP53	17	7579472	G	C	0.5	841	NP_001119590.1:p.Pro33Arg	NM_001126118.1:c.98C>G	missense_variant	3/10	382	False			
+TP53	17	7579472	G	C	0.5	841	NP_001263624.1:p.Pro33Arg	NM_001276695.1:c.98C>G	missense_variant	4/12	382	False			
+TP53	17	7579472	G	C	0.5	841	NP_001263625.1:p.Pro33Arg	NM_001276696.1:c.98C>G	missense_variant	4/12	382	False			
+TP53	17	7579472	G	C	0.5	841			upstream_gene_variant		382	False			
+TP53	17	7579472	G	C	0.5	841			upstream_gene_variant		382	False			
+TP53	17	7579472	G	C	0.5	841			upstream_gene_variant		382	False			
+TP53	17	7579472	G	C	0.5	841	NP_001263689.1:p.Pro33Arg	NM_001276760.1:c.98C>G	missense_variant	4/11	382	False			
+TP53	17	7579472	G	C	0.5	841	NP_001263690.1:p.Pro33Arg	NM_001276761.1:c.98C>G	missense_variant	4/11	382	False			
+TP53	17	7579472	G	C	0.5	841		XM_005256778.1:c.176-21C>G	intron_variant		382	False			
+TP53	17	7579472	G	C	0.5	841		XR_243565.1:n.354C>G	non_coding_transcript_exon_variant	4/12	382	False			
+TP53	17	7579472	G	C	0.5	841		XR_243566.1:n.354C>G	non_coding_transcript_exon_variant	4/12	382	False			
+TP53	17	7579485	C	A	0.5	228	NP_000537.3:p.Glu68Ter	NM_000546.5:c.202G>T	stop_gained	4/11	111	False			
+TP53	17	7579485	C	A	0.5	228	NP_001119584.1:p.Glu68Ter	NM_001126112.2:c.202G>T	stop_gained	4/11	111	False			
+TP53	17	7579485	C	A	0.5	228	NP_001119585.1:p.Glu68Ter	NM_001126113.2:c.202G>T	stop_gained	4/12	111	False			
+TP53	17	7579485	C	A	0.5	228	NP_001119586.1:p.Glu68Ter	NM_001126114.2:c.202G>T	stop_gained	4/12	111	False			
+TP53	17	7579485	C	A	0.5	228			upstream_gene_variant		111	False			
+TP53	17	7579485	C	A	0.5	228			upstream_gene_variant		111	False			
+TP53	17	7579485	C	A	0.5	228			upstream_gene_variant		111	False			
+TP53	17	7579485	C	A	0.5	228	NP_001119590.1:p.Glu29Ter	NM_001126118.1:c.85G>T	stop_gained	3/10	111	False			
+TP53	17	7579485	C	A	0.5	228	NP_001263624.1:p.Glu29Ter	NM_001276695.1:c.85G>T	stop_gained	4/12	111	False			
+TP53	17	7579485	C	A	0.5	228	NP_001263625.1:p.Glu29Ter	NM_001276696.1:c.85G>T	stop_gained	4/12	111	False			
+TP53	17	7579485	C	A	0.5	228			upstream_gene_variant		111	False			
+TP53	17	7579485	C	A	0.5	228			upstream_gene_variant		111	False			
+TP53	17	7579485	C	A	0.5	228			upstream_gene_variant		111	False			
+TP53	17	7579485	C	A	0.5	228	NP_001263689.1:p.Glu29Ter	NM_001276760.1:c.85G>T	stop_gained	4/11	111	False			
+TP53	17	7579485	C	A	0.5	228	NP_001263690.1:p.Glu29Ter	NM_001276761.1:c.85G>T	stop_gained	4/11	111	False			
+TP53	17	7579485	C	A	0.5	228		XM_005256778.1:c.175+27G>T	intron_variant		111	False			
+TP53	17	7579485	C	A	0.5	228		XR_243565.1:n.341G>T	non_coding_transcript_exon_variant	4/12	111	False			
+TP53	17	7579485	C	A	0.5	228		XR_243566.1:n.341G>T	non_coding_transcript_exon_variant	4/12	111	False			
+TP53	17	7579495	G	A	0.5	229	NP_000537.3:p.Pro64=	NM_000546.5:c.192C>T	synonymous_variant	4/11	7	False			
+TP53	17	7579495	G	A	0.5	229	NP_001119584.1:p.Pro64=	NM_001126112.2:c.192C>T	synonymous_variant	4/11	7	False			
+TP53	17	7579495	G	A	0.5	229	NP_001119585.1:p.Pro64=	NM_001126113.2:c.192C>T	synonymous_variant	4/12	7	False			
+TP53	17	7579495	G	A	0.5	229	NP_001119586.1:p.Pro64=	NM_001126114.2:c.192C>T	synonymous_variant	4/12	7	False			
+TP53	17	7579495	G	A	0.5	229			upstream_gene_variant		7	False			
+TP53	17	7579495	G	A	0.5	229			upstream_gene_variant		7	False			
+TP53	17	7579495	G	A	0.5	229			upstream_gene_variant		7	False			
+TP53	17	7579495	G	A	0.5	229	NP_001119590.1:p.Pro25=	NM_001126118.1:c.75C>T	synonymous_variant	3/10	7	False			
+TP53	17	7579495	G	A	0.5	229	NP_001263624.1:p.Pro25=	NM_001276695.1:c.75C>T	synonymous_variant	4/12	7	False			
+TP53	17	7579495	G	A	0.5	229	NP_001263625.1:p.Pro25=	NM_001276696.1:c.75C>T	synonymous_variant	4/12	7	False			
+TP53	17	7579495	G	A	0.5	229			upstream_gene_variant		7	False			
+TP53	17	7579495	G	A	0.5	229			upstream_gene_variant		7	False			
+TP53	17	7579495	G	A	0.5	229			upstream_gene_variant		7	False			
+TP53	17	7579495	G	A	0.5	229	NP_001263689.1:p.Pro25=	NM_001276760.1:c.75C>T	synonymous_variant	4/11	7	False			
+TP53	17	7579495	G	A	0.5	229	NP_001263690.1:p.Pro25=	NM_001276761.1:c.75C>T	synonymous_variant	4/11	7	False			
+TP53	17	7579495	G	A	0.5	229		XM_005256778.1:c.175+17C>T	intron_variant		7	False			
+TP53	17	7579495	G	A	0.5	229		XR_243565.1:n.331C>T	non_coding_transcript_exon_variant	4/12	7	False			
+TP53	17	7579495	G	A	0.5	229		XR_243566.1:n.331C>T	non_coding_transcript_exon_variant	4/12	7	False			
+TP53	17	7579579	C	T	0.5	743	NP_000537.3:p.Pro36=	NM_000546.5:c.108G>A	synonymous_variant	4/11	521	False			
+TP53	17	7579579	C	T	0.5	743	NP_001119584.1:p.Pro36=	NM_001126112.2:c.108G>A	synonymous_variant	4/11	521	False			
+TP53	17	7579579	C	T	0.5	743	NP_001119585.1:p.Pro36=	NM_001126113.2:c.108G>A	synonymous_variant	4/12	521	False			
+TP53	17	7579579	C	T	0.5	743	NP_001119586.1:p.Pro36=	NM_001126114.2:c.108G>A	synonymous_variant	4/12	521	False			
+TP53	17	7579579	C	T	0.5	743			upstream_gene_variant		521	False			
+TP53	17	7579579	C	T	0.5	743			upstream_gene_variant		521	False			
+TP53	17	7579579	C	T	0.5	743			upstream_gene_variant		521	False			
+TP53	17	7579579	C	T	0.5	743		NM_001126118.1:c.-10G>A	5_prime_UTR_variant	3/10	521	False			
+TP53	17	7579579	C	T	0.5	743		NM_001276695.1:c.-10G>A	5_prime_UTR_variant	4/12	521	False			
+TP53	17	7579579	C	T	0.5	743		NM_001276696.1:c.-10G>A	5_prime_UTR_variant	4/12	521	False			
+TP53	17	7579579	C	T	0.5	743			upstream_gene_variant		521	False			
+TP53	17	7579579	C	T	0.5	743			upstream_gene_variant		521	False			
+TP53	17	7579579	C	T	0.5	743			upstream_gene_variant		521	False			
+TP53	17	7579579	C	T	0.5	743		NM_001276760.1:c.-10G>A	5_prime_UTR_variant	4/11	521	False			
+TP53	17	7579579	C	T	0.5	743		NM_001276761.1:c.-10G>A	5_prime_UTR_variant	4/11	521	False			
+TP53	17	7579579	C	T	0.5	743	XP_005256835.1:p.Pro36=	XM_005256778.1:c.108G>A	synonymous_variant	4/12	521	False			
+TP53	17	7579579	C	T	0.5	743		XR_243565.1:n.247G>A	non_coding_transcript_exon_variant	4/12	521	False			
+TP53	17	7579579	C	T	0.5	743		XR_243566.1:n.247G>A	non_coding_transcript_exon_variant	4/12	521	False			
+TP53	17	7579643	CCCCCAGCCCTCCAGGT	C	0.5	111		NM_000546.5:c.96+41_97-54del	intron_variant		64	False			
+TP53	17	7579643	CCCCCAGCCCTCCAGGT	C	0.5	111		NM_001126112.2:c.96+41_97-54del	intron_variant		64	False			
+TP53	17	7579643	CCCCCAGCCCTCCAGGT	C	0.5	111		NM_001126113.2:c.96+41_97-54del	intron_variant		64	False			
+TP53	17	7579643	CCCCCAGCCCTCCAGGT	C	0.5	111		NM_001126114.2:c.96+41_97-54del	intron_variant		64	False			
+TP53	17	7579643	CCCCCAGCCCTCCAGGT	C	0.5	111			upstream_gene_variant		64	False			
+TP53	17	7579643	CCCCCAGCCCTCCAGGT	C	0.5	111			upstream_gene_variant		64	False			
+TP53	17	7579643	CCCCCAGCCCTCCAGGT	C	0.5	111			upstream_gene_variant		64	False			
+TP53	17	7579643	CCCCCAGCCCTCCAGGT	C	0.5	111		NM_001126118.1:c.-22+41_-21-54del	intron_variant		64	False			
+TP53	17	7579643	CCCCCAGCCCTCCAGGT	C	0.5	111		NM_001276695.1:c.-22+41_-21-54del	intron_variant		64	False			
+TP53	17	7579643	CCCCCAGCCCTCCAGGT	C	0.5	111		NM_001276696.1:c.-22+41_-21-54del	intron_variant		64	False			
+TP53	17	7579643	CCCCCAGCCCTCCAGGT	C	0.5	111			upstream_gene_variant		64	False			
+TP53	17	7579643	CCCCCAGCCCTCCAGGT	C	0.5	111			upstream_gene_variant		64	False			
+TP53	17	7579643	CCCCCAGCCCTCCAGGT	C	0.5	111			upstream_gene_variant		64	False			
+TP53	17	7579643	CCCCCAGCCCTCCAGGT	C	0.5	111		NM_001276760.1:c.-22+41_-21-54del	intron_variant		64	False			
+TP53	17	7579643	CCCCCAGCCCTCCAGGT	C	0.5	111		NM_001276761.1:c.-22+41_-21-54del	intron_variant		64	False			
+TP53	17	7579643	CCCCCAGCCCTCCAGGT	C	0.5	111		XM_005256778.1:c.96+41_97-54del	intron_variant		64	False			
+TP53	17	7579643	CCCCCAGCCCTCCAGGT	C	0.5	111		XR_243565.1:n.235+41_236-54del	intron_variant&non_coding_transcript_variant		64	False			
+TP53	17	7579643	CCCCCAGCCCTCCAGGT	C	0.5	111		XR_243566.1:n.235+41_236-54del	intron_variant&non_coding_transcript_variant		64	False			
+TP53	17	7579783	G	A	0.5	191		NM_000546.5:c.74+56C>T	intron_variant		13	False			
+TP53	17	7579783	G	A	0.5	191		NM_001126112.2:c.74+56C>T	intron_variant		13	False			
+TP53	17	7579783	G	A	0.5	191		NM_001126113.2:c.74+56C>T	intron_variant		13	False			
+TP53	17	7579783	G	A	0.5	191		NM_001126114.2:c.74+56C>T	intron_variant		13	False			
+TP53	17	7579783	G	A	0.5	191			upstream_gene_variant		13	False			
+TP53	17	7579783	G	A	0.5	191			upstream_gene_variant		13	False			
+TP53	17	7579783	G	A	0.5	191			upstream_gene_variant		13	False			
+TP53	17	7579783	G	A	0.5	191		NM_001126118.1:c.-105C>T	5_prime_UTR_variant	2/10	13	False			
+TP53	17	7579783	G	A	0.5	191		NM_001276695.1:c.-44+56C>T	intron_variant		13	False			
+TP53	17	7579783	G	A	0.5	191		NM_001276696.1:c.-44+56C>T	intron_variant		13	False			
+TP53	17	7579783	G	A	0.5	191			upstream_gene_variant		13	False			
+TP53	17	7579783	G	A	0.5	191			upstream_gene_variant		13	False			
+TP53	17	7579783	G	A	0.5	191			upstream_gene_variant		13	False			
+TP53	17	7579783	G	A	0.5	191		NM_001276760.1:c.-44+56C>T	intron_variant		13	False			
+TP53	17	7579783	G	A	0.5	191		NM_001276761.1:c.-44+56C>T	intron_variant		13	False			
+TP53	17	7579783	G	A	0.5	191		XM_005256778.1:c.74+56C>T	intron_variant		13	False			
+TP53	17	7579783	G	A	0.5	191		XR_243565.1:n.213+56C>T	intron_variant&non_coding_transcript_variant		13	False			
+TP53	17	7579783	G	A	0.5	191		XR_243566.1:n.213+56C>T	intron_variant&non_coding_transcript_variant		13	False			
+TP53	17	7579801	G	C	0.5	191		NM_000546.5:c.74+38C>G	intron_variant		68	False			
+TP53	17	7579801	G	C	0.5	191		NM_001126112.2:c.74+38C>G	intron_variant		68	False			
+TP53	17	7579801	G	C	0.5	191		NM_001126113.2:c.74+38C>G	intron_variant		68	False			
+TP53	17	7579801	G	C	0.5	191		NM_001126114.2:c.74+38C>G	intron_variant		68	False			
+TP53	17	7579801	G	C	0.5	191			upstream_gene_variant		68	False			
+TP53	17	7579801	G	C	0.5	191			upstream_gene_variant		68	False			
+TP53	17	7579801	G	C	0.5	191			upstream_gene_variant		68	False			
+TP53	17	7579801	G	C	0.5	191		NM_001126118.1:c.-123C>G	5_prime_UTR_variant	2/10	68	False			
+TP53	17	7579801	G	C	0.5	191		NM_001276695.1:c.-44+38C>G	intron_variant		68	False			
+TP53	17	7579801	G	C	0.5	191		NM_001276696.1:c.-44+38C>G	intron_variant		68	False			
+TP53	17	7579801	G	C	0.5	191			upstream_gene_variant		68	False			
+TP53	17	7579801	G	C	0.5	191			upstream_gene_variant		68	False			
+TP53	17	7579801	G	C	0.5	191			upstream_gene_variant		68	False			
+TP53	17	7579801	G	C	0.5	191		NM_001276760.1:c.-44+38C>G	intron_variant		68	False			
+TP53	17	7579801	G	C	0.5	191		NM_001276761.1:c.-44+38C>G	intron_variant		68	False			
+TP53	17	7579801	G	C	0.5	191		XM_005256778.1:c.74+38C>G	intron_variant		68	False			
+TP53	17	7579801	G	C	0.5	191		XR_243565.1:n.213+38C>G	intron_variant&non_coding_transcript_variant		68	False			
+TP53	17	7579801	G	C	0.5	191		XR_243566.1:n.213+38C>G	intron_variant&non_coding_transcript_variant		68	False			
+ERBB2	17	37855834	C	A	0.5	19582		NM_001005862.1:c.-18+4400C>A	intron_variant		10222	False			
+ERBB2	17	37855834	C	A	0.5	19582		NM_001005862.2:c.-18+4400C>A	intron_variant		10222	False			
+ERBB2	17	37855834	C	A	0.5	19582	NP_001276865.1:p.Pro8Thr	NM_001289936.1:c.22C>A	missense_variant	5/31	10222	False			
+ERBB2	17	37855834	C	A	0.5	19582			upstream_gene_variant		10222	False			
+ERBB2	17	37855834	C	A	0.5	19582		NM_001289938.1:c.-18+4400C>A	intron_variant		10222	False			
+ERBB2	17	37855834	C	A	0.5	19582			upstream_gene_variant		10222	False			
+ERBB2	17	37855834	C	A	0.5	19582			upstream_gene_variant		10222	False			
+ERBB2	17	37855834	C	A	0.5	19582			upstream_gene_variant		10222	False			
+ERBB2	17	37855834	C	A	0.5	19582	XP_005257196.1:p.Pro8Thr	XM_005257139.1:c.22C>A	missense_variant	5/31	10222	False			
+	17	37855834	C	A	0.5	19582			regulatory_region_variant		10222	False			
+ERBB2	17	37865692	C	G	0.5	3632	NP_001005862.1:p.Asn157Lys	NM_001005862.1:c.471C>G	missense_variant	7/30	84	False			
+ERBB2	17	37865692	C	G	0.5	3632	NP_001005862.1:p.Asn157Lys	NM_001005862.2:c.471C>G	missense_variant	7/30	84	False			
+ERBB2	17	37865692	C	G	0.5	3632	NP_001276865.1:p.Asn172Lys	NM_001289936.1:c.516C>G	missense_variant	8/31	84	False			
+ERBB2	17	37865692	C	G	0.5	3632	NP_001276866.1:p.Asn187Lys	NM_001289937.1:c.561C>G	missense_variant	4/26	84	False			
+ERBB2	17	37865692	C	G	0.5	3632	NP_001276867.1:p.Asn157Lys	NM_001289938.1:c.471C>G	missense_variant	7/18	84	False			
+ERBB2	17	37865692	C	G	0.5	3632	NP_004439.2:p.Asn187Lys	NM_004448.2:c.561C>G	missense_variant	4/27	84	False			
+ERBB2	17	37865692	C	G	0.5	3632	NP_004439.2:p.Asn187Lys	NM_004448.3:c.561C>G	missense_variant	4/27	84	False			
+ERBB2	17	37865692	C	G	0.5	3632		NR_110535.1:n.885C>G	non_coding_transcript_exon_variant	4/27	84	False			
+ERBB2	17	37865692	C	G	0.5	3632	XP_005257196.1:p.Asn172Lys	XM_005257139.1:c.516C>G	missense_variant	8/31	84	False			
+ERBB2	17	37865692	C	G	0.5	3632	XP_005257197.1:p.Asn157Lys	XM_005257140.1:c.471C>G	missense_variant	3/26	84	False			
+ERBB2	17	37866393	C	T	0.5	1850	NP_001005862.1:p.Thr203Ile	NM_001005862.1:c.608C>T	missense_variant	9/30	30	False			
+ERBB2	17	37866393	C	T	0.5	1850	NP_001005862.1:p.Thr203Ile	NM_001005862.2:c.608C>T	missense_variant	9/30	30	False			
+ERBB2	17	37866393	C	T	0.5	1850	NP_001276865.1:p.Thr218Ile	NM_001289936.1:c.653C>T	missense_variant	10/31	30	False			
+ERBB2	17	37866393	C	T	0.5	1850	NP_001276866.1:p.Thr233Ile	NM_001289937.1:c.698C>T	missense_variant	6/26	30	False			
+ERBB2	17	37866393	C	T	0.5	1850	NP_001276867.1:p.Thr203Ile	NM_001289938.1:c.608C>T	missense_variant	9/18	30	False			
+ERBB2	17	37866393	C	T	0.5	1850	NP_004439.2:p.Thr233Ile	NM_004448.2:c.698C>T	missense_variant	6/27	30	False			
+ERBB2	17	37866393	C	T	0.5	1850	NP_004439.2:p.Thr233Ile	NM_004448.3:c.698C>T	missense_variant	6/27	30	False			
+ERBB2	17	37866393	C	T	0.5	1850		NR_110535.1:n.1022C>T	non_coding_transcript_exon_variant	6/27	30	False			
+ERBB2	17	37866393	C	T	0.5	1850	XP_005257196.1:p.Thr218Ile	XM_005257139.1:c.653C>T	missense_variant	10/31	30	False			
+ERBB2	17	37866393	C	T	0.5	1850	XP_005257197.1:p.Thr203Ile	XM_005257140.1:c.608C>T	missense_variant	5/26	30	False			
+ERBB2	17	37866510	G	A	0.5	1846		NM_001005862.1:c.669+56G>A	intron_variant		38	False			
+ERBB2	17	37866510	G	A	0.5	1846		NM_001005862.2:c.669+56G>A	intron_variant		38	False			
+ERBB2	17	37866510	G	A	0.5	1846		NM_001289936.1:c.714+56G>A	intron_variant		38	False			
+ERBB2	17	37866510	G	A	0.5	1846		NM_001289937.1:c.759+56G>A	intron_variant		38	False			
+ERBB2	17	37866510	G	A	0.5	1846		NM_001289938.1:c.669+56G>A	intron_variant		38	False			
+ERBB2	17	37866510	G	A	0.5	1846		NM_004448.2:c.759+56G>A	intron_variant		38	False			
+ERBB2	17	37866510	G	A	0.5	1846		NM_004448.3:c.759+56G>A	intron_variant		38	False			
+ERBB2	17	37866510	G	A	0.5	1846		NR_110535.1:n.1083+56G>A	intron_variant&non_coding_transcript_variant		38	False			
+ERBB2	17	37866510	G	A	0.5	1846		XM_005257139.1:c.714+56G>A	intron_variant		38	False			
+ERBB2	17	37866510	G	A	0.5	1846		XM_005257140.1:c.669+56G>A	intron_variant		38	False			
+ERBB2	17	37868374	T	G	0.5	3056		NM_001005862.1:c.931+74T>G	intron_variant		195	False			
+ERBB2	17	37868374	T	G	0.5	3056		NM_001005862.2:c.931+74T>G	intron_variant		195	False			
+ERBB2	17	37868374	T	G	0.5	3056		NM_001289936.1:c.976+74T>G	intron_variant		195	False			
+ERBB2	17	37868374	T	G	0.5	3056		NM_001289937.1:c.1021+74T>G	intron_variant		195	False			
+ERBB2	17	37868374	T	G	0.5	3056		NM_001289938.1:c.931+74T>G	intron_variant		195	False			
+ERBB2	17	37868374	T	G	0.5	3056		NM_004448.2:c.1021+74T>G	intron_variant		195	False			
+ERBB2	17	37868374	T	G	0.5	3056		NM_004448.3:c.1021+74T>G	intron_variant		195	False			
+ERBB2	17	37868374	T	G	0.5	3056		NR_110535.1:n.1345+74T>G	intron_variant&non_coding_transcript_variant		195	False			
+ERBB2	17	37868374	T	G	0.5	3056		XM_005257139.1:c.976+74T>G	intron_variant		195	False			
+ERBB2	17	37868374	T	G	0.5	3056		XM_005257140.1:c.931+74T>G	intron_variant		195	False			
+ERBB2	17	37868715	C	T	1.0	8087		NM_001005862.1:c.1058+14C>T	intron_variant		8073	False			
+ERBB2	17	37868715	C	T	1.0	8087		NM_001005862.2:c.1058+14C>T	intron_variant		8073	False			
+ERBB2	17	37868715	C	T	1.0	8087		NM_001289936.1:c.1103+14C>T	intron_variant		8073	False			
+ERBB2	17	37868715	C	T	1.0	8087		NM_001289937.1:c.1148+14C>T	intron_variant		8073	False			
+ERBB2	17	37868715	C	T	1.0	8087		NM_001289938.1:c.1058+14C>T	intron_variant		8073	False			
+ERBB2	17	37868715	C	T	1.0	8087		NM_004448.2:c.1148+14C>T	intron_variant		8073	False			
+ERBB2	17	37868715	C	T	1.0	8087		NM_004448.3:c.1148+14C>T	intron_variant		8073	False			
+ERBB2	17	37868715	C	T	1.0	8087		NR_110535.1:n.1472+14C>T	intron_variant&non_coding_transcript_variant		8073	False			
+ERBB2	17	37868715	C	T	1.0	8087		XM_005257139.1:c.1103+14C>T	intron_variant		8073	False			
+ERBB2	17	37868715	C	T	1.0	8087		XM_005257140.1:c.1058+14C>T	intron_variant		8073	False			
+ERBB2	17	37868738	G	A	0.5	3621		NM_001005862.1:c.1058+37G>A	intron_variant		62	False			
+ERBB2	17	37868738	G	A	0.5	3621		NM_001005862.2:c.1058+37G>A	intron_variant		62	False			
+ERBB2	17	37868738	G	A	0.5	3621		NM_001289936.1:c.1103+37G>A	intron_variant		62	False			
+ERBB2	17	37868738	G	A	0.5	3621		NM_001289937.1:c.1148+37G>A	intron_variant		62	False			
+ERBB2	17	37868738	G	A	0.5	3621		NM_001289938.1:c.1058+37G>A	intron_variant		62	False			
+ERBB2	17	37868738	G	A	0.5	3621		NM_004448.2:c.1148+37G>A	intron_variant		62	False			
+ERBB2	17	37868738	G	A	0.5	3621		NM_004448.3:c.1148+37G>A	intron_variant		62	False			
+ERBB2	17	37868738	G	A	0.5	3621		NR_110535.1:n.1472+37G>A	intron_variant&non_coding_transcript_variant		62	False			
+ERBB2	17	37868738	G	A	0.5	3621		XM_005257139.1:c.1103+37G>A	intron_variant		62	False			
+ERBB2	17	37868738	G	A	0.5	3621		XM_005257140.1:c.1058+37G>A	intron_variant		62	False			
+ERBB2	17	37872267	C	T	0.5	2838		NM_001005862.1:c.1423+75C>T	intron_variant		42	False			
+ERBB2	17	37872267	C	T	0.5	2838		NM_001005862.2:c.1423+75C>T	intron_variant		42	False			
+ERBB2	17	37872267	C	T	0.5	2838		NM_001289936.1:c.1468+75C>T	intron_variant		42	False			
+ERBB2	17	37872267	C	T	0.5	2838		NM_001289937.1:c.1513+75C>T	intron_variant		42	False			
+ERBB2	17	37872267	C	T	0.5	2838		NM_001289938.1:c.1423+75C>T	intron_variant		42	False			
+ERBB2	17	37872267	C	T	0.5	2838		NM_004448.2:c.1513+75C>T	intron_variant		42	False			
+ERBB2	17	37872267	C	T	0.5	2838		NM_004448.3:c.1513+75C>T	intron_variant		42	False			
+ERBB2	17	37872267	C	T	0.5	2838		NR_110535.1:n.1837+75C>T	intron_variant&non_coding_transcript_variant		42	False			
+ERBB2	17	37872267	C	T	0.5	2838		XM_005257139.1:c.1468+75C>T	intron_variant		42	False			
+ERBB2	17	37872267	C	T	0.5	2838		XM_005257140.1:c.1423+75C>T	intron_variant		42	False			
+ERBB2	17	37873546	C	T	0.5	3672		NM_001005862.1:c.1648-27C>T	intron_variant		54	False			
+ERBB2	17	37873546	C	T	0.5	3672		NM_001005862.2:c.1648-27C>T	intron_variant		54	False			
+ERBB2	17	37873546	C	T	0.5	3672		NM_001289936.1:c.1693-27C>T	intron_variant		54	False			
+ERBB2	17	37873546	C	T	0.5	3672		NM_001289937.1:c.1738-27C>T	intron_variant		54	False			
+ERBB2	17	37873546	C	T	0.5	3672		NM_001289938.1:c.1648-27C>T	intron_variant		54	False			
+ERBB2	17	37873546	C	T	0.5	3672		NM_004448.2:c.1738-27C>T	intron_variant		54	False			
+ERBB2	17	37873546	C	T	0.5	3672		NM_004448.3:c.1738-27C>T	intron_variant		54	False			
+ERBB2	17	37873546	C	T	0.5	3672		NR_110535.1:n.2062-27C>T	intron_variant&non_coding_transcript_variant		54	False			
+ERBB2	17	37873546	C	T	0.5	3672		XM_005257139.1:c.1693-27C>T	intron_variant		54	False			
+ERBB2	17	37873546	C	T	0.5	3672		XM_005257140.1:c.1648-27C>T	intron_variant		54	False			
+ERBB2	17	37873562	G	GC	0.5	3675		NM_001005862.1:c.1648-3dup	intron_variant		81	False			
+ERBB2	17	37873562	G	GC	0.5	3675		NM_001005862.2:c.1648-3dup	intron_variant		81	False			
+ERBB2	17	37873562	G	GC	0.5	3675		NM_001289936.1:c.1693-3dup	intron_variant		81	False			
+ERBB2	17	37873562	G	GC	0.5	3675		NM_001289937.1:c.1738-3dup	intron_variant		81	False			
+ERBB2	17	37873562	G	GC	0.5	3675		NM_001289938.1:c.1648-3dup	intron_variant		81	False			
+ERBB2	17	37873562	G	GC	0.5	3675		NM_004448.2:c.1738-3dup	intron_variant		81	False			
+ERBB2	17	37873562	G	GC	0.5	3675		NM_004448.3:c.1738-3dup	intron_variant		81	False			
+ERBB2	17	37873562	G	GC	0.5	3675		NR_110535.1:n.2062-3dup	intron_variant&non_coding_transcript_variant		81	False			
+ERBB2	17	37873562	G	GC	0.5	3675		XM_005257139.1:c.1693-3dup	intron_variant		81	False			
+ERBB2	17	37873562	G	GC	0.5	3675		XM_005257140.1:c.1648-3dup	intron_variant		81	False			
+ERBB2	17	37873562	GC	G	0.5	3675		NM_001005862.1:c.1648-3del	intron_variant		79	False			
+ERBB2	17	37873562	GC	G	0.5	3675		NM_001005862.2:c.1648-3del	intron_variant		79	False			
+ERBB2	17	37873562	GC	G	0.5	3675		NM_001289936.1:c.1693-3del	intron_variant		79	False			
+ERBB2	17	37873562	GC	G	0.5	3675		NM_001289937.1:c.1738-3del	intron_variant		79	False			
+ERBB2	17	37873562	GC	G	0.5	3675		NM_001289938.1:c.1648-3del	intron_variant		79	False			
+ERBB2	17	37873562	GC	G	0.5	3675		NM_004448.2:c.1738-3del	intron_variant		79	False			
+ERBB2	17	37873562	GC	G	0.5	3675		NM_004448.3:c.1738-3del	intron_variant		79	False			
+ERBB2	17	37873562	GC	G	0.5	3675		NR_110535.1:n.2062-3del	intron_variant&non_coding_transcript_variant		79	False			
+ERBB2	17	37873562	GC	G	0.5	3675		XM_005257139.1:c.1693-3del	intron_variant		79	False			
+ERBB2	17	37873562	GC	G	0.5	3675		XM_005257140.1:c.1648-3del	intron_variant		79	False			
+ERBB2	17	37873577	C	T	0.5	3666	NP_001005862.1:p.Ala551Val	NM_001005862.1:c.1652C>T	missense_variant	18/30	59	False			
+ERBB2	17	37873577	C	T	0.5	3666	NP_001005862.1:p.Ala551Val	NM_001005862.2:c.1652C>T	missense_variant	18/30	59	False			
+ERBB2	17	37873577	C	T	0.5	3666	NP_001276865.1:p.Ala566Val	NM_001289936.1:c.1697C>T	missense_variant	19/31	59	False			
+ERBB2	17	37873577	C	T	0.5	3666	NP_001276866.1:p.Ala581Val	NM_001289937.1:c.1742C>T	missense_variant	15/26	59	False			
+ERBB2	17	37873577	C	T	0.5	3666	NP_001276867.1:p.Ala551Val	NM_001289938.1:c.1652C>T	missense_variant	18/18	59	False			
+ERBB2	17	37873577	C	T	0.5	3666	NP_004439.2:p.Ala581Val	NM_004448.2:c.1742C>T	missense_variant	15/27	59	False			
+ERBB2	17	37873577	C	T	0.5	3666	NP_004439.2:p.Ala581Val	NM_004448.3:c.1742C>T	missense_variant	15/27	59	False			
+ERBB2	17	37873577	C	T	0.5	3666		NR_110535.1:n.2066C>T	non_coding_transcript_exon_variant	15/27	59	False			
+ERBB2	17	37873577	C	T	0.5	3666	XP_005257196.1:p.Ala566Val	XM_005257139.1:c.1697C>T	missense_variant	19/31	59	False			
+ERBB2	17	37873577	C	T	0.5	3666	XP_005257197.1:p.Ala551Val	XM_005257140.1:c.1652C>T	missense_variant	14/26	59	False			
+ERBB2	17	37879588	A	G	0.5	16480	NP_001005862.1:p.Ile625Val	NM_001005862.1:c.1873A>G	missense_variant	20/30	8125	False			
+ERBB2	17	37879588	A	G	0.5	16480	NP_001005862.1:p.Ile625Val	NM_001005862.2:c.1873A>G	missense_variant	20/30	8125	False			
+ERBB2	17	37879588	A	G	0.5	16480	NP_001276865.1:p.Ile640Val	NM_001289936.1:c.1918A>G	missense_variant	21/31	8125	False			
+ERBB2	17	37879588	A	G	0.5	16480	NP_001276866.1:p.Ile655Val	NM_001289937.1:c.1963A>G	missense_variant	17/26	8125	False			
+ERBB2	17	37879588	A	G	0.5	16480	NP_004439.2:p.Ile655Val	NM_004448.2:c.1963A>G	missense_variant	17/27	8125	False			
+ERBB2	17	37879588	A	G	0.5	16480	NP_004439.2:p.Ile655Val	NM_004448.3:c.1963A>G	missense_variant	17/27	8125	False			
+MIR4728	17	37879588	A	G	0.5	16480			upstream_gene_variant		8125	False			
+ERBB2	17	37879588	A	G	0.5	16480		NR_110535.1:n.2287A>G	non_coding_transcript_exon_variant	17/27	8125	False			
+ERBB2	17	37879588	A	G	0.5	16480	XP_005257196.1:p.Ile640Val	XM_005257139.1:c.1918A>G	missense_variant	21/31	8125	False			
+ERBB2	17	37879588	A	G	0.5	16480	XP_005257197.1:p.Ile625Val	XM_005257140.1:c.1873A>G	missense_variant	16/26	8125	False			
+	17	37879588	A	G	0.5	16480			regulatory_region_variant		8125	False			
+ERBB2	17	37879719	G	A	0.5	454		NM_001005862.1:c.1995+9G>A	intron_variant		12	False			
+ERBB2	17	37879719	G	A	0.5	454		NM_001005862.2:c.1995+9G>A	intron_variant		12	False			
+ERBB2	17	37879719	G	A	0.5	454		NM_001289936.1:c.2040+9G>A	intron_variant		12	False			
+ERBB2	17	37879719	G	A	0.5	454		NM_001289937.1:c.2085+9G>A	intron_variant		12	False			
+ERBB2	17	37879719	G	A	0.5	454		NM_004448.2:c.2085+9G>A	intron_variant		12	False			
+ERBB2	17	37879719	G	A	0.5	454		NM_004448.3:c.2085+9G>A	intron_variant		12	False			
+MIR4728	17	37879719	G	A	0.5	454			upstream_gene_variant		12	False			
+ERBB2	17	37879719	G	A	0.5	454		NR_110535.1:n.2409+9G>A	intron_variant&non_coding_transcript_variant		12	False			
+ERBB2	17	37879719	G	A	0.5	454		XM_005257139.1:c.2040+9G>A	intron_variant		12	False			
+ERBB2	17	37879719	G	A	0.5	454		XM_005257140.1:c.1995+9G>A	intron_variant		12	False			
+	17	37879719	G	A	0.5	454			regulatory_region_variant		12	False			
+ERBB2	17	37879762	G	A	1.0	73		NM_001005862.1:c.1996-29G>A	intron_variant		73	False			
+ERBB2	17	37879762	G	A	1.0	73		NM_001005862.2:c.1996-29G>A	intron_variant		73	False			
+ERBB2	17	37879762	G	A	1.0	73		NM_001289936.1:c.2041-29G>A	intron_variant		73	False			
+ERBB2	17	37879762	G	A	1.0	73		NM_001289937.1:c.2086-29G>A	intron_variant		73	False			
+MIEN1	17	37879762	G	A	1.0	73			downstream_gene_variant		73	False			
+ERBB2	17	37879762	G	A	1.0	73		NM_004448.2:c.2086-29G>A	intron_variant		73	False			
+ERBB2	17	37879762	G	A	1.0	73		NM_004448.3:c.2086-29G>A	intron_variant		73	False			
+MIEN1	17	37879762	G	A	1.0	73			downstream_gene_variant		73	False			
+MIR4728	17	37879762	G	A	1.0	73			upstream_gene_variant		73	False			
+ERBB2	17	37879762	G	A	1.0	73		NR_110535.1:n.2410-29G>A	intron_variant&non_coding_transcript_variant		73	False			
+ERBB2	17	37879762	G	A	1.0	73		XM_005257139.1:c.2041-29G>A	intron_variant		73	False			
+ERBB2	17	37879762	G	A	1.0	73		XM_005257140.1:c.1996-29G>A	intron_variant		73	False			
+	17	37879762	G	A	1.0	73			regulatory_region_variant		73	False			
+ERBB2	17	37881082	G	A	0.5	7871	NP_001005862.1:p.Gly774Asp	NM_001005862.1:c.2321G>A	missense_variant	23/30	709	False			
+ERBB2	17	37881082	G	A	0.5	7871	NP_001005862.1:p.Gly774Asp	NM_001005862.2:c.2321G>A	missense_variant	23/30	709	False			
+ERBB2	17	37881082	G	A	0.5	7871	NP_001276865.1:p.Gly789Asp	NM_001289936.1:c.2366G>A	missense_variant	24/31	709	False			
+ERBB2	17	37881082	G	A	0.5	7871	NP_001276866.1:p.Gly804Asp	NM_001289937.1:c.2411G>A	missense_variant	20/26	709	False			
+MIEN1	17	37881082	G	A	0.5	7871			downstream_gene_variant		709	False			
+ERBB2	17	37881082	G	A	0.5	7871	NP_004439.2:p.Gly804Asp	NM_004448.2:c.2411G>A	missense_variant	20/27	709	False			
+ERBB2	17	37881082	G	A	0.5	7871	NP_004439.2:p.Gly804Asp	NM_004448.3:c.2411G>A	missense_variant	20/27	709	False			
+MIEN1	17	37881082	G	A	0.5	7871			downstream_gene_variant		709	False			
+MIEN1	17	37881082	G	A	0.5	7871			downstream_gene_variant		709	False			
+MIR4728	17	37881082	G	A	0.5	7871			upstream_gene_variant		709	False			
+ERBB2	17	37881082	G	A	0.5	7871		NR_110535.1:n.2735G>A	non_coding_transcript_exon_variant	20/27	709	False			
+ERBB2	17	37881082	G	A	0.5	7871	XP_005257196.1:p.Gly789Asp	XM_005257139.1:c.2366G>A	missense_variant	24/31	709	False			
+ERBB2	17	37881082	G	A	0.5	7871	XP_005257197.1:p.Gly774Asp	XM_005257140.1:c.2321G>A	missense_variant	19/26	709	False			
+MIEN1	17	37881082	G	A	0.5	7871			downstream_gene_variant		709	False			
+ERBB2	17	37881313	C	T	0.5	2291	NP_001005862.1:p.Tyr805=	NM_001005862.1:c.2415C>T	synonymous_variant	24/30	46	False			
+ERBB2	17	37881313	C	T	0.5	2291	NP_001005862.1:p.Tyr805=	NM_001005862.2:c.2415C>T	synonymous_variant	24/30	46	False			
+ERBB2	17	37881313	C	T	0.5	2291	NP_001276865.1:p.Tyr820=	NM_001289936.1:c.2460C>T	synonymous_variant	25/31	46	False			
+ERBB2	17	37881313	C	T	0.5	2291	NP_001276866.1:p.Tyr835=	NM_001289937.1:c.2505C>T	synonymous_variant	21/26	46	False			
+MIEN1	17	37881313	C	T	0.5	2291			downstream_gene_variant		46	False			
+ERBB2	17	37881313	C	T	0.5	2291	NP_004439.2:p.Tyr835=	NM_004448.2:c.2505C>T	synonymous_variant	21/27	46	False			
+ERBB2	17	37881313	C	T	0.5	2291	NP_004439.2:p.Tyr835=	NM_004448.3:c.2505C>T	synonymous_variant	21/27	46	False			
+MIEN1	17	37881313	C	T	0.5	2291			downstream_gene_variant		46	False			
+MIEN1	17	37881313	C	T	0.5	2291			downstream_gene_variant		46	False			
+MIR4728	17	37881313	C	T	0.5	2291			upstream_gene_variant		46	False			
+ERBB2	17	37881313	C	T	0.5	2291		NR_110535.1:n.2829C>T	non_coding_transcript_exon_variant	21/27	46	False			
+ERBB2	17	37881313	C	T	0.5	2291	XP_005257196.1:p.Tyr820=	XM_005257139.1:c.2460C>T	synonymous_variant	25/31	46	False			
+ERBB2	17	37881313	C	T	0.5	2291	XP_005257197.1:p.Tyr805=	XM_005257140.1:c.2415C>T	synonymous_variant	20/26	46	False			
+MIEN1	17	37881313	C	T	0.5	2291			downstream_gene_variant		46	False			
+ERBB2	17	37881580	G	A	0.5	2058	NP_001005862.1:p.Val854Met	NM_001005862.1:c.2560G>A	missense_variant&splice_region_variant	25/30	33	False			
+ERBB2	17	37881580	G	A	0.5	2058	NP_001005862.1:p.Val854Met	NM_001005862.2:c.2560G>A	missense_variant&splice_region_variant	25/30	33	False			
+ERBB2	17	37881580	G	A	0.5	2058	NP_001276865.1:p.Val869Met	NM_001289936.1:c.2605G>A	missense_variant&splice_region_variant	26/31	33	False			
+ERBB2	17	37881580	G	A	0.5	2058	NP_001276866.1:p.Val884Met	NM_001289937.1:c.2650G>A	missense_variant&splice_region_variant	22/26	33	False			
+MIEN1	17	37881580	G	A	0.5	2058			downstream_gene_variant		33	False			
+ERBB2	17	37881580	G	A	0.5	2058	NP_004439.2:p.Val884Met	NM_004448.2:c.2650G>A	missense_variant&splice_region_variant	22/27	33	False			
+ERBB2	17	37881580	G	A	0.5	2058	NP_004439.2:p.Val884Met	NM_004448.3:c.2650G>A	missense_variant&splice_region_variant	22/27	33	False			
+MIEN1	17	37881580	G	A	0.5	2058			downstream_gene_variant		33	False			
+MIEN1	17	37881580	G	A	0.5	2058			downstream_gene_variant		33	False			
+MIR4728	17	37881580	G	A	0.5	2058			upstream_gene_variant		33	False			
+ERBB2	17	37881580	G	A	0.5	2058		NR_110535.1:n.2974G>A	splice_region_variant&non_coding_transcript_exon_variant	22/27	33	False			
+ERBB2	17	37881580	G	A	0.5	2058	XP_005257196.1:p.Val869Met	XM_005257139.1:c.2605G>A	missense_variant&splice_region_variant	26/31	33	False			
+ERBB2	17	37881580	G	A	0.5	2058	XP_005257197.1:p.Val854Met	XM_005257140.1:c.2560G>A	missense_variant&splice_region_variant	21/26	33	False			
+MIEN1	17	37881580	G	A	0.5	2058			downstream_gene_variant		33	False			
+ERBB2	17	37881639	T	G	0.5	1224	NP_001005862.1:p.Ser873Arg	NM_001005862.1:c.2619T>G	missense_variant	25/30	42	False			
+ERBB2	17	37881639	T	G	0.5	1224	NP_001005862.1:p.Ser873Arg	NM_001005862.2:c.2619T>G	missense_variant	25/30	42	False			
+ERBB2	17	37881639	T	G	0.5	1224	NP_001276865.1:p.Ser888Arg	NM_001289936.1:c.2664T>G	missense_variant	26/31	42	False			
+ERBB2	17	37881639	T	G	0.5	1224	NP_001276866.1:p.Ser903Arg	NM_001289937.1:c.2709T>G	missense_variant	22/26	42	False			
+MIEN1	17	37881639	T	G	0.5	1224			downstream_gene_variant		42	False			
+ERBB2	17	37881639	T	G	0.5	1224	NP_004439.2:p.Ser903Arg	NM_004448.2:c.2709T>G	missense_variant	22/27	42	False			
+ERBB2	17	37881639	T	G	0.5	1224	NP_004439.2:p.Ser903Arg	NM_004448.3:c.2709T>G	missense_variant	22/27	42	False			
+MIEN1	17	37881639	T	G	0.5	1224			downstream_gene_variant		42	False			
+MIEN1	17	37881639	T	G	0.5	1224			downstream_gene_variant		42	False			
+MIR4728	17	37881639	T	G	0.5	1224			upstream_gene_variant		42	False			
+ERBB2	17	37881639	T	G	0.5	1224		NR_110535.1:n.3033T>G	non_coding_transcript_exon_variant	22/27	42	False			
+ERBB2	17	37881639	T	G	0.5	1224	XP_005257196.1:p.Ser888Arg	XM_005257139.1:c.2664T>G	missense_variant	26/31	42	False			
+ERBB2	17	37881639	T	G	0.5	1224	XP_005257197.1:p.Ser873Arg	XM_005257140.1:c.2619T>G	missense_variant	21/26	42	False			
+MIEN1	17	37881639	T	G	0.5	1224			downstream_gene_variant		42	False			
+ERBB2	17	37881646	T	G	0.5	2332	NP_001005862.1:p.Trp876Gly	NM_001005862.1:c.2626T>G	missense_variant	25/30	54	False			
+ERBB2	17	37881646	T	G	0.5	2332	NP_001005862.1:p.Trp876Gly	NM_001005862.2:c.2626T>G	missense_variant	25/30	54	False			
+ERBB2	17	37881646	T	G	0.5	2332	NP_001276865.1:p.Trp891Gly	NM_001289936.1:c.2671T>G	missense_variant	26/31	54	False			
+ERBB2	17	37881646	T	G	0.5	2332	NP_001276866.1:p.Trp906Gly	NM_001289937.1:c.2716T>G	missense_variant	22/26	54	False			
+MIEN1	17	37881646	T	G	0.5	2332			downstream_gene_variant		54	False			
+ERBB2	17	37881646	T	G	0.5	2332	NP_004439.2:p.Trp906Gly	NM_004448.2:c.2716T>G	missense_variant	22/27	54	False			
+ERBB2	17	37881646	T	G	0.5	2332	NP_004439.2:p.Trp906Gly	NM_004448.3:c.2716T>G	missense_variant	22/27	54	False			
+MIEN1	17	37881646	T	G	0.5	2332			downstream_gene_variant		54	False			
+MIEN1	17	37881646	T	G	0.5	2332			downstream_gene_variant		54	False			
+MIR4728	17	37881646	T	G	0.5	2332			upstream_gene_variant		54	False			
+ERBB2	17	37881646	T	G	0.5	2332		NR_110535.1:n.3040T>G	non_coding_transcript_exon_variant	22/27	54	False			
+ERBB2	17	37881646	T	G	0.5	2332	XP_005257196.1:p.Trp891Gly	XM_005257139.1:c.2671T>G	missense_variant	26/31	54	False			
+ERBB2	17	37881646	T	G	0.5	2332	XP_005257197.1:p.Trp876Gly	XM_005257140.1:c.2626T>G	missense_variant	21/26	54	False			
+MIEN1	17	37881646	T	G	0.5	2332			downstream_gene_variant		54	False			
+ERBB2	17	37881649	A	G	0.5	2183	NP_001005862.1:p.Ser877Gly	NM_001005862.1:c.2629A>G	missense_variant	25/30	35	False			
+ERBB2	17	37881649	A	G	0.5	2183	NP_001005862.1:p.Ser877Gly	NM_001005862.2:c.2629A>G	missense_variant	25/30	35	False			
+ERBB2	17	37881649	A	G	0.5	2183	NP_001276865.1:p.Ser892Gly	NM_001289936.1:c.2674A>G	missense_variant	26/31	35	False			
+ERBB2	17	37881649	A	G	0.5	2183	NP_001276866.1:p.Ser907Gly	NM_001289937.1:c.2719A>G	missense_variant	22/26	35	False			
+MIEN1	17	37881649	A	G	0.5	2183			downstream_gene_variant		35	False			
+ERBB2	17	37881649	A	G	0.5	2183	NP_004439.2:p.Ser907Gly	NM_004448.2:c.2719A>G	missense_variant	22/27	35	False			
+ERBB2	17	37881649	A	G	0.5	2183	NP_004439.2:p.Ser907Gly	NM_004448.3:c.2719A>G	missense_variant	22/27	35	False			
+MIEN1	17	37881649	A	G	0.5	2183			downstream_gene_variant		35	False			
+MIEN1	17	37881649	A	G	0.5	2183			downstream_gene_variant		35	False			
+MIR4728	17	37881649	A	G	0.5	2183			upstream_gene_variant		35	False			
+ERBB2	17	37881649	A	G	0.5	2183		NR_110535.1:n.3043A>G	non_coding_transcript_exon_variant	22/27	35	False			
+ERBB2	17	37881649	A	G	0.5	2183	XP_005257196.1:p.Ser892Gly	XM_005257139.1:c.2674A>G	missense_variant	26/31	35	False			
+ERBB2	17	37881649	A	G	0.5	2183	XP_005257197.1:p.Ser877Gly	XM_005257140.1:c.2629A>G	missense_variant	21/26	35	False			
+MIEN1	17	37881649	A	G	0.5	2183			downstream_gene_variant		35	False			
+ERBB2	17	37881664	T	G	0.5	2476		NM_001005862.1:c.2635+9T>G	intron_variant		109	False			
+ERBB2	17	37881664	T	G	0.5	2476		NM_001005862.2:c.2635+9T>G	intron_variant		109	False			
+ERBB2	17	37881664	T	G	0.5	2476		NM_001289936.1:c.2680+9T>G	intron_variant		109	False			
+ERBB2	17	37881664	T	G	0.5	2476		NM_001289937.1:c.2725+9T>G	intron_variant		109	False			
+MIEN1	17	37881664	T	G	0.5	2476			downstream_gene_variant		109	False			
+ERBB2	17	37881664	T	G	0.5	2476		NM_004448.2:c.2725+9T>G	intron_variant		109	False			
+ERBB2	17	37881664	T	G	0.5	2476		NM_004448.3:c.2725+9T>G	intron_variant		109	False			
+MIEN1	17	37881664	T	G	0.5	2476			downstream_gene_variant		109	False			
+MIEN1	17	37881664	T	G	0.5	2476			downstream_gene_variant		109	False			
+MIR4728	17	37881664	T	G	0.5	2476			upstream_gene_variant		109	False			
+ERBB2	17	37881664	T	G	0.5	2476		NR_110535.1:n.3049+9T>G	intron_variant&non_coding_transcript_variant		109	False			
+ERBB2	17	37881664	T	G	0.5	2476		XM_005257139.1:c.2680+9T>G	intron_variant		109	False			
+ERBB2	17	37881664	T	G	0.5	2476		XM_005257140.1:c.2635+9T>G	intron_variant		109	False			
+MIEN1	17	37881664	T	G	0.5	2476			downstream_gene_variant		109	False			
+ERBB2	17	37881674	T	G	0.5	2511		NM_001005862.1:c.2635+19T>G	intron_variant		98	False			
+ERBB2	17	37881674	T	G	0.5	2511		NM_001005862.2:c.2635+19T>G	intron_variant		98	False			
+ERBB2	17	37881674	T	G	0.5	2511		NM_001289936.1:c.2680+19T>G	intron_variant		98	False			
+ERBB2	17	37881674	T	G	0.5	2511		NM_001289937.1:c.2725+19T>G	intron_variant		98	False			
+MIEN1	17	37881674	T	G	0.5	2511			downstream_gene_variant		98	False			
+ERBB2	17	37881674	T	G	0.5	2511		NM_004448.2:c.2725+19T>G	intron_variant		98	False			
+ERBB2	17	37881674	T	G	0.5	2511		NM_004448.3:c.2725+19T>G	intron_variant		98	False			
+MIEN1	17	37881674	T	G	0.5	2511			downstream_gene_variant		98	False			
+MIEN1	17	37881674	T	G	0.5	2511			downstream_gene_variant		98	False			
+MIR4728	17	37881674	T	G	0.5	2511			upstream_gene_variant		98	False			
+ERBB2	17	37881674	T	G	0.5	2511		NR_110535.1:n.3049+19T>G	intron_variant&non_coding_transcript_variant		98	False			
+ERBB2	17	37881674	T	G	0.5	2511		XM_005257139.1:c.2680+19T>G	intron_variant		98	False			
+ERBB2	17	37881674	T	G	0.5	2511		XM_005257140.1:c.2635+19T>G	intron_variant		98	False			
+MIEN1	17	37881674	T	G	0.5	2511			downstream_gene_variant		98	False			
+ERBB2	17	37881678	A	G	0.5	2236		NM_001005862.1:c.2635+23A>G	intron_variant		142	False			
+ERBB2	17	37881678	A	G	0.5	2236		NM_001005862.2:c.2635+23A>G	intron_variant		142	False			
+ERBB2	17	37881678	A	G	0.5	2236		NM_001289936.1:c.2680+23A>G	intron_variant		142	False			
+ERBB2	17	37881678	A	G	0.5	2236		NM_001289937.1:c.2725+23A>G	intron_variant		142	False			
+MIEN1	17	37881678	A	G	0.5	2236			downstream_gene_variant		142	False			
+ERBB2	17	37881678	A	G	0.5	2236		NM_004448.2:c.2725+23A>G	intron_variant		142	False			
+ERBB2	17	37881678	A	G	0.5	2236		NM_004448.3:c.2725+23A>G	intron_variant		142	False			
+MIEN1	17	37881678	A	G	0.5	2236			downstream_gene_variant		142	False			
+MIEN1	17	37881678	A	G	0.5	2236			downstream_gene_variant		142	False			
+MIR4728	17	37881678	A	G	0.5	2236			upstream_gene_variant		142	False			
+ERBB2	17	37881678	A	G	0.5	2236		NR_110535.1:n.3049+23A>G	intron_variant&non_coding_transcript_variant		142	False			
+ERBB2	17	37881678	A	G	0.5	2236		XM_005257139.1:c.2680+23A>G	intron_variant		142	False			
+ERBB2	17	37881678	A	G	0.5	2236		XM_005257140.1:c.2635+23A>G	intron_variant		142	False			
+MIEN1	17	37881678	A	G	0.5	2236			downstream_gene_variant		142	False			
+ERBB2	17	37881683	T	G	0.5	2234		NM_001005862.1:c.2635+28T>G	intron_variant		92	False			
+ERBB2	17	37881683	T	G	0.5	2234		NM_001005862.2:c.2635+28T>G	intron_variant		92	False			
+ERBB2	17	37881683	T	G	0.5	2234		NM_001289936.1:c.2680+28T>G	intron_variant		92	False			
+ERBB2	17	37881683	T	G	0.5	2234		NM_001289937.1:c.2725+28T>G	intron_variant		92	False			
+MIEN1	17	37881683	T	G	0.5	2234			downstream_gene_variant		92	False			
+ERBB2	17	37881683	T	G	0.5	2234		NM_004448.2:c.2725+28T>G	intron_variant		92	False			
+ERBB2	17	37881683	T	G	0.5	2234		NM_004448.3:c.2725+28T>G	intron_variant		92	False			
+MIEN1	17	37881683	T	G	0.5	2234			downstream_gene_variant		92	False			
+MIEN1	17	37881683	T	G	0.5	2234			downstream_gene_variant		92	False			
+MIR4728	17	37881683	T	G	0.5	2234			upstream_gene_variant		92	False			
+ERBB2	17	37881683	T	G	0.5	2234		NR_110535.1:n.3049+28T>G	intron_variant&non_coding_transcript_variant		92	False			
+ERBB2	17	37881683	T	G	0.5	2234		XM_005257139.1:c.2680+28T>G	intron_variant		92	False			
+ERBB2	17	37881683	T	G	0.5	2234		XM_005257140.1:c.2635+28T>G	intron_variant		92	False			
+MIEN1	17	37881683	T	G	0.5	2234			downstream_gene_variant		92	False			
+ERBB2	17	37883151	G	A	0.5	6163	NP_001005862.1:p.Val988=	NM_001005862.1:c.2964G>A	synonymous_variant	28/30	101	False			
+ERBB2	17	37883151	G	A	0.5	6163	NP_001005862.1:p.Val988=	NM_001005862.2:c.2964G>A	synonymous_variant	28/30	101	False			
+ERBB2	17	37883151	G	A	0.5	6163	NP_001276865.1:p.Val1003=	NM_001289936.1:c.3009G>A	synonymous_variant	29/31	101	False			
+ERBB2	17	37883151	G	A	0.5	6163	NP_001276866.1:p.Val1018=	NM_001289937.1:c.3054G>A	synonymous_variant	25/26	101	False			
+MIEN1	17	37883151	G	A	0.5	6163			downstream_gene_variant		101	False			
+ERBB2	17	37883151	G	A	0.5	6163	NP_004439.2:p.Val1018=	NM_004448.2:c.3054G>A	synonymous_variant	25/27	101	False			
+ERBB2	17	37883151	G	A	0.5	6163	NP_004439.2:p.Val1018=	NM_004448.3:c.3054G>A	synonymous_variant	25/27	101	False			
+MIEN1	17	37883151	G	A	0.5	6163			downstream_gene_variant		101	False			
+MIEN1	17	37883151	G	A	0.5	6163			downstream_gene_variant		101	False			
+MIR4728	17	37883151	G	A	0.5	6163			downstream_gene_variant		101	False			
+ERBB2	17	37883151	G	A	0.5	6163		NR_110535.1:n.3378G>A	non_coding_transcript_exon_variant	25/27	101	False			
+ERBB2	17	37883151	G	A	0.5	6163	XP_005257196.1:p.Val1003=	XM_005257139.1:c.3009G>A	synonymous_variant	29/31	101	False			
+ERBB2	17	37883151	G	A	0.5	6163	XP_005257197.1:p.Val988=	XM_005257140.1:c.2964G>A	synonymous_variant	24/26	101	False			
+MIEN1	17	37883151	G	A	0.5	6163			downstream_gene_variant		101	False			
+ERBB2	17	37883561	A	G	0.5	3189	NP_001005862.1:p.Asp1028Gly	NM_001005862.1:c.3083A>G	missense_variant	29/30	53	False			
+ERBB2	17	37883561	A	G	0.5	3189	NP_001005862.1:p.Asp1028Gly	NM_001005862.2:c.3083A>G	missense_variant	29/30	53	False			
+ERBB2	17	37883561	A	G	0.5	3189	NP_001276865.1:p.Asp1043Gly	NM_001289936.1:c.3128A>G	missense_variant	30/31	53	False			
+ERBB2	17	37883561	A	G	0.5	3189		NM_001289937.1:c.3159+305A>G	intron_variant		53	False			
+MIEN1	17	37883561	A	G	0.5	3189			downstream_gene_variant		53	False			
+ERBB2	17	37883561	A	G	0.5	3189	NP_004439.2:p.Asp1058Gly	NM_004448.2:c.3173A>G	missense_variant	26/27	53	False			
+ERBB2	17	37883561	A	G	0.5	3189	NP_004439.2:p.Asp1058Gly	NM_004448.3:c.3173A>G	missense_variant	26/27	53	False			
+MIEN1	17	37883561	A	G	0.5	3189			downstream_gene_variant		53	False			
+MIEN1	17	37883561	A	G	0.5	3189			downstream_gene_variant		53	False			
+MIR4728	17	37883561	A	G	0.5	3189			downstream_gene_variant		53	False			
+ERBB2	17	37883561	A	G	0.5	3189		NR_110535.1:n.3497A>G	non_coding_transcript_exon_variant	26/27	53	False			
+ERBB2	17	37883561	A	G	0.5	3189	XP_005257196.1:p.Asp1043Gly	XM_005257139.1:c.3128A>G	missense_variant	30/31	53	False			
+ERBB2	17	37883561	A	G	0.5	3189	XP_005257197.1:p.Asp1028Gly	XM_005257140.1:c.3083A>G	missense_variant	25/26	53	False			
+MIEN1	17	37883561	A	G	0.5	3189			downstream_gene_variant		53	False			
+ERBB2	17	37883830	G	A	0.5	664		NM_001005862.1:c.3322+30G>A	intron_variant		18	False			
+ERBB2	17	37883830	G	A	0.5	664		NM_001005862.2:c.3322+30G>A	intron_variant		18	False			
+ERBB2	17	37883830	G	A	0.5	664		NM_001289936.1:c.3367+30G>A	intron_variant		18	False			
+ERBB2	17	37883830	G	A	0.5	664		NM_001289937.1:c.3160-112G>A	intron_variant		18	False			
+MIEN1	17	37883830	G	A	0.5	664			downstream_gene_variant		18	False			
+ERBB2	17	37883830	G	A	0.5	664		NM_004448.2:c.3412+30G>A	intron_variant		18	False			
+ERBB2	17	37883830	G	A	0.5	664		NM_004448.3:c.3412+30G>A	intron_variant		18	False			
+MIEN1	17	37883830	G	A	0.5	664			downstream_gene_variant		18	False			
+MIEN1	17	37883830	G	A	0.5	664			downstream_gene_variant		18	False			
+MIR4728	17	37883830	G	A	0.5	664			downstream_gene_variant		18	False			
+ERBB2	17	37883830	G	A	0.5	664		NR_110535.1:n.3736+30G>A	intron_variant&non_coding_transcript_variant		18	False			
+ERBB2	17	37883830	G	A	0.5	664		XM_005257139.1:c.3367+30G>A	intron_variant		18	False			
+ERBB2	17	37883830	G	A	0.5	664		XM_005257140.1:c.3322+30G>A	intron_variant		18	False			
+MIEN1	17	37883830	G	A	0.5	664			downstream_gene_variant		18	False			
+ERBB2	17	37884037	C	G	1.0	2413	NP_001005862.1:p.Pro1140Ala	NM_001005862.1:c.3418C>G	missense_variant	30/30	2411	False			
+ERBB2	17	37884037	C	G	1.0	2413	NP_001005862.1:p.Pro1140Ala	NM_001005862.2:c.3418C>G	missense_variant	30/30	2411	False			
+ERBB2	17	37884037	C	G	1.0	2413	NP_001276865.1:p.Pro1155Ala	NM_001289936.1:c.3463C>G	missense_variant	31/31	2411	False			
+ERBB2	17	37884037	C	G	1.0	2413		NM_001289937.1:c.*87C>G	3_prime_UTR_variant	26/26	2411	False			
+MIEN1	17	37884037	C	G	1.0	2413			downstream_gene_variant		2411	False			
+ERBB2	17	37884037	C	G	1.0	2413	NP_004439.2:p.Pro1170Ala	NM_004448.2:c.3508C>G	missense_variant	27/27	2411	False			
+ERBB2	17	37884037	C	G	1.0	2413	NP_004439.2:p.Pro1170Ala	NM_004448.3:c.3508C>G	missense_variant	27/27	2411	False			
+MIEN1	17	37884037	C	G	1.0	2413			downstream_gene_variant		2411	False			
+MIEN1	17	37884037	C	G	1.0	2413			downstream_gene_variant		2411	False			
+MIR4728	17	37884037	C	G	1.0	2413			downstream_gene_variant		2411	False			
+ERBB2	17	37884037	C	G	1.0	2413		NR_110535.1:n.3832C>G	non_coding_transcript_exon_variant	27/27	2411	False			
+ERBB2	17	37884037	C	G	1.0	2413	XP_005257196.1:p.Pro1155Ala	XM_005257139.1:c.3463C>G	missense_variant	31/31	2411	False			
+ERBB2	17	37884037	C	G	1.0	2413	XP_005257197.1:p.Pro1140Ala	XM_005257140.1:c.3418C>G	missense_variant	26/26	2411	False			
+MIEN1	17	37884037	C	G	1.0	2413			downstream_gene_variant		2411	False			
+STK11	19	1206901	C	T	0.5	1622		NM_000455.4:c.-12C>T	5_prime_UTR_variant	1/10	32	False			
+STK11	19	1206901	C	T	0.5	1622		XM_005259617.1:c.-12C>T	5_prime_UTR_variant	1/10	32	False			
+STK11	19	1206901	C	T	0.5	1622		XM_005259618.1:c.-12C>T	5_prime_UTR_variant	1/9	32	False			
+	19	1206901	C	T	0.5	1622			regulatory_region_variant		32	False			
+STK11	19	1206960	G	A	0.5	4818	NP_000446.1:p.Glu16=	NM_000455.4:c.48G>A	synonymous_variant	1/10	70	False			
+STK11	19	1206960	G	A	0.5	4818	XP_005259674.1:p.Glu16=	XM_005259617.1:c.48G>A	synonymous_variant	1/10	70	False			
+STK11	19	1206960	G	A	0.5	4818	XP_005259675.1:p.Glu16=	XM_005259618.1:c.48G>A	synonymous_variant	1/9	70	False			
+	19	1206960	G	A	0.5	4818			regulatory_region_variant		70	False			
+STK11	19	1207247	G	A	0.5	3892		NM_000455.4:c.290+45G>A	intron_variant		59	False			
+STK11	19	1207247	G	A	0.5	3892		XM_005259617.1:c.290+45G>A	intron_variant		59	False			
+STK11	19	1207247	G	A	0.5	3892		XM_005259618.1:c.290+45G>A	intron_variant		59	False			
+	19	1207247	G	A	0.5	3892			regulatory_region_variant		59	False			
+	19	1207247	G	A	0.5	3892			regulatory_region_variant		59	False			
+	19	1207247	G	A	0.5	3892			TF_binding_site_variant		59	False			
+STK11	19	1218613	G	A	0.5	581		NM_000455.4:c.374+114G>A	intron_variant		14	False			
+STK11	19	1218613	G	A	0.5	581		XM_005259617.1:c.374+114G>A	intron_variant		14	False			
+STK11	19	1218613	G	A	0.5	581		XM_005259618.1:c.374+114G>A	intron_variant		14	False			
+	19	1218613	G	A	0.5	581			regulatory_region_variant		14	False			
+STK11	19	1219454	G	A	0.5	140		NM_000455.4:c.464+42G>A	intron_variant		9	False			
+STK11	19	1219454	G	A	0.5	140		XM_005259617.1:c.464+42G>A	intron_variant		9	False			
+STK11	19	1219454	G	A	0.5	140		XM_005259618.1:c.464+42G>A	intron_variant		9	False			
+STK11	19	1223784	C	T	0.5	710		NM_000455.4:c.1108+613C>T	intron_variant		17	False			
+CBARP	19	1223784	C	T	0.5	710			downstream_gene_variant		17	False			
+STK11	19	1223784	C	T	0.5	710		XM_005259617.1:c.1108+613C>T	intron_variant		17	False			
+STK11	19	1223784	C	T	0.5	710		XM_005259618.1:c.*41C>T	3_prime_UTR_variant	9/9	17	False			
+	19	1223784	C	T	0.5	710			regulatory_region_variant		17	False			
+	19	1223784	C	T	0.5	710			regulatory_region_variant		17	False			
+STK11	19	1223810	C	T	0.5	712		NM_000455.4:c.1108+639C>T	intron_variant		15	False			
+CBARP	19	1223810	C	T	0.5	712			downstream_gene_variant		15	False			
+STK11	19	1223810	C	T	0.5	712		XM_005259617.1:c.1108+639C>T	intron_variant		15	False			
+STK11	19	1223810	C	T	0.5	712		XM_005259618.1:c.*67C>T	3_prime_UTR_variant	9/9	15	False			
+	19	1223810	C	T	0.5	712			regulatory_region_variant		15	False			
+	19	1223810	C	T	0.5	712			regulatory_region_variant		15	False			
+STK11	19	1223826	C	T	0.5	712		NM_000455.4:c.1108+655C>T	intron_variant		25	False			
+CBARP	19	1223826	C	T	0.5	712			downstream_gene_variant		25	False			
+STK11	19	1223826	C	T	0.5	712		XM_005259617.1:c.1108+655C>T	intron_variant		25	False			
+STK11	19	1223826	C	T	0.5	712		XM_005259618.1:c.*83C>T	3_prime_UTR_variant	9/9	25	False			
+	19	1223826	C	T	0.5	712			regulatory_region_variant		25	False			
+	19	1223826	C	T	0.5	712			regulatory_region_variant		25	False			
+STK11	19	1227618	CC	TT	0.5	377		NM_000455.4:c.*43_*44delinsTT	3_prime_UTR_variant	10/10	13	False			
+CBARP	19	1227618	CC	TT	0.5	377			downstream_gene_variant		13	False			
+CBARP	19	1227618	CC	TT	0.5	377			downstream_gene_variant		13	False			
+STK11	19	1227618	CC	TT	0.5	377	XP_005259674.1:p.Ala447Val	XM_005259617.1:c.1340_1341delinsTT	missense_variant	10/10	13	False			
+STK11	19	1227618	CC	TT	0.5	377			downstream_gene_variant		13	False			
+	19	1227618	CC	TT	0.5	377			regulatory_region_variant		13	False			
+STK11	19	1227622	C	T	0.5	376		NM_000455.4:c.*47C>T	3_prime_UTR_variant	10/10	16	False			
+CBARP	19	1227622	C	T	0.5	376			downstream_gene_variant		16	False			
+CBARP	19	1227622	C	T	0.5	376			downstream_gene_variant		16	False			
+STK11	19	1227622	C	T	0.5	376	XP_005259674.1:p.Arg448=	XM_005259617.1:c.1344C>T	synonymous_variant	10/10	16	False			
+STK11	19	1227622	C	T	0.5	376			downstream_gene_variant		16	False			
+	19	1227622	C	T	0.5	376			regulatory_region_variant		16	False			
+STK11	19	1227647	G	A	0.5	377		NM_000455.4:c.*72G>A	3_prime_UTR_variant	10/10	11	False			
+CBARP	19	1227647	G	A	0.5	377			downstream_gene_variant		11	False			
+CBARP	19	1227647	G	A	0.5	377			downstream_gene_variant		11	False			
+STK11	19	1227647	G	A	0.5	377	XP_005259674.1:p.Val457Ile	XM_005259617.1:c.1369G>A	missense_variant	10/10	11	False			
+STK11	19	1227647	G	A	0.5	377			downstream_gene_variant		11	False			
+	19	1227647	G	A	0.5	377			regulatory_region_variant		11	False			
+	19	1227647	G	A	0.5	377			TF_binding_site_variant		11	False			
+	19	1227647	G	A	0.5	377			TF_binding_site_variant		11	False			
+	19	1227647	G	A	0.5	377			TF_binding_site_variant		11	False			
+	19	1227647	G	A	0.5	377			TF_binding_site_variant		11	False			
+	19	1227647	G	A	0.5	377			TF_binding_site_variant		11	False			
+EP300	22	41558770	C	T	0.5	4256	NP_001420.2:p.Leu1239=	NM_001429.3:c.3715C>T	synonymous_variant	21/31	74	False			
+EP300	22	41558797	C	T	0.5	4252		NM_001429.3:c.3728+14C>T	intron_variant		66	False			
+AR	X	66765705	G	A	0.5	1324	NP_000035.2:p.Leu239=	NM_000044.3:c.717G>A	synonymous_variant	1/8	27	False			
+AR	X	66765705	G	A	0.5	1324	XP_005262320.1:p.Leu239=	XM_005262263.1:c.717G>A	synonymous_variant	1/4	27	False			
+AR	X	66765705	G	A	0.5	1324	XP_005262321.1:p.Leu239=	XM_005262264.1:c.717G>A	synonymous_variant	1/4	27	False			
+AR	X	66765705	G	A	0.5	1324		XR_244495.1:n.1401G>A	non_coding_transcript_exon_variant	1/9	27	False			
+AR	X	66765705	G	A	0.5	1324		XR_244496.1:n.1401G>A	non_coding_transcript_exon_variant	1/8	27	False			
+AR	X	66765705	G	A	0.5	1324		XR_244497.1:n.1401G>A	non_coding_transcript_exon_variant	1/3	27	False			
+	X	66765705	G	A	0.5	1324			regulatory_region_variant		27	False			
+AR	X	66765712	G	A	0.5	1322	NP_000035.2:p.Ala242Thr	NM_000044.3:c.724G>A	missense_variant	1/8	30	False			
+AR	X	66765712	G	A	0.5	1322	XP_005262320.1:p.Ala242Thr	XM_005262263.1:c.724G>A	missense_variant	1/4	30	False			
+AR	X	66765712	G	A	0.5	1322	XP_005262321.1:p.Ala242Thr	XM_005262264.1:c.724G>A	missense_variant	1/4	30	False			
+AR	X	66765712	G	A	0.5	1322		XR_244495.1:n.1408G>A	non_coding_transcript_exon_variant	1/9	30	False			
+AR	X	66765712	G	A	0.5	1322		XR_244496.1:n.1408G>A	non_coding_transcript_exon_variant	1/8	30	False			
+AR	X	66765712	G	A	0.5	1322		XR_244497.1:n.1408G>A	non_coding_transcript_exon_variant	1/3	30	False			
+	X	66765712	G	A	0.5	1322			regulatory_region_variant		30	False			
+AR	X	66765802	C	T	0.5	577	NP_000035.2:p.Leu272Phe	NM_000044.3:c.814C>T	missense_variant	1/8	22	False			
+AR	X	66765802	C	T	0.5	577	XP_005262320.1:p.Leu272Phe	XM_005262263.1:c.814C>T	missense_variant	1/4	22	False			
+AR	X	66765802	C	T	0.5	577	XP_005262321.1:p.Leu272Phe	XM_005262264.1:c.814C>T	missense_variant	1/4	22	False			
+AR	X	66765802	C	T	0.5	577		XR_244495.1:n.1498C>T	non_coding_transcript_exon_variant	1/9	22	False			
+AR	X	66765802	C	T	0.5	577		XR_244496.1:n.1498C>T	non_coding_transcript_exon_variant	1/8	22	False			
+AR	X	66765802	C	T	0.5	577		XR_244497.1:n.1498C>T	non_coding_transcript_exon_variant	1/3	22	False			
+	X	66765802	C	T	0.5	577			regulatory_region_variant		22	False			
+AR	X	66766256	G	A	0.5	136	NP_000035.2:p.Gly423Asp	NM_000044.3:c.1268G>A	missense_variant	1/8	8	False			
+AR	X	66766256	G	A	0.5	136	XP_005262320.1:p.Gly423Asp	XM_005262263.1:c.1268G>A	missense_variant	1/4	8	False			
+AR	X	66766256	G	A	0.5	136	XP_005262321.1:p.Gly423Asp	XM_005262264.1:c.1268G>A	missense_variant	1/4	8	False			
+AR	X	66766256	G	A	0.5	136		XR_244495.1:n.1952G>A	non_coding_transcript_exon_variant	1/9	8	False			
+AR	X	66766256	G	A	0.5	136		XR_244496.1:n.1952G>A	non_coding_transcript_exon_variant	1/8	8	False			
+AR	X	66766256	G	A	0.5	136		XR_244497.1:n.1952G>A	non_coding_transcript_exon_variant	1/3	8	False			
+	X	66766256	G	A	0.5	136			regulatory_region_variant		8	False			
+AR	X	66931532	G	A	0.5	5165		NM_000044.3:c.2173+1G>A	splice_donor_variant		72	False			
+AR	X	66931532	G	A	0.5	5165		NM_001011645.2:c.577+1G>A	splice_donor_variant		72	False			
+AR	X	66931532	G	A	0.5	5165		XR_244495.1:n.2857+1G>A	splice_donor_variant&non_coding_transcript_variant		72	False			
+AR	X	66931532	G	A	0.5	5165		XR_244496.1:n.2740+1G>A	splice_donor_variant&non_coding_transcript_variant		72	False			

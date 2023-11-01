@@ -1,1 +1,6 @@
 crm_test_1,crm_ws_1,GeneRead_CRM,gist
+crm_test_1,crm_ws_1,GeneRead_CRM,melanoma
+crm_test_1,crm_ws_1,GeneRead_CRM,glioma
+crm_test_1,crm_ws_1,GeneRead_CRM,lung
+crm_test_1,crm_ws_1,GeneRead_CRM,colorectal
+crm_test_1,crm_ws_1,GeneRead_CRM,tumour
