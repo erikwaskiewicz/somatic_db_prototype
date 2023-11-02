@@ -161,8 +161,8 @@ def ajax_autocomplete(request):
         max_results = 10
 
         # use to search for worksheets - limit to max results variable as we'd never return more than that
-        ws_queryset = Worksheet.objects.filter(ws_id__icontains=query_string)[:max_results]
-        run_id_query = Worksheet.objects.filter(run__run_id__icontains=query_string)[:max_results]
+        ws_queryset = Worksheet.objects.filter(signed_off=True, ws_id__icontains=query_string)[:max_results]
+        run_id_query = Worksheet.objects.filter(signed_off=True, run__run_id__icontains=query_string)[:max_results]
 
         # process query results from worksheet/ run objects
         for record in ws_queryset | run_id_query:
@@ -184,17 +184,18 @@ def ajax_autocomplete(request):
 
         for record in sample_queryset:
             for ws in record.get_worksheets():
-                results.append({
-                    'ws': ws.ws_id,
-                    'run': ws.run.run_id,
-                    'sample': record.sample_id,
-                })
-                counter += 1
+                if ws.signed_off:
+                    results.append({
+                        'ws': ws.ws_id,
+                        'run': ws.run.run_id,
+                        'sample': record.sample_id,
+                    })
+                    counter += 1
 
-                # return as soon as max length reached to speed up query
-                if counter == max_results:
-                    data = json.dumps(results)
-                    return HttpResponse(data, 'application/json')
+                    # return as soon as max length reached to speed up query
+                    if counter == max_results:
+                        data = json.dumps(results)
+                        return HttpResponse(data, 'application/json')
 
 
         # return to template if total number less than max query size
@@ -208,7 +209,7 @@ def view_worksheets(request, query):
     Displays all worksheets and links to the page to show all samples 
     within the worksheet
 
-    # TODO sync with home_page and crm branches
+    # TODO sync with crm branch
     # TODO worksheets page headers different depending on search
     # TODO sample pass/fail needs to be unset when sample reopened
     # TODO ability to set as bioinf qc fail
