@@ -36,9 +36,9 @@ $(document).ready(function(){
     // reformat the list options
     .autocomplete('instance')._renderItem = function(ul, item) {
         if (item.sample === null) {
-            record = '<div>Worksheet ' + '<b>' + item.ws + '</b></div>';;
+            record = '<div class="row"><div class="col-3">Worksheet: <b>' + item.ws + '</b></div><div class="col">NGS run ID: <b>' + item.run + '</b></div><div class="col"></div></div>';
         } else {
-            record = '<div>Worksheet ' + '<b>' + item.ws + '</b><br>&nbsp&nbsp- contains sample <b>' + item.sample + '</b></div>';
+            record = '<div class="row"><div class="col-3">Worksheet: <b>' + item.ws + '</b></div><div class="col">NGS run ID: <b>' + item.run + '</b></div><div class="col">Contains sample <b>' + item.sample + '</b></div></div>';
         }
         return $('<li>') 
         .append(record)

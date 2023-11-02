@@ -18,7 +18,7 @@
 
       <form method="POST">
         {% csrf_token %}
-        <input id="ws_search" name="ws_search" class="form-control form-control-lg" type="text" placeholder="Start typing a worksheet ID or sample ID...">
+        <input id="ws_search" name="ws_search" class="form-control form-control-lg" type="text" placeholder="Start typing a worksheet ID, run ID or sample ID...">
         <small class="form-text text-muted">
           Matching worksheets will autofill after 4 or more characters have been typed, the query will be quicker the more you type in.
           <div id="loading_spinner" class="spinner-border spinner-border-sm text-dark spinner-hidden" style="float: right;" role="status"></div>
