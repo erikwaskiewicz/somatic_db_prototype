@@ -186,6 +186,15 @@ def view_worksheets(request, query):
     """
     Displays all worksheets and links to the page to show all samples 
     within the worksheet
+
+    # TODO sync with home_page and crm branches
+    # TODO worksheets page headers different depending on search
+    # TODO sample pass/fail needs to be unset when sample reopened
+    # TODO ability to set as bioinf qc fail
+    # TODO maybe if whole run fail it should set all samples to fail. Maybe a not analysed for whole run option too?
+    # TODO responsive form to finalise analysis
+             first choice - pass/fail
+             second choice - complete/extra check/send back to previous/send forward, show/hide these based on specifics of check
     """
     # check if user is in the qc user group
     in_qc_user_group = request.user.groups.filter(name='qc_signoff').exists()
@@ -207,11 +216,10 @@ def view_worksheets(request, query):
         all_worksheets = Worksheet.objects.filter(signed_off=True, diagnostic=True).order_by('-run')
 
         # only include worksheets that have a current IGV check in them
-        worksheets = [w for w in all_worksheets if 'IGV' in w.get_status_and_samples()[0]]
+        worksheets = [w for w in all_worksheets if w.get_status() == 'IGV checking']
         filtered = True
 
     # worksheets waiting on bioinformatics QC
-    # TODO sample status is currently a function, needs to be stored in DB
     elif query == 'qc':
         worksheets = Worksheet.objects.filter(signed_off=False).order_by('-run')
         filtered = True
@@ -232,7 +240,8 @@ def view_worksheets(request, query):
 
     for w in worksheets:
         # if first two characters are digits, add to diagnostics list, otherwise add to other list
-        status, samples = w.get_status_and_samples()
+        status, samples = w.get_status_and_samples() #TODO - replace with new functions
+        status = w.get_status()
         if w.diagnostic:
             diagnostics_ws_list.append({
                 'worksheet_id': w.ws_id,
@@ -765,6 +774,9 @@ def analysis_sheet(request, sample_id):
                             else:
                                 submitted, err = signoff_check(request.user, current_step_obj, sample_obj, complete=True)
                                 if submitted:
+                                    # update sample pass/fail TODO unset when reopening a sample
+                                    sample_obj.sample_pass_fail = 'C'
+                                    sample_obj.save()
                                     return redirect('view_ws_samples', sample_data['worksheet_id'])
 
                                 # throw warning if not all variants are checked
@@ -795,6 +807,9 @@ def analysis_sheet(request, sample_id):
                         # otherwise sign off and make sample failed
                         else:
                             signoff_check(request.user, current_step_obj, sample_obj, status='F')
+                            # update sample pass/fail TODO unset when reopening a sample
+                            sample_obj.sample_pass_fail = 'F2'
+                            sample_obj.save()
                             return redirect('view_ws_samples', sample_data['worksheet_id'])
 
 

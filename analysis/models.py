@@ -43,6 +43,16 @@ class Worksheet(models.Model):
     def __str__(self):
         return self.ws_id
 
+    def get_status(self):
+        if not self.signed_off:
+            return 'Bioinformatics QC'
+        samples = SampleAnalysis.objects.filter(worksheet = self)
+        for s in samples:
+            if s.sample_pass_fail == '-':
+                return 'IGV checking'
+        return 'Complete'
+        # TODO get samples function
+
     def get_status_and_samples(self):
         # get all sample analysis objects
         samples = SampleAnalysis.objects.filter(worksheet = self)
@@ -142,7 +152,7 @@ class SampleAnalysis(models.Model):
     """
     QC_CHOICES = (
         ('-', 'Pending'),
-        ('P', 'Pass'),
+        ('C', 'Complete'),
         ('F1', 'QC fail'),
         ('F2', 'Analysis fail'),
     )
@@ -170,6 +180,16 @@ class SampleAnalysis(models.Model):
             perc_ntc_full = decimal.Decimal(self.total_reads_ntc / self.total_reads) * 100
             perc_ntc = perc_ntc_full.quantize(decimal.Decimal('.01'), rounding = decimal.ROUND_UP)
         return perc_ntc
+
+    def get_status(self):
+        """return current status of sample"""
+        # sample_pass_fail is set when analysis is complete, so use that value if its set
+        if self.sample_pass_fail != '-':
+            return self.get_sample_pass_fail_display()
+        # otherwise the status is IGV checking, use total num checks to get the check number
+        else:
+            num_checks = Check.objects.filter(analysis = self).count()
+            return f'IGV check {num_checks}'
 
     def get_checks(self):
         """
