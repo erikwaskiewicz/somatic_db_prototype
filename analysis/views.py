@@ -130,30 +130,51 @@ def ajax_autocomplete(request):
     if request.is_ajax():
         # get search term from ajax
         query_string = request.GET.get('term', '')
+
+        # list to store results plus counter that will control return of results when max limit is reached
         results = []
+        counter = 0
+        max_results = 10
 
-        # use to search for worksheets
-        ws_queryset = Worksheet.objects.filter(ws_id__icontains=query_string)
-        sample_queryset = Sample.objects.filter(sample_id__icontains=query_string)
+        # use to search for worksheets - limit to max results variable as we'd never return more than that
+        ws_queryset = Worksheet.objects.filter(ws_id__icontains=query_string)[:max_results]
+        run_id_query = Worksheet.objects.filter(run__run_id__icontains=query_string)[:max_results]
 
-        # process query results from worksheet objects
-        for record in ws_queryset:
+        # process query results from worksheet/ run objects
+        for record in ws_queryset | run_id_query:
             results.append({
                 'ws': record.ws_id,
+                'run': record.run.run_id,
                 'sample': None,
             })
+            counter += 1
 
-        # process query results from sample objects
+            # return as soon as max length reached to speed up query
+            if counter == max_results:
+                data = json.dumps(results)
+                return HttpResponse(data, 'application/json')
+
+
+        # process query results from sample objects - this wil only query if the above returns less then the max query size
+        sample_queryset = Sample.objects.filter(sample_id__icontains=query_string)[:max_results]
+
         for record in sample_queryset:
             for ws in record.get_worksheets():
                 results.append({
                     'ws': ws.ws_id,
+                    'run': ws.run.run_id,
                     'sample': record.sample_id,
                 })
+                counter += 1
 
-        # return to template
+                # return as soon as max length reached to speed up query
+                if counter == max_results:
+                    data = json.dumps(results)
+                    return HttpResponse(data, 'application/json')
+
+
+        # return to template if total number less than max query size
         data = json.dumps(results)
-
         return HttpResponse(data, 'application/json')
 
 
