@@ -55,7 +55,7 @@
       {% if signed_off %}
       <tr>
         <th>Run QC</th>
-        <td>Run QC pass <a class="btn btn-info btn-sm w-25" style="float: right;" href="{{ autoqc_link }}" target="_blank" role="button">View in AutoQC</a></td>
+        <td>{{ ws_pass_fail }} <a class="btn btn-info btn-sm w-25" style="float: right;" href="{{ autoqc_link }}" target="_blank" role="button">View in AutoQC</a></td>
       </tr>
       <tr>
         <th>SVD signoff user</th>
@@ -74,21 +74,6 @@
     <h5><span class="fa fa-clipboard-check"></span> Worksheet QC pending</h5>
     <br>
     {% crispy qc_form %}
-
-    <!-- remove worksheet button -->
-    <button class="btn btn-danger w-100" type="button" data-toggle="collapse" data-target="#qc-fail">
-      QC failed in AutoQC? Click here
-    </button>
-    <div class="collapse" id="qc-fail">
-      <br>
-      <p>If a sample is a whole run QC fail then if will need to be removed from SVD, submit the following form to delete the worksheet</p>
-      <p><strong>Warning! This will remove all analyses on all samples shown on this page, please double check before proceeding</strong></p>
-
-      {% crispy remove_ws_form %}
-    </div>
-
-
-
   </div>
 
   <!-- warning box is user does not have permissions for QC-->

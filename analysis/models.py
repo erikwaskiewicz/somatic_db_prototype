@@ -30,6 +30,11 @@ class Worksheet(models.Model):
     An NGS worksheet, sometimes 1 run == 1 worksheet, sometimes there are multiple ws per run
 
     """
+    QC_CHOICES = (
+        ('-', 'Pending'),
+        ('P', 'AutoQC run pass'),
+        ('F', 'AutoQC run fail'),
+    )
     ws_id = models.CharField(max_length=50, primary_key=True)
     run = models.ForeignKey('Run', on_delete=models.CASCADE)
     assay = models.CharField(max_length=50)
@@ -38,14 +43,31 @@ class Worksheet(models.Model):
     signed_off = models.BooleanField(default=False) # will need to swap to true for migrations
     signed_off_time = models.DateTimeField(blank=True, null=True)
     signed_off_user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True)
+    auto_qc_pass_fail = models.CharField(max_length=1, choices=QC_CHOICES, default='-') # will need to change to P for migrations
     auto_qc_pk = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
         return self.ws_id
 
+    def qc_signoff(self, signed_off, signed_off_time, signed_off_user, pass_fail, auto_qc_pk):
+        """ signoff worksheet QC """
+        self.signed_off = signed_off
+        self.signed_off_time = signed_off_time
+        self.signed_off_user = signed_off_user
+        self.auto_qc_pass_fail = pass_fail
+        self.auto_qc_pk = auto_qc_pk
+        self.save()
+
+    def reset_qc_signoff(self):
+        """ reset worksheet QC """
+        self.qc_signoff(False, None, None, '-', None)
+
     def get_status(self):
-        if not self.signed_off:
+        """ get overall worksheet status """
+        if self.auto_qc_pass_fail == '-':
             return 'Bioinformatics QC'
+        if self.auto_qc_pass_fail == 'F':
+            return 'Fail'
         samples = SampleAnalysis.objects.filter(worksheet = self)
         for s in samples:
             if s.sample_pass_fail == '-':

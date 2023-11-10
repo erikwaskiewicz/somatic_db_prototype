@@ -11,7 +11,7 @@ from django.utils import timezone
 from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, 
     CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, 
     ConfirmPolyForm, ConfirmArtefactForm, AddNewPolyForm, AddNewArtefactForm, ManualVariantCheckForm, ReopenSampleAnalysisForm, ChangeLimsInitials, 
-    EditedPasswordChangeForm, EditedUserCreationForm, RunQCForm, ReopenRunQCForm, RemoveWorksheetForm)
+    EditedPasswordChangeForm, EditedUserCreationForm, RunQCForm, ReopenRunQCForm)
 from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
     get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, 
     create_myeloid_coverage_summary)
@@ -213,7 +213,8 @@ def view_worksheets(request, query):
     # TODO worksheets page headers different depending on search
     # TODO sample pass/fail needs to be unset when sample reopened
     # TODO ability to set as bioinf qc fail
-    # TODO maybe if whole run fail it should set all samples to fail. Maybe a not analysed for whole run option too?
+    # TODO if whole run fail it should set all samples to fail. 
+    # TODO Maybe a not analysed for whole run option too? would need a generic 'not analysed' panel probably
     # TODO responsive form to finalise analysis
              first choice - pass/fail
              second choice - complete/extra check/send back to previous/send forward, show/hide these based on specifics of check
@@ -315,7 +316,6 @@ def view_samples(request, worksheet_id=None, user_pk=None):
         'check_form': PaperworkCheckForm(),
         'reopen_analysis_form': ReopenSampleAnalysisForm(),
         'reopen_qc_form': ReopenRunQCForm(),
-        'remove_ws_form': RemoveWorksheetForm(),
         'in_qc_user_group': in_qc_user_group,
     }
 
@@ -355,6 +355,7 @@ def view_samples(request, worksheet_id=None, user_pk=None):
         if ws_obj.signed_off:
             context['signoff_user'] = ws_obj.signed_off_user
             context['signoff_time'] = ws_obj.signed_off_time
+            context['ws_pass_fail'] = ws_obj.get_auto_qc_pass_fail_display()
             context['autoqc_link'] = f'{settings.AUTOQC_URL}/{ws_obj.auto_qc_pk}'
         else:
             context['qc_form'] = RunQCForm()
@@ -421,11 +422,8 @@ def view_samples(request, worksheet_id=None, user_pk=None):
                 cleaned_data = qc_form.cleaned_data
 
                 # update values
-                ws_obj.signed_off = True
-                ws_obj.signed_off_time = timezone.now()
-                ws_obj.signed_off_user = request.user
-                ws_obj.auto_qc_pk = cleaned_data['auto_qc_pk']
-                ws_obj.save()
+                # TODO set all samples as fail if whole run fail?
+                ws_obj.qc_signoff(True, timezone.now(), request.user, cleaned_data['qc_result'], cleaned_data['auto_qc_pk'])
 
                 # redirect to force refresh
                 return redirect('view_ws_samples', worksheet_id)
@@ -434,25 +432,13 @@ def view_samples(request, worksheet_id=None, user_pk=None):
         if 'reopen_qc' in request.POST:
             reopen_qc_form = ReopenRunQCForm(request.POST)
             if reopen_qc_form.is_valid():
-                cleaned_data = reopen_qc_form.cleaned_data
 
                 # remove QC values
-                ws_obj.signed_off = False
-                ws_obj.signed_off_time = None
-                ws_obj.signed_off_user = None
-                ws_obj.auto_qc_pk = None
-                ws_obj.save()
+                # TODO reset all samples too
+                ws_obj.reset_qc_signoff()
 
                 # redirect to force refresh
                 return redirect('view_ws_samples', worksheet_id)
-
-        # if worksheet needs removing due to QC fail
-        if 'remove_worksheet' in request.POST:
-            remove_ws_form = RemoveWorksheetForm(request.POST)
-            if remove_ws_form.is_valid():
-                ws_obj.delete()
-
-                return redirect('view_worksheets', 'qc')
 
     return render(request, 'analysis/view_samples.html', context)
 

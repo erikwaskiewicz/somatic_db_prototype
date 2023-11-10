@@ -57,7 +57,11 @@ class RunQCForm(forms.Form):
     Perform QC on a worksheet
 
     """
-    qc_result = forms.BooleanField(required=True, label='Run has been passed in AutoQC')
+    QC_CHOICES = (
+        ('P', 'AutoQC run pass'),
+        ('F', 'AutoQC run fail'),
+    )
+    qc_result = forms.ChoiceField(choices=QC_CHOICES, required=True, label='Whole run pass/fail, as performed in AutoQC')
     confirm = forms.BooleanField(required=True, label='All individual sample fails have been failed below')
     auto_qc_pk = forms.CharField(label='AutoQC primary key')
 
@@ -82,21 +86,6 @@ class ReopenRunQCForm(forms.Form):
         self.helper.form_method = 'POST'
         self.helper.add_input(
             Submit('submit', "I'm sure", css_class='btn btn-danger w-100')
-        )
-
-
-class RemoveWorksheetForm(forms.Form):
-    """
-    Form that removes a worksheet if QC has failed
-    """
-    remove_worksheet = forms.BooleanField(required=True, label='Confirm that you would like to delete the worksheet')
-
-    def __init__(self, *args, **kwargs):
-        super(RemoveWorksheetForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_method = 'POST'
-        self.helper.add_input(
-            Submit('submit', 'Remove worksheet', css_class='btn btn-danger w-25')
         )
 
 
