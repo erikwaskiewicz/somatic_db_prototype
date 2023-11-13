@@ -215,7 +215,6 @@ def view_worksheets(request, query):
     # TODO Maybe a not analysed for whole run option too? would need a generic 'not analysed' panel probably
     # TODO patient info check to patient tab
     # TODO add checks to finalise form
-    # TODO code in send back button
     """
     # check if user is in the qc user group
     in_qc_user_group = request.user.groups.filter(name='qc_signoff').exists()
@@ -717,6 +716,20 @@ def analysis_sheet(request, sample_id):
                 info_check=current_step_obj.patient_info_check,
                 pk=current_step_obj.pk, 
             )
+
+        # if send check back form is clicked
+        if 'send_back_check' in request.POST:
+            send_back_form = SendCheckBackForm(request.POST)
+            if send_back_form.is_valid():
+                # delete current check
+                current_check_obj = context['sample_data']['checks']['current_check_object']
+                current_check_obj.delete()
+
+                # reopen previous check
+                previous_check_obj = context['sample_data']['checks']['previous_check_object']
+                reopen_check(previous_check_obj.user, sample_obj)
+
+                return redirect('view_ws_samples', sample_data['worksheet_id'])
 
         # if finalise check submit form is clicked
         if 'next_step' in request.POST:

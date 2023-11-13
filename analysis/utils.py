@@ -94,7 +94,7 @@ def unassign_check(sample_analysis_obj):
 
 
 @transaction.atomic
-def reopen_check(current_user, sample_analysis_obj):
+def reopen_check(user, sample_analysis_obj):
     """
     Allow the person who closed the case to reopen it to the previous check
     """
@@ -107,7 +107,7 @@ def reopen_check(current_user, sample_analysis_obj):
     latest_check = all_checks['current_check_object']
 
     latest_check.status = 'P'
-    latest_check.user = current_user
+    latest_check.user = user
     latest_check.save()
     sample_analysis_obj.save()
 
