@@ -6,7 +6,18 @@
   <div class="container">
     <ol class="breadcrumb" style="background-color: transparent;">
       <li class="breadcrumb-item"><a href="{% url 'home' %}"><span class="fa fa-home"></span></a></li>
+
+      {% if query == 'training' %}
+      <li class="breadcrumb-item active">Worksheets (training)</li>
+      {% elif query == 'recent' %}
+      <li class="breadcrumb-item active">Worksheets (recent)</li>
+      {% elif query == 'pending' %}
+      <li class="breadcrumb-item active">Worksheets (pending)</li>
+      {% elif query == 'qc' %}
+      <li class="breadcrumb-item active">Worksheets (QC)</li>
+      {% else %}
       <li class="breadcrumb-item active">Worksheets</li>
+      {% endif %}
     </ol>
   </div>
 </div>
@@ -14,7 +25,17 @@
 
 {% block content %}
 <div class="container">
+  {% if query == 'training' %}
+  <h5>Training/ validation worksheets</h5>
+  {% elif query == 'recent' %}
+  <h5>Recent worksheets</h5>
+  {% elif query == 'pending' %}
+  <h5>Worksheets not completed</h5>
+  {% elif query == 'qc' %}
+  <h5>Worksheets awaiting QC</h5>
+  {% else %}
   <h5>Worksheets</h5>
+  {% endif %}
   <br>
 
   <!-- when filtered, warning box to say that not all worksheets are shown -->

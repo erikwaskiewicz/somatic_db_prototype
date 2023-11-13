@@ -16,7 +16,7 @@
         <li class="breadcrumb-item active">{{ worksheet }}</li>
 
         {% elif template == 'worksheet' and not signed_off %}
-        <li class="breadcrumb-item"><a href="{% url 'view_worksheets' 'qc' %}">Worksheets (pending QC)</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'view_worksheets' 'qc' %}">Worksheets (QC)</a></li>
         <li class="breadcrumb-item active">{{ worksheet }}</li>
 
         {% endif %}

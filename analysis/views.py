@@ -210,7 +210,6 @@ def view_worksheets(request, query):
     within the worksheet
 
     # TODO sync with crm branch
-    # TODO worksheets page headers different depending on search
     # TODO ability to set as bioinf qc fail
     # TODO if whole run fail it should set all samples to fail. 
     # TODO Maybe a not analysed for whole run option too? would need a generic 'not analysed' panel probably
