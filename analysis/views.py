@@ -214,9 +214,9 @@ def view_worksheets(request, query):
     # TODO ability to set as bioinf qc fail
     # TODO if whole run fail it should set all samples to fail. 
     # TODO Maybe a not analysed for whole run option too? would need a generic 'not analysed' panel probably
-    # TODO responsive form to finalise analysis
-             first choice - pass/fail
-             second choice - complete/extra check/send back to previous/send forward, show/hide these based on specifics of check
+    # TODO patient info check to patient tab
+    # TODO add checks to finalise form
+    # TODO code in send back button
     """
     # check if user is in the qc user group
     in_qc_user_group = request.user.groups.filter(name='qc_signoff').exists()

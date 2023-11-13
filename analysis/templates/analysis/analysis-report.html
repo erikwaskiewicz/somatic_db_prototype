@@ -410,9 +410,9 @@
     <tr>
       <th class="col-1">Check</th>
       <th class="col-3">User</th>
+      <th class="col-1">Pass/fail</th>
       <th class="col-2">Checks</th>
-      <th class="col-6">Comments</th>
-      
+      <th class="col-5">Comments</th>
     </tr>
   </thead>
   <tbody>
@@ -420,6 +420,13 @@
     <tr>
       <td>{{ forloop.counter }}</td>
       <td>{{ c.user }}<br>{{ c.signoff_time }}</td>
+      <td>
+        {% if c.status ==  'C' %}
+        <span class="badge badge-pill badge-success">Pass</span>
+        {% else %}
+        <span class="badge badge-pill badge-danger">{{ c.get_status_display }}</span>
+        {% endif %}
+      </td>
       <td>
         <b>Patient info check:</b> {{ c.patient_info_check }}
       {% if sample_data.panel_obj.show_snvs %}

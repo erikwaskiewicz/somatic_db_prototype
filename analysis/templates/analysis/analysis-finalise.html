@@ -7,19 +7,29 @@
 <table class="table table-sm table-striped table-hover">
   <thead>
     <tr>
-      <th scope="col"></th>
-      <th scope="col">Comment</th>
-      <th scope="col">Patient info check</th>
-      <th scope="col">User</th>
+      <th class="col-1"></th>
+      <th class="col-1">Pass/fail</th>
+      <th class="col-1">Patient info check</th>
+      <th class="col-2">User</th>
+      <th class="col-7">Comment</th>
     </tr>
   </thead>
   {% for check in sample_data.checks.all_checks %}
   <tbody>
     <tr>
       <td>{{ forloop.counter }}</td>
-      <td>{{ check.overall_comment | wordwrap:80 | linebreaksbr }}</td>
+      <td>
+        {% if check.status ==  'C' %}
+        <span class="badge badge-pill badge-success">Pass</span>
+        {% elif check.status ==  'P' %}
+        <span class="badge badge-pill badge-secondary">{{ check.get_status_display }}</span>
+        {% else %}
+        <span class="badge badge-pill badge-danger">{{ check.get_status_display }}</span>
+        {% endif %}
+      </td>
       <td>{{ check.patient_info_check }}</td>
       <td>{{ check.user }}<br>{{ check.overall_comment_updated }}</td>
+      <td>{{ check.overall_comment | wordwrap:80 | linebreaksbr }}</td>
     </tr>
   </tbody>
   {% endfor %}
