@@ -118,7 +118,7 @@ class NewVariantForm(forms.Form):
         )
 
 
-class SubmitForm(forms.Form):
+class OldSubmitForm(forms.Form):
     """
     Finalise a sample analysis
 
@@ -128,16 +128,36 @@ class SubmitForm(forms.Form):
         ('Request extra check', 'Sample passed check, send for an extra check'),
         ('Fail sample', 'Sample failed check'),
     )
-    next_step = forms.ChoiceField(choices=NEXT_STEP_CHOICES)
+    next_step_old = forms.ChoiceField(choices=NEXT_STEP_CHOICES)
     confirm = forms.BooleanField(required=True, label='Confirm check is complete')
 
     def __init__(self, *args, **kwargs):
-        super(SubmitForm, self).__init__(*args, **kwargs)
+        super(OldSubmitForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = 'POST'
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-100')
         )
+
+
+class SubmitForm(forms.Form):
+    """
+    Finalise a sample analysis
+
+    """
+    PASS_FAIL_CHOICES = (
+        ('P', 'Analysis pass'),
+        ('F', 'Analysis fail')
+    )
+    NEXT_STEP_CHOICES = (
+        ('finalise', 'Complete analysis for this sample'),
+        ('extra_check', 'Send for an extra check'),
+        ('send_back', 'Send back to first checker'),
+        ('send_forward', 'Send back to second checker'),
+    )
+    analysis_pass_fail = forms.ChoiceField(widget=forms.RadioSelect, choices=PASS_FAIL_CHOICES)
+    next_step = forms.ChoiceField(widget=forms.RadioSelect, choices=NEXT_STEP_CHOICES)
+    confirm = forms.BooleanField(required=True, label='Confirm that analysis is complete')
 
 
 class SampleCommentForm(forms.Form):

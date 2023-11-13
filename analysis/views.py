@@ -8,7 +8,7 @@ from django.template import Context
 from django.template.loader import get_template
 from django.utils import timezone
 
-from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, 
+from .forms import (NewVariantForm, OldSubmitForm, SubmitForm, VariantCommentForm, UpdatePatientName, 
     CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, 
     ConfirmPolyForm, ConfirmArtefactForm, AddNewPolyForm, AddNewArtefactForm, ManualVariantCheckForm, ReopenSampleAnalysisForm, ChangeLimsInitials, 
     EditedPasswordChangeForm, EditedUserCreationForm, RunQCForm, ReopenRunQCForm)
@@ -475,6 +475,7 @@ def analysis_sheet(request, sample_id):
         'sample_data': sample_data,
         'new_variant_form': NewVariantForm(),
         'manual_check_form': ManualVariantCheckForm(regions=sample_data['panel_manual_regions']),
+        'old_submit_form': OldSubmitForm(),
         'submit_form': SubmitForm(),
         'update_name_form': UpdatePatientName(),
         'sample_comment_form': SampleCommentForm(
@@ -719,14 +720,18 @@ def analysis_sheet(request, sample_id):
                 pk=current_step_obj.pk, 
             )
 
-
-
-        # if finalise check submit form is clicked
+        # temp
         if 'next_step' in request.POST:
             submit_form = SubmitForm(request.POST)
-
             if submit_form.is_valid():
-                next_step = submit_form.cleaned_data['next_step']
+                print(submit_form.cleaned_data)
+
+        # if finalise check submit form is clicked
+        if 'next_step_old' in request.POST:
+            old_submit_form = SubmitForm(request.POST)
+
+            if old_submit_form.is_valid():
+                next_step = old_submit_form.cleaned_data['next_step']
                 current_step = sample_data['checks']['current_status']
                 
                 if sample_data['sample_name'] == None:

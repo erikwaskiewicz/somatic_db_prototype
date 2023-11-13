@@ -34,10 +34,65 @@
 <br>
 <div class="card-body bg-light">
 
-  <h5>Finalise check</h5>
+  <h5>Analysis complete?</h5>
   <br>
-
-  {% crispy submit_form %}
+  <button class="btn btn-info w-100" type="button" data-toggle="modal" data-target="#finalise-modal">Complete check</button>
 
 </div>
 
+<div class="modal fade" id="finalise-modal" tabindex="-1" role="dialog" aria-labelledby="finalise-modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="finalise-modalLabel">Complete check</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <form method="post">
+          {% csrf_token %}
+          <div class="alert alert-warning" role="alert">
+            <h5><div class="spinner-border spinner-border-sm" role="status"></div>&nbsp;Checking demographics completed...</h5>
+            <p>TODO Trigger ajax on modal click - patient name filled in and check completed, NTC check</p>
+          </div>
+
+          <fieldset>
+            <legend>{{ submit_form.analysis_pass_fail.label }}</legend>
+            <div class="btn-group btn-group-toggle w-100" data-toggle="buttons">
+            {% for radio in submit_form.analysis_pass_fail %}
+            <label class="btn btn-outline-secondary" for="{{ radio.id_for_label }}">
+                {{ radio.tag }}
+                {{ radio.choice_label }}
+            </label>
+            {% endfor %}
+            </div>
+          </fieldset>
+
+          <br>
+          <div class="alert alert-warning" role="alert">
+            <h5><div class="spinner-border spinner-border-sm" role="status"></div>&nbsp;Checking variants completed...</h5>
+            <p>TODO Trigger ajax on form click - manual variant review, all variants completed, use to filter next step options</p>
+          </div>
+
+          <fieldset>
+            <legend>{{ submit_form.next_step.label }}</legend>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            {% for radio in submit_form.next_step %}
+            <label class="btn btn-outline-secondary" for="{{ radio.id_for_label }}">
+                {{ radio.tag }}
+                {{ radio.choice_label }}
+            </label>
+            {% endfor %}
+            </div>
+          </fieldset>
+          <br>
+          {{ submit_form.confirm|as_crispy_field }}
+          <button type="submit" class="btn btn-info w-100">Submit</button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
