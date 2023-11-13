@@ -8,10 +8,10 @@ from django.template import Context
 from django.template.loader import get_template
 from django.utils import timezone
 
-from .forms import (NewVariantForm, OldSubmitForm, SubmitForm, VariantCommentForm, UpdatePatientName, 
+from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, 
     CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, 
     ConfirmPolyForm, ConfirmArtefactForm, AddNewPolyForm, AddNewArtefactForm, ManualVariantCheckForm, ReopenSampleAnalysisForm, ChangeLimsInitials, 
-    EditedPasswordChangeForm, EditedUserCreationForm, RunQCForm, ReopenRunQCForm)
+    EditedPasswordChangeForm, EditedUserCreationForm, RunQCForm, ReopenRunQCForm, SendCheckBackForm)
 from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
     get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, 
     create_myeloid_coverage_summary)
@@ -473,7 +473,6 @@ def analysis_sheet(request, sample_id):
         'sample_data': sample_data,
         'new_variant_form': NewVariantForm(),
         'manual_check_form': ManualVariantCheckForm(regions=sample_data['panel_manual_regions']),
-        'old_submit_form': OldSubmitForm(),
         'submit_form': SubmitForm(),
         'update_name_form': UpdatePatientName(),
         'sample_comment_form': SampleCommentForm(
@@ -486,6 +485,7 @@ def analysis_sheet(request, sample_id):
             comment=current_step_obj.coverage_comment,
             ntc_check=current_step_obj.coverage_ntc_check,
         ),
+        'send_back_form': SendCheckBackForm()
     }
 
     # pull out coverage summary for myeloid, otherwise return false

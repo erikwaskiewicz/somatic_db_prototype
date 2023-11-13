@@ -118,28 +118,6 @@ class NewVariantForm(forms.Form):
         )
 
 
-class OldSubmitForm(forms.Form):
-    """
-    Finalise a sample analysis
-
-    """
-    NEXT_STEP_CHOICES = (
-        ('Complete check', 'Sample passed check'),
-        ('Request extra check', 'Sample passed check, send for an extra check'),
-        ('Fail sample', 'Sample failed check'),
-    )
-    next_step_old = forms.ChoiceField(choices=NEXT_STEP_CHOICES)
-    confirm = forms.BooleanField(required=True, label='Confirm check is complete')
-
-    def __init__(self, *args, **kwargs):
-        super(OldSubmitForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_method = 'POST'
-        self.helper.add_input(
-            Submit('submit', 'Submit', css_class='btn btn-info w-100')
-        )
-
-
 class SubmitForm(forms.Form):
     """
     Finalise a sample analysis
@@ -158,6 +136,23 @@ class SubmitForm(forms.Form):
     analysis_pass_fail = forms.ChoiceField(widget=forms.RadioSelect, choices=PASS_FAIL_CHOICES, label='Has the sample analysis passed?')
     next_step = forms.ChoiceField(widget=forms.RadioSelect, choices=NEXT_STEP_CHOICES)
     confirm = forms.BooleanField(required=True, label='Confirm that analysis is complete')
+
+
+class SendCheckBackForm(forms.Form):
+    """
+    Finalise a sample analysis
+
+    """
+    send_back_check = forms.BooleanField(required=True, label='I understand that my check will be removed')
+    inform_user_check = forms.BooleanField(required=True, label="I have notified the user that I'm sending this check back to them")
+
+    def __init__(self, *args, **kwargs):
+        super(SendCheckBackForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Confirm', css_class='btn btn-danger w-100')
+        )
 
 
 class SampleCommentForm(forms.Form):

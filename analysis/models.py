@@ -213,12 +213,18 @@ class SampleAnalysis(models.Model):
         TODO - this is getting called twice when samples page is loaded
         """
         all_checks = Check.objects.filter(analysis = self).order_by('pk')
-        igv_checks = all_checks.filter(stage='IGV')
-
         assigned_to = None
-        current_check_object = all_checks.latest('pk')
 
-        for n, c in enumerate(igv_checks):
+        # get most recent two checks (if there is at least 2 checks total)
+        all_checks_reversed = all_checks.order_by('-pk')
+        current_check_object = all_checks_reversed[0]
+        if len(all_checks_reversed) > 1:
+            previous_check_object = all_checks_reversed[1]
+        else:
+            previous_check_object = None
+
+        # find the current check/user
+        for n, c in enumerate(all_checks):
             if c.status == 'P':
                 assigned_to = c.user
                 current_check_object = c
@@ -232,9 +238,9 @@ class SampleAnalysis(models.Model):
                     lims_checks.append(lims_initials)
 
         return {
-            
             'assigned_to': assigned_to,
             'current_check_object': current_check_object,
+            'previous_check_object': previous_check_object,
             'all_checks': all_checks,
             'lims_checks': ','.join(lims_checks),
         }
@@ -245,17 +251,12 @@ class Check(models.Model):
     Model to store 1st, 2nd check etc
 
     """
-    STAGE_CHOICES = (
-        ('IGV', 'IGV check'),
-        ('VUS', 'Interpretation check'),
-    )
     STATUS_CHOICES = (
         ('P', 'Pending'),
         ('C', 'Complete'),
         ('F', 'Fail'),
     )
     analysis = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
-    stage = models.CharField(max_length=3, choices=STAGE_CHOICES) # TODO - this isnt really needed anymore
     status = models.CharField(max_length=1, choices=STATUS_CHOICES)
     user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True)
     coverage_ntc_check = models.BooleanField(default=False)
