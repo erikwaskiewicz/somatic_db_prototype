@@ -36,7 +36,8 @@
 
   <h5>Analysis complete?</h5>
   <br>
-  <button class="btn btn-info w-100" type="button" data-toggle="modal" data-target="#finalise-modal">Complete check</button>
+  <button class="btn btn-info" style="width:49%;" type="button" data-toggle="modal" data-target="#finalise-modal">Complete check</button>
+  <button class="btn btn-info" style="width:49%;" type="button" data-toggle="modal" data-target="#">Send check back</button>
 
 </div>
 
@@ -59,7 +60,7 @@
           </div>
 
           <fieldset>
-            <legend>{{ submit_form.analysis_pass_fail.label }}</legend>
+            <h5>{{ submit_form.analysis_pass_fail.label }}</h5>
             <div class="btn-group btn-group-toggle w-100" data-toggle="buttons">
             {% for radio in submit_form.analysis_pass_fail %}
             <label class="btn btn-outline-secondary" for="{{ radio.id_for_label }}">
@@ -77,8 +78,8 @@
           </div>
 
           <fieldset>
-            <legend>{{ submit_form.next_step.label }}</legend>
-            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <h5>{{ submit_form.next_step.label }}</h5>
+            <div class="btn-group btn-group-toggle w-100" data-toggle="buttons">
             {% for radio in submit_form.next_step %}
             <label class="btn btn-outline-secondary" for="{{ radio.id_for_label }}">
                 {{ radio.tag }}
