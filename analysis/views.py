@@ -584,17 +584,21 @@ def analysis_sheet(request, sample_id):
 
         # comments submit button
         if 'variant_comment' in request.POST:
-            new_comment = request.POST['variant_comment']
-            pk = request.POST['pk']
+            var_comment_form = VariantCommentForm(request.POST, pk=request.POST['pk'], comment=request.POST['variant_comment'])
+            if var_comment_form.is_valid():
 
-            # update comment
-            VariantCheck.objects.filter(pk=request.POST['pk']).update(
-                comment=new_comment,
-                comment_updated=timezone.now(),
-            )
+                new_var_data = var_comment_form.cleaned_data
+                new_comment = new_var_data['variant_comment']
+                pk = new_var_data['pk']
 
-            # reload variant data
-            context['variant_data'] = get_variant_info(sample_data, sample_obj)
+                # update comment
+                VariantCheck.objects.filter(pk=pk).update(
+                    comment=new_comment,
+                    comment_updated=timezone.now(),
+                )
+
+                # reload variant data
+                context['variant_data'] = get_variant_info(sample_data, sample_obj)
 
         # if button for manaully scrolling in IGV is clicked
         if 'variants_checked' in request.POST:
