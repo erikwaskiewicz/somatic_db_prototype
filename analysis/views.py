@@ -211,7 +211,6 @@ def view_worksheets(request, query):
 
     # TODO sync with crm branch
     # TODO worksheets page headers different depending on search
-    # TODO sample pass/fail needs to be unset when sample reopened
     # TODO ability to set as bioinf qc fail
     # TODO if whole run fail it should set all samples to fail. 
     # TODO Maybe a not analysed for whole run option too? would need a generic 'not analysed' panel probably
@@ -263,7 +262,7 @@ def view_worksheets(request, query):
 
     for w in worksheets:
         # if first two characters are digits, add to diagnostics list, otherwise add to other list
-        samples = w.get_samples() #TODO - replace with new functions
+        samples = w.get_samples()
         status = w.get_status()
         if w.diagnostic:
             diagnostics_ws_list.append({
@@ -730,7 +729,7 @@ def analysis_sheet(request, sample_id):
                 if next_step == 'finalise':
                     submitted, err = signoff_check(request.user, current_step_obj, sample_obj, status=pass_fail, complete=True)
                     if submitted:
-                        # update sample pass/fail TODO unset when reopening a sample
+                        # update sample pass/fail
                         sample_obj.sample_pass_fail = pass_fail
                         sample_obj.save()
                         return redirect('view_ws_samples', sample_data['worksheet_id'])
@@ -809,7 +808,7 @@ def analysis_sheet(request, sample_id):
                             else:
                                 submitted, err = signoff_check(request.user, current_step_obj, sample_obj, complete=True)
                                 if submitted:
-                                    # update sample pass/fail TODO unset when reopening a sample
+                                    # update sample pass/fail
                                     sample_obj.sample_pass_fail = 'C'
                                     sample_obj.save()
                                     return redirect('view_ws_samples', sample_data['worksheet_id'])
@@ -842,7 +841,7 @@ def analysis_sheet(request, sample_id):
                         # otherwise sign off and make sample failed
                         else:
                             signoff_check(request.user, current_step_obj, sample_obj, status='F')
-                            # update sample pass/fail TODO unset when reopening a sample
+                            # update sample pass/fail
                             sample_obj.sample_pass_fail = 'F2'
                             sample_obj.save()
                             return redirect('view_ws_samples', sample_data['worksheet_id'])

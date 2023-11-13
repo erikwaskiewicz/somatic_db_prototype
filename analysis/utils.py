@@ -98,7 +98,10 @@ def reopen_check(current_user, sample_analysis_obj):
     """
     Allow the person who closed the case to reopen it to the previous check
     """
-    
+    # set sample analysis status back to pending
+    sample_analysis_obj.sample_pass_fail = '-'
+    sample_analysis_obj.save()
+
     # get the latest check
     all_checks = sample_analysis_obj.get_checks()
     latest_check = all_checks['current_check_object']
