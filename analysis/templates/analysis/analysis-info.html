@@ -43,6 +43,20 @@
     </tr>
   </tbody>
 </table>
+<br>
+
+{% if sample_data.checks.current_check_object.patient_info_check %}
+<div class="alert alert-success" role="alert">
+  <p><strong>Patient demographics check complete</strong></p>
+</div>
+
+{% else %}
+<div class="alert alert-warning" role="alert">
+  <h5>Patient demographics check required</h5>
+  {% crispy demographics_form %}
+</div>
+
+{% endif %}
 
 <br>
 

@@ -108,6 +108,7 @@ def reopen_check(user, sample_analysis_obj):
 
     latest_check.status = 'P'
     latest_check.user = user
+    latest_check.signoff_time = None
     latest_check.save()
     sample_analysis_obj.save()
 
@@ -211,7 +212,7 @@ def signoff_check(user, current_step_obj, sample_obj, status='C', complete=False
     return True, ''
 
 
-def make_next_check(sample_obj, next_step):
+def make_next_check(sample_obj):
     """
     Sets up the next check and associated variant checks
 
@@ -219,7 +220,6 @@ def make_next_check(sample_obj, next_step):
     # add new check object
     new_check_obj = Check(
         analysis=sample_obj, 
-        stage=next_step,
         status='P',
     )
 

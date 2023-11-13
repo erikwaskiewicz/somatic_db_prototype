@@ -28,7 +28,7 @@
         {% endif %}
       </td>
       <td>{{ check.patient_info_check }}</td>
-      <td>{{ check.user }}<br>{{ check.overall_comment_updated }}</td>
+      <td>{{ check.user }}<br>{% firstof check.signoff_time '' %}</td>
       <td>{{ check.overall_comment | wordwrap:80 | linebreaksbr }}</td>
     </tr>
   </tbody>

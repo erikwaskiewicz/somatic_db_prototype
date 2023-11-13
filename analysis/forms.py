@@ -155,6 +155,22 @@ class SendCheckBackForm(forms.Form):
         )
 
 
+class DetailsCheckForm(forms.Form):
+    """
+    Finalise a sample analysis
+
+    """
+    patient_demographics = forms.BooleanField(required=True, label='Patient demographics are correct')
+
+    def __init__(self, *args, **kwargs):
+        self.info_check = kwargs.pop('info_check')
+
+        super(DetailsCheckForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.fields['patient_demographics'].initial = self.info_check
+        self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-warning'))
+
+
 class SampleCommentForm(forms.Form):
     """
     Add a sample wide comment
@@ -165,18 +181,15 @@ class SampleCommentForm(forms.Form):
         required=False,
         label='General sample comments:'
     )
-    patient_demographics = forms.BooleanField(required=False, label='Patient demographics checked')
     pk = forms.CharField(widget=forms.HiddenInput())
 
     def __init__(self, *args, **kwargs):
         self.comment = kwargs.pop('comment')
-        self.info_check = kwargs.pop('info_check')
         self.pk = kwargs.pop('pk')
 
         super(SampleCommentForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.fields['sample_comment'].initial = self.comment
-        self.fields['patient_demographics'].initial = self.info_check
         self.fields['pk'].initial = self.pk
         self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-success'))
 

@@ -11,7 +11,7 @@ from django.utils import timezone
 from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, 
     CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, 
     ConfirmPolyForm, ConfirmArtefactForm, AddNewPolyForm, AddNewArtefactForm, ManualVariantCheckForm, ReopenSampleAnalysisForm, ChangeLimsInitials, 
-    EditedPasswordChangeForm, EditedUserCreationForm, RunQCForm, ReopenRunQCForm, SendCheckBackForm)
+    EditedPasswordChangeForm, EditedUserCreationForm, RunQCForm, ReopenRunQCForm, SendCheckBackForm, DetailsCheckForm)
 from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
     get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, 
     create_myeloid_coverage_summary)
@@ -213,7 +213,6 @@ def view_worksheets(request, query):
     # TODO ability to set as bioinf qc fail
     # TODO if whole run fail it should set all samples to fail. 
     # TODO Maybe a not analysed for whole run option too? would need a generic 'not analysed' panel probably
-    # TODO patient info check to patient tab
     # TODO add checks to finalise form
     """
     # check if user is in the qc user group
@@ -476,9 +475,9 @@ def analysis_sheet(request, sample_id):
         'update_name_form': UpdatePatientName(),
         'sample_comment_form': SampleCommentForm(
             comment=current_step_obj.overall_comment,
-            info_check=current_step_obj.patient_info_check,
             pk=current_step_obj.pk, 
         ),
+        'demographics_form': DetailsCheckForm(info_check=current_step_obj.patient_info_check),
         'coverage_check_form': CoverageCheckForm(
             pk=current_step_obj.pk, 
             comment=current_step_obj.coverage_comment,
@@ -566,6 +565,23 @@ def analysis_sheet(request, sample_id):
                 sample_obj = SampleAnalysis.objects.get(pk = sample_id)
                 context['sample_data'] = get_sample_info(sample_obj)
 
+        # if patient demographiocs check is completed
+        if 'patient_demographics' in request.POST:
+            demographics_form = DetailsCheckForm(request.POST, info_check=current_step_obj.patient_info_check)
+            if demographics_form.is_valid():
+                # raise error if patient name not filled in
+                if context['sample_data']['sample_name'] == None:
+                    context['warning'].append('Cant complete demographics check - patient name has not been inputted')
+
+                else:
+                    # update check
+                    Check.objects.filter(pk=current_step_obj.pk).update(
+                        patient_info_check=demographics_form.cleaned_data['patient_demographics'],
+                    )
+                    # reload sample data
+                    context['sample_data'] = get_sample_info(sample_obj)
+                    #context['demographics_form'] = DetailsCheckForm(info_check=current_step_obj.patient_info_check)
+
         # comments submit button
         if 'variant_comment' in request.POST:
             new_comment = request.POST['variant_comment']
@@ -580,6 +596,7 @@ def analysis_sheet(request, sample_id):
             # reload variant data
             context['variant_data'] = get_variant_info(sample_data, sample_obj)
 
+        # if button for manaully scrolling in IGV is clicked
         if 'variants_checked' in request.POST:
             manual_check_form = ManualVariantCheckForm(request.POST, regions=sample_data['panel_manual_regions'])
 
@@ -694,18 +711,12 @@ def analysis_sheet(request, sample_id):
         # overall sample comments form
         if 'sample_comment' in request.POST:
             new_comment = request.POST['sample_comment']
-            try:
-                if request.POST['patient_demographics'] == 'on':
-                    info_check = True
-            except:
-                info_check = False
             pk = request.POST['pk']
 
             # update comment
             Check.objects.filter(pk=pk).update(
                 overall_comment=new_comment,
                 overall_comment_updated=timezone.now(),
-                patient_info_check=info_check,
             )
 
             # reload sample data
@@ -713,7 +724,6 @@ def analysis_sheet(request, sample_id):
             current_step_obj = context['sample_data']['checks']['current_check_object']
             context['sample_comment_form'] = SampleCommentForm(
                 comment=current_step_obj.overall_comment,
-                info_check=current_step_obj.patient_info_check,
                 pk=current_step_obj.pk, 
             )
 
@@ -753,7 +763,7 @@ def analysis_sheet(request, sample_id):
                 elif next_step == 'extra_check':
                     submitted, err = signoff_check(request.user, current_step_obj, sample_obj, status=pass_fail)
                     if submitted:
-                        make_next_check(sample_obj, 'IGV')
+                        make_next_check(sample_obj)
                         return redirect('view_ws_samples', sample_data['worksheet_id'])
                     else:
                         context['warning'].append(err)
