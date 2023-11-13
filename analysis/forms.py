@@ -146,7 +146,7 @@ class SubmitForm(forms.Form):
 
     """
     PASS_FAIL_CHOICES = (
-        ('P', 'Analysis pass'),
+        ('C', 'Analysis pass'),
         ('F', 'Analysis fail')
     )
     NEXT_STEP_CHOICES = (

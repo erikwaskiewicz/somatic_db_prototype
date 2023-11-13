@@ -105,7 +105,7 @@ def ajax_num_pending_worksheets(request):
     if request.is_ajax():
         # get all worksheets then filter for only ones that have a current IGV check in them
         all_worksheets = Worksheet.objects.filter(signed_off=True, diagnostic=True).order_by('-run')
-        pending_worksheets = [w for w in all_worksheets if 'IGV' in w.get_status_and_samples()[0]]
+        pending_worksheets = [w for w in all_worksheets if 'IGV' in w.get_status()]
         num_pending = len(pending_worksheets)
 
         # sort out css colouring, green if no checks, yellow if one or more
@@ -263,7 +263,7 @@ def view_worksheets(request, query):
 
     for w in worksheets:
         # if first two characters are digits, add to diagnostics list, otherwise add to other list
-        status, samples = w.get_status_and_samples() #TODO - replace with new functions
+        samples = w.get_samples() #TODO - replace with new functions
         status = w.get_status()
         if w.diagnostic:
             diagnostics_ws_list.append({
@@ -459,7 +459,7 @@ def analysis_sheet(request, sample_id):
     current_step_obj = sample_data['checks']['current_check_object']
 
     # assign to whoever clicked the sample and reload check objects
-    if sample_data['checks']['current_status'] not in ['Complete', 'Fail']:
+    if sample_obj.sample_pass_fail == '-':
         if current_step_obj.user == None:
             current_step_obj.user = request.user
             current_step_obj.save()
@@ -720,13 +720,35 @@ def analysis_sheet(request, sample_id):
                 pk=current_step_obj.pk, 
             )
 
-        # temp
+        # if finalise check submit form is clicked
         if 'next_step' in request.POST:
             submit_form = SubmitForm(request.POST)
             if submit_form.is_valid():
-                print(submit_form.cleaned_data)
+                pass_fail = submit_form.cleaned_data['analysis_pass_fail']
+                next_step = submit_form.cleaned_data['next_step']
 
-        # if finalise check submit form is clicked
+                if next_step == 'finalise':
+                    submitted, err = signoff_check(request.user, current_step_obj, sample_obj, status=pass_fail, complete=True)
+                    if submitted:
+                        # update sample pass/fail TODO unset when reopening a sample
+                        sample_obj.sample_pass_fail = pass_fail
+                        sample_obj.save()
+                        return redirect('view_ws_samples', sample_data['worksheet_id'])
+
+                    # throw warning if not all variants are checked
+                    else:
+                        context['warning'].append(err)
+
+                elif next_step == 'extra_check':
+                    submitted, err = signoff_check(request.user, current_step_obj, sample_obj, status=pass_fail)
+                    if submitted:
+                        make_next_check(sample_obj, 'IGV')
+                        return redirect('view_ws_samples', sample_data['worksheet_id'])
+                    else:
+                        context['warning'].append(err)
+
+
+        # if finalise check submit form is clicked - this is no longer used, checks need to be moved to ajax call
         if 'next_step_old' in request.POST:
             old_submit_form = SubmitForm(request.POST)
 

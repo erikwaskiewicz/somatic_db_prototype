@@ -114,7 +114,7 @@
           <td>{{ analysis.assay }}</td>
           {% endif %}
           <td>{{ analysis.panel }}</td>
-          <td>{{ analysis.checks.current_status }}</td>
+          <td>{{ analysis.status }}</td>
           {% if template == 'worksheet' %}<td>{{ analysis.checks.assigned_to }}</td>{% endif %}
           <td style="text-align:right">
 
@@ -125,7 +125,7 @@
             <a class="btn btn-light btn-block disabled">QC pending</a>
 
             <!-- button when analysis is complete and the logged in user did the most recent check -->
-            {% elif analysis.checks.current_status == 'Complete' and request.user == analysis.checks.current_check_object.user %}
+            {% elif analysis.status == 'Complete' and request.user == analysis.checks.current_check_object.user %}
             <div class="btn-group btn-block">
               <a class="btn btn-info btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">Complete</a>
               <button type="button btn-block" class="btn btn-info dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -139,13 +139,13 @@
             </div>
             
             <!-- button when analysis is complete -->
-            {% elif analysis.checks.current_status == 'Complete' %}
+            {% elif analysis.status == 'Complete' %}
             <a class="btn btn-light btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">View</a>
 
             <!-- button when analysis is a fail and the logged in user did the most recent check -->
-            {% elif analysis.checks.current_status == 'Fail' and request.user == analysis.checks.current_check_object.user %}
+            {% elif analysis.status == 'Analysis fail' and request.user == analysis.checks.current_check_object.user %}
             <div class="btn-group btn-block">
-              <a class="btn btn-danger btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">Fail</a>
+              <a class="btn btn-danger btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">Analysis fail</a>
               <button type="button btn-block" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
@@ -157,49 +157,18 @@
             </div>
 
             <!-- button when analysis is a fail -->
-            {% elif analysis.checks.current_status == 'Fail' %}
-            <a class="btn btn-danger btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">Fail</a>
-
-            <!-- button when second check for fail required but unassigned -->
-            {% elif analysis.checks.current_status == 'Fail - 2nd check required' and analysis.checks.assigned_to == None %}
-            <a class="btn btn-warning btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}" role="button">Fail (check required)</a>
-
-            <!-- button when second check for fail required and assigned to current user -->
-            {% elif analysis.checks.current_status == 'Fail - 2nd check required' and analysis.checks.assigned_to == request.user %}
-            <div class="btn-group btn-block">
-              <a class="btn btn-warning btn-block btn-disabled" href="{% url 'analysis_sheet' analysis.analysis_id %}" role="button">Fail - analyse 2nd check</a>
-              <button type="button btn-block" class="btn btn-warning dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="sr-only">Toggle Dropdown</span>
-              </button>
-              <div class="dropdown-menu dropdown-menu-right">
-                <a class="dropdown-item" data-toggle="modal" data-target="#unassign-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.assigned_to }}" data-status="{{ analysis.checks.current_status }}">
-                  Unassign
-                </a>
-              </div>
-            </div>
-
-            <!-- button when second check for fail required and assigned to someone else -->
-            {% elif analysis.checks.current_status == 'Fail - 2nd check required' and analysis.checks.assigned_to != request.user %}
-            <div class="btn-group btn-block">
-              <a class="btn btn-warning btn-block btn-disabled" href="#" role="button">Fail - assigned to {{ analysis.checks.assigned_to }}</a>
-              <button type="button btn-block" class="btn btn-warning dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="sr-only">Toggle Dropdown</span>
-              </button>
-              <div class="dropdown-menu dropdown-menu-right">
-                <a class="dropdown-item" data-toggle="modal" data-target="#unassign-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.assigned_to }}" data-status="{{ analysis.checks.current_status }}">
-                  Unassign
-                </a>
-              </div>
-            </div>
+            <!-- TODO also include bioinformatics QC fail -->
+            {% elif analysis.status == 'Analysis fail' %}
+            <a class="btn btn-danger btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">Analysis fail</a>
 
             <!-- button when no one is assigned to an analysis 1st check (goes to check modal for 1st check only)-->
-            {% elif analysis.checks.assigned_to == None and analysis.checks.current_status == 'IGV check 1' %}
+            {% elif analysis.checks.assigned_to == None and analysis.status == 'IGV check 1' %}
             <a class="btn btn-secondary btn-block" href="#" data-toggle="modal" data-target="#check-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-ws="{{ worksheet }}" data-run="{{ run_id }}">
               Assign to me & analyse
             </a>
 
             <!-- button when no one is assigned to an analysis after 1st check -->
-            {% elif analysis.checks.assigned_to == None and analysis.checks.current_status != 'IGV check 1' %}
+            {% elif analysis.checks.assigned_to == None and analysis.status != 'IGV check 1' %}
             <a class="btn btn-secondary btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}" role="button">Assign to me & analyse</a>
 
             <!-- button if analysis is assigned to someone else -->
@@ -210,7 +179,7 @@
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
               <div class="dropdown-menu dropdown-menu-right">
-                <a class="dropdown-item" data-toggle="modal" data-target="#unassign-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.assigned_to }}" data-status="{{ analysis.checks.current_status }}">
+                <a class="dropdown-item" data-toggle="modal" data-target="#unassign-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.assigned_to }}" data-status="{{ analysis.status }}">
                   Unassign
                 </a>
               </div>
@@ -226,7 +195,7 @@
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
               <div class="dropdown-menu dropdown-menu-right">
-                <a class="dropdown-item" data-toggle="modal" data-target="#unassign-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.assigned_to }}" data-status="{{ analysis.checks.current_status }}">
+                <a class="dropdown-item" data-toggle="modal" data-target="#unassign-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.assigned_to }}" data-status="{{ analysis.status }}">
                   Unassign
                 </a>
               </div>

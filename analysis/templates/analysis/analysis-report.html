@@ -1,6 +1,6 @@
 {% load crispy_forms_tags %}
 
-{% if sample_data.checks.current_status  == 'Fail' %}
+{% if sample_data.status  == 'Analysis fail' %}
 <div class="alert alert-danger">
   <div class="container">
     <div class="row">

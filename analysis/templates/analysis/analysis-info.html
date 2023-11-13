@@ -12,7 +12,7 @@
       <td><b>Patient name</b></td>
       <td>
         {{ sample_data.sample_name }}
-        {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail'%}
+        {% if sample_data.status == 'Pending' %}
         <button type="button" style="float: right;" class="btn btn-sm btn-warning w-25" data-toggle="modal" data-target="#update-name">Update</button>
         {% endif %}
       </td>

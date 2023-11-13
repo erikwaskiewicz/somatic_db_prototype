@@ -26,6 +26,7 @@ def get_samples(samples):
                     'worksheet': s.worksheet,
                     'assay': s.panel.get_assay_display(),
                     'panel': s.panel,
+                    'status': s.get_status(),
                     'checks': s.get_checks(),
                 }]
             }
@@ -37,6 +38,7 @@ def get_samples(samples):
                     'worksheet': s.worksheet,
                     'assay': s.panel.get_assay_display(),
                     'panel': s.panel,
+                    'status': s.get_status(),
                     'checks': s.get_checks(),
                 }
             )
@@ -53,9 +55,10 @@ def unassign_check(sample_analysis_obj):
     # get latest check
     all_checks = sample_analysis_obj.get_checks()
     latest_check = all_checks['current_check_object']
+    current_status = sample_analysis_obj.get_status()
 
     # if resetting from 1st check, reset the tickbox for the paperwork check too
-    if all_checks['current_status'] == 'IGV check 1':
+    if current_status == 'IGV check 1':
         sample_analysis_obj.paperwork_check = False
 
     # reset check
@@ -112,7 +115,7 @@ def reopen_check(current_user, sample_analysis_obj):
 def signoff_check(user, current_step_obj, sample_obj, status='C', complete=False):
     """
     Signs off a check, returns true if successful, returns false if not, along with an error message
-
+    TODO - check this, status is not C for complete and passed, F1 for QC fail, or F2 for analysis fail
     """
     # get all SNV checks for the sample
     if sample_obj.panel.show_snvs:
@@ -312,6 +315,7 @@ def get_sample_info(sample_obj):
         'total_reads_ntc': sample_obj.total_reads_ntc,
         'percent_reads_ntc': sample_obj.percent_reads_ntc(),
         'checks': sample_obj.get_checks(),
+        'status': sample_obj.get_sample_pass_fail_display(),
         'genome_build': sample_obj.genome_build,
         'test_code': sample_obj.panel.lims_test_code,
     }

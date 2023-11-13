@@ -75,18 +75,11 @@ class Worksheet(models.Model):
         return 'Complete'
         # TODO get samples function
 
-    def get_status_and_samples(self):
+    def get_samples(self):
         # get all sample analysis objects
         samples = SampleAnalysis.objects.filter(worksheet = self)
-
-        # get list of all unique statuses and concatenate
-        all_status = [ s.get_checks()['current_status'] for s in samples ]
-        status = ' | '.join( set(all_status) )
-        
-        # get all sample IDs
         sample_list = [i.sample.sample_id for i in samples]
-
-        return status, sample_list
+        return sample_list
 
 
 class Sample(models.Model):
@@ -175,8 +168,8 @@ class SampleAnalysis(models.Model):
     QC_CHOICES = (
         ('-', 'Pending'),
         ('C', 'Complete'),
-        ('F1', 'QC fail'),
-        ('F2', 'Analysis fail'),
+        ('F', 'Analysis fail'),
+        ('QC', 'QC fail'),
     )
     worksheet = models.ForeignKey('Worksheet', on_delete=models.CASCADE)
     sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
@@ -222,22 +215,14 @@ class SampleAnalysis(models.Model):
         all_checks = Check.objects.filter(analysis = self).order_by('pk')
         igv_checks = all_checks.filter(stage='IGV')
 
-        current_status = 'Complete'
         assigned_to = None
         current_check_object = all_checks.latest('pk')
 
         for n, c in enumerate(igv_checks):
             if c.status == 'P':
-                current_status = f'{c.get_stage_display()} {n+1}'
                 assigned_to = c.user
                 current_check_object = c
 
-        num_fails = [ c for c in igv_checks if c.status == 'F' ]
-        if len(num_fails) == 1:
-            current_status = 'Fail - 2nd check required'
-        elif len(num_fails) > 1:
-            current_status = 'Fail'
-                
         # make list of checks initials for LIMS XML
         lims_checks = []
         for c in all_checks:
@@ -247,7 +232,7 @@ class SampleAnalysis(models.Model):
                     lims_checks.append(lims_initials)
 
         return {
-            'current_status': current_status,
+            
             'assigned_to': assigned_to,
             'current_check_object': current_check_object,
             'all_checks': all_checks,

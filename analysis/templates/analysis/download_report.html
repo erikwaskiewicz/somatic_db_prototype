@@ -39,7 +39,7 @@
   <h1>{{ sample_data.panel_obj.get_assay_display }} report for {{ sample_data.sample_id }}</h1>
 
   <!-- Fail warning box -->
-  {% if sample_data.checks.current_status  == 'Fail' %}
+  {% if sample_data.status  == 'Analysis fail' %}
   <div class="alert">
     <h2><b>This sample has failed QC</b></h2>
   </div> 
