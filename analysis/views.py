@@ -891,17 +891,20 @@ def ajax_finalise_check(request):
         sample_analysis_obj = current_check_obj.analysis
         panel_obj = sample_analysis_obj.panel
 
+        error_list = []
+
         # demographics checks
         if option_selected == 'demographics':
-            error_list = []
 
             # check for errors - patient name filled in, demogrpahics check done, NTC check done
             if sample_analysis_obj.sample.sample_name == None:
                 error_list.append('The patient name for this sample is empty')
             if current_check_obj.patient_info_check == False:
                 error_list.append("The patient demographics for this sample haven't been checked")
-            if current_check_obj.coverage_ntc_check == False:
-                error_list.append("The NTC coverage hasn't been checked for this sample")
+            # all assays except RNA
+            if panel_obj.assay != '2':
+                if current_check_obj.coverage_ntc_check == False:
+                    error_list.append("The NTC coverage hasn't been checked for this sample")
 
             # select template based on whether there were any errors
             if len(error_list) == 0:
@@ -911,39 +914,70 @@ def ajax_finalise_check(request):
                 pass_fail = False
                 template = f'analysis/forms/ajax_finalise_form_check_1_fail.html'
 
-        # variants checks
-        else:
-            error_list = []
-            # pass only checks - 
+            # package data and return as JSON object
+            html = render_to_string(template, {'errors': error_list})
+            data = json.dumps({
+                'pass': pass_fail,
+                'html': html,
+            })
+
+
+        elif 'next_step_' in option_selected:
+
+            # variant checks for when a check has passed only
             if option_selected == 'next_step_pass':
                 # manual variant review if required
                 if panel_obj.manual_review_required:
                     if current_check_obj.manual_review_check == False:
-                        error_list.append("Manual search for variants in IGV hasn't been completed")
+                        error_list.append("Manual search for variants in IGV hasn't been completed (top of 'SNVs & indels' tab)")
                 # TODO - finish these
                 # no variants on pending
                 # at least two variant checks for each variant - highlight which variant if not
                 # lastest two variant checks agree - highlight which variant if not
 
-            # pass and fail checks (to close case):
+                # select template based on whether there were any errors
+                if len(error_list) == 0:
+                    pass_fail_check_2 = True
+                    template_check_2 = f'analysis/forms/ajax_finalise_form_check_2_pass.html'
+                else:
+                    pass_fail_check_2 = False
+                    template_check_2 = f'analysis/forms/ajax_finalise_form_check_2_fail.html'
+
+                html_check_2 = render_to_string(template_check_2, {'errors': error_list})
+
+            # there are no variant analysis checks for fails, return the success alert
+            if option_selected == 'next_step_fail':
+                pass_fail_check_2 = True
+                template_check_2 = f'analysis/forms/ajax_finalise_form_check_2_pass.html'
+                html_check_2 = render_to_string(template_check_2, {'errors': error_list})
+
+
+            # checks to close a case - run for both pass and fails
+            error_list = []
+            all_checks = sample_analysis_obj.get_checks()
+
             # at least two checks
+            if len(all_checks['all_checks']) < 2:
+                error_list.append("There haven't been at least two checks for this sample")
             # pass/fail of last two checks agrees
 
             # select template based on whether there were any errors
             if len(error_list) == 0:
-                pass_fail = True
-                template = f'analysis/forms/ajax_finalise_form_check_2_pass.html'
+                pass_fail_check_3 = True
+                template_check_3 = f'analysis/forms/ajax_finalise_form_check_3_pass.html'
             else:
-                pass_fail = False
-                template = f'analysis/forms/ajax_finalise_form_check_2_fail.html'
+                pass_fail_check_3 = False
+                template_check_3 = f'analysis/forms/ajax_finalise_form_check_3_fail.html'
+            html_check_3 = render_to_string(template_check_3, {'errors': error_list})
 
 
-        # package data and return as JSON object
-        html = render_to_string(template, {'errors': error_list})
-        data = json.dumps({
-            'pass': pass_fail,
-            'html': html,
-        })
+            # package data and return as JSON object
+            data = json.dumps({
+                'pass_check_2': pass_fail_check_2,
+                'html_check_2': html_check_2,
+                'pass_check_3': pass_fail_check_3,
+                'html_check_3': html_check_3,
+            })
         return HttpResponse(data, 'application/json')
 
 

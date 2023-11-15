@@ -129,7 +129,7 @@ class SubmitForm(forms.Form):
     )
     NEXT_STEP_CHOICES = (
         ('extra_check', 'Send for an extra check'),
-        ('finalise', 'Complete analysis for this sample'),
+        ('finalise', 'Close analysis for this sample'),
     )
     analysis_pass_fail = forms.ChoiceField(widget=forms.RadioSelect, choices=PASS_FAIL_CHOICES, label='Has the sample analysis passed?')
     next_step = forms.ChoiceField(widget=forms.RadioSelect, choices=NEXT_STEP_CHOICES)
