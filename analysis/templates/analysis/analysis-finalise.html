@@ -107,15 +107,19 @@
 <script>
   $(document).ready(function(){
       $("#finalise-modal").on('show.bs.modal', function(){
-          var finalise_form_check_1 = document.getElementById("finalise_form_check_1");
-          var finalise_form_pass_fail = document.getElementById("finalise_form_pass_fail");
-          var finalise_form_check_2 = document.getElementById("finalise_form_check_2");
-          var finalise_form_next_step = document.getElementById("finalise_form_next_step");
+          function load_variables() {
+              finalise_form_check_1 = document.getElementById("finalise_form_check_1");
+              finalise_form_pass_fail = document.getElementById("finalise_form_pass_fail");
+              finalise_form_check_2 = document.getElementById("finalise_form_check_2");
+              finalise_form_next_step = document.getElementById("finalise_form_next_step");
 
-          var pass_button = document.getElementById("id_analysis_pass_fail_0").parentElement
-          var fail_button = document.getElementById("id_analysis_pass_fail_1").parentElement
-          var extra_check_button = document.getElementById("id_next_step_0").parentElement
-          var complete_button = document.getElementById("id_next_step_1").parentElement
+              pass_button = document.getElementById("id_analysis_pass_fail_0").parentElement
+              fail_button = document.getElementById("id_analysis_pass_fail_1").parentElement
+              extra_check_button = document.getElementById("id_next_step_0").parentElement
+              complete_button = document.getElementById("id_next_step_1").parentElement
+          }
+
+          load_variables();
 
           // add button specific CSS class for pass/fail
           pass_button.classList.add("btn-outline-success");
@@ -132,19 +136,62 @@
           finalise_form_check_2.style.display = "none";
           finalise_form_next_step.style.display = "none";
 
-          // TODO ajax on first check and show pass/fail
-          setTimeout(() => {  finalise_form_pass_fail.style.display = "block"; }, 2000);
+          // AJAX call on for demographocs check
+          // TODO reset template each time modal is opened
+          $.ajax({
+              url: "{% url 'ajax_finalise_check' '1' %}",
+              type: 'GET',
+              success: function(data) {
+                  setTimeout(function() {
+                      // replace loading box with htlm from response
+                      $(finalise_form_check_1).replaceWith(data.html);
+
+                      // if its a pass, show the next step
+                      if (data.pass_fail === true) {
+                        finalise_form_pass_fail.style.display = "block"
+                      }
+                  }, 1000)
+              },
+              failure: function(data) {
+                  alert('Got an error');
+              }
+          });
 
           // TODO ajax on pass/fail button click to hide next step button and run second check ajax
           $('#id_analysis_pass_fail_0').on('click', function(event) {
-            finalise_form_check_2.style.display = "block";
-            finalise_form_next_step.style.display = "none";
-            extra_check_button.classList.remove("active")
-            complete_button.classList.remove("active")
-            setTimeout(() => {  finalise_form_next_step.style.display = "block"; }, 2000);
+              // display second check box
+              finalise_form_check_2.style.display = "block";
+
+              // hide and reset next step form
+              finalise_form_next_step.style.display = "none";
+              extra_check_button.classList.remove("active")
+              complete_button.classList.remove("active")
+
+              // AJAX call for check
+              $.ajax({
+                  url: "{% url 'ajax_finalise_check' '2' %}",
+                  type: 'GET',
+                  success: function(data) {
+                      setTimeout(function() {
+                          // replace loading box with htlm from response
+                          $(finalise_form_check_2).replaceWith(data.html);
+
+                          // reload html elements
+                          load_variables();
+
+                          // if its a pass, show the next step
+                          if (data.pass_fail === true) {
+                            finalise_form_next_step.style.display = "block"
+                          }
+                      }, 1000)
+                  },
+                  failure: function(data) {
+                      alert('Got an error');
+                  }
+              });
           });
 
-          // TODO ajax on fail button click
+          // TODO ajax on fail button click only to check if sample can be closed off
           $('#id_analysis_pass_fail_1').on('click', function(event) {
             finalise_form_check_2.style.display = "none";
             extra_check_button.classList.remove("active")

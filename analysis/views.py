@@ -5,7 +5,7 @@ from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template import Context
-from django.template.loader import get_template
+from django.template.loader import get_template, render_to_string
 from django.utils import timezone
 
 from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, 
@@ -876,6 +876,31 @@ def analysis_sheet(request, sample_id):
 
     # render the pages
     return render(request, 'analysis/analysis_sheet.html', context)
+
+
+def ajax_finalise_check(request, check):
+    """
+    AJAX call to check patient demographics are filled in
+    """
+    if request.is_ajax():
+        # TODO this is just for testing
+        pass_fail = True
+        if check == '2':
+            pass_fail = False
+
+        # select correct template
+        if pass_fail == True:
+            template = f'analysis/forms/ajax_finalise_form_check_{check}_pass.html'
+        else:
+            template = f'analysis/forms/ajax_finalise_form_check_{check}_fail.html'
+
+        # package data and return as JSON object
+        html = render_to_string(template, {})
+        data = json.dumps({
+            'pass_fail': pass_fail,
+            'html': html,
+        })
+        return HttpResponse(data, 'application/json')
 
 
 def ajax(request):
