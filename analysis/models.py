@@ -89,7 +89,7 @@ class Sample(models.Model):
     """
     sample_id = models.CharField(max_length=50, primary_key=True)
     sample_name = models.CharField(max_length=200, blank=True, null=True)
-    sample_name_check = models.BooleanField(default=False)
+    sample_name_check = models.BooleanField(default=False) # TODO - dont think this is being used? its part of check istead
 
     def get_worksheets(self):
         # get all worksheets that the sample appears on

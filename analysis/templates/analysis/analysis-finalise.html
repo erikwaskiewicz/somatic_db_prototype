@@ -139,15 +139,19 @@
           // AJAX call on for demographocs check
           // TODO reset template each time modal is opened
           $.ajax({
-              url: "{% url 'ajax_finalise_check' '1' %}",
+              url: "{% url 'ajax_finalise_check' %}",
               type: 'GET',
+              data: {
+                  'current_check': '{{ sample_data.checks.current_check_object.pk }}',
+                  'option_selected': 'demographics',
+              },
               success: function(data) {
                   setTimeout(function() {
                       // replace loading box with htlm from response
                       $(finalise_form_check_1).replaceWith(data.html);
 
                       // if its a pass, show the next step
-                      if (data.pass_fail === true) {
+                      if (data.pass === true) {
                         finalise_form_pass_fail.style.display = "block"
                       }
                   }, 1000)
@@ -169,8 +173,12 @@
 
               // AJAX call for check
               $.ajax({
-                  url: "{% url 'ajax_finalise_check' '2' %}",
+                  url: "{% url 'ajax_finalise_check' %}",
                   type: 'GET',
+                  data: {
+                      'current_check': '{{ sample_data.checks.current_check_object.pk }}',
+                      'option_selected': 'next_step_pass',
+                  },
                   success: function(data) {
                       setTimeout(function() {
                           // replace loading box with htlm from response
@@ -180,7 +188,7 @@
                           load_variables();
 
                           // if its a pass, show the next step
-                          if (data.pass_fail === true) {
+                          if (data.pass === true) {
                             finalise_form_next_step.style.display = "block"
                           }
                       }, 1000)
@@ -193,10 +201,40 @@
 
           // TODO ajax on fail button click only to check if sample can be closed off
           $('#id_analysis_pass_fail_1').on('click', function(event) {
-            finalise_form_check_2.style.display = "none";
-            extra_check_button.classList.remove("active")
-            complete_button.classList.remove("active")
-            finalise_form_next_step.style.display = "block";
+              // display second check box
+              finalise_form_check_2.style.display = "block";
+
+              // hide and reset next step form
+              finalise_form_next_step.style.display = "none";
+              extra_check_button.classList.remove("active")
+              complete_button.classList.remove("active")
+
+              // AJAX call for check
+              $.ajax({
+                  url: "{% url 'ajax_finalise_check' %}",
+                  type: 'GET',
+                  data: {
+                      'current_check': '{{ sample_data.checks.current_check_object.pk }}',
+                      'option_selected': 'next_step_fail',
+                  },
+                  success: function(data) {
+                      setTimeout(function() {
+                          // replace loading box with htlm from response
+                          $(finalise_form_check_2).replaceWith(data.html);
+
+                          // reload html elements
+                          load_variables();
+
+                          // if its a pass, show the next step
+                          if (data.pass === true) {
+                            finalise_form_next_step.style.display = "block"
+                          }
+                      }, 1000)
+                  },
+                  failure: function(data) {
+                      alert('Got an error');
+                  }
+              });
           });
 
           // TODO ajax to disable complete button if not enough checks done
