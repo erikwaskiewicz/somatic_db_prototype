@@ -63,48 +63,7 @@
         </button>
       </div>
       <div class="modal-body">
-
-        <form method="post">
-          {% csrf_token %}
-          <div class="alert alert-warning" role="alert">
-            <h5><div class="spinner-border spinner-border-sm" role="status"></div>&nbsp;Checking demographics completed...</h5>
-            <p>TODO Trigger ajax on modal click - patient name filled in and check completed, NTC check</p>
-          </div>
-
-          <fieldset>
-            <h5>{{ submit_form.analysis_pass_fail.label }}</h5>
-            <div class="btn-group btn-group-toggle w-100" data-toggle="buttons">
-            {% for radio in submit_form.analysis_pass_fail %}
-            <label class="btn btn-outline-secondary" for="{{ radio.id_for_label }}">
-                {{ radio.tag }}
-                {{ radio.choice_label }}
-            </label>
-            {% endfor %}
-            </div>
-          </fieldset>
-
-          <br>
-          <div class="alert alert-warning" role="alert">
-            <h5><div class="spinner-border spinner-border-sm" role="status"></div>&nbsp;Checking variants completed...</h5>
-            <p>TODO Trigger ajax on form click - manual variant review, all variants completed, use to filter next step options</p>
-          </div>
-
-          <fieldset>
-            <h5>{{ submit_form.next_step.label }}</h5>
-            <div class="btn-group btn-group-toggle w-100" data-toggle="buttons">
-            {% for radio in submit_form.next_step %}
-            <label class="btn btn-outline-secondary" for="{{ radio.id_for_label }}">
-                {{ radio.tag }}
-                {{ radio.choice_label }}
-            </label>
-            {% endfor %}
-            </div>
-          </fieldset>
-          <br>
-          {{ submit_form.confirm|as_crispy_field }}
-          <button type="submit" class="btn btn-info w-100">Submit</button>
-        </form>
-
+        {% include 'analysis/forms/finalise_form.html' %}
       </div>
     </div>
   </div>
@@ -142,3 +101,60 @@
     </div>
   </div>
 </div>
+
+
+
+<script>
+  $(document).ready(function(){
+      $("#finalise-modal").on('show.bs.modal', function(){
+          var finalise_form_check_1 = document.getElementById("finalise_form_check_1");
+          var finalise_form_pass_fail = document.getElementById("finalise_form_pass_fail");
+          var finalise_form_check_2 = document.getElementById("finalise_form_check_2");
+          var finalise_form_next_step = document.getElementById("finalise_form_next_step");
+
+          var pass_button = document.getElementById("id_analysis_pass_fail_0").parentElement
+          var fail_button = document.getElementById("id_analysis_pass_fail_1").parentElement
+          var extra_check_button = document.getElementById("id_next_step_0").parentElement
+          var complete_button = document.getElementById("id_next_step_1").parentElement
+
+          // add button specific CSS class for pass/fail
+          pass_button.classList.add("btn-outline-success");
+          fail_button.classList.add("btn-outline-danger");
+
+          // unset button values - TODO this doesnt remove the actual value, so form validation wont work, need to completely reset each section of the form
+          pass_button.classList.remove("active")
+          fail_button.classList.remove("active")
+          extra_check_button.classList.remove("active")
+          complete_button.classList.remove("active")
+
+          // hide all but first check
+          finalise_form_pass_fail.style.display = "none";
+          finalise_form_check_2.style.display = "none";
+          finalise_form_next_step.style.display = "none";
+
+          // TODO ajax on first check and show pass/fail
+          setTimeout(() => {  finalise_form_pass_fail.style.display = "block"; }, 2000);
+
+          // TODO ajax on pass/fail button click to hide next step button and run second check ajax
+          $('#id_analysis_pass_fail_0').on('click', function(event) {
+            finalise_form_check_2.style.display = "block";
+            finalise_form_next_step.style.display = "none";
+            extra_check_button.classList.remove("active")
+            complete_button.classList.remove("active")
+            setTimeout(() => {  finalise_form_next_step.style.display = "block"; }, 2000);
+          });
+
+          // TODO ajax on fail button click
+          $('#id_analysis_pass_fail_1').on('click', function(event) {
+            finalise_form_check_2.style.display = "none";
+            extra_check_button.classList.remove("active")
+            complete_button.classList.remove("active")
+            finalise_form_next_step.style.display = "block";
+          });
+
+          // TODO ajax to disable complete button if not enough checks done
+          //complete_button.classList.add("disabled");
+
+      });
+  });
+</script>

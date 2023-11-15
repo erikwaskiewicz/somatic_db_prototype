@@ -751,6 +751,7 @@ def analysis_sheet(request, sample_id):
             if submit_form.is_valid():
                 pass_fail = submit_form.cleaned_data['analysis_pass_fail']
                 next_step = submit_form.cleaned_data['next_step']
+                print(submit_form)
 
                 if next_step == 'finalise':
                     submitted, err = signoff_check(request.user, current_step_obj, sample_obj, status=pass_fail, complete=True)

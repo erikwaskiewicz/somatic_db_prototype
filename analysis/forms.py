@@ -128,14 +128,12 @@ class SubmitForm(forms.Form):
         ('F', 'Analysis fail')
     )
     NEXT_STEP_CHOICES = (
-        ('finalise', 'Complete analysis for this sample'),
         ('extra_check', 'Send for an extra check'),
-        #('send_back', 'Send back to first checker'),
-        #('send_forward', 'Send back to second checker'),
+        ('finalise', 'Complete analysis for this sample'),
     )
     analysis_pass_fail = forms.ChoiceField(widget=forms.RadioSelect, choices=PASS_FAIL_CHOICES, label='Has the sample analysis passed?')
     next_step = forms.ChoiceField(widget=forms.RadioSelect, choices=NEXT_STEP_CHOICES)
-    confirm = forms.BooleanField(required=True, label='Confirm that analysis is complete')
+    confirm = forms.BooleanField(required=True, label='Confirm selections are correct')
 
 
 class SendCheckBackForm(forms.Form):
