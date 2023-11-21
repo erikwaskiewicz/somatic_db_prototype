@@ -119,7 +119,7 @@ admin.site.register(VariantCheck, VariantCheckAdmin)
 
 
 class VariantListAdmin(admin.ModelAdmin):
-    list_display = ('name', 'list_type')
+    list_display = ('name', 'list_type', 'genome_build', 'assay')
     search_fields = ['name',]
     # can't search by list_type because of choice field
 
@@ -127,7 +127,7 @@ admin.site.register(VariantList, VariantListAdmin )
 
 
 class VariantToVariantListAdmin(admin.ModelAdmin):
-    list_display = ('id', 'variant_list', 'variant', 'classification')
+    list_display = ('id', 'variant_list', 'variant', 'classification', 'vaf_cutoff')
     search_fields = ['id', 'variant_list__name', 'variant__genomic_37', 'classification']
 
 admin.site.register(VariantToVariantList, VariantToVariantListAdmin)
@@ -140,15 +140,15 @@ admin.site.register(Gene, GeneAdmin)
 
 
 class GeneCoverageAnalysisAdmin(admin.ModelAdmin):
-    list_display = ('id', 'sample', 'gene', 'av_coverage', 'percent_270x', 'percent_135x')
-    search_fields = ['id', 'sample__id', 'gene__gene', 'av_coverage', 'percent_270x', 'percent_135x']
+    list_display = ('id', 'sample', 'gene', 'av_coverage', 'percent_135x', 'percent_270x', 'percent_500x', 'percent_1000x')
+    search_fields = ['id', 'sample__id', 'gene__gene', 'av_coverage', 'percent_135x', 'percent_270x', 'percent_500x', 'percent_1000x']
 
 admin.site.register(GeneCoverageAnalysis, GeneCoverageAnalysisAdmin )
 
 
 class RegionCoverageAnalysisAdmin(admin.ModelAdmin):
-    list_display = ('id', 'gene', 'hgvs_c', 'genomic', 'average_coverage', 'percent_270x', 'percent_135x')
-    search_fields = ['id', 'gene__id', 'hgvs_c', 'average_coverage', 'percent_270x', 'percent_135x']
+    list_display = ('id', 'gene', 'hgvs_c', 'genomic', 'average_coverage', 'percent_135x', 'percent_270x', 'percent_500x', 'percent_1000x')
+    search_fields = ['id', 'gene__id', 'hgvs_c', 'average_coverage', 'percent_135x', 'percent_270x', 'percent_500x', 'percent_1000x']
     # cant search by genomic as its a class function
 
 admin.site.register(RegionCoverageAnalysis, RegionCoverageAnalysisAdmin)

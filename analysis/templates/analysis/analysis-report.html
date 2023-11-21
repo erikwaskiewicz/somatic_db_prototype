@@ -132,6 +132,9 @@
             {% if '270' in coverage_data.depth_cutoffs %}
             <th scope="col">Percent 270X</th>
             {% endif %}
+            {% if '500' in coverage_data.depth_cutoffs %}
+            <th scope="col">Percent 500X</th>
+            {% endif %}
             {% if '1000' in coverage_data.depth_cutoffs %}
             <th scope="col">Percent 1000X</th>
             {% endif %}
@@ -148,6 +151,9 @@
             {% endif %}
             {% if '270' in coverage_data.depth_cutoffs %}
             <td>{{ values.percent_270x }}%</td>
+            {% endif %}
+            {% if '500' in coverage_data.depth_cutoffs %}
+            <td>{{ values.percent_500x }}%</td>
             {% endif %}
             {% if '1000' in coverage_data.depth_cutoffs %}
             <td>{{ values.percent_1000x }}%</td>
@@ -250,6 +256,38 @@
           {% for gene, values in coverage_data.regions.items %}
             {% if values.gaps_270 %}
               {% for gap in values.gaps_270 %}
+              <tr>
+                <td>{{ gap.hgvs_c }}</td>
+                <td>{{ gap.percent_cosmic }}</td>
+                <td>{{ gap.counts_cosmic }}</td>
+              </tr>
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          <tr><td colspan="3">No hotspot gaps</td></tr>
+        {% endif %}
+        </tbody>
+      </table>
+      <br>
+
+    {% endif %}
+    {% if '500' in coverage_data.depth_cutoffs %}
+      <h5>Hotspot gaps 500X</h5>
+      <table class="table table-sm table-striped table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Gap</th>
+            <th scope="col">Percent COSMIC</th>
+            <th scope="col">Counts COSMIC</th>
+          </tr>
+        </thead>
+
+        <tbody>
+        {% if coverage_data.gaps_present_500 %}
+          {% for gene, values in coverage_data.regions.items %}
+            {% if values.gaps_500 %}
+              {% for gap in values.gaps_500 %}
               <tr>
                 <td>{{ gap.hgvs_c }}</td>
                 <td>{{ gap.percent_cosmic }}</td>

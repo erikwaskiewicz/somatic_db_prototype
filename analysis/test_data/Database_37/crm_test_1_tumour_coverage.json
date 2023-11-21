@@ -1,0 +1,669 @@
+{
+    "NRAS": {
+        "average_depth": 2741.0,
+        "percent_500": 88.3,
+        "average_ntc": 2,
+        "percent_ntc": 0,
+        "hotspot_regions": [
+            {
+                "chr": 1,
+                "pos_start": 115252184,
+                "pos_end": 115252354,
+                "hgvs_c": "NRAS(NM_002524.3):c.450+6_c.291-5",
+                "average_coverage": 3450.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 2,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 1,
+                "pos_start": 115256415,
+                "pos_end": 115256604,
+                "hgvs_c": "NRAS(NM_002524.3):c.290+6_c.112-5",
+                "average_coverage": 2055.0,
+                "percent_500": 70.4,
+                "ntc_coverage": 1,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 1,
+                "pos_start": 115258665,
+                "pos_end": 115258786,
+                "hgvs_c": "NRAS(NM_002524.3S):c.111+6_c.-5",
+                "average_coverage": 2816.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 2,
+                "percent_ntc": 0
+            }
+        ],
+        "gaps_500": []
+    },
+    "IDH1": {
+        "average_depth": 6502.0,
+        "percent_500": 100.0,
+        "average_ntc": 6,
+        "percent_ntc": 0,
+        "hotspot_regions": [
+            {
+                "chr": 2,
+                "pos_start": 209113095,
+                "pos_end": 209113202,
+                "hgvs_c": "IDH1(NM_005896.21):c.305_412",
+                "average_coverage": 6502.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 6,
+                "percent_ntc": 0
+            }
+        ],
+        "gaps_500": []
+    },
+    "PIK3CA": {
+        "average_depth": 3250.0,
+        "percent_500": 61.7,
+        "average_ntc": 8,
+        "percent_ntc": 0,
+        "hotspot_regions": [
+            {
+                "chr": 3,
+                "pos_start": 178936072,
+                "pos_end": 178936104,
+                "hgvs_c": "PIK3CA(NM_006218.2):c.1614_1646",
+                "average_coverage": 4285.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 71,
+                "percent_ntc": 1
+            },
+            {
+                "chr": 3,
+                "pos_start": 178951876,
+                "pos_end": 178952157,
+                "hgvs_c": "PIK3CA(NM_006218.2):c.2937-5_*5",
+                "average_coverage": 3133.0,
+                "percent_500": 57.3,
+                "ntc_coverage": 1,
+                "percent_ntc": 0
+            }
+        ],
+        "gaps_500": []
+    },
+    "PDGFRA": {
+        "average_depth": 2985.0,
+        "percent_500": 94.7,
+        "average_ntc": 19,
+        "percent_ntc": 0,
+        "hotspot_regions": [
+            {
+                "chr": 4,
+                "pos_start": 55141002,
+                "pos_end": 55141145,
+                "hgvs_c": "PDGFRA(NM_006206.4):c.1654-5_1786+5",
+                "average_coverage": 2384.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 3,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 4,
+                "pos_start": 55144057,
+                "pos_end": 55144178,
+                "hgvs_c": "PDGFRA(NM_006206.4):c.1892-5_2002+5",
+                "average_coverage": 4369.0,
+                "percent_500": 82.6,
+                "ntc_coverage": 15,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 4,
+                "pos_start": 55152002,
+                "pos_end": 55152135,
+                "hgvs_c": "PDGFRA(NM_006206.4):c.2440-5_2562+5",
+                "average_coverage": 2372.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 41,
+                "percent_ntc": 1
+            }
+        ],
+        "gaps_500": []
+    },
+    "KIT": {
+        "average_depth": 1993.0,
+        "percent_500": 89.9,
+        "average_ntc": 1,
+        "percent_ntc": 0,
+        "hotspot_regions": [
+            {
+                "chr": 4,
+                "pos_start": 55592017,
+                "pos_end": 55592221,
+                "hgvs_c": "KIT(NM_000222.2):c.1347-5_1540+5",
+                "average_coverage": 1479.0,
+                "percent_500": 73.0,
+                "ntc_coverage": 1,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 4,
+                "pos_start": 55593576,
+                "pos_end": 55593713,
+                "hgvs_c": "KIT(NM_000222.2):c.1648-5_1774+5",
+                "average_coverage": 3761.0,
+                "percent_500": 86.9,
+                "ntc_coverage": 3,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 4,
+                "pos_start": 55594171,
+                "pos_end": 55594292,
+                "hgvs_c": "KIT(NM_000222.2):c.1880-5_1990+5",
+                "average_coverage": 1298.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 4,
+                "pos_start": 55595495,
+                "pos_end": 55595656,
+                "hgvs_c": "KIT(NM_000222.2):c.1991-5_2141+5",
+                "average_coverage": 1831.0,
+                "percent_500": 98.1,
+                "ntc_coverage": 2,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 4,
+                "pos_start": 55599230,
+                "pos_end": 55599363,
+                "hgvs_c": "KIT(NM_000222.2):c.2362-5_2484+5",
+                "average_coverage": 1786.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 1,
+                "percent_ntc": 0
+            }
+        ],
+        "gaps_500": []
+    },
+    "EGFR": {
+        "average_depth": 4725.0,
+        "percent_500": 98.2,
+        "average_ntc": 24,
+        "percent_ntc": 0,
+        "hotspot_regions": [
+            {
+                "chr": 7,
+                "pos_start": 55241608,
+                "pos_end": 55241741,
+                "hgvs_c": "EGFR(NM_005228.3):c.2062-5_2184+5",
+                "average_coverage": 4872.0,
+                "percent_500": 91.7,
+                "ntc_coverage": 97,
+                "percent_ntc": 1
+            },
+            {
+                "chr": 7,
+                "pos_start": 55242409,
+                "pos_end": 55242518,
+                "hgvs_c": "EGFR(NM_005228.3):c.2185-5_2283+5",
+                "average_coverage": 4117.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 3,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 7,
+                "pos_start": 55248980,
+                "pos_end": 55249176,
+                "hgvs_c": "EGFR(NM_005228.3):c.2284-5_2469+5",
+                "average_coverage": 4621.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 3,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 7,
+                "pos_start": 55259406,
+                "pos_end": 55259572,
+                "hgvs_c": "EGFR(NM_005228.3):c.2470-5_2625+5",
+                "average_coverage": 5129.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 3,
+                "percent_ntc": 0
+            }
+        ],
+        "gaps_500": []
+    },
+    "BRAF": {
+        "average_depth": 4563.0,
+        "percent_500": 90.7,
+        "average_ntc": 4,
+        "percent_ntc": 0,
+        "hotspot_regions": [
+            {
+                "chr": 7,
+                "pos_start": 140453069,
+                "pos_end": 140453198,
+                "hgvs_c": "BRAF(NM_004333.4):c.1742-5_1860+5",
+                "average_coverage": 5575.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 6,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 7,
+                "pos_start": 140481370,
+                "pos_end": 140481498,
+                "hgvs_c": "BRAF(NM_004333.4):c.1315-5_1432+5",
+                "average_coverage": 3544.0,
+                "percent_500": 81.2,
+                "ntc_coverage": 2,
+                "percent_ntc": 0
+            }
+        ],
+        "gaps_500": []
+    },
+    "RET": {
+        "average_depth": 1297.0,
+        "percent_500": 59.8,
+        "average_ntc": 12,
+        "percent_ntc": 0,
+        "hotspot_regions": [
+            {
+                "chr": 10,
+                "pos_start": 43609065,
+                "pos_end": 43609128,
+                "hgvs_c": "RET(NM_020975.4):c.1821_1879+5",
+                "average_coverage": 1247.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 10,
+                "pos_start": 43609928,
+                "pos_end": 43609971,
+                "hgvs_c": "RET(NM_020975.4):c.1880_1923",
+                "average_coverage": 1727.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 28,
+                "percent_ntc": 1
+            },
+            {
+                "chr": 10,
+                "pos_start": 43613815,
+                "pos_end": 43613933,
+                "hgvs_c": "RET(NM_020975.4):c.2285-5_2392+5",
+                "average_coverage": 358.0,
+                "percent_500": 0.0,
+                "ntc_coverage": 17,
+                "percent_ntc": 4
+            },
+            {
+                "chr": 10,
+                "pos_start": 43615523,
+                "pos_end": 43615656,
+                "hgvs_c": "RET(NM_020975.4):c.2608-5_2730+5",
+                "average_coverage": 970.0,
+                "percent_500": 56.4,
+                "ntc_coverage": 1,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 10,
+                "pos_start": 43617388,
+                "pos_end": 43617469,
+                "hgvs_c": "RET(NM_020975.4):c.2731-5_2801+5",
+                "average_coverage": 3009.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 23,
+                "percent_ntc": 0
+            }
+        ],
+        "gaps_500": []
+    },
+    "PTEN": {
+        "average_depth": 3766.0,
+        "percent_500": 82.8,
+        "average_ntc": 5,
+        "percent_ntc": 0,
+        "hotspot_regions": [
+            {
+                "chr": 10,
+                "pos_start": 89624221,
+                "pos_end": 89624310,
+                "hgvs_c": "PTEN(NM_000314.4):c.-6_79+5",
+                "average_coverage": 5640.0,
+                "percent_500": 79.8,
+                "ntc_coverage": 4,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 10,
+                "pos_start": 89653776,
+                "pos_end": 89653871,
+                "hgvs_c": "PTEN(NM_000314.4):c.80-5_164+5",
+                "average_coverage": 6523.0,
+                "percent_500": 94.7,
+                "ntc_coverage": 5,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 10,
+                "pos_start": 89685264,
+                "pos_end": 89685319,
+                "hgvs_c": "PTEN(NM_000314.4):c.165-5_209+5",
+                "average_coverage": 564.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 10,
+                "pos_start": 89690797,
+                "pos_end": 89690851,
+                "hgvs_c": "PTEN(NM_000314.4):c.210-5_253+5",
+                "average_coverage": 5690.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 4,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 10,
+                "pos_start": 89692764,
+                "pos_end": 89693013,
+                "hgvs_c": "PTEN(NM_000314.4):c.254-5_492+5",
+                "average_coverage": 2724.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 8,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 10,
+                "pos_start": 89711869,
+                "pos_end": 89712021,
+                "hgvs_c": "PTEN(NM_000314.4):c.493-5_634+5",
+                "average_coverage": 5793.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 3,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 10,
+                "pos_start": 89717604,
+                "pos_end": 89717781,
+                "hgvs_c": "PTEN(NM_000314.4):c.635-5_801+5",
+                "average_coverage": 4923.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 4,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 10,
+                "pos_start": 89720645,
+                "pos_end": 89720880,
+                "hgvs_c": "PTEN(NM_000314.4):c.802-5_1026+5",
+                "average_coverage": 2359.0,
+                "percent_500": 41.3,
+                "ntc_coverage": 3,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 10,
+                "pos_start": 89725038,
+                "pos_end": 89725234,
+                "hgvs_c": "PTEN(NM_000314.4):c.1027-5_*5",
+                "average_coverage": 2343.0,
+                "percent_500": 67.9,
+                "ntc_coverage": 5,
+                "percent_ntc": 0
+            }
+        ],
+        "gaps_500": []
+    },
+    "KRAS": {
+        "average_depth": 6010.0,
+        "percent_500": 100.0,
+        "average_ntc": 16,
+        "percent_ntc": 0,
+        "hotspot_regions": [
+            {
+                "chr": 12,
+                "pos_start": 25378542,
+                "pos_end": 25378712,
+                "hgvs_c": "KRAS(NM_004985.3):c.450+6_c.291-5",
+                "average_coverage": 6423.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 26,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 12,
+                "pos_start": 25380162,
+                "pos_end": 25380351,
+                "hgvs_c": "KRAS(NM_004985.3):c.290+6_c.112-5",
+                "average_coverage": 6057.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 16,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 12,
+                "pos_start": 25398202,
+                "pos_end": 25398323,
+                "hgvs_c": "KRAS(NM_004985.3):c.111+6_c.-5",
+                "average_coverage": 5357.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 3,
+                "percent_ntc": 0
+            }
+        ],
+        "gaps_500": []
+    },
+    "IDH2": {
+        "average_depth": 1202.0,
+        "percent_500": 37.8,
+        "average_ntc": 1,
+        "percent_ntc": 0,
+        "hotspot_regions": [
+            {
+                "chr": 15,
+                "pos_start": 90631825,
+                "pos_end": 90631944,
+                "hgvs_c": "IDH2(NM_002168.2):c.409_528",
+                "average_coverage": 1202.0,
+                "percent_500": 37.8,
+                "ntc_coverage": 1,
+                "percent_ntc": 0
+            }
+        ],
+        "gaps_500": []
+    },
+    "TP53": {
+        "average_depth": 3028.0,
+        "percent_500": 85.1,
+        "average_ntc": 5,
+        "percent_ntc": 0,
+        "hotspot_regions": [
+            {
+                "chr": 17,
+                "pos_start": 7572921,
+                "pos_end": 7573013,
+                "hgvs_c": "TP53(NM_000546.4):c.1101-5_*5",
+                "average_coverage": 3011.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 17,
+                "pos_start": 7573921,
+                "pos_end": 7574038,
+                "hgvs_c": "TP53(NM_000546.4):c.994-5_1100+5",
+                "average_coverage": 692.0,
+                "percent_500": 37.6,
+                "ntc_coverage": 7,
+                "percent_ntc": 1
+            },
+            {
+                "chr": 17,
+                "pos_start": 7576524,
+                "pos_end": 7576671,
+                "hgvs_c": "TP53(NM_001276695.1):c.*12+1C>T_(NM_001276696.1):c.877-14C>T",
+                "average_coverage": 2795.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 1,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 17,
+                "pos_start": 7576847,
+                "pos_end": 7576931,
+                "hgvs_c": "TP53(NM_000546.4):c.920-5_993+5",
+                "average_coverage": 8672.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 26,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 17,
+                "pos_start": 7577013,
+                "pos_end": 7577160,
+                "hgvs_c": "TP53(NM_000546.4):c.783-5_919+5",
+                "average_coverage": 3493.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 24,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 17,
+                "pos_start": 7577493,
+                "pos_end": 7577613,
+                "hgvs_c": "TP53(NM_000546.4):c.673-5_782+5",
+                "average_coverage": 946.0,
+                "percent_500": 47.5,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 17,
+                "pos_start": 7578171,
+                "pos_end": 7578294,
+                "hgvs_c": "TP53(NM_000546.4):c.560-5_672+5",
+                "average_coverage": 5055.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 17,
+                "pos_start": 7578365,
+                "pos_end": 7578559,
+                "hgvs_c": "TP53(NM_000546.4):c.376-5_559+5",
+                "average_coverage": 4823.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 4,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 17,
+                "pos_start": 7579306,
+                "pos_end": 7579595,
+                "hgvs_c": "TP53(NM_000546.4):c.97-5_375+5",
+                "average_coverage": 1625.0,
+                "percent_500": 88.2,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 17,
+                "pos_start": 7579694,
+                "pos_end": 7579726,
+                "hgvs_c": "TP53(NM_000546.4):c.75-5_96+5",
+                "average_coverage": 116.0,
+                "percent_500": 0.0,
+                "ntc_coverage": 0,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 17,
+                "pos_start": 7579833,
+                "pos_end": 7579945,
+                "hgvs_c": "TP53(NM_000546.4):c.-28-5_74+5",
+                "average_coverage": 2299.0,
+                "percent_500": 86.6,
+                "ntc_coverage": 2,
+                "percent_ntc": 0
+            }
+        ],
+        "gaps_500": []
+    },
+    "ERBB2": {
+        "average_depth": 4336.0,
+        "percent_500": 94.9,
+        "average_ntc": 8,
+        "percent_ntc": 0,
+        "hotspot_regions": [
+            {
+                "chr": 17,
+                "pos_start": 37868175,
+                "pos_end": 37868305,
+                "hgvs_c": "ERBB2(NM_004448.2):c.902-6_c.1021+5",
+                "average_coverage": 1971.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 1,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 17,
+                "pos_start": 37879566,
+                "pos_end": 37879715,
+                "hgvs_c": "ERBB2(NM_004448.2):c.1947-6_c.2085+5",
+                "average_coverage": 8631.0,
+                "percent_500": 71.1,
+                "ntc_coverage": 5,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 17,
+                "pos_start": 37880159,
+                "pos_end": 37880268,
+                "hgvs_c": "ERBB2(NM_004448.2):c.2209-6_c.2307+5",
+                "average_coverage": 2588.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 2,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 17,
+                "pos_start": 37880973,
+                "pos_end": 37881169,
+                "hgvs_c": "ERBB2(NM_004448.2):c.2308-6_c.2493+5",
+                "average_coverage": 5692.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 1,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 17,
+                "pos_start": 37881296,
+                "pos_end": 37881462,
+                "hgvs_c": "ERBB2(NM_004448.2):c.2494-6_c.2649+5",
+                "average_coverage": 2692.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 31,
+                "percent_ntc": 1
+            },
+            {
+                "chr": 17,
+                "pos_start": 37881574,
+                "pos_end": 37881660,
+                "hgvs_c": "ERBB2(NM_004448.2):c.2650-6_2725+5",
+                "average_coverage": 2767.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 6,
+                "percent_ntc": 0
+            }
+        ],
+        "gaps_500": []
+    }
+}

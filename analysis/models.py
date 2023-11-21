@@ -85,6 +85,8 @@ class Panel(models.Model):
         ('1', 'TSO500 DNA'),
         ('2', 'TSO500 RNA'),
         ('3', 'TSO500 ctDNA'),
+        ('4', 'GeneRead CRM'),
+        ('5', 'GeneRead BRCA'),
     )
     panel_name = models.CharField(max_length=50)
     pretty_print = models.CharField(max_length=100)
@@ -97,7 +99,7 @@ class Panel(models.Model):
     # snv settings
     show_snvs = models.BooleanField()
     show_myeloid_gaps_summary = models.BooleanField(default=False)
-    depth_cutoffs = models.CharField(max_length=50, blank=True, null=True) # either 135,270 or 1000, comma seperated, no spaces
+    depth_cutoffs = models.CharField(max_length=50, blank=True, null=True) # either 135,270, 500 or 1000, comma seperated, no spaces
     vaf_cutoff = models.DecimalField(decimal_places=5, max_digits=10, blank=True, null=True) # formatted as e.g. 1.4%, not 0.014
     manual_review_required = models.BooleanField(default=False)
     manual_review_desc = models.CharField(max_length=200, blank=True, null=True) # pipe seperated, no spaces
@@ -332,6 +334,14 @@ class VariantList(models.Model):
     name = models.CharField(max_length=50, primary_key=True)
     list_type = models.CharField(max_length=1, choices=TYPE_CHOICES)
     genome_build = models.IntegerField(default=37)
+    assay = models.CharField(blank=True, max_length=1, choices=Panel.ASSAY_CHOICES)
+
+    def header(self):
+        if self.genome_build == 37:
+            build_css = 'info'
+        elif self.genome_build == 38:
+            build_css = 'success'
+        return f'{self.get_assay_display()} {self.get_list_type_display()} list <span class="badge badge-{build_css}">GRCh{self.genome_build}</span>'
 
 
 class VariantToVariantList(models.Model):
@@ -342,6 +352,7 @@ class VariantToVariantList(models.Model):
     variant_list = models.ForeignKey('VariantList', on_delete=models.CASCADE)
     variant = models.ForeignKey('Variant', on_delete=models.CASCADE)
     classification = models.CharField(max_length=50, blank=True, null=True)
+    vaf_cutoff = models.DecimalField(decimal_places=5, max_digits=10, default=0.0)
     upload_user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True, related_name='upload_user')
     upload_time = models.DateTimeField(blank=True, null=True)
     upload_comment = models.CharField(max_length=500, blank=True, null=True)
@@ -378,6 +389,7 @@ class GeneCoverageAnalysis(models.Model):
     av_coverage = models.IntegerField()
     percent_135x = models.IntegerField(blank=True, null=True)
     percent_270x = models.IntegerField(blank=True, null=True)
+    percent_500x = models.IntegerField(blank=True, null=True)
     percent_1000x = models.IntegerField(blank=True, null=True)
     av_ntc_coverage = models.IntegerField()
     percent_ntc = models.IntegerField()
@@ -402,6 +414,7 @@ class RegionCoverageAnalysis(models.Model):
     average_coverage = models.IntegerField()
     percent_135x = models.IntegerField(blank=True, null=True)
     percent_270x = models.IntegerField(blank=True, null=True)
+    percent_500x = models.IntegerField(blank=True, null=True)
     percent_1000x = models.IntegerField(blank=True, null=True)
     ntc_coverage = models.IntegerField()
     percent_ntc = models.IntegerField()

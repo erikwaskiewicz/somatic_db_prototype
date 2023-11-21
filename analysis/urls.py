@@ -20,4 +20,5 @@ urlpatterns = [
     path('ajax/submit_variant_selections/', views.ajax, name='ajax'),
 
     path('variant_lists/polys/<str:list_name>', views.view_polys, name='view_polys'),
+    path('variant_lists/artefacts/<str:list_name>', views.view_artefacts, name='view_artefacts'),
 ]
