@@ -113,6 +113,7 @@ class Command(BaseCommand):
         """
         percent_135x = region.get('percent_135', None)
         percent_270x = region.get('percent_270', None)
+        percent_500x = region.get('percent_500', None)
         percent_1000x = region.get('percent_1000', None)
 
         new_regions_obj = RegionCoverageAnalysis(
@@ -126,6 +127,7 @@ class Command(BaseCommand):
             average_coverage = region['average_coverage'],
             percent_135x = percent_135x,
             percent_270x = percent_270x,
+            percent_500x = percent_500x,
             percent_1000x = percent_1000x,
             ntc_coverage = region['ntc_coverage'],
             percent_ntc = region['percent_ntc'],
@@ -175,6 +177,8 @@ class Command(BaseCommand):
             'TSO500_DNA': '1',
             'TSO500_RNA': '2',
             'TSO500_ctDNA': '3',
+            'GeneRead_CRM': '4',
+            'GeneRead_BRCA': '5',
         }
         if assay not in assay_choices.keys():
             print(f'ERROR\t{datetime.now()}\timport.py\tUnknown assay - {assay}')
@@ -394,6 +398,7 @@ class Command(BaseCommand):
                 # get the coverage values, if they're missing default to none
                 percent_135x = values.get('percent_135', None)
                 percent_270x = values.get('percent_270', None)
+                percent_500x = values.get('percent_500', None)
                 percent_1000x = values.get('percent_1000', None)
 
                 # save to db
@@ -403,173 +408,186 @@ class Command(BaseCommand):
                     av_coverage=values['average_depth'],
                     percent_135x=percent_135x,
                     percent_270x=percent_270x,
+                    percent_500x=percent_500x,
                     percent_1000x=percent_1000x,
                     av_ntc_coverage=values['average_ntc'],
                     percent_ntc=values['percent_ntc'],
                 )
                 new_gene_coverage_obj.save()
 
+                # genescreen region
+                if 'genescreen_regions' in values:
+                    for r in values['genescreen_regions']:
+                        if isinstance(r, list):
+                            self.add_regions_from_list(r, 'G', new_gene_coverage_obj)
+
+                        elif isinstance(r, dict):
+                            self.add_regions_from_dict(r, 'G', new_gene_coverage_obj)
+
+
                 # hotspot regions
-                for r in values['hotspot_regions']:
-                    if isinstance(r, list):
-                        self.add_regions_from_list(r, 'H', new_gene_coverage_obj)
-
-                    elif isinstance(r, dict):
-                        self.add_regions_from_dict(r, 'H', new_gene_coverage_obj)
-
-                # genescreen regions
-                for r in values['genescreen_regions']:
-                    if isinstance(r, list):
-                        self.add_regions_from_list(r, 'G', new_gene_coverage_obj)
-
-                    elif isinstance(r, dict):
-                        self.add_regions_from_dict(r, 'G', new_gene_coverage_obj)
-
-                # gaps 135x
-                if '135' in coverage_thresholds:
-                    for gap in values['gaps_135']:
+                if 'hotspot_regions' in values:
+                    for r in values['hotspot_regions']:
                         if isinstance(r, list):
-                            self.add_gaps_from_list(gap, '135', new_gene_coverage_obj)
+                            self.add_regions_from_list(r, 'H', new_gene_coverage_obj)
 
                         elif isinstance(r, dict):
-                            self.add_gaps_from_dict(gap, '135', new_gene_coverage_obj)
+                            self.add_regions_from_dict(r, 'H', new_gene_coverage_obj)
 
-                # gaps 270x
-                if '270' in coverage_thresholds:
-                    for gap in values['gaps_270']:
-                        if isinstance(r, list):
-                            self.add_gaps_from_list(gap, '270', new_gene_coverage_obj)
+                    # gaps 135x
+                    if '135' in coverage_thresholds:
+                        for gap in values['gaps_135']:
+                            if isinstance(r, list):
+                                self.add_gaps_from_list(gap, '135', new_gene_coverage_obj)
 
-                        elif isinstance(r, dict):
-                            self.add_gaps_from_dict(gap, '270', new_gene_coverage_obj)
+                            elif isinstance(r, dict):
+                                self.add_gaps_from_dict(gap, '135', new_gene_coverage_obj)
 
-                # gaps 1000x
-                if '1000' in coverage_thresholds:
-                    for gap in values['gaps_1000']:
-                        if isinstance(r, list):
-                            self.add_gaps_from_list(gap, '1000', new_gene_coverage_obj)
+                    # gaps 270x
+                    if '270' in coverage_thresholds:
+                        for gap in values['gaps_270']:
+                            if isinstance(r, list):
+                                self.add_gaps_from_list(gap, '270', new_gene_coverage_obj)
 
-                        elif isinstance(r, dict):
-                            self.add_gaps_from_dict(gap, '1000', new_gene_coverage_obj)
+                            elif isinstance(r, dict):
+                                self.add_gaps_from_dict(gap, '270', new_gene_coverage_obj)
+
+                    # gaps 500
+                    if '500' in coverage_thresholds:
+                        for gap in values['gaps_500']:
+                            if isinstance(r, list):
+                                self.add_gaps_from_list(gap, '500', new_gene_coverage_obj)
+
+                            elif isinstance(r, dict):
+                                self.add_gaps_from_dict(gap, '500', new_gene_coverage_obj)
+
+                    # gaps 1000x
+                    if '1000' in coverage_thresholds:
+                        for gap in values['gaps_1000']:
+                            if isinstance(r, list):
+                                self.add_gaps_from_list(gap, '1000', new_gene_coverage_obj)
+
+                            elif isinstance(r, dict):
+                                self.add_gaps_from_dict(gap, '1000', new_gene_coverage_obj)
 
             # logging
             print(f'INFO\t{datetime.now()}\timport.py\tFinished uploading coverage data successfully')
 
 
-        # ---------------------------------------------------------------------------------------------------------
-        # fusions
-        # ---------------------------------------------------------------------------------------------------------
+            # ---------------------------------------------------------------------------------------------------------
+            # fusions
+            # ---------------------------------------------------------------------------------------------------------
 
-        if panel_obj.show_fusions:
-            fusions_file = options['fusions'][0]
+            if panel_obj.show_fusions:
+                fusions_file = options['fusions'][0]
 
-            # check that inputs are valid
-            if not os.path.isfile(fusions_file):
-                print(f'ERROR\t{datetime.now()}\timport.py\t{fusions_file} file does not exist')
-                raise IOError(f'{fusions_file} file does not exist')
+                # check that inputs are valid
+                if not os.path.isfile(fusions_file):
+                    print(f'ERROR\t{datetime.now()}\timport.py\t{fusions_file} file does not exist')
+                    raise IOError(f'{fusions_file} file does not exist')
 
-            # load in virtual panel, handle empty strings as they cant be split
-            splicing, fusions = [], []
-            if panel_obj.splice_genes:
-                splicing = panel_obj.splice_genes.split(',')
-            if panel_obj.fusion_genes:
-                fusions = panel_obj.fusion_genes.split(',')
-            
-            # make panel dictionary
-            virtual_panel = {
-                'splicing': splicing,
-                'fusions': fusions,
-            }
-
-            # logging
-            fusion_counter = 0
-            print(f'INFO\t{datetime.now()}\timport.py\tUploading fusions...')
-
-            # load in fusion calls
-            with open(fusions_file) as f:
-
-                # make dictionary of calls and loop through
-                reader = csv.DictReader(f, delimiter=',')
-                for f in reader:
-
-                    # format fusion field and filter panel
-                    in_panel = False
-                    
-                    # splice variants
-                    if f['type'] == 'Splice':
-                        # add exon number to gene name
-                        fusion = f"{f['fusion']} {f['exons']}"
-
-                        # check splicing gene list and set variable if matches
-                        if 'splicing' in virtual_panel.keys():
-                            if f['fusion'] in virtual_panel['splicing']:
-                                in_panel = True
-
-                    # gene fusions
-                    elif f['type'] == 'Fusion':
-                        # use pipeline output directly (will be GENE_A--GENE_B)
-                        fusion = f['fusion']
-
-                        # check fusion gene list and set variable if matches
-                        for g in virtual_panel['fusions']:
-                            if g in fusion:
-                                in_panel = True
-
-                    # add record for fusion (regardless of whether it's in the panel or not)
-                    new_fusion, created = Fusion.objects.get_or_create(
-                        fusion_genes = fusion,
-                        left_breakpoint = f['left_breakpoint'],
-                        right_breakpoint = f['right_breakpoint'],
-                        genome_build = genome_build
-                    )
-
-                    # if the fusion was in the panel, make a fusion instance
-                    if in_panel:
-                        # logging
-                        if debug:
-                            print(f'DEBUG\t{datetime.now()}\timport.py\tAdding fusion: {f}')
-
-                        # add fusion instance object
-                        new_fusion_instance = FusionAnalysis(
-                            sample = new_sample_analysis,
-                            fusion_genes = new_fusion,
-                            fusion_supporting_reads = f['fusion_supporting_reads'],
-                            ref_reads_1 = f['reference_reads_1'],
-                            fusion_caller = f['type'],
-                            in_ntc = f['in_ntc'],
-                        )
-                        # some variables aren't always included in pipeline output (particularly for splice variants)
-                        if f['reference_reads_2'] not in ['', 'NA']:
-                            new_fusion_instance.ref_reads_2 = f['reference_reads_2']
-                        if f['fusion_score'] != '':
-                            new_fusion_instance.fusion_score = f['fusion_score']
-                        if f['split_reads'] != '':
-                            new_fusion_instance.split_reads = f['split_reads']
-                        if f['split_reads'] != '':
-                            new_fusion_instance.spanning_reads = f['spanning_reads']
-                        new_fusion_instance.save()
-
-                        # set up virtual panel
-                        new_fusion_analysis = FusionPanelAnalysis(
-                            sample_analysis = new_sample_analysis,
-                            fusion_instance = new_fusion_instance,
-                        )
-                        new_fusion_analysis.save()
-
-                        # set up check object
-                        new_fusion_check = FusionCheck(
-                            fusion_analysis = new_fusion_analysis,
-                            check_object = new_check,
-                        )
-                        new_fusion_check.save()
-
-                        # logging
-                        fusion_counter += 1
-                        if debug:
-                            print(f'DEBUG\t{datetime.now()}\timport.py\tFusion added successfully')
+                # load in virtual panel, handle empty strings as they cant be split
+                splicing, fusions = [], []
+                if panel_obj.splice_genes:
+                    splicing = panel_obj.splice_genes.split(',')
+                if panel_obj.fusion_genes:
+                    fusions = panel_obj.fusion_genes.split(',')
+                
+                # make panel dictionary
+                virtual_panel = {
+                    'splicing': splicing,
+                    'fusions': fusions,
+                }
 
                 # logging
-                print(f'INFO\t{datetime.now()}\timport.py\tFinished uploading successfully - added {fusion_counter} fusions(s)')
+                fusion_counter = 0
+                print(f'INFO\t{datetime.now()}\timport.py\tUploading fusions...')
 
-        # close
-        print(f'INFO\t{datetime.now()}\timport.py\tFinished import.py script successfully')
+                # load in fusion calls
+                with open(fusions_file) as f:
+
+                    # make dictionary of calls and loop through
+                    reader = csv.DictReader(f, delimiter=',')
+                    for f in reader:
+
+                        # format fusion field and filter panel
+                        in_panel = False
+                        
+                        # splice variants
+                        if f['type'] == 'Splice':
+                            # add exon number to gene name
+                            fusion = f"{f['fusion']} {f['exons']}"
+
+                            # check splicing gene list and set variable if matches
+                            if 'splicing' in virtual_panel.keys():
+                                if f['fusion'] in virtual_panel['splicing']:
+                                    in_panel = True
+
+                        # gene fusions
+                        elif f['type'] == 'Fusion':
+                            # use pipeline output directly (will be GENE_A--GENE_B)
+                            fusion = f['fusion']
+
+                            # check fusion gene list and set variable if matches
+                            for g in virtual_panel['fusions']:
+                                if g in fusion:
+                                    in_panel = True
+
+                        # add record for fusion (regardless of whether it's in the panel or not)
+                        new_fusion, created = Fusion.objects.get_or_create(
+                            fusion_genes = fusion,
+                            left_breakpoint = f['left_breakpoint'],
+                            right_breakpoint = f['right_breakpoint'],
+                            genome_build = genome_build
+                        )
+
+                        # if the fusion was in the panel, make a fusion instance
+                        if in_panel:
+                            # logging
+                            if debug:
+                                print(f'DEBUG\t{datetime.now()}\timport.py\tAdding fusion: {f}')
+
+                            # add fusion instance object
+                            new_fusion_instance = FusionAnalysis(
+                                sample = new_sample_analysis,
+                                fusion_genes = new_fusion,
+                                fusion_supporting_reads = f['fusion_supporting_reads'],
+                                ref_reads_1 = f['reference_reads_1'],
+                                fusion_caller = f['type'],
+                                in_ntc = f['in_ntc'],
+                            )
+                            # some variables aren't always included in pipeline output (particularly for splice variants)
+                            if f['reference_reads_2'] not in ['', 'NA']:
+                                new_fusion_instance.ref_reads_2 = f['reference_reads_2']
+                            if f['fusion_score'] != '':
+                                new_fusion_instance.fusion_score = f['fusion_score']
+                            if f['split_reads'] != '':
+                                new_fusion_instance.split_reads = f['split_reads']
+                            if f['split_reads'] != '':
+                                new_fusion_instance.spanning_reads = f['spanning_reads']
+                            new_fusion_instance.save()
+
+                            # set up virtual panel
+                            new_fusion_analysis = FusionPanelAnalysis(
+                                sample_analysis = new_sample_analysis,
+                                fusion_instance = new_fusion_instance,
+                            )
+                            new_fusion_analysis.save()
+
+                            # set up check object
+                            new_fusion_check = FusionCheck(
+                                fusion_analysis = new_fusion_analysis,
+                                check_object = new_check,
+                            )
+                            new_fusion_check.save()
+
+                            # logging
+                            fusion_counter += 1
+                            if debug:
+                                print(f'DEBUG\t{datetime.now()}\timport.py\tFusion added successfully')
+
+                    # logging
+                    print(f'INFO\t{datetime.now()}\timport.py\tFinished uploading successfully - added {fusion_counter} fusions(s)')
+
+            # close
+            print(f'INFO\t{datetime.now()}\timport.py\tFinished import.py script successfully')

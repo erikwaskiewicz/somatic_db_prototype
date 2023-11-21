@@ -54,6 +54,7 @@
                     <region_name>{{ gene }}</region_name>
                     <percent_135x>{{ values.percent_135x }}</percent_135x>
                     <percent_270x>{{ values.percent_270x }}</percent_270x>
+                    <percent_500x>{{ values.percent_500x }}</percent_500x>
                     <percent_1000x>{{ values.percent_1000x }}</percent_1000x>
                 </region>
                 {% endfor %}
@@ -81,6 +82,16 @@
                 {% endfor %}
                 {% endfor %}
             </gaps_270x>
+            <gaps_500x>
+                {% for gene, values in coverage_data.regions.items %}
+                {% for gap in values.gaps_500 %}
+                <gap>
+                    <region_name>{{ gap.hgvs_c }}</region_name>
+                    <cosmic>{{ gap.percent_cosmic }}</cosmic>
+                </gap>
+                {% endfor %}
+                {% endfor %}
+            </gaps_500x>
             <gaps_1000x>
                 {% for gene, values in coverage_data.regions.items %}
                 {% for gap in values.gaps_1000 %}
