@@ -1,5 +1,6 @@
 from django.test import TestCase
 from analysis.utils import *
+from analysis.models import *
 
 from decimal import Decimal
 
@@ -1959,3 +1960,80 @@ class TestChecks(TestCase):
         # loop through and test each line
         for line in failed_checks:
             self.assertEqual(complete_checks(line), expected_out)
+
+
+class TestGnomad(TestCase):
+    """
+    Correctly handle displaying the Gnomad scores and links
+
+    """
+    def setUp(self):
+        ''' runs before each test '''
+        # make mock sample object
+        self.sample_obj = Sample(sample_id='test_sample')
+
+        # make mock variant object, build 37 for most tests as build doesnt matter for most
+        self.variant_obj = Variant(variant='1:2345C>G', genome_build=37)
+
+        # make mock variant instance, gnomad values will be added in each test
+        self.variant_instance_obj = VariantInstance(
+            sample = self.sample_obj,
+            variant = self.variant_obj,
+            gene = 'BRAF',
+            exon = '1/5',
+            hgvs_c = 'c.12345C>G',
+            hgvs_p = 'p.Ala456Arg',
+            total_count = 10,
+            alt_count = 1,
+            in_ntc = False,
+            manual_upload = False,
+            final_decision = '-',
+        )
+
+    # test the gnomad display function with a range of values
+    def test_gnomad_display_null(self):
+        ''' if gnomad score is None '''
+        self.variant_instance_obj.gnomad_popmax = None
+        self.assertEqual(self.variant_instance_obj.gnomad_display(), '')
+
+    def test_gnomad_display_not_in_gnomad(self):
+        ''' if the variant is not found in gnomad '''
+        self.variant_instance_obj.gnomad_popmax = -1.00000
+        self.assertEqual(self.variant_instance_obj.gnomad_display(), 'Not found')
+
+    def test_gnomad_display_with_values_0(self):
+        ''' if variant in gnomad but not present in any population '''
+        self.variant_instance_obj.gnomad_popmax = 0
+        self.assertEqual(self.variant_instance_obj.gnomad_display(), '0.00%')
+
+    def test_gnomad_display_with_values_very_small(self):
+        ''' very low AF in gnomad, 2dp, should round up '''
+        self.variant_instance_obj.gnomad_popmax = 0.00001
+        self.assertEqual(self.variant_instance_obj.gnomad_display(), '0.01%')
+
+    def test_gnomad_display_with_values_10(self):
+        ''' medium value '''
+        self.variant_instance_obj.gnomad_popmax = 0.1
+        self.assertEqual(self.variant_instance_obj.gnomad_display(), '10.00%')
+
+    def test_gnomad_display_with_values_100(self):
+        ''' 100% in gnomad '''
+        self.variant_instance_obj.gnomad_popmax = 1
+        self.assertEqual(self.variant_instance_obj.gnomad_display(), '100.00%')
+
+    # test the gnomad link function with a range of values
+    def test_gnomad_link_37(self):
+        ''' link if build 37 '''
+        self.variant_obj.genome_build=37
+        self.assertEqual(self.variant_instance_obj.gnomad_link(), 'https://gnomad.broadinstitute.org/variant/1:2345C>G?dataset=gnomad_r2_1')
+
+    def test_gnomad_link_38(self):
+        ''' link if build 38 '''
+        self.variant_obj.genome_build=38
+        self.assertEqual(self.variant_instance_obj.gnomad_link(), 'https://gnomad.broadinstitute.org/variant/1:2345C>G?dataset=gnomad_r3')
+
+    def test_gnomad_link_invalid_build(self):
+        ''' value error should be thrown if not build 37 or 38 '''
+        self.variant_obj.genome_build=100
+        with self.assertRaises(ValueError):
+            self.variant_instance_obj.gnomad_link()

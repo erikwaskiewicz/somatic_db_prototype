@@ -261,28 +261,47 @@ class VariantInstance(models.Model):
     final_decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
 
     def vaf(self):
-        """
-        calculate VAF of variant from total and alt read counts
-        VAF is always displayed to two decimal places
-
-        """
+        """ calculate VAF of variant from total and alt read counts """
         vaf = decimal.Decimal(self.alt_count / self.total_count) * 100
-        vaf_rounded = vaf.quantize(decimal.Decimal('.01'), rounding = decimal.ROUND_DOWN)
+        vaf_rounded = vaf.quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_DOWN)
 
         return vaf_rounded
 
     def vaf_ntc(self):
-        """
-        calculate VAF of NTC variant if its seen in NTC, otherwise return None
-        VAF is always displayed to two decimal places
-
-        """
+        """ calculate VAF of NTC variant if its seen in NTC, otherwise return None """
         if self.in_ntc:
             vaf = decimal.Decimal(self.alt_count_ntc / self.total_count_ntc) * 100
-            vaf_rounded = vaf.quantize(decimal.Decimal('.01'), rounding = decimal.ROUND_DOWN)
+            vaf_rounded = vaf.quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_DOWN)
             return vaf_rounded
         else:
             return None
+
+    def gnomad_display(self):
+        """ format the Gnoamd popmax AF into human readable text """
+        # gnomad score missing in older runs
+        if self.gnomad_popmax == None:
+            return ''
+        # -1 means that the variant is missing from gnomad
+        elif self.gnomad_popmax == -1.00000:
+            return 'Not found'
+        # otherwise, format the value as a percentage, round up to prevent very low AFs appearing as 0
+        else:
+            gnomad_popmax = decimal.Decimal(self.gnomad_popmax * 100)
+            popmax_rounded = gnomad_popmax.quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_UP)
+            return f'{popmax_rounded}%'
+
+    def gnomad_link(self):
+        """ link to the Gnomad webpage """
+        genome_build = self.variant.genome_build
+        var = self.variant.variant
+
+        # format link specific to genome build
+        if genome_build == 37:
+            return f'https://gnomad.broadinstitute.org/variant/{var}?dataset=gnomad_r2_1'
+        elif genome_build == 38:
+            return f'https://gnomad.broadinstitute.org/variant/{var}?dataset=gnomad_r3'
+        else:
+            raise ValueError('Genome build should be either 37 or 38')
 
 
 class VariantPanelAnalysis(models.Model):
