@@ -474,120 +474,120 @@ class Command(BaseCommand):
             print(f'INFO\t{datetime.now()}\timport.py\tFinished uploading coverage data successfully')
 
 
-            # ---------------------------------------------------------------------------------------------------------
-            # fusions
-            # ---------------------------------------------------------------------------------------------------------
+        # ---------------------------------------------------------------------------------------------------------
+        # fusions
+        # ---------------------------------------------------------------------------------------------------------
 
-            if panel_obj.show_fusions:
-                fusions_file = options['fusions'][0]
+        if panel_obj.show_fusions:
+            fusions_file = options['fusions'][0]
 
-                # check that inputs are valid
-                if not os.path.isfile(fusions_file):
-                    print(f'ERROR\t{datetime.now()}\timport.py\t{fusions_file} file does not exist')
-                    raise IOError(f'{fusions_file} file does not exist')
+            # check that inputs are valid
+            if not os.path.isfile(fusions_file):
+                print(f'ERROR\t{datetime.now()}\timport.py\t{fusions_file} file does not exist')
+                raise IOError(f'{fusions_file} file does not exist')
 
-                # load in virtual panel, handle empty strings as they cant be split
-                splicing, fusions = [], []
-                if panel_obj.splice_genes:
-                    splicing = panel_obj.splice_genes.split(',')
-                if panel_obj.fusion_genes:
-                    fusions = panel_obj.fusion_genes.split(',')
+            # load in virtual panel, handle empty strings as they cant be split
+            splicing, fusions = [], []
+            if panel_obj.splice_genes:
+                splicing = panel_obj.splice_genes.split(',')
+            if panel_obj.fusion_genes:
+                fusions = panel_obj.fusion_genes.split(',')
                 
-                # make panel dictionary
-                virtual_panel = {
-                    'splicing': splicing,
-                    'fusions': fusions,
-                }
+            # make panel dictionary
+            virtual_panel = {
+                'splicing': splicing,
+                'fusions': fusions,
+            }
+
+            # logging
+            fusion_counter = 0
+            print(f'INFO\t{datetime.now()}\timport.py\tUploading fusions...')
+
+            # load in fusion calls
+            with open(fusions_file) as f:
+
+                # make dictionary of calls and loop through
+                reader = csv.DictReader(f, delimiter=',')
+                for f in reader:
+
+                    # format fusion field and filter panel
+                    in_panel = False
+                        
+                    # splice variants
+                    if f['type'] == 'Splice':
+                        # add exon number to gene name
+                        fusion = f"{f['fusion']} {f['exons']}"
+
+                        # check splicing gene list and set variable if matches
+                        if 'splicing' in virtual_panel.keys():
+                            if f['fusion'] in virtual_panel['splicing']:
+                                in_panel = True
+
+                    # gene fusions
+                    elif f['type'] == 'Fusion':
+                        # use pipeline output directly (will be GENE_A--GENE_B)
+                        fusion = f['fusion']
+
+                        # check fusion gene list and set variable if matches
+                        for g in virtual_panel['fusions']:
+                            if g in fusion:
+                                in_panel = True
+
+                    # add record for fusion (regardless of whether it's in the panel or not)
+                    new_fusion, created = Fusion.objects.get_or_create(
+                        fusion_genes = fusion,
+                        left_breakpoint = f['left_breakpoint'],
+                        right_breakpoint = f['right_breakpoint'],
+                        genome_build = genome_build
+                    )
+
+                    # if the fusion was in the panel, make a fusion instance
+                    if in_panel:
+                        # logging
+                        if debug:
+                            print(f'DEBUG\t{datetime.now()}\timport.py\tAdding fusion: {f}')
+
+                        # add fusion instance object
+                        new_fusion_instance = FusionAnalysis(
+                            sample = new_sample_analysis,
+                            fusion_genes = new_fusion,
+                            fusion_supporting_reads = f['fusion_supporting_reads'],
+                            ref_reads_1 = f['reference_reads_1'],
+                            fusion_caller = f['type'],
+                            in_ntc = f['in_ntc'],
+                        )
+                        # some variables aren't always included in pipeline output (particularly for splice variants)
+                        if f['reference_reads_2'] not in ['', 'NA']:
+                            new_fusion_instance.ref_reads_2 = f['reference_reads_2']
+                        if f['fusion_score'] != '':
+                            new_fusion_instance.fusion_score = f['fusion_score']
+                        if f['split_reads'] != '':
+                            new_fusion_instance.split_reads = f['split_reads']
+                        if f['split_reads'] != '':
+                            new_fusion_instance.spanning_reads = f['spanning_reads']
+                        new_fusion_instance.save()
+
+                        # set up virtual panel
+                        new_fusion_analysis = FusionPanelAnalysis(
+                            sample_analysis = new_sample_analysis,
+                            fusion_instance = new_fusion_instance,
+                        )
+                        new_fusion_analysis.save()
+
+                        # set up check object
+                        new_fusion_check = FusionCheck(
+                            fusion_analysis = new_fusion_analysis,
+                            check_object = new_check,
+                        )
+                        new_fusion_check.save()
+
+                        # logging
+                        fusion_counter += 1
+                        if debug:
+                            print(f'DEBUG\t{datetime.now()}\timport.py\tFusion added successfully')
 
                 # logging
-                fusion_counter = 0
-                print(f'INFO\t{datetime.now()}\timport.py\tUploading fusions...')
+                print(f'INFO\t{datetime.now()}\timport.py\tFinished uploading successfully - added {fusion_counter} fusions(s)')
 
-                # load in fusion calls
-                with open(fusions_file) as f:
-
-                    # make dictionary of calls and loop through
-                    reader = csv.DictReader(f, delimiter=',')
-                    for f in reader:
-
-                        # format fusion field and filter panel
-                        in_panel = False
-                        
-                        # splice variants
-                        if f['type'] == 'Splice':
-                            # add exon number to gene name
-                            fusion = f"{f['fusion']} {f['exons']}"
-
-                            # check splicing gene list and set variable if matches
-                            if 'splicing' in virtual_panel.keys():
-                                if f['fusion'] in virtual_panel['splicing']:
-                                    in_panel = True
-
-                        # gene fusions
-                        elif f['type'] == 'Fusion':
-                            # use pipeline output directly (will be GENE_A--GENE_B)
-                            fusion = f['fusion']
-
-                            # check fusion gene list and set variable if matches
-                            for g in virtual_panel['fusions']:
-                                if g in fusion:
-                                    in_panel = True
-
-                        # add record for fusion (regardless of whether it's in the panel or not)
-                        new_fusion, created = Fusion.objects.get_or_create(
-                            fusion_genes = fusion,
-                            left_breakpoint = f['left_breakpoint'],
-                            right_breakpoint = f['right_breakpoint'],
-                            genome_build = genome_build
-                        )
-
-                        # if the fusion was in the panel, make a fusion instance
-                        if in_panel:
-                            # logging
-                            if debug:
-                                print(f'DEBUG\t{datetime.now()}\timport.py\tAdding fusion: {f}')
-
-                            # add fusion instance object
-                            new_fusion_instance = FusionAnalysis(
-                                sample = new_sample_analysis,
-                                fusion_genes = new_fusion,
-                                fusion_supporting_reads = f['fusion_supporting_reads'],
-                                ref_reads_1 = f['reference_reads_1'],
-                                fusion_caller = f['type'],
-                                in_ntc = f['in_ntc'],
-                            )
-                            # some variables aren't always included in pipeline output (particularly for splice variants)
-                            if f['reference_reads_2'] not in ['', 'NA']:
-                                new_fusion_instance.ref_reads_2 = f['reference_reads_2']
-                            if f['fusion_score'] != '':
-                                new_fusion_instance.fusion_score = f['fusion_score']
-                            if f['split_reads'] != '':
-                                new_fusion_instance.split_reads = f['split_reads']
-                            if f['split_reads'] != '':
-                                new_fusion_instance.spanning_reads = f['spanning_reads']
-                            new_fusion_instance.save()
-
-                            # set up virtual panel
-                            new_fusion_analysis = FusionPanelAnalysis(
-                                sample_analysis = new_sample_analysis,
-                                fusion_instance = new_fusion_instance,
-                            )
-                            new_fusion_analysis.save()
-
-                            # set up check object
-                            new_fusion_check = FusionCheck(
-                                fusion_analysis = new_fusion_analysis,
-                                check_object = new_check,
-                            )
-                            new_fusion_check.save()
-
-                            # logging
-                            fusion_counter += 1
-                            if debug:
-                                print(f'DEBUG\t{datetime.now()}\timport.py\tFusion added successfully')
-
-                    # logging
-                    print(f'INFO\t{datetime.now()}\timport.py\tFinished uploading successfully - added {fusion_counter} fusions(s)')
-
-            # close
-            print(f'INFO\t{datetime.now()}\timport.py\tFinished import.py script successfully')
+        # close
+        print(f'INFO\t{datetime.now()}\timport.py\tFinished import.py script successfully')
