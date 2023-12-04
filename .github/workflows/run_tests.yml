@@ -1,0 +1,35 @@
+# This workflow will install Python dependencies, and run unit tests
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Run Tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+    - name: Set up Conda
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        miniconda-version: "latest"
+        auto-activate-base: false
+        activate-environment: somatic_variant_db
+        environment-file: env.yaml
+    - name: Test Analysis with Django test
+      run: |
+        export DJANGO_SETTINGS_MODULE=somatic_variant_db.workflow_settings
+        python manage.py test
