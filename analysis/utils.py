@@ -430,11 +430,6 @@ def get_variant_info(sample_data, sample_obj):
         except IndexError:
             transcript = ''
 
-        # handle when missing from gnomad
-        gnomad_popmax = sample_variant.variant_instance.gnomad_popmax
-        if gnomad_popmax == -1.00000:
-            gnomad_popmax = 'Not found'
-
         #Create a variant calls dictionary to pass to analysis-snvs.html
         variant_calls_dict = {
             'pk': sample_variant.pk,
@@ -449,7 +444,8 @@ def get_variant_info(sample_data, sample_obj):
             'hgvs_c_short': hgvs_c_short,
             'hgvs_p_short': hgvs_p_short,
             'transcript': transcript,
-            'gnomad_popmax': gnomad_popmax,
+            'gnomad_popmax': sample_variant.variant_instance.gnomad_display(),
+            'gnomad_link': sample_variant.variant_instance.gnomad_link(),
             'this_run': {
                 'ntc': sample_variant.variant_instance.in_ntc,
                 'alt_count_ntc': sample_variant.variant_instance.alt_count_ntc,
