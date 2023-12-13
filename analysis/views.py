@@ -14,15 +14,12 @@ from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatien
     EditedPasswordChangeForm, EditedUserCreationForm)
 from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
     get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, 
-    create_myeloid_coverage_summary)
+    create_myeloid_coverage_summary, variant_format_check)
 from .models import *
 
 import json
 import os
 import pdfkit
-import re
-import pybedtools
-
 
 def signup(request):
     """
@@ -563,49 +560,12 @@ def analysis_sheet(request, sample_id):
 
                 #Get variant together from components
                 new_variant = f"{new_variant_data['chrm']}:{new_variant_data['position']}{new_variant_data['ref'].upper()}>{new_variant_data['alt'].upper()}"
-                    
-                #Get overlap with panel bed to check genome build (check below)
-                panel_bed_file = sample_obj.panel.bed_file.path
-                panel_bed = pybedtools.BedTool(panel_bed_file)
-                variant_as_bed=f"{new_variant_data['chrm']}\t{int(new_variant_data['position'])-1}\t{new_variant_data['position']}"
-                variant_bed_region = pybedtools.BedTool(variant_as_bed, from_string=True)
-                overlaps_panel = len(panel_bed.intersect(variant_bed_region)) > 0
                 
-                #Check ref/alt format (check below)
-                ref_check = True
-                for i in new_variant_data['ref']:
+                variant_check, warning_message = variant_format_check(new_variant_data['chrm'], new_variant_data['position'], new_variant_data['ref'], new_variant_data['alt'], sample_obj.panel.bed_file.path, new_variant_data['total_reads'], new_variant_data['alt_reads'])
                 
-                	if i not in 'ATCGN':
-                	
-                		ref_check = False
-                		
-                alt_check = True
-                for i in new_variant_data['alt']:
+                if not variant_check:
                 
-                	if i not in 'ATCGN':
-                	
-                		alt_check = False
-                
-                #FORMATTING CHECKS
-                #Error out if total depth is set to zero
-                if new_variant_data['total_reads'] == 0:
-                                	
-                    context['warning'].append('Total read counts can not be zero')
-                
-                #Error out if alt read depth is set to zero    
-                elif new_variant_data['alt_reads'] == 0:
-                
-                    context['warning'].append('Alt read counts can not be zero')
-                     
-                #Error out if the REF or ALT has non NGS characters (calculated above)
-                elif not ref_check or not alt_check:
-                
-                    context['warning'].append('Ref or Alt nucleotide is not A,T,C or G - please correct')
-                    
-                #If the coordinates are in the wrong genome build - check they overlap with bed (calculated above)
-                elif overlaps_panel == 0:
-                
-                    context['warning'].append('Genomic coordinates given are not on the panel - Have you used coordinates for the correct genome build?')     
+                	context['warning'].append(warning_message)
                                     
                 else:
                 
