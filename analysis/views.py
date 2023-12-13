@@ -554,31 +554,37 @@ def analysis_sheet(request, sample_id):
 
 
         # if add new variant form is clicked
-        if 'hgvs_g' in request.POST:
+        if 'chrm' in request.POST:
             new_variant_form = NewVariantForm(request.POST)
 
             if new_variant_form.is_valid():
 
                 new_variant_data = new_variant_form.cleaned_data
-		
-		#Split out the variant into it's component parts so we can check formatting and error if not correct
-                try:
-                    chromosome = new_variant_data['hgvs_g'].split(":")[0]
-                    position = re.findall('\d+', new_variant_data['hgvs_g'].split(':')[1])[0]
-                    ref = re.sub('[0-9]', '', new_variant_data['hgvs_g'].split(':')[1].split('>')[0]) 
-                    alt = re.sub('[0-9]', '', new_variant_data['hgvs_g'].split(':')[1].split('>')[1])
-                    variant_check = True
-                
-                except:
-                
-                    variant_check = False
+
+                #Get variant together from components
+                new_variant = f"{new_variant_data['chrm']}:{new_variant_data['position']}{new_variant_data['ref'].upper()}>{new_variant_data['alt'].upper()}"
                     
                 #Get overlap with panel bed to check genome build (check below)
                 panel_bed_file = sample_obj.panel.bed_file.path
                 panel_bed = pybedtools.BedTool(panel_bed_file)
-                variant_as_bed=f"{chromosome}\t{int(position)-1}\t{position}"
+                variant_as_bed=f"{new_variant_data['chrm']}\t{int(new_variant_data['position'])-1}\t{new_variant_data['position']}"
                 variant_bed_region = pybedtools.BedTool(variant_as_bed, from_string=True)
                 overlaps_panel = len(panel_bed.intersect(variant_bed_region)) > 0
+                
+                #Check ref/alt format (check below)
+                ref_check = True
+                for i in new_variant_data['ref']:
+                
+                	if i not in 'ATCGN':
+                	
+                		ref_check = False
+                		
+                alt_check = True
+                for i in new_variant_data['alt']:
+                
+                	if i not in 'ATCGN':
+                	
+                		alt_check = False
                 
                 #FORMATTING CHECKS
                 #Error out if total depth is set to zero
@@ -591,31 +597,21 @@ def analysis_sheet(request, sample_id):
                 
                     context['warning'].append('Alt read counts can not be zero')
                      
-                #Error out if the variant format is not correct (based on try except above)
-                elif not variant_check:
+                #Error out if the REF or ALT has non NGS characters (calculated above)
+                elif not ref_check or not alt_check:
                 
-                    context['warning'].append('Genomic coordinates are not in the correct format, ensure it contains CHROMOSOME : POSITION REF > ALT')
-                	
-                #Error if ref or alt are missing
-                elif ref == "" or alt == "":
-                
-                    context['warning'].append('Genomic coordinates are not in the correct format, ensure it contains CHROMOSOME : POSITION REF > ALT')
-                
-                #If the chr or position contain the letters chr or g	
-                elif "chr" in chromosome or "g" in chromosome:
-                
-                    context['warning'].append('Genomic coordinates are not in the correct format, ensure it contains CHROMOSOME : POSITION REF > ALT. Do not include chr for the chromosome or g. anywhere.')	
+                    context['warning'].append('Ref or Alt nucleotide is not A,T,C or G - please correct')
                     
                 #If the coordinates are in the wrong genome build - check they overlap with bed (calculated above)
                 elif overlaps_panel == 0:
                 
-                    context['warning'].append('Genomic coordinates given are not on panel - Have you used coordinates for the correct genome build?')     
+                    context['warning'].append('Genomic coordinates given are not on the panel - Have you used coordinates for the correct genome build?')     
                                     
                 else:
                 
                     #Lock to same genome build as sample_analysis 
                     new_variant_object, created = Variant.objects.get_or_create(
-                        variant = new_variant_data['hgvs_g'],
+                        variant = new_variant,
                         genome_build = sample_obj.genome_build,
 
                     )
