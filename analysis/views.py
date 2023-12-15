@@ -14,13 +14,12 @@ from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatien
     EditedPasswordChangeForm, EditedUserCreationForm)
 from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
     get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, 
-    create_myeloid_coverage_summary)
+    create_myeloid_coverage_summary, variant_format_check)
 from .models import *
 
 import json
 import os
 import pdfkit
-
 
 def signup(request):
     """
@@ -552,27 +551,27 @@ def analysis_sheet(request, sample_id):
 
 
         # if add new variant form is clicked
-        if 'hgvs_g' in request.POST:
+        if 'chrm' in request.POST:
             new_variant_form = NewVariantForm(request.POST)
 
             if new_variant_form.is_valid():
 
                 new_variant_data = new_variant_form.cleaned_data
-		
-                #Error out if total depth is set to zero
-                if new_variant_data['total_reads'] == 0:
-                                	
-                    context['warning'].append('Total read counts can not be zero')
-                    
-                elif new_variant_data['alt_reads'] == 0:
+
+                #Get variant together from components
+                new_variant = f"{new_variant_data['chrm']}:{new_variant_data['position']}{new_variant_data['ref'].upper()}>{new_variant_data['alt'].upper()}"
                 
-                     context['warning'].append('Alt read counts can not be zero')
-                    
+                variant_check, warning_message = variant_format_check(new_variant_data['chrm'], new_variant_data['position'], new_variant_data['ref'], new_variant_data['alt'], sample_obj.panel.bed_file.path, new_variant_data['total_reads'], new_variant_data['alt_reads'])
+                
+                if not variant_check:
+                
+                	context['warning'].append(warning_message)
+                                    
                 else:
                 
                     #Lock to same genome build as sample_analysis 
                     new_variant_object, created = Variant.objects.get_or_create(
-                        variant = new_variant_data['hgvs_g'],
+                        variant = new_variant,
                         genome_build = sample_obj.genome_build,
 
                     )

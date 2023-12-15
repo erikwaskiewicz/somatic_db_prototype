@@ -54,10 +54,14 @@ class PaperworkCheckForm(forms.Form):
 
 class NewVariantForm(forms.Form):
     """
-    Manually add a SNV
+    Manually add a SNV. Splitting HGVS into components to stop formatting errors
 
     """
-    hgvs_g = forms.CharField(label='Genomic coordinates')
+
+    chrm = forms.CharField(label='Chromosome')
+    position = forms.IntegerField(label='Genomic coordinates')
+    ref = forms.CharField(label='Reference nucleotide')
+    alt = forms.CharField(label='Alt nucleotide')
     hgvs_c = forms.CharField(label='HGVS c.')
     hgvs_p = forms.CharField(label='HGVS p.')
     gene = forms.CharField()
@@ -70,7 +74,10 @@ class NewVariantForm(forms.Form):
         super(NewVariantForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_id = 'new-variant-form'
-        self.fields['hgvs_g'].widget.attrs['placeholder'] = 'e.g. 7:140453136A>T'
+        self.fields['chrm'].widget.attrs['placeholder'] = 'e.g. 7'
+        self.fields['position'].widget.attrs['placeholder'] = 'e.g. 140453136'
+        self.fields['ref'].widget.attrs['placeholder'] = 'e.g. A'
+        self.fields['alt'].widget.attrs['placeholder'] = 'e.g. T'
         self.fields['hgvs_c'].widget.attrs['placeholder'] = 'e.g. NM_004333.4:c.1799T>A'
         self.fields['hgvs_p'].widget.attrs['placeholder'] = 'e.g. NP_004324.2:p.(Val600Glu)'
         self.fields['gene'].widget.attrs['placeholder'] = 'e.g. BRAF'

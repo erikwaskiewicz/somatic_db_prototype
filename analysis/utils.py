@@ -4,6 +4,7 @@ from .forms import NewVariantForm, SubmitForm, VariantCommentForm, FusionComment
 from django.utils import timezone
 from django.db import transaction
 
+import pybedtools
 
 def get_samples(samples):
     """
@@ -504,7 +505,6 @@ def get_variant_info(sample_data, sample_obj):
 def get_fusion_info(sample_data, sample_obj):
     """
     Get information on all fusions in a sample analysis to generate the fusion portion of the context dictionary
-
     """
 
     fusions = FusionPanelAnalysis.objects.filter(sample_analysis=sample_obj)
@@ -935,3 +935,71 @@ def get_poly_list(poly_list_obj, user):
             checking_list.append(formatted_variant)
 
     return confirmed_list, checking_list
+    
+def if_nucleotide(string):
+    """
+    Function to check if nucleotide is a string
+    """
+    check = True
+    for char in string:
+    
+        if char not in 'ATCGN':
+        
+            check = False
+            
+    return check
+
+def if_chrom(string):
+    """
+    Function to check if chromosome is 1-22 or X/Y
+    """
+    chroms = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "X", "Y"]
+    if string in chroms:
+        return True
+    else:
+        return False
+
+def variant_format_check(chrm, position, ref, alt, panel_bed_path, total_reads, alt_reads):
+    """
+    Function to check if format of a manually entered variant is correct
+    """
+
+    #Check the chromosome is sensible
+    chrm_check = if_chrom(chrm)
+    if not chrm_check:
+
+        return False, f'{chrm} is not a chromosome - please correct. Do not include "chr" in this box.'
+    
+    #Check position is right genome build and panel
+    #Get overlap with panel bed to check genome build (check below)
+    panel_bed_file = panel_bed_path
+    panel_bed = pybedtools.BedTool(panel_bed_file)
+    variant_as_bed=f"{chrm}\t{int(position)-1}\t{position}"
+    variant_bed_region = pybedtools.BedTool(variant_as_bed, from_string=True)
+    overlaps_panel = len(panel_bed.intersect(variant_bed_region)) > 0
+    
+    #If the coordinates are in the wrong genome build - check they overlap with bed (calculated above)
+    if overlaps_panel == 0:
+            
+        return False, 'Genomic coordinates given are not on the panel - Have you used coordinates for the correct genome build?'
+                
+    #Check ref/alt format (check below)
+    ref_check = if_nucleotide(ref)
+    alt_check = if_nucleotide(alt)
+    
+    #Error out if the REF or ALT has non NGS characters (calculated above)
+    if not ref_check or not alt_check:
+                
+        return False, 'Ref or Alt nucleotide is not A,T,C or G - please correct'
+                
+    #Error out if total depth is set to zero
+    if total_reads == 0:
+                      	
+        return False, 'Total read counts can not be zero'
+                
+    #Error out if alt read depth is set to zero
+    if alt_reads == 0:
+                
+        return False, 'Alt read counts can not be zero'
+
+    return True, ''
