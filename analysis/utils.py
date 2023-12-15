@@ -949,10 +949,26 @@ def if_nucleotide(string):
             
     return check
 
+def if_chrom(string):
+    """
+    Function to check if chromosome is 1-22 or X/Y
+    """
+    chroms = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "X", "Y"]
+    if string in chroms:
+        return True
+    else:
+        return False
+
 def variant_format_check(chrm, position, ref, alt, panel_bed_path, total_reads, alt_reads):
     """
     Function to check if format of a manually entered variant is correct
     """
+
+    #Check the chromosome is sensible
+    chrm_check = if_chrom(chrm)
+    if not chrm_check:
+
+        return False, f'{chrm} is not a chromosome - please correct'
     
     #Check position is right genome build and panel
     #Get overlap with panel bed to check genome build (check below)

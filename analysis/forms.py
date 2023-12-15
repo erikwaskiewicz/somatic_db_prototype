@@ -58,7 +58,7 @@ class NewVariantForm(forms.Form):
 
     """
 
-    chrm = forms.IntegerField(label='Chromosome')
+    chrm = forms.CharField(label='Chromosome')
     position = forms.IntegerField(label='Genomic coordinates')
     ref = forms.CharField(label='Reference nucleotide')
     alt = forms.CharField(label='Alt nucleotide')

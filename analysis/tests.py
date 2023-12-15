@@ -1072,28 +1072,32 @@ class TestDna(TestCase):
         panel_obj = Panel.objects.get(panel_name='Lung', assay='1', genome_build=37, live=True)
         
         #Correct format
-        variant1_check, error = variant_format_check(7, 55241609, 'A', 'T', panel_obj.bed_file.path, 100, 10)
+        variant1_check, error = variant_format_check('7', 55241609, 'A', 'T', panel_obj.bed_file.path, 100, 10)
         self.assertTrue(variant1_check)
         
         #Incorrect format - position not in bed
-        variant2_check, error = variant_format_check(7, 1, 'A', 'T', panel_obj.bed_file.path, 100, 10)
+        variant2_check, error = variant_format_check('7', 1, 'A', 'T', panel_obj.bed_file.path, 100, 10)
         self.assertFalse(variant2_check)
         
         #Incorrect format - ref not a nucleotide
-        variant3_check, error = variant_format_check(7, 55241609, 'X', 'T', panel_obj.bed_file.path, 100, 10)
+        variant3_check, error = variant_format_check('7', 55241609, 'X', 'T', panel_obj.bed_file.path, 100, 10)
         self.assertFalse(variant3_check)
         
         #Incorrect format - alt not a nucleotide
-        variant4_check, error = variant_format_check(7, 55241609, 'A', 'delin', panel_obj.bed_file.path, 100, 10)
+        variant4_check, error = variant_format_check('7', 55241609, 'A', 'delin', panel_obj.bed_file.path, 100, 10)
         self.assertFalse(variant4_check)
         
         #Incorrect format - total reads 0
-        variant5_check, error = variant_format_check(7, 55241609, 'A', 'T', panel_obj.bed_file.path, 0, 10)
+        variant5_check, error = variant_format_check('7', 55241609, 'A', 'T', panel_obj.bed_file.path, 0, 10)
         self.assertFalse(variant5_check)
         
         #Incorrect format - alt reads 0
-        variant6_check, error = variant_format_check(7, 55241609, 'A', 'T', panel_obj.bed_file.path, 100, 0)
+        variant6_check, error = variant_format_check('7', 55241609, 'A', 'T', panel_obj.bed_file.path, 100, 0)
         self.assertFalse(variant6_check)
+
+        #Incorrect format - not a chromosome
+        variant7_check, error = variant_format_check('86', 55241609, 'A', 'T', panel_obj.bed_file.path, 100, 0)
+        self.assertFalse(variant7_check)
       
 class TestNTCCalls(TestCase):
     """
