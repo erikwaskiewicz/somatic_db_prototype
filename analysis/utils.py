@@ -968,7 +968,7 @@ def variant_format_check(chrm, position, ref, alt, panel_bed_path, total_reads, 
     chrm_check = if_chrom(chrm)
     if not chrm_check:
 
-        return False, f'{chrm} is not a chromosome - please correct'
+        return False, f'{chrm} is not a chromosome - please correct. Do not include "chr" in this box.'
     
     #Check position is right genome build and panel
     #Get overlap with panel bed to check genome build (check below)
