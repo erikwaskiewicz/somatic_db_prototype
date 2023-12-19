@@ -1041,7 +1041,7 @@ def view_fusion_artefacts(request, list_name):
                 fusion = fusion_obj.fusion_genes
 
                 # reload context
-                confirmed_list, checking_list = get_poly_list(artefact_list, request.user)
+                confirmed_list, checking_list = get_fusion_list(artefact_list, request.user)
                 context['confirmed_list'] = confirmed_list
                 context['checking_list'] = checking_list
                 context['success'].append(f'Fusion {fusion} added to artefact list')
