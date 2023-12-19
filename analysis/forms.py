@@ -280,6 +280,7 @@ class ConfirmPolyForm(forms.Form):
             Submit('submit', 'Submit', css_class='btn btn-info w-100')
         )
 
+
 class ConfirmArtefactForm(forms.Form):
     """
     Confirm that a variant should be added to the artefact list
@@ -322,7 +323,8 @@ class AddNewPolyForm(forms.Form):
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-25')
         )
-        
+
+       
 class AddNewArtefactForm(forms.Form):
     """
     Add a variant to the artefact list
@@ -345,6 +347,31 @@ class AddNewArtefactForm(forms.Form):
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-25')
         )
+
+
+class AddNewFusionArtefactForm(forms.Form):
+    """
+    Add a fusion to the artefact list
+    """
+    left_breakpoint = forms.CharField()
+    right_breakpoint = forms.CharField()
+    comment = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 4}),
+        label='Comments'
+    )
+
+    def __init__(self,*args,**kwargs):
+        super(AddNewFusionArtefactForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.fields['comment'].help_text = 'Add comments or evidence to support this fusion being an artefact\ne.g. filepaths to documented evidence, sample IDs to check...'
+        self.fields['left_breakpoint'].help_text = 'Must be in genomic format e.g. chr1:123456'
+        self.fields['right_breakpoint'].help_text = 'Must be in genomic format e.g. chr2:789012'
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Submit', css_class='btn btn-info w-25')
+        )
+
+
 
 class ChangeLimsInitials(forms.Form):
     """
@@ -376,7 +403,6 @@ class EditedPasswordChangeForm(PasswordChangeForm):
         self.helper.add_input(
             Submit('submit', 'Change password', css_class='btn btn-danger w-100')
         )
-
 
 
 class EditedUserCreationForm(UserCreationForm):

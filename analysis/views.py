@@ -566,7 +566,7 @@ def analysis_sheet(request, sample_id):
                 if not variant_check:
                 
                 	context['warning'].append(warning_message)
-                                    
+                                                    
                 else:
                 
                     #Lock to same genome build as sample_analysis 

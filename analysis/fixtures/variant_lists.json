@@ -37,6 +37,24 @@
 },
 {
     "model": "analysis.variantlist",
+    "pk": "TSO500_ctDNA_b37_fusion_artefacts",
+    "fields": {
+        "list_type": "A",
+        "genome_build": 37,
+        "assay": "3"
+    }
+},
+{
+    "model": "analysis.variantlist",
+    "pk": "TSO500_RNA_b37_fusion_artefacts",
+    "fields": {
+        "list_type": "A",
+        "genome_build": 37,
+        "assay": "2"
+    }
+},
+{
+    "model": "analysis.variantlist",
     "pk": "build_37_polys",
     "fields": {
         "list_type": "P",

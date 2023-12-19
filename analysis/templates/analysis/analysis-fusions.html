@@ -128,6 +128,8 @@
     <button type="button" class="btn btn-success fusion-submit" id="fusion-submit">Update selections</button>
   </div>
   <br>
+  <br>
+  <br>
   {% endif %}
 
 {% else %}
@@ -140,11 +142,63 @@
 {% endif %}
 
 
+<!-- Artefact list -->
+<div id="accordion">
+  <div class="card">
+    <div class="card-header" id="heading-artefacts">
+      <h5 class="mb-0">
+        <p><b>Filtered calls:</b>&nbsp;&nbsp;Artefacts list
 
+        {% if fusion_data.artefact_count > 0 %}
+        <span class="badge badge-warning">{{ fusion_data.artefact_count }}</span>
+        {% else %}
+        <span class="badge badge-secondary">{{ fusion_data.artefact_count }}</span>
+        {% endif %}
 
-{% for v in fusion_data.fusion_calls %}
+        &nbsp;&nbsp;<button class="btn btn-outline-dark" data-toggle="collapse" data-target="#artefacts" aria-expanded="true" aria-controls="artefacts"><span class="fa fa-search"></span> Show/ hide</button>
+        </p>
+      </h5>
+    </div>
+
+    <div id="artefacts" class="collapse" aria-labelledby="heading-artefacts" data-parent="#accordion">
+      <div class="card-body">
+
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th class="col-3">Fusion</th>
+              <th class="col-3">Left Breakpoint</th>
+              <th class="col-3">Right Breakpoint</th>
+              <th class="col-3">Fusion Supporting Reads</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for fusion in fusion_data.filtered_calls %}
+            <tr>
+              <td>
+                {{ fusion.fusion_genes }}<br>
+                {% if fusion.genome_build == 37 %}
+                <span class="badge badge-info badge-pill">GRCh{{ var.genome_build }}</span>
+                {% elif fusion.genome_build == 38 %}
+                <span class="badge badge-success badge-pill">GRCh{{ var.genome_build }}</span>
+                {% endif %}
+                <span class="badge badge-secondary badge-pill">Artefacts</span>
+              </td>
+              <td>{{ fusion.left_breakpoint }}</td>
+              <td>{{ fusion.right_breakpoint }}</td>
+              <td>{{ fusion.fusion_supporting_reads }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <!-- Comments Modal -->
+{% for v in fusion_data.fusion_calls %}
 <div class="modal fade" id="comments-modal-{{ v.pk }}" tabindex="-1" role="dialog" aria-labelledby="comments-modal-label" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">

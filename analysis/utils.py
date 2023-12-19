@@ -507,6 +507,8 @@ def get_fusion_info(sample_data, sample_obj):
 
     fusion_calls = []
     reportable_list = []
+    filtered_list = []
+    artefact_count = 0
 
     for fusion_object in fusions:
 
@@ -521,6 +523,10 @@ def get_fusion_info(sample_data, sample_obj):
             if c != 'Not analysed':
                 fusion_checks_analysed.append(c)
 
+        # marker to tell whether a variant should be filtered downstream
+        filter_call = False
+        filter_reason = ''
+        
         # do the last two checks agree?
         last_two_checks_agree = True
         if len(fusion_checks_analysed) > 1:
@@ -553,6 +559,24 @@ def get_fusion_info(sample_data, sample_obj):
         else:
             vaf = None
 
+        # get artefact lists relevant to this sample
+        artefact_lists = VariantList.objects.filter(genome_build=sample_obj.genome_build, list_type='A', assay = sample_obj.panel.assay)
+
+        # get fusions in artefact list
+        for fusion_artefact in VariantToVariantList.objects.filter(fusion=fusion_object.fusion_instance.fusion_genes):
+
+            # if signed off and in one of the variant lists for this sample
+            if fusion_artefact.signed_off() and (fusion_artefact.variant_list in artefact_lists):
+
+                # if it's an artefact
+                if fusion_artefact.variant_list.list_type == 'A':
+                    # set variables and update variant check
+                    artefact_count += 1
+                    filter_call = True
+                    latest_check.decision = 'A'
+                    latest_check.save()
+                    filter_reason = 'Artefact'
+
         # combine all into context dict
         fusion_calls_dict = {
             'pk': fusion_object.pk,
@@ -574,7 +598,11 @@ def get_fusion_info(sample_data, sample_obj):
             'comments': fusion_comments_list,
             'final_decision': fusion_object.fusion_instance.get_final_decision_display()
         }
-        fusion_calls.append(fusion_calls_dict)
+        # add to artefact list if appears in the artefact list, otherwise add to the fusion calls list
+        if filter_call == True:
+            filtered_list.append((fusion_calls_dict, filter_reason))
+        else:
+            fusion_calls.append(fusion_calls_dict)
 
     # set true or false for whether there are reportable variants
     if len(reportable_list) == 0:
@@ -584,6 +612,8 @@ def get_fusion_info(sample_data, sample_obj):
 
     fusion_data = {
         'fusion_calls': fusion_calls,
+        'filtered_calls': filtered_list,
+        'artefact_count': artefact_count,
         'no_calls': no_calls,
         'check_options': FusionCheck.DECISION_CHOICES,
     }
