@@ -497,7 +497,6 @@ def get_variant_info(sample_data, sample_obj):
     return variant_data
 
 
-
 def get_fusion_info(sample_data, sample_obj):
     """
     Get information on all fusions in a sample analysis to generate the fusion portion of the context dictionary
@@ -618,12 +617,7 @@ def get_fusion_info(sample_data, sample_obj):
         'check_options': FusionCheck.DECISION_CHOICES,
     }
 
-    for f in fusion_data['filtered_calls']:
-        print(f)
-        print(f[0])
-
     return fusion_data
-
 
 
 def get_coverage_data(sample_obj, depth_cutoffs):
@@ -966,10 +960,10 @@ def get_poly_list(poly_list_obj, user):
 
     return confirmed_list, checking_list
 
+
 def get_fusion_list(artefact_list_obj, user):
     """
-    get all polys and split into a list of confirmed polys and 
-    a list of polys that need checking
+    get all polys and split into a list of confirmed fusion artefacts and a list of fusion artefacts that need checking
 
     """
     # get all variant objects from the poly list
@@ -1014,6 +1008,7 @@ def get_fusion_list(artefact_list_obj, user):
             checking_list.append(formatted_variant)
 
     return confirmed_list, checking_list
+  
     
 def if_nucleotide(string):
     """
@@ -1028,6 +1023,7 @@ def if_nucleotide(string):
             
     return check
 
+
 def if_chrom(string):
     """
     Function to check if chromosome is 1-22 or X/Y
@@ -1037,6 +1033,7 @@ def if_chrom(string):
         return True
     else:
         return False
+
 
 def variant_format_check(chrm, position, ref, alt, panel_bed_path, total_reads, alt_reads):
     """
