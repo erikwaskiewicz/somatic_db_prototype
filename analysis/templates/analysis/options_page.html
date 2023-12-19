@@ -35,6 +35,10 @@
         <p class="card-text">View and edit the known artefact list for <b>{{ list.get_assay_display }} build {{ list.genome_build }}</b>. These will be classed as artefacts in all {{ list.get_assay_display }} assays.</p>
         <a class="btn btn-info" href="{% url 'view_artefacts' list.name %}">View</a>
 
+        {% elif list.list_type == 'F' %}
+        <p class="card-text">View and edit the known fusion artefact list for <b>{{ list.get_assay_display }} build {{ list.genome_build }}</b>. These will be classed as artefacts in all {{ list.get_assay_display }} assays.</p>
+        <a class="btn btn-info" href="{% url 'view_fusion_artefacts' list.name %}">View</a>
+
         {% endif %}
       </div>
     </div>

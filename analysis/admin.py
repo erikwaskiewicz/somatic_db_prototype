@@ -127,7 +127,7 @@ admin.site.register(VariantList, VariantListAdmin )
 
 
 class VariantToVariantListAdmin(admin.ModelAdmin):
-    list_display = ('id', 'variant_list', 'variant', 'classification', 'vaf_cutoff')
+    list_display = ('id', 'variant_list', 'variant', 'fusion', 'classification', 'vaf_cutoff')
     search_fields = ['id', 'variant_list__name', 'variant__genomic_37', 'classification']
 
 admin.site.register(VariantToVariantList, VariantToVariantListAdmin)

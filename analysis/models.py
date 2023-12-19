@@ -361,6 +361,7 @@ class VariantList(models.Model):
         ('P', 'Poly'),
         ('K', 'Known'),
         ('A', 'Artefact'),
+        ('F', 'Fusion Artefact')
     )
     name = models.CharField(max_length=50, primary_key=True)
     list_type = models.CharField(max_length=1, choices=TYPE_CHOICES)

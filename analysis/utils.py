@@ -961,6 +961,55 @@ def get_poly_list(poly_list_obj, user):
             checking_list.append(formatted_variant)
 
     return confirmed_list, checking_list
+
+def get_fusion_list(artefact_list_obj, user):
+    """
+    get all polys and split into a list of confirmed polys and 
+    a list of polys that need checking
+
+    """
+    # get all variant objects from the poly list
+    fusions = VariantToVariantList.objects.filter(variant_list=artefact_list_obj).order_by("fusion__left_breakpoint")
+
+    # make empty lists before collecting data from loop
+    confirmed_list = []
+    checking_list = []
+
+    for n, f in enumerate(fusions):
+
+        # format variant info info dictionary 
+        formatted_variant = {
+            'counter': n,
+            'variant_pk': f.id,
+            'fusion': f.fusion.fusion_genes,
+            'left_breakpoint': f.fusion.left_breakpoint,
+            'right_breakpoint': f.fusion.right_breakpoint,
+            'genome_build': f.fusion.genome_build,
+            'upload_user': f.upload_user,
+            'upload_time': f.upload_time,
+            'upload_comment': f.upload_comment,
+            'check_user': f.check_user,
+            'check_time': f.check_time,
+            'check_comment': f.check_comment,
+        }
+
+        # add polys with two checks to the confirmed list
+        if f.signed_off():
+            confirmed_list.append(formatted_variant)
+
+        # otherwise add to the checking list
+        else:
+            # check if the current user is the person who submitted the poly
+            # if it is then disable the button to sign off
+            if user == f.upload_user:
+                formatted_variant['able_to_sign_off'] = False
+            else:
+                formatted_variant['able_to_sign_off'] = True
+
+            # add to checking list
+            checking_list.append(formatted_variant)
+
+    return confirmed_list, checking_list
     
 def if_nucleotide(string):
     """
