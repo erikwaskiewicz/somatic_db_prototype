@@ -873,7 +873,6 @@ def view_artefacts(request, list_name):
     Page to view all confirmed artefacts and add and check new ones
 
     """
-    print("ON ARTEFACT PAGE!")
     # get artefact list and pull out list of confirmed polys and polys to be checked
     artefact_list = VariantList.objects.get(name=list_name, list_type='A')
     confirmed_list, checking_list = get_poly_list(artefact_list, request.user)
@@ -933,8 +932,6 @@ def view_artefacts(request, list_name):
 
         # if add new artefact button is pressed
         if 'variant' in request.POST:
-            print("IN THE LOOP!")
-            print(request.POST)
             add_new_form = AddNewArtefactForm(request.POST)
 
             if add_new_form.is_valid():
@@ -987,7 +984,6 @@ def view_fusion_artefacts(request, list_name):
     Page to view all confirmed artefacts and add and check new ones
 
     """
-    print("ON FUSION ARTEFACT PAGE!")
     # get artefact list and pull out list of confirmed polys and polys to be checked
     artefact_list = VariantList.objects.get(name=list_name, list_type='F')
     confirmed_list, checking_list = get_fusion_list(artefact_list, request.user)
@@ -1017,7 +1013,6 @@ def view_fusion_artefacts(request, list_name):
     #----------------------------------------------------------
     #  If any buttons are pressed
     if request.method == 'POST':
-        print(request.POST)
 
         # if confirm poly button is pressed
         if 'variant_pk' in request.POST:
@@ -1048,14 +1043,11 @@ def view_fusion_artefacts(request, list_name):
 
         # if add new artefact button is pressed
         if 'fusion' in request.POST:
-            print("IN THE LOOP!")
-            print(request.POST)
             add_new_form = AddNewFusionArtefactForm(request.POST)
-            print(add_new_form.is_valid())
+
             if add_new_form.is_valid():
 
                 # get form data
-                print(add_new_form.cleaned_data)
                 fusion = add_new_form.cleaned_data['fusion']
                 left_breakpoint = add_new_form.cleaned_data['left_breakpoint']
                 right_breakpoint = add_new_form.cleaned_data['right_breakpoint']
@@ -1092,9 +1084,6 @@ def view_fusion_artefacts(request, list_name):
                 # throw error if there isnt a variant matching the input
                 except Fusion.DoesNotExist:
                     context['warning'].append(f'Cannot find fusion matching {fusion}, have you entered the correct breakpoints?')
-
-        else:
-            print("NOT IN LOOP!")
 
     # render the page
     return render(request, 'analysis/view_fusion_artefacts.html', context)
