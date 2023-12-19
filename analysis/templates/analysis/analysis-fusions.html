@@ -173,14 +173,14 @@
             </tr>
           </thead>
           <tbody>
-            {% for fusion in fusion_data.filtered_calls %}
+            {% for fusion, fusion_type in fusion_data.filtered_calls %}
             <tr>
               <td>
                 {{ fusion.fusion_genes }}<br>
                 {% if fusion.genome_build == 37 %}
-                <span class="badge badge-info badge-pill">GRCh{{ var.genome_build }}</span>
+                <span class="badge badge-info badge-pill">GRCh{{ fusion.genome_build }}</span>
                 {% elif fusion.genome_build == 38 %}
-                <span class="badge badge-success badge-pill">GRCh{{ var.genome_build }}</span>
+                <span class="badge badge-success badge-pill">GRCh{{ fusion.genome_build }}</span>
                 {% endif %}
                 <span class="badge badge-secondary badge-pill">Artefacts</span>
               </td>

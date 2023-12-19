@@ -560,7 +560,7 @@ def get_fusion_info(sample_data, sample_obj):
             vaf = None
 
         # get artefact lists relevant to this sample
-        artefact_lists = VariantList.objects.filter(genome_build=sample_obj.genome_build, list_type='A', assay = sample_obj.panel.assay)
+        artefact_lists = VariantList.objects.filter(genome_build=sample_obj.genome_build, list_type='F', assay = sample_obj.panel.assay)
 
         # get fusions in artefact list
         for fusion_artefact in VariantToVariantList.objects.filter(fusion=fusion_object.fusion_instance.fusion_genes):
@@ -569,7 +569,7 @@ def get_fusion_info(sample_data, sample_obj):
             if fusion_artefact.signed_off() and (fusion_artefact.variant_list in artefact_lists):
 
                 # if it's an artefact
-                if fusion_artefact.variant_list.list_type == 'A':
+                if fusion_artefact.variant_list.list_type == 'F':
                     # set variables and update variant check
                     artefact_count += 1
                     filter_call = True
@@ -617,6 +617,10 @@ def get_fusion_info(sample_data, sample_obj):
         'no_calls': no_calls,
         'check_options': FusionCheck.DECISION_CHOICES,
     }
+
+    for f in fusion_data['filtered_calls']:
+        print(f)
+        print(f[0])
 
     return fusion_data
 
