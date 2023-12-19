@@ -34,6 +34,7 @@ class Worksheet(models.Model):
     run = models.ForeignKey('Run', on_delete=models.CASCADE)
     assay = models.CharField(max_length=50)
     diagnostic = models.BooleanField(default=True)
+    upload_time = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return self.ws_id
@@ -60,6 +61,15 @@ class Sample(models.Model):
     sample_id = models.CharField(max_length=50, primary_key=True)
     sample_name = models.CharField(max_length=200, blank=True, null=True)
     sample_name_check = models.BooleanField(default=False)
+
+    def get_worksheets(self):
+        # get all worksheets that the sample appears on
+        sample_analyses = SampleAnalysis.objects.filter(sample=self)
+        worksheets = []
+        for s in sample_analyses:
+            if s.worksheet not in worksheets:
+                worksheets.append(s.worksheet)
+        return worksheets
 
 
 def make_bedfile_path(instance, filename):
@@ -132,6 +142,8 @@ class SampleAnalysis(models.Model):
     total_reads = models.IntegerField(blank=True, null=True)
     total_reads_ntc = models.IntegerField(blank=True, null=True)
     genome_build = models.IntegerField(default=37)
+    upload_time = models.DateTimeField(blank=True, null=True)
+
 
     def percent_reads_ntc(self):
         """

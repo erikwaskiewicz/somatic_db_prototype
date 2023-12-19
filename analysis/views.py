@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, update_session_auth_hash
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.utils import timezone
 from django.template.loader import get_template
 from django.template import Context
+from django.shortcuts import get_object_or_404
 
 from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, 
     CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, 
@@ -13,13 +14,12 @@ from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatien
     EditedPasswordChangeForm, EditedUserCreationForm)
 from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
     get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, 
-    create_myeloid_coverage_summary)
+    create_myeloid_coverage_summary, variant_format_check)
 from .models import *
 
 import json
 import os
 import pdfkit
-
 
 def signup(request):
     """
@@ -66,9 +66,115 @@ def signup(request):
 @login_required
 def home(request):
     """
-    TODO - no home page yet, just redirect to list of worksheets
+    Landing page of webapp, contains search bar and quick links to other parts of the app
     """
-    return redirect('view_worksheets', 'recent')
+    return render(request, 'analysis/home.html', {})
+
+
+def ajax_num_assigned_user(request, user_pk):
+    """
+    AJAX call for the number of uncompleted checks assigned to a user
+    Loaded in the background when the home page is loaded
+    """
+    if request.is_ajax():
+        # get user object and work out count of uncompleted checks assigned to user
+        user_obj = get_object_or_404(User, pk=user_pk)
+        num_checks = Check.objects.filter(user=user_obj, status='P').count()
+
+        # sort out css colouring, green if no checks, yellow if one or more
+        if num_checks == 0:
+            css_class = 'success'
+        else:
+            css_class = 'warning'
+
+        # return as json object
+        out_dict = {
+            'num_checks': num_checks,
+            'css_class': css_class,
+        }
+
+        return JsonResponse(out_dict)
+
+
+def ajax_num_pending_worksheets(request):
+    """
+    AJAX call for the number of uncompleted worksheets
+    Loaded in the background when the home page is loaded
+    """
+    if request.is_ajax():
+        # get all worksheets then filter for only ones that have a current IGV check in them
+        all_worksheets = Worksheet.objects.filter(diagnostic=True).order_by('-run')
+        pending_worksheets = [w for w in all_worksheets if 'IGV' in w.get_status_and_samples()[0]]
+        num_pending = len(pending_worksheets)
+
+        # sort out css colouring, green if no checks, yellow if one or more
+        if num_pending == 0:
+            css_class = 'success'
+        else:
+            css_class = 'warning'
+
+        # return as json object
+        out_dict = {
+            'num_pending': num_pending,
+            'css_class': css_class,
+        }
+
+        return JsonResponse(out_dict)
+
+
+def ajax_autocomplete(request):
+    """
+    Get a list of worksheets for autocompleting the search bar on the home page
+    """
+    if request.is_ajax():
+        # get search term from ajax
+        query_string = request.GET.get('term', '')
+
+        # list to store results plus counter that will control return of results when max limit is reached
+        results = []
+        counter = 0
+        max_results = 10
+
+        # use to search for worksheets - limit to max results variable as we'd never return more than that
+        ws_queryset = Worksheet.objects.filter(ws_id__icontains=query_string)[:max_results]
+        run_id_query = Worksheet.objects.filter(run__run_id__icontains=query_string)[:max_results]
+
+        # process query results from worksheet/ run objects
+        for record in ws_queryset | run_id_query:
+            results.append({
+                'ws': record.ws_id,
+                'run': record.run.run_id,
+                'sample': None,
+            })
+            counter += 1
+
+            # return as soon as max length reached to speed up query
+            if counter == max_results:
+                data = json.dumps(results)
+                return HttpResponse(data, 'application/json')
+
+
+        # process query results from sample objects - this wil only query if the above returns less then the max query size
+        sample_queryset = Sample.objects.filter(sample_id__icontains=query_string)[:max_results]
+
+        for record in sample_queryset:
+            for ws in record.get_worksheets():
+                results.append({
+                    'ws': ws.ws_id,
+                    'run': ws.run.run_id,
+                    'sample': record.sample_id,
+                })
+                counter += 1
+
+                # return as soon as max length reached to speed up query
+                if counter == max_results:
+                    data = json.dumps(results)
+                    return HttpResponse(data, 'application/json')
+
+
+        # return to template if total number less than max query size
+        data = json.dumps(results)
+        return HttpResponse(data, 'application/json')
 
 
 @login_required
@@ -77,11 +183,27 @@ def view_worksheets(request, query):
     Displays all worksheets and links to the page to show all samples 
     within the worksheet
     """
-    # based on URL, either query 30 most recent or all results
+    # based on URL, do a different query
+    # 30 most recent worksheets
     if query == 'recent':
         worksheets = Worksheet.objects.filter(diagnostic=True).order_by('-run')[:30]
         filtered = True
 
+    # all worksheets that arent diagnostic
+    elif query == 'training':
+        worksheets = Worksheet.objects.filter(diagnostic=False).order_by('-run')
+        filtered = True
+
+    # all diagnostic worksheets with an IGV check still open
+    elif query == 'pending':
+        # TODO this will load in all worksheets first, is there a quicker way?
+        all_worksheets = Worksheet.objects.filter(diagnostic=True).order_by('-run')
+
+        # only include worksheets that have a current IGV check in them
+        worksheets = [w for w in all_worksheets if 'IGV' in w.get_status_and_samples()[0]]
+        filtered = True
+
+    # all worksheets
     elif query == 'all':
         worksheets = Worksheet.objects.all().order_by('-run')
         filtered = False
@@ -120,22 +242,67 @@ def view_worksheets(request, query):
     context = {
         'worksheets': ws_list,
         'filtered': filtered,
+        'query': query,
     }
 
     return render(request, 'analysis/view_worksheets.html', context)
 
 
 @login_required
-def view_samples(request, worksheet_id):
+def view_samples(request, worksheet_id=None, user_pk=None):
     """
-    Displays all samples with a worksheet and links to the analysis 
-    for the sample
+    Displays a list of samples from either:
+     - a worksheet: all samples on a worksheet
+     - a user: all samples assigned to a user
+    Only one of the optional args will ever be passed in, each from different URLs, 
+    this will control whether a worksheet or a user is displayed
     """
-    samples = SampleAnalysis.objects.filter(worksheet = worksheet_id)
-    sample_dict = get_samples(samples)
-    ws_obj = Worksheet.objects.get(ws_id = worksheet_id)
-    run_id = ws_obj.run
+    # start context dictionary
+    context = {
+        'unassign_form': UnassignForm(),
+        'check_form': PaperworkCheckForm(),
+        'reopen_form': ReopenForm(),
+    }
 
+    # error if both variables used, shouldnt be able to do this
+    if user_pk and worksheet_id:
+        raise Http404('Invalid URL, both worksheet_id and user_pk were parsed')
+
+    # if all samples per user required
+    elif user_pk:
+
+        # get user object to get list of checks, then get the related samples
+        user_obj = get_object_or_404(User, pk=user_pk)
+        user_checks = Check.objects.filter(user=user_obj, status='P')
+        samples = [c.analysis for c in user_checks]
+
+        # get template specific variables needed for context
+        context['template'] = 'user'
+        context['username'] = user_obj.username
+        context['samples'] = get_samples(samples)
+
+    # if all samples on a worksheet required
+    elif worksheet_id:
+
+        # get list of samples
+        samples = SampleAnalysis.objects.filter(worksheet = worksheet_id)
+
+        # get template specific variables needed for context
+        ws_obj = Worksheet.objects.get(ws_id = worksheet_id)
+        context['template'] = 'worksheet'
+        context['worksheet'] = worksheet_id
+        context['run_id'] = ws_obj.run
+        context['assay'] = ws_obj.assay
+        context['samples'] = get_samples(samples)
+
+    # error if neither variables available
+    else:
+        raise Http404('Invalid URL, neither worksheet_id or user_pk were parsed')
+
+
+    ####################################
+    #  If any buttons are pressed
+    ####################################
     if request.method == 'POST':
         # if unassign modal button is pressed
         if 'unassign' in request.POST:
@@ -149,8 +316,11 @@ def view_samples(request, worksheet_id):
                 unassign_check(sample_analysis_obj)
 
                 # redirect to force refresh, otherwise form could accidentally be resubmitted when refreshing the page
-                return redirect('view_samples', worksheet_id)
-            
+                if context['template'] == 'worksheet':
+                    return redirect('view_ws_samples', worksheet_id)
+                elif context['template'] == 'user':
+                    return redirect('view_user_samples', user_pk)
+
         # if reopen modal button is pressed
         if 'reopen' in request.POST:
             reopen_form = ReopenForm(request.POST)
@@ -164,7 +334,7 @@ def view_samples(request, worksheet_id):
                 reopen_check(current_user, sample_analysis_obj)
 
                 # redirect to force refresh
-                return redirect('view_samples', worksheet_id)
+                return redirect('view_ws_samples', worksheet_id)
 
         # if someone starts a first check
         if 'paperwork_check' in request.POST:
@@ -180,16 +350,6 @@ def view_samples(request, worksheet_id):
 
                 return redirect('analysis_sheet', sample_analysis_obj.pk)
 
-    # render context
-    context = {
-        'worksheet': worksheet_id,
-        'run_id': run_id,
-        'assay': ws_obj.assay,
-        'samples': sample_dict,
-        'unassign_form': UnassignForm(),
-        'check_form': PaperworkCheckForm(),
-        'reopen_form': ReopenForm(),
-    }
 
     return render(request, 'analysis/view_samples.html', context)
 
@@ -391,27 +551,27 @@ def analysis_sheet(request, sample_id):
 
 
         # if add new variant form is clicked
-        if 'hgvs_g' in request.POST:
+        if 'chrm' in request.POST:
             new_variant_form = NewVariantForm(request.POST)
 
             if new_variant_form.is_valid():
 
                 new_variant_data = new_variant_form.cleaned_data
-		
-                #Error out if total depth is set to zero
-                if new_variant_data['total_reads'] == 0:
-                                	
-                    context['warning'].append('Total read counts can not be zero')
-                    
-                elif new_variant_data['alt_reads'] == 0:
+
+                #Get variant together from components
+                new_variant = f"{new_variant_data['chrm']}:{new_variant_data['position']}{new_variant_data['ref'].upper()}>{new_variant_data['alt'].upper()}"
                 
-                     context['warning'].append('Alt read counts can not be zero')
-                    
+                variant_check, warning_message = variant_format_check(new_variant_data['chrm'], new_variant_data['position'], new_variant_data['ref'], new_variant_data['alt'], sample_obj.panel.bed_file.path, new_variant_data['total_reads'], new_variant_data['alt_reads'])
+                
+                if not variant_check:
+                
+                	context['warning'].append(warning_message)
+                                    
                 else:
                 
                     #Lock to same genome build as sample_analysis 
                     new_variant_object, created = Variant.objects.get_or_create(
-                        variant = new_variant_data['hgvs_g'],
+                        variant = new_variant,
                         genome_build = sample_obj.genome_build,
 
                     )
@@ -502,7 +662,7 @@ def analysis_sheet(request, sample_id):
                             submitted, err = signoff_check(request.user, current_step_obj, sample_obj)
                             if submitted:
                                 make_next_check(sample_obj, 'IGV')
-                                return redirect('view_samples', sample_data['worksheet_id'])
+                                return redirect('view_ws_samples', sample_data['worksheet_id'])
                             else:
                                 context['warning'].append(err)
                             
@@ -533,7 +693,7 @@ def analysis_sheet(request, sample_id):
                             else:
                                 submitted, err = signoff_check(request.user, current_step_obj, sample_obj, complete=True)
                                 if submitted:
-                                    return redirect('view_samples', sample_data['worksheet_id'])
+                                    return redirect('view_ws_samples', sample_data['worksheet_id'])
 
                                 # throw warning if not all variants are checked
                                 else:
@@ -545,7 +705,7 @@ def analysis_sheet(request, sample_id):
                         submitted, err = signoff_check(request.user, current_step_obj, sample_obj)
                         if submitted:
                             make_next_check(sample_obj, 'IGV')
-                            return redirect('view_samples', sample_data['worksheet_id'])
+                            return redirect('view_ws_samples', sample_data['worksheet_id'])
                         else:
                             context['warning'].append(err)
 
@@ -558,12 +718,12 @@ def analysis_sheet(request, sample_id):
                         if current_step == 'IGV check 1':
                             signoff_check(request.user, current_step_obj, sample_obj, status='F')
                             make_next_check(sample_obj, 'IGV')
-                            return redirect('view_samples', sample_data['worksheet_id'])
+                            return redirect('view_ws_samples', sample_data['worksheet_id'])
 
                         # otherwise sign off and make sample failed
                         else:
                             signoff_check(request.user, current_step_obj, sample_obj, status='F')
-                            return redirect('view_samples', sample_data['worksheet_id'])
+                            return redirect('view_ws_samples', sample_data['worksheet_id'])
 
 
     # render the pages
@@ -705,7 +865,8 @@ def view_polys(request, list_name):
 
     # render the page
     return render(request, 'analysis/view_polys.html', context)
-    
+
+
 @login_required
 def view_artefacts(request, list_name):
     """
@@ -815,7 +976,6 @@ def view_artefacts(request, list_name):
 
     # render the page
     return render(request, 'analysis/view_artefacts.html', context)
-
 
 
 @login_required

@@ -1,0 +1,114 @@
+{% extends 'analysis/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block breadcrumbs %}
+<br>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  
+  <div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <h1 class="display-4"><i class="fa fa-dna"></i> Somatic Variant Database</h1>
+
+      <hr class="my-4">
+      <p class="lead">Find a worksheet:</p>
+
+      <form method="POST">
+        {% csrf_token %}
+        <input id="ws_search" name="ws_search" class="form-control form-control-lg" type="text" placeholder="Start typing a worksheet ID, run ID or sample ID...">
+        <small class="form-text text-muted">
+          Matching worksheets will autofill after 4 or more characters have been typed, the query will be quicker the more you type in.
+          <div id="loading_spinner" class="spinner-border spinner-border-sm text-dark spinner-hidden" style="float: right;" role="status"></div>
+        </small>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-5">
+
+      <div id="num_assigned_alert" class="alert alert-warning" role="alert">
+        <div class="row">
+          <div class="col-10">
+            <h5>
+              <span id="num_assigned_text" class="btn badge-pill badge-warning">
+                <div class="spinner-border spinner-border-sm text-dark " role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+              </span>
+              Assigned to me
+            </h5>
+          </div>
+          <div class="col-2"><a class="btn btn-light w-100" href="{% url 'view_user_samples' request.user.pk %}"><i class="fa fa-search"></i></a></div>
+        </div>
+      </div>
+
+      <div id="num_pending_alert" class="alert alert-warning" role="alert">
+        <div class="row">
+          <div class="col-10">
+            <h5>
+              <span id="num_pending_text" class="btn badge-pill badge-warning">
+                <div class="spinner-border spinner-border-sm text-dark " role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+              </span>
+              Worksheets not completed
+            </h5>
+          </div>
+          <div class="col-2"><a class="btn btn-light w-100" href="{% url 'view_worksheets' 'pending' %}"><i class="fa fa-search"></i></a></div>
+        </div>
+      </div>
+
+      <div class="alert alert-secondary" role="alert">
+        <h5>Quick links</h5>
+        <br>
+        <p><a class="btn btn-info w-100" href="{% url 'view_worksheets' 'recent' %}">Recent worksheets</a></p>
+        <p><a class="btn btn-info w-100" href="{% url 'view_worksheets' 'training' %}">All training/ validation worksheets</a></p>
+        <p><a class="btn btn-info w-100" href="{% url 'view_worksheets' 'all' %}">All worksheets (slow loading)</a></p>
+        <p><a class="btn btn-info w-100" href="{% url 'options_page' %}">Options (including poly/ artefact lists)</a></p>
+      </div>
+
+    </div>
+
+    <div class="col-7">
+
+      <div class="alert alert-info" role="alert">
+        <h5>Please send us your feedback!</h5>
+        <p>This is the first iteration of a homepage for the SVD, designed so that you can find the worksheets or samples you need as soon as possible and try to avoid some of the long loading times when loading all worksheets.</p>
+        <p>New features:</p>
+        <ul>
+          <li>Search bar above to find specific worksheets</li>
+          <li>Any samples currently assigned to you will appear in 1st box to the left, box will be yellow/ green depending if you do/ don't have anything assigned to you</li>
+          <li>View any worksheet that has samples that aren't completed in 2nd box to the left, again colour coded as above</li>
+          <li>Quick links for common searches</li>
+        </ul> 
+        <p>Ideas for future:</p>
+        <ul>
+          <li>Expand search/ quick link options - let us know of any common searches you would like to add</li>
+          <li>An advanced search option for more specific queries</li>
+          <li>Dashboard with summary statistics of e.g. how many samples last month, split by referral/ assay etc... Let us know if you've got any ideas of things that would be good to include</li>
+        </ul> 
+        <p>If you have comments on the above or any new ideas on anything you'd like to be included then please email bioinformatics.team@wales.nhs.uk</p>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- custom JS, pass in template variables through data attributes -->
+<script src="{% static 'custom/js/home.js' %}" defer
+        data-ajax-search-url='{% url "ajax-search-ws" %}'
+        data-temp-sample-url='{% url "view_ws_samples" "temp" %}'
+        data-num-pending-url='{% url "ajax-num-pending" %}'
+        data-num-assigned-url='{% url "ajax-num-assigned" request.user.pk %}'>
+</script>
+
+{% endblock %}
