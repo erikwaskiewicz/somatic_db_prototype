@@ -508,6 +508,7 @@ class FusionAnalysis(models.Model):
     fusion_score = models.CharField(max_length=50, blank=True, null=True)
     in_ntc = models.BooleanField(default=False)
     final_decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
+    manual_upload=models.BooleanField(default=False)
 
     def vaf(self):
         """
