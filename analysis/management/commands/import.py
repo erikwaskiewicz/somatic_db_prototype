@@ -585,7 +585,7 @@ class Command(BaseCommand):
                             fusion_counter += 1
                             if debug:
                                 print(f'DEBUG\t{datetime.now()}\timport.py\tFusion added successfully')
-
+                                self.stdout.write(self.style.SUCCESS('Fusion added successfully')) 
                     # logging
                     print(f'INFO\t{datetime.now()}\timport.py\tFinished uploading successfully - added {fusion_counter} fusions(s)')
 

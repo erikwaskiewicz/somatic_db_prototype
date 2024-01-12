@@ -3,6 +3,24 @@ from analysis.utils import *
 
 from decimal import Decimal
 
+from io import StringIO
+from django.core import management
+from django.core.management import call_command
+from django.core.management import BaseCommand, CommandError
+
+class TestFusionsUpload(TestCase):
+    """
+    Test that fusions and samples are uploaded from RNA runs
+    """
+
+    def setup_(self):
+        self.temp_file_path = 'analysis/test_data/test.txt'
+
+    def test_fusion_upload(self):
+        test_file = 'analysis/test_data/Database_37/rna_test_1_fusion_check.csv'
+        total_fusions = self.fusion_genes(len(test_file))
+        expected = 19
+        self.assertEqual(total_fusions, expected)
 
 class TestViews(TestCase):
     """
