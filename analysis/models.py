@@ -358,9 +358,9 @@ class VariantList(models.Model):
 
     """
     TYPE_CHOICES = (
-        ('P', 'Poly'),
+        ('P', 'SNV Poly'),
         ('K', 'Known'),
-        ('A', 'Artefact'),
+        ('A', 'SNV Artefact'),
         ('F', 'Fusion Artefact')
     )
     name = models.CharField(max_length=50, primary_key=True)
