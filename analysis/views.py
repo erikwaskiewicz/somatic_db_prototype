@@ -1048,7 +1048,6 @@ def view_fusion_artefacts(request, list_name):
             if add_new_form.is_valid():
 
                 # get form data
-                #fusion = add_new_form.cleaned_data['fusion']
                 left_breakpoint = add_new_form.cleaned_data['left_breakpoint']
                 right_breakpoint = add_new_form.cleaned_data['right_breakpoint']
                 comment = add_new_form.cleaned_data['comment']
