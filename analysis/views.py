@@ -35,27 +35,37 @@ def signup(request):
         signup_form = EditedUserCreationForm(request.POST)
 
         if signup_form.is_valid():
-            signup_form.save()
 
             # get data from form
             username = signup_form.cleaned_data.get('username')
             raw_password = signup_form.cleaned_data.get('password1')
             lims_initials = signup_form.cleaned_data.get('lims_initials')
 
-            # save user object and authenticate
-            user = authenticate(username=username, password=raw_password)
-            user.is_active = False
-            user.save()
+            # check if LIMS initials already exists
+            initials_check, warning_message = lims_initials_check(lims_initials)
 
-            # add lims initials
-            usersettings = UserSettings(
-                user = user,
-                lims_initials = lims_initials
-            )
-            usersettings.save()
+            if initials_check:
+                # user is created on this save command
+                signup_form.save()
 
-            return redirect('home')
-            #TODO - add some kind of confirmation
+                # edit user object
+                user = authenticate(username=username, password=raw_password)
+                user.is_active = False
+                user.save()
+
+                # add lims initials
+                usersettings = UserSettings(
+                    user = user,
+                    lims_initials = lims_initials
+                )
+                usersettings.save()
+
+                return redirect('home')
+                #TODO - add some kind of confirmation
+
+            # if LIMS initials already exists then throw an error
+            else:
+                warnings.append(warning_message)
 
         else:
             warnings.append('Could not create an account, check that your password meets the requirements below')
