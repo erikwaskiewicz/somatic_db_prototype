@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.contrib.auth.models import User
 from analysis.utils import *
 from analysis.models import *
 
@@ -1099,7 +1100,8 @@ class TestDna(TestCase):
         #Incorrect format - not a chromosome
         variant7_check, error = variant_format_check('86', 55241609, 'A', 'T', panel_obj.bed_file.path, 100, 0)
         self.assertFalse(variant7_check)
-      
+
+
 class TestNTCCalls(TestCase):
     """
     Load in DNA control sample with NTC contamination spiked in, test that 
@@ -2071,3 +2073,29 @@ class TestGnomad(TestCase):
         self.variant_obj.genome_build=100
         with self.assertRaises(ValueError):
             self.variant_instance_obj.gnomad_link()
+
+
+class TestLIMSInitials(TestCase):
+    """
+    Check to make sure that someone doesnt set their initials to a value already used by someone else
+
+    """
+    def setUp(self):
+        ''' runs before each test '''
+        # make mock user and user settings objects
+        self.user = User.objects.create_user(username='test_user', password='test_user_1')
+        self.usersettings = UserSettings(
+            user = self.user,
+            lims_initials = 'ABC'
+        )
+        self.usersettings.save()
+
+    def test_initials_check_pass(self):
+        ''' check will return true as initials dont exist '''
+        initials_check, warning_message = lims_initials_check('XYZ')
+        self.assertEqual(initials_check, True)
+
+    def test_initials_check_fail(self):
+        ''' check will return false as initials already used by user '''
+        initials_check, warning_message = lims_initials_check('ABC')
+        self.assertEqual(initials_check, False)
