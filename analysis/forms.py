@@ -353,7 +353,6 @@ class AddNewFusionArtefactForm(forms.Form):
     """
     Add a fusion to the artefact list
     """
-    fusion=forms.CharField()
     left_breakpoint = forms.CharField()
     right_breakpoint = forms.CharField()
     comment = forms.CharField(
@@ -364,7 +363,6 @@ class AddNewFusionArtefactForm(forms.Form):
     def __init__(self,*args,**kwargs):
         super(AddNewFusionArtefactForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.fields['fusion'].help_text = 'The fusion genes'
         self.fields['comment'].help_text = 'Add comments or evidence to support this fusion being an artefact\ne.g. filepaths to documented evidence, sample IDs to check...'
         self.fields['left_breakpoint'].help_text = 'Must be in genomic format e.g. chr1:123456'
         self.fields['right_breakpoint'].help_text = 'Must be in genomic format e.g. chr2:789012'
@@ -372,7 +370,6 @@ class AddNewFusionArtefactForm(forms.Form):
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-25')
         )
-
 
 
 class ChangeLimsInitials(forms.Form):

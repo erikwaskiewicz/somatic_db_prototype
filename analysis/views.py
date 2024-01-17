@@ -1042,13 +1042,13 @@ def view_fusion_artefacts(request, list_name):
                 context['success'].append(f'Fusion {fusion} added to artefact list')
 
         # if add new artefact button is pressed
-        if 'fusion' in request.POST:
+        if 'left_breakpoint' in request.POST:
             add_new_form = AddNewFusionArtefactForm(request.POST)
 
             if add_new_form.is_valid():
 
                 # get form data
-                fusion = add_new_form.cleaned_data['fusion']
+                #fusion = add_new_form.cleaned_data['fusion']
                 left_breakpoint = add_new_form.cleaned_data['left_breakpoint']
                 right_breakpoint = add_new_form.cleaned_data['right_breakpoint']
                 comment = add_new_form.cleaned_data['comment']
@@ -1057,10 +1057,13 @@ def view_fusion_artefacts(request, list_name):
                 try:
                     # load in fusion and variant to list objects
                     fusion_obj = Fusion.objects.get(left_breakpoint=left_breakpoint, right_breakpoint=right_breakpoint)
+
                     variant_to_variant_list_obj, created = VariantToVariantList.objects.get_or_create(
                         variant_list = artefact_list,
                         fusion = fusion_obj,
                     )
+
+                    fusion = fusion_obj.fusion_genes
 
                     # add user info if a new model is created
                     if created:
@@ -1083,7 +1086,7 @@ def view_fusion_artefacts(request, list_name):
 
                 # throw error if there isnt a variant matching the input
                 except Fusion.DoesNotExist:
-                    context['warning'].append(f'Cannot find fusion matching {fusion}, have you entered the correct breakpoints?')
+                    context['warning'].append(f'Cannot find fusion, have you entered the correct breakpoints?')
 
     # render the page
     return render(request, 'analysis/view_fusion_artefacts.html', context)
