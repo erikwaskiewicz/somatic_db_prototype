@@ -1079,3 +1079,16 @@ def variant_format_check(chrm, position, ref, alt, panel_bed_path, total_reads, 
         return False, 'Alt read counts can not be zero'
 
     return True, ''
+
+
+def lims_initials_check(lims_initials:str):
+    """
+    Checks that LIMS initials are unique in the database
+    """
+    all_user_settings = UserSettings.objects.all()
+    all_lims_initials = [u.lims_initials for u in all_user_settings]
+
+    if lims_initials in all_lims_initials:
+        return False, f'Initials {lims_initials} already used by another user'
+    else:
+        return True, ''

@@ -377,7 +377,7 @@ class ChangeLimsInitials(forms.Form):
     Add/ change the user initials as displayed in LIMS
 
     """
-    lims_initials = forms.CharField(label='LIMS initials')
+    lims_initials = forms.CharField(label='LIMS initials', max_length=10)
 
     def __init__(self, *args, **kwargs):
         super(ChangeLimsInitials, self).__init__(*args, **kwargs)
