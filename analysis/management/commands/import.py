@@ -516,13 +516,18 @@ class Command(BaseCommand):
                 reader = csv.DictReader(f, delimiter=',')
                 for f in reader:
 
+                    # sanitise the fusion input to prevent multiple fusions with the same breakpoints but different names
+                    # we want to remove GENE1/GENE2 and GENE1--GENE2 and just have GENE1-GENE2
+                    fusion_name = f['fusion']
+                    sanitised_fusion_name = fusion_name.replace("/","-").replace("--","-")
+
                     # format fusion field and filter panel
                     in_panel = False
                         
                     # splice variants
                     if f['type'] == 'Splice':
                         # add exon number to gene name
-                        fusion = f"{f['fusion']} {f['exons']}"
+                        fusion = f"{sanitised_fusion_name} {f['exons']}"
 
                         # check splicing gene list and set variable if matches
                         if 'splicing' in virtual_panel.keys():
@@ -532,7 +537,7 @@ class Command(BaseCommand):
                     # gene fusions
                     elif f['type'] == 'Fusion':
                         # use pipeline output directly (will be GENE_A--GENE_B)
-                        fusion = f['fusion']
+                        fusion = sanitised_fusion_name
 
                         # check fusion gene list and set variable if matches
                         for g in virtual_panel['fusions']:
