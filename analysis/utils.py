@@ -511,7 +511,7 @@ def get_fusion_info(sample_data, sample_obj):
     for fusion_object in fusions:
 
         # get checks for each variant
-        fusion_checks = FusionCheck.objects.filter(fusion_analysis=fusion_object)
+        fusion_checks = FusionCheck.objects.filter(fusion_analysis=fusion_object).order_by('pk')
         fusion_checks_list = [ v.get_decision_display() for v in fusion_checks ]
         latest_check = fusion_checks.latest('pk')
 
