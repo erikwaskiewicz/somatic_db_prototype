@@ -498,7 +498,6 @@ def get_variant_info(sample_data, sample_obj):
     return variant_data
 
 
-
 def get_fusion_info(sample_data, sample_obj):
     """
     Get information on all fusions in a sample analysis to generate the fusion portion of the context dictionary
@@ -508,6 +507,8 @@ def get_fusion_info(sample_data, sample_obj):
 
     fusion_calls = []
     reportable_list = []
+    filtered_list = []
+    artefact_count = 0
 
     for fusion_object in fusions:
 
@@ -522,6 +523,10 @@ def get_fusion_info(sample_data, sample_obj):
             if c != 'Not analysed':
                 fusion_checks_analysed.append(c)
 
+        # marker to tell whether a variant should be filtered downstream
+        filter_call = False
+        filter_reason = ''
+        
         # do the last two checks agree?
         last_two_checks_agree = True
         if len(fusion_checks_analysed) > 1:
@@ -554,6 +559,24 @@ def get_fusion_info(sample_data, sample_obj):
         else:
             vaf = None
 
+        # get artefact lists relevant to this sample
+        artefact_lists = VariantList.objects.filter(genome_build=sample_obj.genome_build, list_type='F', assay = sample_obj.panel.assay)
+
+        # get fusions in artefact list
+        for fusion_artefact in VariantToVariantList.objects.filter(fusion=fusion_object.fusion_instance.fusion_genes):
+
+            # if signed off and in one of the variant lists for this sample
+            if fusion_artefact.signed_off() and (fusion_artefact.variant_list in artefact_lists):
+
+                # if it's an artefact
+                if fusion_artefact.variant_list.list_type == 'F':
+                    # set variables and update variant check
+                    artefact_count += 1
+                    filter_call = True
+                    latest_check.decision = 'A'
+                    latest_check.save()
+                    filter_reason = 'Artefact'
+
         # combine all into context dict
         fusion_calls_dict = {
             'pk': fusion_object.pk,
@@ -576,7 +599,11 @@ def get_fusion_info(sample_data, sample_obj):
             'final_decision': fusion_object.fusion_instance.get_final_decision_display(),
             'manual_upload': fusion_object.fusion_instance.manual_upload
         }
-        fusion_calls.append(fusion_calls_dict)
+        # add to artefact list if appears in the artefact list, otherwise add to the fusion calls list
+        if filter_call == True:
+            filtered_list.append((fusion_calls_dict, filter_reason))
+        else:
+            fusion_calls.append(fusion_calls_dict)
 
     # set true or false for whether there are reportable variants
     if len(reportable_list) == 0:
@@ -586,12 +613,13 @@ def get_fusion_info(sample_data, sample_obj):
 
     fusion_data = {
         'fusion_calls': fusion_calls,
+        'filtered_calls': filtered_list,
+        'artefact_count': artefact_count,
         'no_calls': no_calls,
         'check_options': FusionCheck.DECISION_CHOICES,
     }
 
     return fusion_data
-
 
 
 def get_coverage_data(sample_obj, depth_cutoffs):
@@ -933,6 +961,56 @@ def get_poly_list(poly_list_obj, user):
             checking_list.append(formatted_variant)
 
     return confirmed_list, checking_list
+
+
+def get_fusion_list(artefact_list_obj, user):
+    """
+    get all polys and split into a list of confirmed fusion artefacts and a list of fusion artefacts that need checking
+
+    """
+    # get all variant objects from the poly list
+    fusions = VariantToVariantList.objects.filter(variant_list=artefact_list_obj).order_by("fusion__left_breakpoint")
+
+    # make empty lists before collecting data from loop
+    confirmed_list = []
+    checking_list = []
+
+    for n, f in enumerate(fusions):
+
+        # format variant info info dictionary 
+        formatted_variant = {
+            'counter': n,
+            'variant_pk': f.id,
+            'fusion': f.fusion.fusion_genes,
+            'left_breakpoint': f.fusion.left_breakpoint,
+            'right_breakpoint': f.fusion.right_breakpoint,
+            'genome_build': f.fusion.genome_build,
+            'upload_user': f.upload_user,
+            'upload_time': f.upload_time,
+            'upload_comment': f.upload_comment,
+            'check_user': f.check_user,
+            'check_time': f.check_time,
+            'check_comment': f.check_comment,
+        }
+
+        # add polys with two checks to the confirmed list
+        if f.signed_off():
+            confirmed_list.append(formatted_variant)
+
+        # otherwise add to the checking list
+        else:
+            # check if the current user is the person who submitted the poly
+            # if it is then disable the button to sign off
+            if user == f.upload_user:
+                formatted_variant['able_to_sign_off'] = False
+            else:
+                formatted_variant['able_to_sign_off'] = True
+
+            # add to checking list
+            checking_list.append(formatted_variant)
+
+    return confirmed_list, checking_list
+  
     
 def if_nucleotide(string):
     """
@@ -947,6 +1025,7 @@ def if_nucleotide(string):
             
     return check
 
+
 def if_chrom(string):
     """
     Function to check if chromosome is 1-22 or X/Y
@@ -956,6 +1035,7 @@ def if_chrom(string):
         return True
     else:
         return False
+
 
 def variant_format_check(chrm, position, ref, alt, panel_bed_path, total_reads, alt_reads):
     """

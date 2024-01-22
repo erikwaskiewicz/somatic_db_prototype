@@ -10,10 +10,10 @@ from django.shortcuts import get_object_or_404
 
 from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, 
     CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, 
-    ConfirmPolyForm, ConfirmArtefactForm, AddNewPolyForm, AddNewArtefactForm, ManualVariantCheckForm, ReopenForm, ChangeLimsInitials, 
-    EditedPasswordChangeForm, EditedUserCreationForm, NewFusionForm)
+    ConfirmPolyForm, ConfirmArtefactForm, AddNewPolyForm, AddNewArtefactForm, AddNewFusionArtefactForm, 
+    ManualVariantCheckForm, ReopenForm, ChangeLimsInitials, EditedPasswordChangeForm, EditedUserCreationForm, NewFusionForm)
 from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
-    get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, 
+    get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, get_fusion_list, 
     create_myeloid_coverage_summary, variant_format_check, breakpoint_format_check, lims_initials_check)
 from .models import *
 
@@ -575,9 +575,8 @@ def analysis_sheet(request, sample_id):
                 variant_check, warning_message = variant_format_check(new_variant_data['chrm'], new_variant_data['position'], new_variant_data['ref'], new_variant_data['alt'], sample_obj.panel.bed_file.path, new_variant_data['total_reads'], new_variant_data['alt_reads'])
                 
                 if not variant_check:
-                    
                     context['warning'].append(warning_message)
-                                    
+
                 else:
                 
                     #Lock to same genome build as sample_analysis 
@@ -1053,12 +1052,123 @@ def view_artefacts(request, list_name):
 
 
 @login_required
+def view_fusion_artefacts(request, list_name):
+    """
+    Page to view all confirmed artefacts and add and check new ones
+
+    """
+    # get artefact list and pull out list of confirmed polys and polys to be checked
+    artefact_list = VariantList.objects.get(name=list_name, list_type='F')
+    confirmed_list, checking_list = get_fusion_list(artefact_list, request.user)
+
+    # set genome build
+    genome = artefact_list.genome_build
+    if genome == 37:
+        build_tag = 'info'
+    elif genome == 38:
+        build_tag = 'success'
+    assay = artefact_list.get_assay_display()
+
+    # make context dictionary
+    context = {
+        'success': [],
+        'warning': [],
+        'list_name': list_name,
+        'genome_build': genome,
+        'build_tag': build_tag,
+        'assay': assay,
+        'confirmed_list': confirmed_list,
+        'checking_list': checking_list,
+        'confirm_form': ConfirmArtefactForm(),
+        'add_new_form': AddNewFusionArtefactForm(),
+    }
+
+    #----------------------------------------------------------
+    #  If any buttons are pressed
+    if request.method == 'POST':
+
+        # if confirm poly button is pressed
+        if 'variant_pk' in request.POST:
+
+            confirm_form = ConfirmArtefactForm(request.POST)
+            if confirm_form.is_valid():
+
+                # get form dataNCOA4/RET and CCDC6--RETNCOA4/RET and CCDC6--RET
+                variant_pk = confirm_form.cleaned_data['variant_pk']
+                comment = confirm_form.cleaned_data['comment']
+
+                # update artefact list
+                variant_to_variant_list_obj = VariantToVariantList.objects.get(pk=variant_pk)
+                variant_to_variant_list_obj.check_user = request.user
+                variant_to_variant_list_obj.check_time = timezone.now()
+                variant_to_variant_list_obj.check_comment = comment
+                variant_to_variant_list_obj.save()
+
+                # get genomic coords for confirmation popup
+                fusion_obj = variant_to_variant_list_obj.fusion
+                fusion = fusion_obj.fusion_genes
+
+                # reload context
+                confirmed_list, checking_list = get_fusion_list(artefact_list, request.user)
+                context['confirmed_list'] = confirmed_list
+                context['checking_list'] = checking_list
+                context['success'].append(f'Fusion {fusion} added to artefact list')
+
+        # if add new artefact button is pressed
+        if 'left_breakpoint' in request.POST:
+            add_new_form = AddNewFusionArtefactForm(request.POST)
+
+            if add_new_form.is_valid():
+
+                # get form data
+                left_breakpoint = add_new_form.cleaned_data['left_breakpoint']
+                right_breakpoint = add_new_form.cleaned_data['right_breakpoint']
+                comment = add_new_form.cleaned_data['comment']
+
+                # wrap in try/ except to handle when a variant doesnt match the input
+                try:
+                    # load in fusion and variant to list objects
+                    fusion_obj = Fusion.objects.get(left_breakpoint=left_breakpoint, right_breakpoint=right_breakpoint)
+
+                    variant_to_variant_list_obj, created = VariantToVariantList.objects.get_or_create(
+                        variant_list = artefact_list,
+                        fusion = fusion_obj,
+                    )
+
+                    fusion = fusion_obj.fusion_genes
+
+                    # add user info if a new model is created
+                    if created:
+                        variant_to_variant_list_obj.upload_user = request.user
+                        variant_to_variant_list_obj.upload_time = timezone.now()
+                        variant_to_variant_list_obj.upload_comment = comment
+                        variant_to_variant_list_obj.save()
+
+                        # give success message
+                        context['success'].append(f'Fusion {fusion} added to artefact checking list')
+
+                    # throw error if already in poly list
+                    else:
+                        context['warning'].append(f'Fusion {fusion} is already in the artefact list')
+
+                    # reload context
+                    confirmed_list, checking_list = get_fusion_list(artefact_list, request.user)
+                    context['confirmed_list'] = confirmed_list
+                    context['checking_list'] = checking_list
+
+                # throw error if there isnt a variant matching the input
+                except Fusion.DoesNotExist:
+                    context['warning'].append(f'Cannot find fusion, have you entered the correct breakpoints?')
+
+    # render the page
+    return render(request, 'analysis/view_fusion_artefacts.html', context)
+
+@login_required
 def options_page(request):
     """
     Display a page of all other options e.g. poly lists
     """
     variant_lists = VariantList.objects.all()
-
     return render(request, 'analysis/options_page.html', {'variant_lists': variant_lists})
 
 
