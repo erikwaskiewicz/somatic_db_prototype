@@ -14,7 +14,8 @@ from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatien
     EditedPasswordChangeForm, EditedUserCreationForm, NewFusionForm)
 from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
     get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, 
-    create_myeloid_coverage_summary, variant_format_check, breakpoint_format_check)
+    create_myeloid_coverage_summary, variant_format_check, breakpoint_format_check, lims_initials_check)
+    create_myeloid_coverage_summary, variant_format_check, lims_initials_check)
 from .models import *
 
 import json
@@ -35,27 +36,37 @@ def signup(request):
         signup_form = EditedUserCreationForm(request.POST)
 
         if signup_form.is_valid():
-            signup_form.save()
 
             # get data from form
             username = signup_form.cleaned_data.get('username')
             raw_password = signup_form.cleaned_data.get('password1')
             lims_initials = signup_form.cleaned_data.get('lims_initials')
 
-            # save user object and authenticate
-            user = authenticate(username=username, password=raw_password)
-            user.is_active = False
-            user.save()
+            # check if LIMS initials already exists
+            initials_check, warning_message = lims_initials_check(lims_initials)
 
-            # add lims initials
-            usersettings = UserSettings(
-                user = user,
-                lims_initials = lims_initials
-            )
-            usersettings.save()
+            if initials_check:
+                # user is created on this save command
+                signup_form.save()
 
-            return redirect('home')
-            #TODO - add some kind of confirmation
+                # edit user object
+                user = authenticate(username=username, password=raw_password)
+                user.is_active = False
+                user.save()
+
+                # add lims initials
+                usersettings = UserSettings(
+                    user = user,
+                    lims_initials = lims_initials
+                )
+                usersettings.save()
+
+                return redirect('home')
+                #TODO - add some kind of confirmation
+
+            # if LIMS initials already exists then throw an error
+            else:
+                warnings.append(warning_message)
 
         else:
             warnings.append('Could not create an account, check that your password meets the requirements below')
@@ -1057,7 +1068,10 @@ def user_settings(request):
     """
     Display a page of user setting options
     """
-    lims_form = ChangeLimsInitials()
+    context = {
+        'lims_form': ChangeLimsInitials(),
+        'warning': []
+    }
 
     #----------------------------------------------------------
     #  If any buttons are pressed
@@ -1072,20 +1086,30 @@ def user_settings(request):
                 # get form data and change LIMS data
                 new_lims_initials = lims_form.cleaned_data['lims_initials']
 
-                # update value if it already exists
-                try:
-                    request.user.usersettings.lims_initials = new_lims_initials
-                    request.user.usersettings.save()
+                # check if LIMS initials are already in the database
 
-                # add new record if it doesnt exist
-                except ObjectDoesNotExist:
-                    user = UserSettings(
-                        user = request.user,
-                        lims_initials = new_lims_initials
-                    )
-                    user.save()
+                initials_check, warning_message = lims_initials_check(new_lims_initials)
 
-    return render(request, 'analysis/user_settings.html', {'lims_form': lims_form,})
+                if not initials_check:
+
+                    context['warning'].append(warning_message)
+
+                else:
+
+                    # update value if it already exists
+                    try:
+                        request.user.usersettings.lims_initials = new_lims_initials
+                        request.user.usersettings.save()
+
+                    # add new record if it doesnt exist
+                    except ObjectDoesNotExist:
+                        user = UserSettings(
+                            user = request.user,
+                            lims_initials = new_lims_initials
+                        )
+                        user.save()
+
+    return render(request, 'analysis/user_settings.html', context)
 
 
 @login_required

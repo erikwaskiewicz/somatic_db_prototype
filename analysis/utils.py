@@ -1002,6 +1002,7 @@ def variant_format_check(chrm, position, ref, alt, panel_bed_path, total_reads, 
 
     return True, ''
 
+
 def if_breakpoint(breakpoint:str):
     """
     Checks that a breakpoints has been entered correctly as chromosome coordinates
@@ -1014,6 +1015,7 @@ def if_breakpoint(breakpoint:str):
     else:
         return False
 
+      
 def breakpoint_format_check(left_breakpoint:str, right_breakpoint:str):
     """
     Checks both breakpoints for manual fusions and raises a warning if one or more is incorrect
@@ -1034,3 +1036,16 @@ def breakpoint_format_check(left_breakpoint:str, right_breakpoint:str):
     
     # Otherwise the breakpoints are formatted correctly
     return True, ''
+
+
+def lims_initials_check(lims_initials:str):
+    """
+    Checks that LIMS initials are unique in the database
+    """
+    all_user_settings = UserSettings.objects.all()
+    all_lims_initials = [u.lims_initials for u in all_user_settings]
+
+    if lims_initials in all_lims_initials:
+        return False, f'Initials {lims_initials} already used by another user'
+    else:
+        return True, ''
