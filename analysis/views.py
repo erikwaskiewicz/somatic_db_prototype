@@ -15,7 +15,6 @@ from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatien
 from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
     get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, 
     create_myeloid_coverage_summary, variant_format_check, breakpoint_format_check, lims_initials_check)
-    create_myeloid_coverage_summary, variant_format_check, lims_initials_check)
 from .models import *
 
 import json
