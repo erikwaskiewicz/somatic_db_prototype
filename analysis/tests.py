@@ -1998,6 +1998,31 @@ class TestChecks(TestCase):
             self.assertEqual(complete_checks(line), expected_out)
 
 
+    def test_manual_fusion_formatting(self):
+        """
+        Checks that breakpoints are formatted correctly for manual RNA variant entry
+        """
+
+        correct_breakpoint_autosomal = "chr12:12022900"
+        correct_breakpoint_x = "chrX:12345"
+        incorrect_breakpoint_autosomal = "chr93:12345"
+        incorrect_breakpoint = "NOT A BREAKPOINT"
+
+        # check if_breakpoint regex function
+        self.assertTrue(if_breakpoint(correct_breakpoint_autosomal))
+        self.assertTrue(if_breakpoint(correct_breakpoint_x))
+        self.assertFalse(if_breakpoint(incorrect_breakpoint))
+
+        # check breakpoint_format_check function (uses if_chrom)
+        both_breakpoints_correct, both_breakpoints_correct_message = breakpoint_format_check(correct_breakpoint_autosomal, correct_breakpoint_x)
+        left_breakpoint_incorrect, left_breakpoint_incorrect_message = breakpoint_format_check(incorrect_breakpoint_autosomal, correct_breakpoint_autosomal)
+        right_breakpoint_incorrect, right_breakpoint_incorrect_message = breakpoint_format_check(correct_breakpoint_autosomal, incorrect_breakpoint_autosomal)
+        self.assertTrue(both_breakpoints_correct)
+        self.assertFalse(left_breakpoint_incorrect)
+        self.assertFalse(right_breakpoint_incorrect)
+
+
+
 class TestGnomad(TestCase):
     """
     Correctly handle displaying the Gnomad scores and links

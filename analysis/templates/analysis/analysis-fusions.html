@@ -50,11 +50,13 @@
       <td class="variant-pk" style="display:none">{{ v.pk }}</td>
       <td>
         <p style="display:inline" id="igv-{{ v.pk }}">{{ v.fusion_genes }} </p><button class="btn btn-sm btn-info" onclick="copyToClipboard('#igv-{{ v.pk }}')"><span class="fa fa-copy"></span></button>
+        {% if v.manual_upload %}
+          <span class="badge badge-warning badge-pill">Manual</span>
+        {% endif %}
       </td>
       <td>{{ v.fusion_hgvs }}</td>
       <td>{{ v.fusion_supporting_reads }}</td>
       {% if sample_data.panel_obj.show_fusion_vaf %}<td>{{ v.vaf }}%</td>{% endif %}
-      <!--<td>{{ v.reference_reads }}</td>-->
       <td>{{ v.left_breakpoint }}
       {% if v.genome_build == 37 %}
        <span class = "badge badge-info badge-pill">GRCh{{ v.genome_build }}
@@ -125,6 +127,7 @@
   <!-- submit button -->
   {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail' %}
   <div class="float-right">
+    <button type="button" class="btn btn-light" data-toggle="modal" data-target="#add-fusion-modal">Add fusion</button>
     <button type="button" class="btn btn-success fusion-submit" id="fusion-submit">Update selections</button>
   </div>
   <br>
@@ -138,6 +141,15 @@
 <div class="alert alert-info">
   No calls in this sample
 </div>
+
+  {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail' %}
+  <div class="float-right">
+    <button type="button" class="btn btn-light" data-toggle="modal" data-target="#add-fusion-modal">Add fusion</button>
+  </div>
+  <br>
+  <br>
+  <br>
+  {% endif %}
   
 {% endif %}
 
@@ -250,6 +262,26 @@
 </div>
 {% endfor %}
 
+
+<!-- Add fusion modal -->
+<div class="modal fade" id="add-fusion-modal" tabindex="-1" role="dialog" aria-labelledby="add-fusion-modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="add-fusion-modalLabel">Add new fusion</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        {% crispy new_fusion_form %}
+
+      </div>
+
+    </div>
+  </div>
+</div>
 
 
 
