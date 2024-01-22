@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.db import transaction
 
 import pybedtools
+import re
 
 def get_samples(samples):
     """
@@ -572,7 +573,8 @@ def get_fusion_info(sample_data, sample_obj):
             'latest_checks_agree': last_two_checks_agree,
             'comment_form': fusion_comment_form,
             'comments': fusion_comments_list,
-            'final_decision': fusion_object.fusion_instance.get_final_decision_display()
+            'final_decision': fusion_object.fusion_instance.get_final_decision_display(),
+            'manual_upload': fusion_object.fusion_instance.manual_upload
         }
         fusion_calls.append(fusion_calls_dict)
 
@@ -998,6 +1000,41 @@ def variant_format_check(chrm, position, ref, alt, panel_bed_path, total_reads, 
                 
         return False, 'Alt read counts can not be zero'
 
+    return True, ''
+
+
+def if_breakpoint(breakpoint:str):
+    """
+    Checks that a breakpoints has been entered correctly as chromosome coordinates
+    """
+
+    expected_format = r'chr([0-9]{1,2}|X|Y):[0-9]+'
+
+    if re.fullmatch(expected_format, breakpoint):
+        return True
+    else:
+        return False
+
+      
+def breakpoint_format_check(left_breakpoint:str, right_breakpoint:str):
+    """
+    Checks both breakpoints for manual fusions and raises a warning if one or more is incorrect
+    """
+
+    left_breakpoint_check = if_breakpoint(left_breakpoint)
+    right_breakpoint_check = if_breakpoint(right_breakpoint)
+    left_chrom_check = if_chrom(left_breakpoint.split(":")[0][3:])
+    right_chrom_check = if_chrom(right_breakpoint.split(":")[0][3:])
+
+    # Error if left breakpoint incorrectly formatted
+    if not left_breakpoint_check or not left_chrom_check:
+        return False, 'Left breakpoint not formatted using genomic co-ordinates, please correct'
+    
+    # Error if right breakpoint incorrectly formatted
+    if not right_breakpoint_check or not right_chrom_check:
+        return False, 'Right breakpoint not formatted using genomic co-ordinates, please correct'
+    
+    # Otherwise the breakpoints are formatted correctly
     return True, ''
 
 

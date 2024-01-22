@@ -11,10 +11,10 @@ from django.shortcuts import get_object_or_404
 from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, 
     CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, 
     ConfirmPolyForm, ConfirmArtefactForm, AddNewPolyForm, AddNewArtefactForm, ManualVariantCheckForm, ReopenForm, ChangeLimsInitials, 
-    EditedPasswordChangeForm, EditedUserCreationForm)
+    EditedPasswordChangeForm, EditedUserCreationForm, NewFusionForm)
 from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
     get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, 
-    create_myeloid_coverage_summary, variant_format_check, lims_initials_check)
+    create_myeloid_coverage_summary, variant_format_check, breakpoint_format_check, lims_initials_check)
 from .models import *
 
 import json
@@ -395,6 +395,7 @@ def analysis_sheet(request, sample_id):
         'warning': [],
         'sample_data': sample_data,
         'new_variant_form': NewVariantForm(),
+        'new_fusion_form': NewFusionForm(),
         'manual_check_form': ManualVariantCheckForm(regions=sample_data['panel_manual_regions']),
         'submit_form': SubmitForm(),
         'update_name_form': UpdatePatientName(),
@@ -574,8 +575,8 @@ def analysis_sheet(request, sample_id):
                 variant_check, warning_message = variant_format_check(new_variant_data['chrm'], new_variant_data['position'], new_variant_data['ref'], new_variant_data['alt'], sample_obj.panel.bed_file.path, new_variant_data['total_reads'], new_variant_data['alt_reads'])
                 
                 if not variant_check:
-                
-                	context['warning'].append(warning_message)
+                    
+                    context['warning'].append(warning_message)
                                     
                 else:
                 
@@ -613,6 +614,69 @@ def analysis_sheet(request, sample_id):
                     # reload context
                     context['variant_data'] = get_variant_info(sample_data, sample_obj)
 
+        # if add new fusion form is clicked
+        if 'fusion_genes' in request.POST:
+            new_fusion_form = NewFusionForm(request.POST)
+
+            if new_fusion_form.is_valid():
+
+                new_fusion_data = new_fusion_form.cleaned_data
+
+                breakpoint_check, warning_message = breakpoint_format_check(
+                    new_fusion_form.cleaned_data['left_breakpoint'],
+                    new_fusion_form.cleaned_data['right_breakpoint']
+                )
+
+                if not breakpoint_check:
+
+                    context['warning'].append(warning_message)
+
+                else:
+
+                    # Create new Fusion object with same genome build as SampleAnalysis
+                    new_fusion_object, created = Fusion.objects.get_or_create(
+                        fusion_genes=new_fusion_data['fusion_genes'],
+                        left_breakpoint=new_fusion_data['left_breakpoint'],
+                        right_breakpoint=new_fusion_data['right_breakpoint'],
+                        genome_build=sample_obj.genome_build
+                    )
+                    new_fusion_object.save()
+
+                    # Create new FusionAnalysis object
+                    # Set ref_reads_1 as 0 for RNA as not needed
+                    if new_fusion_form.cleaned_data['ref_reads_1']:
+                        ref_reads_1 = new_fusion_form.cleaned_data['ref_reads_1']
+                    else:
+                        ref_reads_1 = 0
+
+                    new_fusion_analysis_object = FusionAnalysis(
+                        fusion_genes=new_fusion_object,
+                        sample=sample_obj,
+                        hgvs=new_fusion_data['hgvs'],
+                        in_ntc=new_fusion_data['in_ntc'],
+                        ref_reads_1=ref_reads_1,
+                        fusion_supporting_reads=new_fusion_data['fusion_supporting_reads'],
+                        manual_upload=True,
+                        fusion_caller="Manual"
+                    )
+                    new_fusion_analysis_object.save()
+
+                    # Create new FusionPanelAnalysis object
+                    new_fusion_panel_analysis_object = FusionPanelAnalysis(
+                        fusion_instance=new_fusion_analysis_object,
+                        sample_analysis=sample_obj
+                    )
+                    new_fusion_panel_analysis_object.save()
+
+                    # Create new FusionCheck object
+                    new_fusion_check_object = FusionCheck(
+                        fusion_analysis=new_fusion_panel_analysis_object,
+                        check_object=sample_obj.get_checks().get('current_check_object')
+                    )
+                    new_fusion_check_object.save()
+
+                    # Reload context
+                    context['fusion_data'] = get_fusion_info(sample_data, sample_obj)
 
         # overall sample comments form
         if 'sample_comment' in request.POST:
