@@ -74,6 +74,7 @@
   <!-- SNV section - variant calls ------------------------------>
   {% if sample_data.panel_obj.show_snvs %}
   <h2>SNVs & indels - variant calls</h2>
+  <small class="form-text text-muted">Only genuine variants are displayed here, any miscalled or failed calls are listed at the end of this report</small>
 
   <table>
     <thead>
@@ -121,7 +122,6 @@
     {% endif %}
     </tbody>
   </table>
-  <small class="form-text text-muted">Only genuine variants are displayed here, any miscalled or failed calls are listed at the end of this report</small>
   <br>
   <br>
 
@@ -322,6 +322,8 @@
 
   {% if sample_data.panel_obj.show_fusions %}
   <h2>Fusions</h2>
+  <small class="form-text text-muted">Only genuine fusions are displayed here, any miscalled or failed calls are listed at the end of this report</small>
+
   <table>
     <thead>
       <tr>
@@ -369,7 +371,6 @@
     {% endif %}
     </tbody>
   </table>
-  <small class="form-text text-muted">Only genuine fusions are displayed here, any miscalled or failed calls are listed at the end of this report</small>
   <br>
   <br>
 
