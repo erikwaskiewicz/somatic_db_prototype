@@ -128,7 +128,7 @@ class TestUpload(TestCase):
             'genome': ['GRCh37'],
             'debug': ['True'],
             'fusions': ['analysis/test_data/Database_37/rna_test_1_fusion_check.csv'],
-            'fusion_coverage': ['240000000,900']
+            'fusion_coverage': ['9000004,596']
         }
 
         # run import management command - wrap in contextlib to prevent output printing to screen
@@ -145,8 +145,8 @@ class TestUpload(TestCase):
         self.assertEqual(sample_analysis_obj.genome_build, 37)
 
         # test number of reads - RNA only
-        self.assertEqual(sample_analysis_obj.total_reads, 240000000)
-        self.assertEqual(sample_analysis_obj.total_reads_ntc, 900)
+        self.assertEqual(sample_analysis_obj.total_reads, 9000004)
+        self.assertEqual(sample_analysis_obj.total_reads_ntc, 596)
 
         # test than no SNV data was uploaded
         self.assertFalse(Variant.objects.exists())
@@ -179,6 +179,70 @@ class TestUpload(TestCase):
         # ? test incorrect assay
         # ? test incorrect genome build
         # ? test duplicate ws
+
+
+    def test_upload_TSO500_ctDNA(self):
+        '''
+        test import for TSO500_ctDNA test data
+        '''
+
+        # needed arguments for upload
+        kwargs = {
+            'run': ['ctDNA_run_1'],
+            'worksheet': ['ctdna_ws_1'],
+            'assay': ['TSO500_ctDNA'],
+            'sample': ['ctdna_test_1'],
+            'panel': ['lung'],
+            'genome': ['GRCh37'],
+            'debug': ['True'],
+            'snvs': ['analysis/test_data/Database_37/ctdna_test_1_variants.tsv'],
+            'snv_coverage': ['analysis/test_data/Database_37/ctdna_test_1_lung_coverage.json'],
+            'fusions': ['analysis/test_data/Database_37/ctdna_test_1_fusion_check.csv'],
+        }
+
+        # run import management command - wrap in contextlib to prevent output printing to screen
+        with contextlib.redirect_stdout(None):
+            call_command('import', **kwargs)
+
+        # get db objects
+        ws_obj = Worksheet.objects.get(ws_id = 'ctdna_ws_1')
+        sample_obj = Sample.objects.get(sample_id = 'ctdna_test_1')
+        panel_obj = Panel.objects.get(panel_name='lung', assay='3', live=True, genome_build=37)
+        sample_analysis_obj = SampleAnalysis.objects.get(worksheet = ws_obj, sample=sample_obj, panel=panel_obj)
+
+        # test genome build
+        self.assertEqual(sample_analysis_obj.genome_build, 37)
+
+        # test number of reads is empty - RNA only
+        self.assertEqual(sample_analysis_obj.total_reads, None)
+        self.assertEqual(sample_analysis_obj.total_reads_ntc, None)
+
+        # test than num SNVs uploaded was correct
+        self.assertEqual(Variant.objects.count(), 3690)
+        self.assertEqual(VariantInstance.objects.count(), 6)
+
+        # test that num of coverage records is correct
+        self.assertEqual(GeneCoverageAnalysis.objects.count(), 3)
+        self.assertEqual(RegionCoverageAnalysis.objects.count(), 11)
+        self.assertEqual(GapsAnalysis.objects.count(), 1)
+
+        # check number of calls - total in import file, total in tumour panel, fusion only and splice only
+        self.assertEqual(Fusion.objects.count(), 18)
+        self.assertEqual(FusionAnalysis.objects.count(), 10)
+        self.assertEqual(FusionAnalysis.objects.filter(fusion_caller='Fusion').count(), 10)
+        self.assertEqual(FusionAnalysis.objects.filter(fusion_caller='Splice').count(), 0)
+
+        # check splice variant exons are labelled correctly (not in panel but in input csv)
+        self.assertTrue(Fusion.objects.filter(fusion_genes='MET 14/21').exists())
+        self.assertTrue(Fusion.objects.filter(fusion_genes='EGFR 2-7/28').exists())
+
+        # check sanitisation of fusions with a slash instead of dash
+        self.assertTrue(Fusion.objects.filter(fusion_genes='NCOA4-RET').exists())
+        self.assertFalse(Fusion.objects.filter(fusion_genes='NCOA4/RET').exists())
+
+        # check sanitisation of fusions with a double dash instead of a single one
+        self.assertTrue(Fusion.objects.filter(fusion_genes='CCDC6-RET').exists())
+        self.assertFalse(Fusion.objects.filter(fusion_genes='CCDC6--RET').exists())
 
 
 class TestDna(TestCase):
