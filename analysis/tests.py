@@ -245,6 +245,56 @@ class TestUpload(TestCase):
         self.assertFalse(Fusion.objects.filter(fusion_genes='CCDC6--RET').exists())
 
 
+    def test_upload_GeneRead_CRM(self):
+        '''
+        test import for GeneRead_CRM test data
+        '''
+        # needed arguments for upload
+        kwargs = {
+            'run': ['run_3'],
+            'worksheet': ['crm_ws_1'],
+            'assay': ['GeneRead_CRM'],
+            'sample': ['crm_test_1'],
+            'panel': ['tumour'],
+            'genome': ['GRCh37'],
+            'debug': ['True'],
+            'snvs': ['analysis/test_data/Database_37/crm_test_1_variants.tsv'],
+            'snv_coverage': ['analysis/test_data/Database_37/crm_test_1_tumour_coverage.json']
+        }
+
+        # run import management command - wrap in contextlib to prevent output printing to screen
+        with contextlib.redirect_stdout(None):
+            call_command('import', **kwargs)
+
+        # get db objects
+        ws_obj = Worksheet.objects.get(ws_id = 'crm_ws_1')
+        sample_obj = Sample.objects.get(sample_id = 'crm_test_1')
+        panel_obj = Panel.objects.get(panel_name='tumour', assay='4', live=True, genome_build=37)
+        sample_analysis_obj = SampleAnalysis.objects.get(worksheet = ws_obj, sample=sample_obj, panel=panel_obj)
+
+        # test genome build
+        self.assertEqual(sample_analysis_obj.genome_build, 37)
+
+        # test number of reads is empty - RNA only
+        self.assertEqual(sample_analysis_obj.total_reads, None)
+        self.assertEqual(sample_analysis_obj.total_reads_ntc, None)
+
+        # test than num SNVs uploaded was correct
+        self.assertEqual(Variant.objects.count(), 67)
+        self.assertEqual(VariantInstance.objects.count(), 11)
+
+        # test that num of coverage records is correct
+        self.assertEqual(GeneCoverageAnalysis.objects.count(), 13)
+        self.assertEqual(RegionCoverageAnalysis.objects.count(), 55)
+        self.assertEqual(GapsAnalysis.objects.count(), 0)
+
+        # check that no fusions have been added
+        self.assertFalse(Fusion.objects.exists())
+        self.assertFalse(FusionAnalysis.objects.exists())
+        self.assertFalse(FusionAnalysis.objects.filter(fusion_caller='Fusion').exists())
+        self.assertFalse(FusionAnalysis.objects.filter(fusion_caller='Splice').exists())
+
+
 class TestDna(TestCase):
     """
     Load in DNA control sample with each virtual panel applied, test that data is as expected
