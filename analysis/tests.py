@@ -6,54 +6,51 @@ from decimal import Decimal
 from io import StringIO
 from django.core import management
 from django.core.management import call_command
-from django.core.management import BaseCommand, CommandError
+
 
 class TestUpload(TestCase):
     """
-    Test that fusions and samples are uploaded from RNA runs
+    Test that fusions and samples are uploaded from RNA runs with correct formatting
     """
 
-#    panels = ['Tumour', 'lung', 'Glioma', 'Thyroid', 'GIST', 'melanoma', 'Colorectal', 'NTRK']
-
-    def SetUp(self):
-    #for panel in panels:
-        panel_obj, created = Panel.objects.get_or_create(panel_name='Tumour', assay='2', genome_build=37, live=True)
-
-        self.panel_obj = panel_obj
-        print(panel_obj)
-        print(created)
     def test_fusion_upload(self):
+        '''
+        Fusion file uploads and formatted correctly
+        '''
 
-        panel_obj, created = Panel.objects.get_or_create(panel_name='Tumour', assay='2', genome_build=37, live=True, version=1, show_snvs=False, show_fusion_coverage=True, show_fusions=True, show_fusion_vaf=True)
-        panel = Panel(panel_name='Tumour', assay='2', genome_build=37, live=True, version=1, show_snvs=False, show_fusion_coverage=True, show_fusions=True, show_fusion_vaf=True)
-        self.panel_obj = panel_obj
-        print(panel_obj)
-        print(created)
+        panel_obj= Panel.objects.create(panel_name='Tumour'
+            , assay='2'
+            , genome_build=37
+            , live=True, version=1
+            , show_snvs=False
+            , show_fusion_coverage=True
+            , show_fusions=True, show_fusion_vaf=True)
 
         kwargs = {
         'run':['rna_test_1'],
         'worksheet':['rna_ws_1'],
         'assay':['TSO500_RNA'],
         'sample':['rna_test_1'],
-        'panel':[panel],
+        'panel':['Tumour'],
         'genome':['GRCh37'],
         'debug':['True'],
-        'fusions':['analysis/test_data/Database_37/rna_test_1_fusion_check.csv']
+        'fusions':['analysis/test_data/Database_37/rna_test_1_fusion_check.csv'],
+        'fusion_coverage':['240000000,900']
         }
 
+        out=StringIO()
+
         call_command('import',
-           stdout=StringIO(),
+           stdout=out,
            stderr=StringIO(),
            **kwargs)
 
-#    def call_command(self, *args):
- #           call_command('import',
-  #              *args,                
-   #             stdout=StringIO(),
-    #            stderr=StringIO()
-     #       )
+        fusions = Fusion.objects.all()
 
+        for fusion in fusions:
 
+            self.assertEqual('NCOA4-RET', fusion.fusions.fusion_genes)
+            self.assertEqual('CCDC6-RET', fusion.fusions.fusion_genes)
 
 class TestViews(TestCase):
     """
