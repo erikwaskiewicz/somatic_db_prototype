@@ -80,7 +80,7 @@
     <!-- otherwise list all genuine or miscalled variants -->
     {% else%}
       {% for v in variant_data.variant_calls %}
-        {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
+        {% if v.final_decision == "Genuine" %}
         <tr>
           <td class="variant-pk" style="display:none">{{ v.pk }}</td>
           <td><p style="display:inline" id="igv">{{ v.genomic }} 
@@ -368,7 +368,7 @@
     <tr><td colspan="7">No calls</td></tr>
   {% else %}
     {% for v in fusion_data.fusion_calls %}
-    {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
+    {% if v.final_decision == "Genuine" %}
     <tr>
       <td>{{ v.fusion_genes }}</td>
       <td>{{ v.fusion_hgvs }}</td>
