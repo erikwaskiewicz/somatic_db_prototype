@@ -18,6 +18,7 @@ class TestUpload(TestCase):
         Fusion file uploads and formatted correctly
         '''
 
+        # Create a panel
         panel_obj= Panel.objects.create(panel_name='Tumour'
             , assay='2'
             , genome_build=37
@@ -26,6 +27,7 @@ class TestUpload(TestCase):
             , show_fusion_coverage=True
             , show_fusions=True, show_fusion_vaf=True)
 
+        # Needed arguments for upload
         kwargs = {
         'run':['rna_test_1'],
         'worksheet':['rna_ws_1'],
@@ -45,6 +47,7 @@ class TestUpload(TestCase):
            stderr=StringIO(),
            **kwargs)
 
+        # Check formatting of fusion uploads
         fusions = Fusion.objects.all()
 
         for fusion in fusions:
