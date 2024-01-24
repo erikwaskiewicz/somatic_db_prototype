@@ -610,8 +610,8 @@ def analysis_sheet(request, sample_id):
                     )
                     new_variant_check_object.save()
 
-                    # reload context
-                    context['variant_data'] = get_variant_info(sample_data, sample_obj)
+                    # redirect to same page (if you just reload comtext then form will be resubmitted on refresh)
+                    return redirect('analysis_sheet', sample_id)
 
         # if add new fusion form is clicked
         if 'fusion_genes' in request.POST:
@@ -674,8 +674,8 @@ def analysis_sheet(request, sample_id):
                     )
                     new_fusion_check_object.save()
 
-                    # Reload context
-                    context['fusion_data'] = get_fusion_info(sample_data, sample_obj)
+                    # redirect to same page (if you just reload comtext then form will be resubmitted on refresh)
+                    return redirect('analysis_sheet', sample_id)
 
         # overall sample comments form
         if 'sample_comment' in request.POST:
