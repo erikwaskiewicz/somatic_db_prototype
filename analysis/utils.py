@@ -332,6 +332,7 @@ def get_variant_info(sample_data, sample_obj):
     variant_calls = []
     reportable_list = []
     filtered_list = []
+    other_calls_list = []
     poly_count = 0
     artefact_count = 0
 
@@ -409,6 +410,10 @@ def get_variant_info(sample_data, sample_obj):
         if sample_variant.variant_instance.get_final_decision_display() in ['Genuine']:
             reportable_list.append(variant_obj.variant)
 
+        # list of other calls to go in the footer of the report
+        if sample_variant.variant_instance.get_final_decision_display() in ['Miscalled', 'Failed call']:
+            other_calls_list.append(f'{sample_variant.variant_instance.gene} {sample_variant.variant_instance.hgvs_c}')
+
         # get list of comments for variant
         variant_comments_list = []
         for v in variant_checks:
@@ -485,6 +490,12 @@ def get_variant_info(sample_data, sample_obj):
     else:
         no_calls = False
 
+    # make list of other calls to go in footer of PDF report
+    if len(other_calls_list) == 0:
+        other_calls_text = 'None'
+    else:
+        other_calls_text = ', '.join(other_calls_list)
+
     # return as variantr data dictionary
     variant_data = {
         'variant_calls': variant_calls, 
@@ -492,6 +503,7 @@ def get_variant_info(sample_data, sample_obj):
         'poly_count': poly_count,
         'artefact_count': artefact_count,
         'no_calls': no_calls,
+        'other_calls_text': other_calls_text,
         'check_options': VariantCheck.DECISION_CHOICES,
     }
 
@@ -508,6 +520,7 @@ def get_fusion_info(sample_data, sample_obj):
     fusion_calls = []
     reportable_list = []
     filtered_list = []
+    other_calls_list = []
     artefact_count = 0
 
     for fusion_object in fusions:
@@ -549,8 +562,12 @@ def get_fusion_info(sample_data, sample_obj):
                 )
 
         # if variant is to appear on report tab, add to list
-        if fusion_object.fusion_instance.get_final_decision_display() in ['Genuine', 'Miscalled']:
+        if fusion_object.fusion_instance.get_final_decision_display() in ['Genuine']:
             reportable_list.append(fusion_object)
+
+        # list of other calls to go in the footer of the report
+        if fusion_object.fusion_instance.get_final_decision_display() in ['Miscalled', 'Failed call']:
+            other_calls_list.append(fusion_object.fusion_instance.fusion_genes.fusion_genes)
 
         # only get VAF when panel setting says so, otherwise return none
         panel = sample_obj.panel
@@ -611,11 +628,18 @@ def get_fusion_info(sample_data, sample_obj):
     else:
         no_calls = False
 
+        # make list of other calls to go in footer of PDF report
+    if len(other_calls_list) == 0:
+        other_calls_text = 'None'
+    else:
+        other_calls_text = ', '.join(other_calls_list)
+
     fusion_data = {
         'fusion_calls': fusion_calls,
         'filtered_calls': filtered_list,
         'artefact_count': artefact_count,
         'no_calls': no_calls,
+        'other_calls_text': other_calls_text,
         'check_options': FusionCheck.DECISION_CHOICES,
     }
 
