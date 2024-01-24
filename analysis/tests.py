@@ -9,44 +9,6 @@ from decimal import Decimal
 import contextlib
 
 
-class TestUpload(TestCase):
-    """
-    Test that fusions and samples are uploaded from RNA runs with correct formatting
-    """
-
-    # load in test data
-    fixtures = ['panels.json']
-
-    def test_fusion_upload(self):
-        '''
-        Fusion file uploads and formatted correctly
-        '''
-
-        # Needed arguments for upload
-        kwargs = {
-            'run': ['rna_test_1'],
-            'worksheet': ['rna_ws_1'],
-            'assay': ['TSO500_RNA'],
-            'sample': ['rna_test_1'],
-            'panel': ['Tumour'],
-            'genome': ['GRCh37'],
-            'debug': ['True'],
-            'fusions': ['analysis/test_data/Database_37/rna_test_1_fusion_check.csv'],
-            'fusion_coverage': ['240000000,900']
-        }
-
-        # run import management command
-        with contextlib.redirect_stdout(None):
-            call_command('import', **kwargs)
-
-        # Check formatting of fusion uploads
-        self.assertTrue(Fusion.objects.filter(fusion_genes='NCOA4-RET').exists())
-        self.assertFalse(Fusion.objects.filter(fusion_genes='NCOA4/RET').exists())
-
-        self.assertTrue(Fusion.objects.filter(fusion_genes='CCDC6-RET').exists())
-        self.assertFalse(Fusion.objects.filter(fusion_genes='CCDC6--RET').exists())
-
-
 class TestViews(TestCase):
     """
     Test ability to navigate through the different pages of the database
@@ -91,6 +53,83 @@ class TestViews(TestCase):
         ''' Access logout page '''
         response = self.client.get('/logout', follow=True)
         self.assertEqual(response.status_code, 200)
+
+
+class TestUpload(TestCase):
+    """
+    Test that data is correctly imported through the import management command
+    """
+
+    # load in all panels
+    fixtures = ['panels.json']
+
+
+    def test_upload_TSO500_RNA(self):
+        '''
+        test import for TSO500_RNA test data
+        '''
+
+        # needed arguments for upload
+        kwargs = {
+            'run': ['rna_test_1'],
+            'worksheet': ['rna_ws_1'],
+            'assay': ['TSO500_RNA'],
+            'sample': ['rna_test_1'],
+            'panel': ['Tumour'],
+            'genome': ['GRCh37'],
+            'debug': ['True'],
+            'fusions': ['analysis/test_data/Database_37/rna_test_1_fusion_check.csv'],
+            'fusion_coverage': ['240000000,900']
+        }
+
+        # run import management command - wrap in contextlib to prevent output printing to screen
+        with contextlib.redirect_stdout(None):
+            call_command('import', **kwargs)
+
+        # get db objects
+        ws_obj = Worksheet.objects.get(ws_id = 'rna_ws_1')
+        sample_obj = Sample.objects.get(sample_id = 'rna_test_1')
+        panel_obj = Panel.objects.get(panel_name='Tumour', assay='2', live=True, genome_build=37)
+        sample_analysis_obj = SampleAnalysis.objects.get(worksheet = ws_obj, sample=sample_obj, panel=panel_obj)
+
+        # test genome build
+        self.assertEqual(sample_analysis_obj.genome_build, 37)
+
+        # test number of reads - RNA only
+        self.assertEqual(sample_analysis_obj.total_reads, 240000000)
+        self.assertEqual(sample_analysis_obj.total_reads_ntc, 900)
+
+        # test than no SNV data was uploaded
+        self.assertFalse(Variant.objects.exists())
+        self.assertFalse(VariantInstance.objects.exists())
+
+        # test that no SNV coverage data has been populated
+        self.assertFalse(GeneCoverageAnalysis.objects.exists())
+        self.assertFalse(RegionCoverageAnalysis.objects.exists())
+        self.assertFalse(GapsAnalysis.objects.exists())
+
+        # check number of calls - total in import file, total in tumour panel, fusion only and splice only
+        self.assertEqual(Fusion.objects.count(), 18)
+        self.assertEqual(FusionAnalysis.objects.count(), 13)
+        self.assertEqual(FusionAnalysis.objects.filter(fusion_caller='Fusion').count(), 11)
+        self.assertEqual(FusionAnalysis.objects.filter(fusion_caller='Splice').count(), 2)
+
+        # check splice variant exons are labelled correctly
+        self.assertTrue(Fusion.objects.filter(fusion_genes='MET 14/21').exists())
+        self.assertTrue(Fusion.objects.filter(fusion_genes='EGFR 2-7/28').exists())
+
+        # check sanitisation of fusions with a slash instead of dash
+        self.assertTrue(Fusion.objects.filter(fusion_genes='NCOA4-RET').exists())
+        self.assertFalse(Fusion.objects.filter(fusion_genes='NCOA4/RET').exists())
+
+        # check sanitisation of fusions with a double dash instead of a single one
+        self.assertTrue(Fusion.objects.filter(fusion_genes='CCDC6-RET').exists())
+        self.assertFalse(Fusion.objects.filter(fusion_genes='CCDC6--RET').exists())
+
+        # possible edge cases?
+        # ? test incorrect assay
+        # ? test incorrect genome build
+        # ? test duplicate ws
 
 
 class TestDna(TestCase):
