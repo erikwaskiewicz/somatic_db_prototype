@@ -14,7 +14,7 @@
 
         <small_variants>
             {% for v in variant_data.variant_calls %}
-            {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
+            {% if v.final_decision == "Genuine" %}
             <variant>
                 <variant_ID>{{ v.genomic }}</variant_ID>
                 <gene>{{ v.gene }}</gene>
@@ -36,7 +36,7 @@
 
         <structural_variants>
             {% for v in fusion_data.fusion_calls %}
-            {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
+            {% if v.final_decision == "Genuine" %}
             <variant>
                 <genes>{{ v.fusion_genes }}</genes>
                 <hgvs>{{ v.fusion_hgvs }}</hgvs>
