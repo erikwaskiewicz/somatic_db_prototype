@@ -136,7 +136,7 @@
                 "chr": 4,
                 "pos_start": 54729329,
                 "pos_end": 54729334,
-                "hgvs_c": "KIT(NM_000222.3)c.1991-5_1991-1",
+                "hgvs_c": "KIT(NM_000222.3):c.1991-5_1991-1",
                 "gene": "KIT",
                 "counts_cosmic": 0,
                 "percent_cosmic": 0.0
@@ -145,7 +145,7 @@
                 "chr": 4,
                 "pos_start": 54729453,
                 "pos_end": 54729456,
-                "hgvs_c": "KIT(NM_000222.3)c.2110_2112",
+                "hgvs_c": "KIT(NM_000222.3):c.2110_2112",
                 "gene": "KIT",
                 "counts_cosmic": 0,
                 "percent_cosmic": 0.0
@@ -154,7 +154,7 @@
                 "chr": 4,
                 "pos_start": 54729458,
                 "pos_end": 54729490,
-                "hgvs_c": "KIT(NM_000222.3)c.2115_2141+5",
+                "hgvs_c": "KIT(NM_000222.3):c.2115_2141+5",
                 "gene": "KIT",
                 "counts_cosmic": 1,
                 "percent_cosmic": 0.14
@@ -198,7 +198,7 @@
                 "chr": 7,
                 "pos_start": 140753387,
                 "pos_end": 140753398,
-                "hgvs_c": "BRAF(NM_004333.6)c.1742-5_1747",
+                "hgvs_c": "BRAF(NM_004333.6):c.1742-5_1747",
                 "gene": "BRAF",
                 "counts_cosmic": 12,
                 "percent_cosmic": 0.1
