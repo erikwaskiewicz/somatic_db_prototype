@@ -108,7 +108,7 @@ def reopen_check(current_user, sample_analysis_obj):
     sample_analysis_obj.save()
 
     return True
-        
+
 
 @transaction.atomic
 def signoff_check(user, current_step_obj, sample_obj, status='C', complete=False):
@@ -406,7 +406,7 @@ def get_variant_info(sample_data, sample_obj):
                 last_two_checks_agree = False
 
         # if variant is to appear on report tab, add to list
-        if sample_variant.variant_instance.get_final_decision_display() in ['Genuine', 'Miscalled']:
+        if sample_variant.variant_instance.get_final_decision_display() in ['Genuine']:
             reportable_list.append(variant_obj.variant)
 
         # get list of comments for variant
@@ -1010,8 +1010,8 @@ def get_fusion_list(artefact_list_obj, user):
             checking_list.append(formatted_variant)
 
     return confirmed_list, checking_list
-  
-    
+
+
 def if_nucleotide(string):
     """
     Function to check if nucleotide is a string
