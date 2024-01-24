@@ -59,6 +59,7 @@
 <!-- SNV section - variant calls -->
 {% if sample_data.panel_obj.show_snvs %}
 <h4>SNVs & indels - variant calls</h4>
+<small class="form-text text-muted">Only genuine variants are displayed here, see 'SNVs & indels' tab for all calls</small>
 <table class="table table-sm table-striped table-hover">
   <thead>
     <tr>
@@ -77,7 +78,7 @@
     {% if variant_data.no_calls %}
       <tr><td colspan="7">No calls</td></tr>
 
-    <!-- otherwise list all genuine or miscalled variants -->
+    <!-- otherwise list all genuine variants -->
     {% else%}
       {% for v in variant_data.variant_calls %}
         {% if v.final_decision == "Genuine" %}
@@ -349,6 +350,7 @@
 <!-- fusions section -->
 {% if sample_data.panel_obj.show_fusions %}
 <h4>Fusions</h4>
+<small class="form-text text-muted">Only genuine fusions are displayed here, see 'Fusions' tab for all calls</small>
 <table class="table table-sm table-striped table-hover">
   <thead>
     <tr>
