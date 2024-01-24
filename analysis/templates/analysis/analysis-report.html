@@ -229,7 +229,7 @@
             {% if values.gaps_135 %}
               {% for gap in values.gaps_135 %}
               <tr>
-                <td>{{ gap.hgvs_c }}</td>
+                <td>{{ gap.gene }} {{ gap.hgvs_c }}</td>
                 <td>{{ gap.percent_cosmic }}</td>
                 <td>{{ gap.counts_cosmic }}</td>
               </tr>
@@ -261,7 +261,7 @@
             {% if values.gaps_270 %}
               {% for gap in values.gaps_270 %}
               <tr>
-                <td>{{ gap.hgvs_c }}</td>
+                <td>{{ gap.gene }} {{ gap.hgvs_c }}</td>
                 <td>{{ gap.percent_cosmic }}</td>
                 <td>{{ gap.counts_cosmic }}</td>
               </tr>
@@ -293,7 +293,7 @@
             {% if values.gaps_500 %}
               {% for gap in values.gaps_500 %}
               <tr>
-                <td>{{ gap.hgvs_c }}</td>
+                <td>{{ gap.gene }} {{ gap.hgvs_c }}</td>
                 <td>{{ gap.percent_cosmic }}</td>
                 <td>{{ gap.counts_cosmic }}</td>
               </tr>
@@ -325,7 +325,7 @@
             {% if values.gaps_1000 %}
               {% for gap in values.gaps_1000 %}
               <tr>
-                <td>{{ gap.hgvs_c }}</td>
+                <td>{{ gap.gene }} {{ gap.hgvs_c }}</td>
                 <td>{{ gap.percent_cosmic }}</td>
                 <td>{{ gap.counts_cosmic }}</td>
               </tr>

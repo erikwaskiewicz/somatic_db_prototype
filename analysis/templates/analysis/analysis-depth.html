@@ -195,7 +195,7 @@
                     <tbody>
                     {% for gap in value.gaps_135 %}
                       <tr>
-                        <td>{{ gap.hgvs_c }}</td>
+                        <td>{{ gap.gene }} {{ gap.hgvs_c }}</td>
                         <td>
                           {{ gap.genomic }}
                           {% if sample_data.genome_build == 37 %}
@@ -233,7 +233,7 @@
                     <tbody>
                     {% for gap in value.gaps_270 %}
                       <tr>
-                        <td>{{ gap.hgvs_c }}</td>
+                        <td>{{ gap.gene }} {{ gap.hgvs_c }}</td>
                         <td>
                           {{ gap.genomic }}
                           {% if sample_data.genome_build == 37 %}
@@ -304,7 +304,7 @@
                     <tbody>
                     {% for gap in value.gaps_1000 %}
                       <tr>
-                        <td>{{ gap.hgvs_c }}</td>
+                        <td>{{ gap.gene }} {{ gap.hgvs_c }}</td>
                         <td>
                           {{ gap.genomic }}
                           {% if sample_data.genome_build == 37 %}

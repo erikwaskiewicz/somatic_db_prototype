@@ -679,48 +679,34 @@ def get_coverage_data(sample_obj, depth_cutoffs):
             else:
                 counts_cosmic = 'N/A'
 
+            # make temp dict of info for each gap
+            gaps_dict = {
+                'genomic': gap.genomic(),
+                'gene': gap.hgvs_c.split('(')[0],
+                'hgvs_c': gap.hgvs_c.split(':')[1],
+                'percent_cosmic': percent_cosmic,
+                'counts_cosmic': counts_cosmic,
+            }
+
+            # add the dict to the list for the correct coverage cutoff
             # gaps at 135x
             if gap.coverage_cutoff == 135:
                 gaps_present_135 = True
-                gaps_dict = {
-                    'genomic': gap.genomic(),
-                    'hgvs_c': gap.hgvs_c,
-                    'percent_cosmic': percent_cosmic,
-                    'counts_cosmic': counts_cosmic,
-                }
                 gaps_135.append(gaps_dict)
 
             # gaps at 270x
             elif gap.coverage_cutoff == 270:
                 gaps_present_270 = True
-                gaps_dict = {
-                    'genomic': gap.genomic(),
-                    'hgvs_c': gap.hgvs_c,
-                    'percent_cosmic': percent_cosmic,
-                    'counts_cosmic': counts_cosmic,
-                }
                 gaps_270.append(gaps_dict)
 
             # gaps at 500x
             elif gap.coverage_cutoff == 500:
                 gaps_present_500 = True
-                gaps_dict = {
-                    'genomic': gap.genomic(),
-                    'hgvs_c': gap.hgvs_c,
-                    'percent_cosmic': gap.percent_cosmic,
-                    'counts_cosmic': counts_cosmic,
-                }
                 gaps_500.append(gaps_dict)
 
             # gaps at 1000x
             elif gap.coverage_cutoff == 1000:
                 gaps_present_1000 = True
-                gaps_dict = {
-                    'genomic': gap.genomic(),
-                    'hgvs_c': gap.hgvs_c,
-                    'percent_cosmic': percent_cosmic,
-                    'counts_cosmic': counts_cosmic,
-                }
                 gaps_1000.append(gaps_dict)
 
         # combine gaps and regions dictionaries
