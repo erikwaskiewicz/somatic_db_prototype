@@ -114,6 +114,7 @@ class Panel(models.Model):
     manual_review_required = models.BooleanField(default=False)
     manual_review_desc = models.CharField(max_length=200, blank=True, null=True) # pipe seperated, no spaces
     bed_file = models.FileField(upload_to=make_bedfile_path, blank=True, null=True)
+    report_snv_vaf = models.BooleanField(default=False)
 
     # fusion settings
     show_fusions = models.BooleanField()

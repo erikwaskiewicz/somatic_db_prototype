@@ -23,10 +23,14 @@
                 <hgvs_p>{{ v.hgvs_p_short }}</hgvs_p>
                 <exon>{{ v.exon }}</exon>
                 <genome_build>{{ sample_data.genome_build }}</genome_build>
-                {% if sample_data.panel_obj.assay == '3' %}  {# VAF rounded to 2dp for ctDNA, whole number for the rest #}
-                <vaf>{{ v.vaf.vaf }}</vaf>
+                {% if sample_data.panel_obj.report_snv_vaf %}
+                    {% if sample_data.panel_obj.assay == '3' %}  {# VAF rounded to 2dp for ctDNA, whole number for the rest #}
+                    <vaf>{{ v.vaf.vaf }}</vaf>
+                    {% else %}
+                    <vaf>{{ v.vaf.vaf_rounded }}</vaf>
+                    {% endif %}
                 {% else %}
-                <vaf>{{ v.vaf.vaf_rounded }}</vaf>
+                <vaf></vaf>
                 {% endif %}
                 <igv_outcome>{{ v.final_decision }}</igv_outcome>
             </variant>
