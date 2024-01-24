@@ -63,6 +63,55 @@ class TestUpload(TestCase):
     # load in all panels
     fixtures = ['panels.json']
 
+    def test_upload_TSO500_DNA(self):
+        '''
+        test import for TSO500_DNA test data
+        '''
+        # needed arguments for upload
+        kwargs = {
+            'run': ['run_test38'],
+            'worksheet': ['test38'],
+            'assay': ['TSO500_DNA'],
+            'sample': ['sample22'],
+            'panel': ['lung'],
+            'genome': ['GRCh38'],
+            'debug': ['True'],
+            'snvs': ['analysis/test_data/Database_38/sample22_variants.tsv'],
+            'snv_coverage': ['analysis/test_data/Database_38/sample22_lung_coverage.json']
+        }
+
+        # run import management command - wrap in contextlib to prevent output printing to screen
+        with contextlib.redirect_stdout(None):
+            call_command('import', **kwargs)
+
+        # get db objects
+        ws_obj = Worksheet.objects.get(ws_id = 'test38')
+        sample_obj = Sample.objects.get(sample_id = 'sample22')
+        panel_obj = Panel.objects.get(panel_name='lung', assay='1', live=True, genome_build=38)
+        sample_analysis_obj = SampleAnalysis.objects.get(worksheet = ws_obj, sample=sample_obj, panel=panel_obj)
+
+        # test genome build
+        self.assertEqual(sample_analysis_obj.genome_build, 38)
+
+        # test number of reads is empty - RNA only
+        self.assertEqual(sample_analysis_obj.total_reads, None)
+        self.assertEqual(sample_analysis_obj.total_reads_ntc, None)
+
+        # test than num SNVs uploaded was correct
+        self.assertEqual(Variant.objects.count(), 2)
+        self.assertEqual(VariantInstance.objects.count(), 2)
+
+        # test that num of coverage records is correct
+        self.assertEqual(GeneCoverageAnalysis.objects.count(), 3)
+        self.assertEqual(RegionCoverageAnalysis.objects.count(), 11)
+        self.assertEqual(GapsAnalysis.objects.count(), 9)
+
+        # check that no fusions have been added
+        self.assertFalse(Fusion.objects.exists())
+        self.assertFalse(FusionAnalysis.objects.exists())
+        self.assertFalse(FusionAnalysis.objects.filter(fusion_caller='Fusion').exists())
+        self.assertFalse(FusionAnalysis.objects.filter(fusion_caller='Splice').exists())
+
 
     def test_upload_TSO500_RNA(self):
         '''
