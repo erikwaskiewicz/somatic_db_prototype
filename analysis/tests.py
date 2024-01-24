@@ -1,13 +1,12 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
+from django.core.management import call_command
+
 from analysis.utils import *
 from analysis.models import *
 
 from decimal import Decimal
-
-from io import StringIO
-from django.core import management
-from django.core.management import call_command
+import contextlib
 
 
 class TestUpload(TestCase):
@@ -15,47 +14,38 @@ class TestUpload(TestCase):
     Test that fusions and samples are uploaded from RNA runs with correct formatting
     """
 
+    # load in test data
+    fixtures = ['panels.json']
+
     def test_fusion_upload(self):
         '''
         Fusion file uploads and formatted correctly
         '''
 
-        # Create a panel
-        panel_obj= Panel.objects.create(panel_name='Tumour'
-            , assay='2'
-            , genome_build=37
-            , live=True, version=1
-            , show_snvs=False
-            , show_fusion_coverage=True
-            , show_fusions=True, show_fusion_vaf=True)
-
         # Needed arguments for upload
         kwargs = {
-        'run':['rna_test_1'],
-        'worksheet':['rna_ws_1'],
-        'assay':['TSO500_RNA'],
-        'sample':['rna_test_1'],
-        'panel':['Tumour'],
-        'genome':['GRCh37'],
-        'debug':['True'],
-        'fusions':['analysis/test_data/Database_37/rna_test_1_fusion_check.csv'],
-        'fusion_coverage':['240000000,900']
+            'run': ['rna_test_1'],
+            'worksheet': ['rna_ws_1'],
+            'assay': ['TSO500_RNA'],
+            'sample': ['rna_test_1'],
+            'panel': ['Tumour'],
+            'genome': ['GRCh37'],
+            'debug': ['True'],
+            'fusions': ['analysis/test_data/Database_37/rna_test_1_fusion_check.csv'],
+            'fusion_coverage': ['240000000,900']
         }
 
-        out=StringIO()
-
-        call_command('import',
-           stdout=out,
-           stderr=StringIO(),
-           **kwargs)
+        # run import management command
+        with contextlib.redirect_stdout(None):
+            call_command('import', **kwargs)
 
         # Check formatting of fusion uploads
-        fusions = Fusion.objects.all()
+        self.assertTrue(Fusion.objects.filter(fusion_genes='NCOA4-RET').exists())
+        self.assertFalse(Fusion.objects.filter(fusion_genes='NCOA4/RET').exists())
 
-        for fusion in fusions:
+        self.assertTrue(Fusion.objects.filter(fusion_genes='CCDC6-RET').exists())
+        self.assertFalse(Fusion.objects.filter(fusion_genes='CCDC6--RET').exists())
 
-            self.assertEqual('NCOA4-RET', fusion.fusions.fusion_genes)
-            self.assertEqual('CCDC6-RET', fusion.fusions.fusion_genes)
 
 class TestViews(TestCase):
     """
