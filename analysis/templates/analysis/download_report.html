@@ -1,5 +1,6 @@
 {% load humanize %}
 <head>
+  <!-- this will only work if the CSS is defined within the template -->
   <style>
     table {
       word-wrap: break-word;
@@ -95,7 +96,11 @@
       {% for v in variant_data.variant_calls %}
         {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
         <tr>
-          <td>{{ v.genomic | truncatechars:20 }}</td>
+          <td>{{ v.genomic | truncatechars:20 }}
+          {% if v.manual_upload %}
+        	Manual
+          {% endif %}
+          </td>
           <td>{{ v.gene }} ({{ v.exon }})</td>
           <td>{{ v.hgvs_c }} ({{ v.hgvs_p }})</td>
           {% if sample_data.panel_obj.assay == '3' %} <!-- 2dp for ctDNA, whole number for the rest-->
@@ -208,7 +213,7 @@
         {% for gap in values.gaps_135 %}
         <tr>
           <td>{{ gap.hgvs_c }}</td>
-          <td>{{ gap.percent_cosmic }}%</td>
+          <td>{{ gap.percent_cosmic }}</td>
           <td>{{ gap.counts_cosmic }}</td>
         </tr>
         {% endfor %}
@@ -237,7 +242,7 @@
         {% for gap in values.gaps_270 %}
         <tr>
           <td>{{ gap.hgvs_c }}</td>
-          <td>{{ gap.percent_cosmic }}%</td>
+          <td>{{ gap.percent_cosmic }}</td>
           <td>{{ gap.counts_cosmic }}</td>
         </tr>
         {% endfor %}
@@ -266,7 +271,7 @@
         {% for gap in values.gaps_500 %}
         <tr>
           <td>{{ gap.hgvs_c }}</td>
-          <td>{{ gap.percent_cosmic }}%</td>
+          <td>{{ gap.percent_cosmic }}</td>
           <td>{{ gap.counts_cosmic }}</td>
         </tr>
         {% endfor %}
@@ -295,7 +300,7 @@
         {% for gap in values.gaps_1000 %}
         <tr>
           <td>{{ gap.hgvs_c }}</td>
-          <td>{{ gap.percent_cosmic }}%</td>
+          <td>{{ gap.percent_cosmic }}</td>
           <td>{{ gap.counts_cosmic }}</td>
         </tr>
         {% endfor %}
