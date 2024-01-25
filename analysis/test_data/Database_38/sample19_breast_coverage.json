@@ -102,7 +102,7 @@
                 "chr": 3,
                 "pos_start": 179210180,
                 "pos_end": 179210203,
-                "hgvs_c": "PIK3CA(NM_006218.4)c.1252-5_1269",
+                "hgvs_c": "PIK3CA(NM_006218.4):c.1252-5_1269",
                 "gene": "PIK3CA",
                 "counts_cosmic": 144,
                 "percent_cosmic": 1.86
@@ -111,7 +111,7 @@
                 "chr": 3,
                 "pos_start": 179210191,
                 "pos_end": 179210194,
-                "hgvs_c": "PIK3CA(NM_006218.4)c.1258_1260",
+                "hgvs_c": "PIK3CA(NM_006218.4):c.1258_1260",
                 "gene": "PIK3CA",
                 "counts_cosmic": 115,
                 "percent_cosmic": 1.49
@@ -120,7 +120,7 @@
                 "chr": 3,
                 "pos_start": 179210327,
                 "pos_end": 179210343,
-                "hgvs_c": "PIK3CA(NM_006218.4)c.1394_1404+5",
+                "hgvs_c": "PIK3CA(NM_006218.4):c.1394_1404+5",
                 "gene": "PIK3CA",
                 "counts_cosmic": 0,
                 "percent_cosmic": 0.0
@@ -129,7 +129,7 @@
                 "chr": 3,
                 "pos_start": 179218204,
                 "pos_end": 179218209,
-                "hgvs_c": "PIK3CA(NM_006218.4)c.1540-5_1540-1",
+                "hgvs_c": "PIK3CA(NM_006218.4):c.1540-5_1540-1",
                 "gene": "PIK3CA",
                 "counts_cosmic": 0,
                 "percent_cosmic": 0.0
@@ -138,7 +138,7 @@
                 "chr": 3,
                 "pos_start": 179234088,
                 "pos_end": 179234092,
-                "hgvs_c": "PIK3CA(NM_006218.4)c.2937-5_2937-2",
+                "hgvs_c": "PIK3CA(NM_006218.4):c.2937-5_2937-2",
                 "gene": "PIK3CA",
                 "counts_cosmic": 0,
                 "percent_cosmic": 0.0
