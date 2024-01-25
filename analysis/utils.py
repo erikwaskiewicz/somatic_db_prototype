@@ -318,7 +318,7 @@ def get_sample_info(sample_obj):
         'total_reads_ntc': sample_obj.total_reads_ntc,
         'percent_reads_ntc': sample_obj.percent_reads_ntc(),
         'checks': sample_obj.get_checks(),
-        'status': sample_obj.get_sample_pass_fail_display(),
+        'status': sample_obj.get_status(),
         'genome_build': sample_obj.genome_build,
         'test_code': sample_obj.panel.lims_test_code,
     }

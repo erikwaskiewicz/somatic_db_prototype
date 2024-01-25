@@ -105,102 +105,131 @@
 
 
 <script>
+
+function load_variables() {
+    // load in elements of form that will require show/hiding
+    finalise_form_check_1 = document.getElementById("finalise_form_check_1");
+    finalise_form_check_2 = document.getElementById("finalise_form_check_2");
+    finalise_form_check_3 = document.getElementById("finalise_form_check_3");
+    finalise_form_pass_fail = document.getElementById("finalise_form_pass_fail");
+    finalise_form_next_step = document.getElementById("finalise_form_next_step");
+
+    // load in buttons that will need editting
+    pass_button = document.getElementById("id_analysis_pass_fail_0").parentElement
+    fail_button = document.getElementById("id_analysis_pass_fail_1").parentElement
+    extra_check_button = document.getElementById("id_next_step_0").parentElement
+    complete_button = document.getElementById("id_next_step_1").parentElement
+}
+
+function set_up_form() {
+    // add button specific CSS class for pass/fail
+    pass_button.classList.add("btn-outline-success");
+    fail_button.classList.add("btn-outline-danger");
+
+    // unset button CSS display
+    pass_button.classList.remove("active")
+    fail_button.classList.remove("active")
+    extra_check_button.classList.remove("active")
+    complete_button.classList.remove("active")
+
+    // remove values from all form buttons TODO - should specifiy which forms, will probably remove from the entire analysis page
+    $( 'input[type="radio"]' ).prop('checked', false);
+
+    // hide all but first check
+    finalise_form_pass_fail.style.display = "none";
+    finalise_form_check_2.style.display = "none";
+    finalise_form_check_3.style.display = "none";
+    finalise_form_next_step.style.display = "none";
+}
+
+function ajax_call(option_selected) {
+    // handle AJAX and show/hiding of form sections when the analysis pass/fail buttons are pressed
+    //
+
+
+    // display second check box
+    finalise_form_check_2.style.display = "block";
+
+    // hide and reset next step form
+    finalise_form_check_3.style.display = "none";
+    finalise_form_next_step.style.display = "none";
+    extra_check_button.classList.remove("active")
+    complete_button.classList.remove("active")
+
+    // AJAX call for check
+    $.ajax({
+        url: "{% url 'ajax_finalise_check' %}",
+        type: 'GET',
+        data: {
+            'current_check': '{{ sample_data.checks.current_check_object.pk }}',
+            'option_selected': option_selected,
+        },
+        success: function(data) {
+            setTimeout(function() {
+                // replace loading alert with response HTML for check 2
+                $(finalise_form_check_2).replaceWith(data.html_check_2);
+
+                // reload html elements otherwise they wont be recognised
+                load_variables();
+
+                // if its a pass, show the next check section
+                if (data.pass_check_2 === true) {
+                  finalise_form_check_3.style.display = "block";
+
+                  setTimeout(function() {
+                      // replace loading alert with response HTML for check 3
+                      $(finalise_form_check_3).replaceWith(data.html_check_3);
+
+                      // reload html elements otherwise they wont be recognised
+                      load_variables();
+
+                      // display final section of form and disable complete button if check 3 fails
+                      finalise_form_next_step.style.display = "block"
+                      if (data.pass_check_3 === false) {
+                          complete_button.classList.add("disabled");
+                      }
+                  }, 750);
+                }
+            }, 750)
+        },
+        failure: function(data) {
+            alert('Got an error');
+        }
+    });
+}
+
+
   $(document).ready(function(){
+
+      // on page load
+      //load_variables();
+      //set_up_form();
+
+      var orig_form = $("#finalise_form").clone()
+      console.log(orig_form)
+
+
+      $("#finalise-modal").on('hide.bs.modal', function(){
+        $("#finalise_form").replaceWith(orig_form);
+        //console.log(orig_form[0].childNodes[3])
+        load_variables();
+        set_up_form();
+      });
+      // when modal is opened
       $("#finalise-modal").on('show.bs.modal', function(){
 
           // TODO reset template + form each time modal is opened
+          //$("#finalise_form").replaceWith(orig_form);
+          load_variables();
+          set_up_form();
+          console.log($('#finalise_form_next_step input')[0].checked);
+          console.log($('#finalise_form_next_step input')[1].checked);
+          console.log($('#finalise_form_next_step input')[2].checked);
+          //$('#finalise_form_next_step input')[1].checked;
+          //$('#finalise_form_next_step input')[2].checked;
           // TODO move JS to own file
 
 
-          function load_variables() {
-              // load in elements of form that will require show/hiding
-              finalise_form_check_1 = document.getElementById("finalise_form_check_1");
-              finalise_form_check_2 = document.getElementById("finalise_form_check_2");
-              finalise_form_check_3 = document.getElementById("finalise_form_check_3");
-              finalise_form_pass_fail = document.getElementById("finalise_form_pass_fail");
-              finalise_form_next_step = document.getElementById("finalise_form_next_step");
-
-              // load in buttons that will need editting
-              pass_button = document.getElementById("id_analysis_pass_fail_0").parentElement
-              fail_button = document.getElementById("id_analysis_pass_fail_1").parentElement
-              extra_check_button = document.getElementById("id_next_step_0").parentElement
-              complete_button = document.getElementById("id_next_step_1").parentElement
-          }
-
-          function ajax_call(option_selected) {
-              // handle AJAX and show/hiding of form sections when the analysis pass/fail buttons are pressed
-              //
-
-
-              // display second check box
-              finalise_form_check_2.style.display = "block";
-
-              // hide and reset next step form
-              finalise_form_check_3.style.display = "none";
-              finalise_form_next_step.style.display = "none";
-              extra_check_button.classList.remove("active")
-              complete_button.classList.remove("active")
-
-              // AJAX call for check
-              $.ajax({
-                  url: "{% url 'ajax_finalise_check' %}",
-                  type: 'GET',
-                  data: {
-                      'current_check': '{{ sample_data.checks.current_check_object.pk }}',
-                      'option_selected': option_selected,
-                  },
-                  success: function(data) {
-                      setTimeout(function() {
-                          // replace loading alert with response HTML for check 2
-                          $(finalise_form_check_2).replaceWith(data.html_check_2);
-
-                          // reload html elements otherwise they wont be recognised
-                          load_variables();
-
-                          // if its a pass, show the next check section
-                          if (data.pass_check_2 === true) {
-                            finalise_form_check_3.style.display = "block";
-
-                            setTimeout(function() {
-                                // replace loading alert with response HTML for check 3
-                                $(finalise_form_check_3).replaceWith(data.html_check_3);
-
-                                // reload html elements otherwise they wont be recognised
-                                load_variables();
-
-                                // display final section of form and disable complete button if check 3 fails
-                                finalise_form_next_step.style.display = "block"
-                                if (data.pass_check_3 === false) {
-                                    complete_button.classList.add("disabled");
-                                }
-                            }, 750);
-                          }
-                      }, 750)
-                  },
-                  failure: function(data) {
-                      alert('Got an error');
-                  }
-              });
-          }
-
-          // on page load
-          load_variables();
-
-          // add button specific CSS class for pass/fail
-          pass_button.classList.add("btn-outline-success");
-          fail_button.classList.add("btn-outline-danger");
-
-          // unset button values - TODO this doesnt remove the actual value, so form validation wont work, need to completely reset each section of the form
-          pass_button.classList.remove("active")
-          fail_button.classList.remove("active")
-          extra_check_button.classList.remove("active")
-          complete_button.classList.remove("active")
-
-          // hide all but first check
-          finalise_form_pass_fail.style.display = "none";
-          finalise_form_check_2.style.display = "none";
-          finalise_form_check_3.style.display = "none";
-          finalise_form_next_step.style.display = "none";
 
           // AJAX call on for demographics check
           $.ajax({

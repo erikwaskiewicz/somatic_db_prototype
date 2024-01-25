@@ -72,7 +72,7 @@
     {% endif %}
 
     <!-- show finalise tab if analysis not yet complete -->
-    {% if sample_data.status == 'Pending' %}
+    {% if 'IGV' in sample_data.status %}
     <li class="nav-item">
       <a class="nav-link section-button" href="#finalise" data-target="finalise">Finalise</a>
     </li>
@@ -101,7 +101,7 @@
 <div class="container-fluid" id="rna">{% include 'analysis/analysis-fusions.html' %}</div>
 {% endif %}
 
-{% if sample_data.status == 'Pending' %}
+{% if 'IGV' in sample_data.status %}
 <div class="container" id="finalise">{% include 'analysis/analysis-finalise.html' %}</div>
 
 {% else %}

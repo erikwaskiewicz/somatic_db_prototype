@@ -214,6 +214,9 @@ def view_worksheets(request, query):
     # TODO if whole run fail it should set all samples to fail. 
     # TODO Maybe a not analysed for whole run option too? would need a generic 'not analysed' panel probably
     # TODO add checks to finalise form
+    # TODO reopen button not working, nor IGV dropdowns, not paperwork check popup
+    # TODO Include training samples in assigned to me bit?
+    # TODO mixture of passes/ fails still allowed
     """
     # check if user is in the qc user group
     in_qc_user_group = request.user.groups.filter(name='qc_signoff').exists()
