@@ -12,7 +12,7 @@
       <td><b>Patient name</b></td>
       <td>
         {{ sample_data.sample_name }}
-        {% if 'IGV' in sample_data.status and sample_data.checks.current_check_object.patient_info_check == False %}
+        {% if 'IGV' in sample_data.status %}
         <button type="button" style="float: right;" class="btn btn-sm btn-warning w-25" data-toggle="modal" data-target="#update-name">Update</button>
         {% endif %}
       </td>
@@ -45,19 +45,13 @@
 </table>
 <br>
 
-{% if sample_data.checks.current_check_object.patient_info_check %}
-<div class="alert alert-success" role="alert">
-  <p><strong>Patient demographics check complete</strong></p>
+<div class="card">
+  <div class="card-body">
+    <h5>Patient demographics check</h5>
+    <br>
+    {% crispy demographics_form %}
+  </div>
 </div>
-
-{% else %}
-<div class="alert alert-warning" role="alert">
-  <h5>Patient demographics check required</h5>
-  {% crispy demographics_form %}
-</div>
-
-{% endif %}
-
 <br>
 
 

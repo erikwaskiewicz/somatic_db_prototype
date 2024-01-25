@@ -125,10 +125,10 @@
 {% if fusion_data.fusion_calls %}
 
   <!-- submit button -->
-  {% if sample_data.status == 'Pending' %}
+  {% if 'IGV' in sample_data.status %}
   <div class="float-right">
     <button type="button" class="btn btn-light" data-toggle="modal" data-target="#add-fusion-modal">Add fusion</button>
-    <button type="button" class="btn btn-success fusion-submit" id="fusion-submit">Update selections</button>
+    <button type="button" class="btn btn-warning fusion-submit" id="fusion-submit">Update selections</button>
   </div>
   <br>
   <br>

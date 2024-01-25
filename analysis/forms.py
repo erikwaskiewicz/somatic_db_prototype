@@ -220,7 +220,7 @@ class SampleCommentForm(forms.Form):
         self.helper = FormHelper()
         self.fields['sample_comment'].initial = self.comment
         self.fields['pk'].initial = self.pk
-        self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-success'))
+        self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-warning'))
 
 
 class VariantCommentForm(forms.Form):
@@ -319,7 +319,7 @@ class CoverageCheckForm(forms.Form):
         self.fields['coverage_comment'].initial = self.comment
         self.fields['ntc_checked'].initial = self.ntc
         self.fields['pk'].initial = self.pk
-        self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-success'))
+        self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-warning'))
 
 
 class ManualVariantCheckForm(forms.Form):

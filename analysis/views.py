@@ -11,7 +11,7 @@ from django.utils import timezone
 from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, 
     SampleCommentForm, UnassignForm, PaperworkCheckForm, ConfirmPolyForm, ConfirmArtefactForm, AddNewPolyForm, AddNewArtefactForm, 
     ManualVariantCheckForm, ReopenSampleAnalysisForm, ChangeLimsInitials, EditedPasswordChangeForm, EditedUserCreationForm, 
-    RunQCForm, ReopenRunQCForm, SendCheckBackForm, DetailsCheckForm, AddNewFusionArtefactForm, ReopenForm, NewFusionForm)
+    RunQCForm, ReopenRunQCForm, SendCheckBackForm, DetailsCheckForm, AddNewFusionArtefactForm, NewFusionForm)
 
 from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
     get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, get_fusion_list, 
@@ -219,13 +219,12 @@ def view_worksheets(request, query):
     Displays all worksheets and links to the page to show all samples 
     within the worksheet
 
-    # TODO sync with crm branch
     # TODO ability to set as bioinf qc fail
     # TODO if whole run fail it should set all samples to fail. 
     # TODO Maybe a not analysed for whole run option too? would need a generic 'not analysed' panel probably
-    # TODO add checks to finalise form
-    # TODO reopen button not working, nor IGV dropdowns, not paperwork check popup
     # TODO Include training samples in assigned to me bit?
+
+    # TODO add checks to finalise form
     # TODO mixture of passes/ fails still allowed
     """
     # check if user is in the qc user group
@@ -594,7 +593,8 @@ def analysis_sheet(request, sample_id):
                     )
                     # reload sample data
                     context['sample_data'] = get_sample_info(sample_obj)
-                    #context['demographics_form'] = DetailsCheckForm(info_check=current_step_obj.patient_info_check)
+                    current_step_obj = context['sample_data']['checks']['current_check_object']
+                    context['demographics_form'] = DetailsCheckForm(info_check=current_step_obj.patient_info_check)
 
         # comments submit button
         if 'variant_comment' in request.POST:

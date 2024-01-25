@@ -122,7 +122,7 @@
   {% if 'IGV' in sample_data.status %}
   <div class="float-right">
     <button type="button" class="btn btn-light" data-toggle="modal" data-target="#add-variant-modal">Add variant</button>
-    <button type="button" class="btn btn-success snv-submit" id="snv-submit">Update selections</button>
+    <button type="button" class="btn btn-warning snv-submit" id="snv-submit">Update selections</button>
   </div>
   <br>
   <br>
@@ -135,7 +135,7 @@
   <div class="alert alert-info">No calls in this sample</div>
 
   <!-- button to add new variant in case of miscalled indels -->
-  {% if sample_data.status == 'Pending' %}
+  {% if 'IGV' in sample_data.status %}
   <div class="float-right">
     <button type="button" class="btn btn-light" data-toggle="modal" data-target="#add-variant-modal">Add variant</button>
   </div>
