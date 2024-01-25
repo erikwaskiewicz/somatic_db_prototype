@@ -69,7 +69,7 @@
                 "chr": 1,
                 "pos_start": 114709580,
                 "pos_end": 114709583,
-                "hgvs_c": "NRAS(NM_002524.5)c.436_438",
+                "hgvs_c": "NRAS(NM_002524.5):c.436_438",
                 "gene": "NRAS",
                 "counts_cosmic": 0,
                 "percent_cosmic": 0.0
@@ -78,7 +78,7 @@
                 "chr": 1,
                 "pos_start": 114709667,
                 "pos_end": 114709670,
-                "hgvs_c": "NRAS(NM_002524.5)c.349_351",
+                "hgvs_c": "NRAS(NM_002524.5):c.349_351",
                 "gene": "NRAS",
                 "counts_cosmic": 0,
                 "percent_cosmic": 0.0
@@ -87,7 +87,7 @@
                 "chr": 1,
                 "pos_start": 114713906,
                 "pos_end": 114713909,
-                "hgvs_c": "NRAS(NM_002524.5)c.181_183",
+                "hgvs_c": "NRAS(NM_002524.5):c.181_183",
                 "gene": "NRAS",
                 "counts_cosmic": 317,
                 "percent_cosmic": 49.22
@@ -96,7 +96,7 @@
                 "chr": 1,
                 "pos_start": 114713912,
                 "pos_end": 114713915,
-                "hgvs_c": "NRAS(NM_002524.5)c.175_177",
+                "hgvs_c": "NRAS(NM_002524.5):c.175_177",
                 "gene": "NRAS",
                 "counts_cosmic": 0,
                 "percent_cosmic": 0.0
@@ -140,7 +140,7 @@
                 "chr": 3,
                 "pos_start": 179218204,
                 "pos_end": 179218215,
-                "hgvs_c": "PIK3CA(NM_006218.4)c.1540-5_1545",
+                "hgvs_c": "PIK3CA(NM_006218.4):c.1540-5_1545",
                 "gene": "PIK3CA",
                 "counts_cosmic": 0,
                 "percent_cosmic": 0.0
@@ -149,7 +149,7 @@
                 "chr": 3,
                 "pos_start": 179218301,
                 "pos_end": 179218303,
-                "hgvs_c": "PIK3CA(NM_006218.4)c.1632_1633",
+                "hgvs_c": "PIK3CA(NM_006218.4):c.1632_1633",
                 "gene": "PIK3CA",
                 "counts_cosmic": 0,
                 "percent_cosmic": 0.0
@@ -158,7 +158,7 @@
                 "chr": 3,
                 "pos_start": 179218304,
                 "pos_end": 179218306,
-                "hgvs_c": "PIK3CA(NM_006218.4)c.1635_1636",
+                "hgvs_c": "PIK3CA(NM_006218.4):c.1635_1636",
                 "gene": "PIK3CA",
                 "counts_cosmic": 0,
                 "percent_cosmic": 0.0
@@ -167,7 +167,7 @@
                 "chr": 3,
                 "pos_start": 179218329,
                 "pos_end": 179218339,
-                "hgvs_c": "PIK3CA(NM_006218.4)c.1660_1664+5",
+                "hgvs_c": "PIK3CA(NM_006218.4):c.1660_1664+5",
                 "gene": "PIK3CA",
                 "counts_cosmic": 0,
                 "percent_cosmic": 0.0
@@ -176,7 +176,7 @@
                 "chr": 3,
                 "pos_start": 179234088,
                 "pos_end": 179234369,
-                "hgvs_c": "PIK3CA(NM_006218.4)c.2937-5_3207+5",
+                "hgvs_c": "PIK3CA(NM_006218.4):c.2937-5_3207+5",
                 "gene": "PIK3CA",
                 "counts_cosmic": 0,
                 "percent_cosmic": 0.0
@@ -241,7 +241,7 @@
                 "chr": 7,
                 "pos_start": 55191875,
                 "pos_end": 55191879,
-                "hgvs_c": "EGFR(NM_005228.5)c.2625+2_2625+5",
+                "hgvs_c": "EGFR(NM_005228.5):c.2625+2_2625+5",
                 "gene": "EGFR",
                 "counts_cosmic": 0,
                 "percent_cosmic": 0.0
@@ -252,7 +252,7 @@
                 "chr": 7,
                 "pos_start": 55173915,
                 "pos_end": 55174048,
-                "hgvs_c": "EGFR(NM_005228.5)c.2062-5_2184+5",
+                "hgvs_c": "EGFR(NM_005228.5):c.2062-5_2184+5",
                 "gene": "EGFR",
                 "counts_cosmic": 0,
                 "percent_cosmic": 0.0
@@ -261,7 +261,7 @@
                 "chr": 7,
                 "pos_start": 55174716,
                 "pos_end": 55174825,
-                "hgvs_c": "EGFR(NM_005228.5)c.2185-5_2283+5",
+                "hgvs_c": "EGFR(NM_005228.5):c.2185-5_2283+5",
                 "gene": "EGFR",
                 "counts_cosmic": 0,
                 "percent_cosmic": 0.0
@@ -270,7 +270,7 @@
                 "chr": 7,
                 "pos_start": 55181287,
                 "pos_end": 55181483,
-                "hgvs_c": "EGFR(NM_005228.5)c.2284-5_2469+5",
+                "hgvs_c": "EGFR(NM_005228.5):c.2284-5_2469+5",
                 "gene": "EGFR",
                 "counts_cosmic": 0,
                 "percent_cosmic": 0.0
@@ -279,7 +279,7 @@
                 "chr": 7,
                 "pos_start": 55191713,
                 "pos_end": 55191806,
-                "hgvs_c": "EGFR(NM_005228.5)c.2470-5_2557",
+                "hgvs_c": "EGFR(NM_005228.5):c.2470-5_2557",
                 "gene": "EGFR",
                 "counts_cosmic": 0,
                 "percent_cosmic": 0.0
@@ -288,7 +288,7 @@
                 "chr": 7,
                 "pos_start": 55191809,
                 "pos_end": 55191811,
-                "hgvs_c": "EGFR(NM_005228.5)c.2561_2562",
+                "hgvs_c": "EGFR(NM_005228.5):c.2561_2562",
                 "gene": "EGFR",
                 "counts_cosmic": 0,
                 "percent_cosmic": 0.0
@@ -297,7 +297,7 @@
                 "chr": 7,
                 "pos_start": 55191812,
                 "pos_end": 55191879,
-                "hgvs_c": "EGFR(NM_005228.5)c.2564_2625+5",
+                "hgvs_c": "EGFR(NM_005228.5):c.2564_2625+5",
                 "gene": "EGFR",
                 "counts_cosmic": 0,
                 "percent_cosmic": 0.0
@@ -340,7 +340,7 @@
                 "chr": 7,
                 "pos_start": 140753392,
                 "pos_end": 140753398,
-                "hgvs_c": "BRAF(NM_004333.6)c.1432+28178_1432+28183",
+                "hgvs_c": "BRAF(NM_004333.6):c.1432+28178_1432+28183",
                 "gene": "BRAF",
                 "counts_cosmic": 15,
                 "percent_cosmic": 0.13
@@ -351,7 +351,7 @@
                 "chr": 7,
                 "pos_start": 140753269,
                 "pos_end": 140753288,
-                "hgvs_c": "BRAF(NM_004333.6)c.1847_1860+5",
+                "hgvs_c": "BRAF(NM_004333.6):c.1847_1860+5",
                 "gene": "BRAF",
                 "counts_cosmic": 0,
                 "percent_cosmic": 0.0
@@ -360,7 +360,7 @@
                 "chr": 7,
                 "pos_start": 140753360,
                 "pos_end": 140753398,
-                "hgvs_c": "BRAF(NM_004333.6)c.1742-5_1774",
+                "hgvs_c": "BRAF(NM_004333.6):c.1742-5_1774",
                 "gene": "BRAF",
                 "counts_cosmic": 23,
                 "percent_cosmic": 0.19
@@ -369,7 +369,7 @@
                 "chr": 7,
                 "pos_start": 140781570,
                 "pos_end": 140781583,
-                "hgvs_c": "BRAF(NM_004333.6)c.1425_1432+5",
+                "hgvs_c": "BRAF(NM_004333.6):c.1425_1432+5",
                 "gene": "BRAF",
                 "counts_cosmic": 1,
                 "percent_cosmic": 0.01
@@ -378,7 +378,7 @@
                 "chr": 7,
                 "pos_start": 140781687,
                 "pos_end": 140781698,
-                "hgvs_c": "BRAF(NM_004333.6)c.1315-5_1320",
+                "hgvs_c": "BRAF(NM_004333.6):c.1315-5_1320",
                 "gene": "BRAF",
                 "counts_cosmic": 0,
                 "percent_cosmic": 0.0
@@ -455,7 +455,7 @@
                 "chr": 12,
                 "pos_start": 25225625,
                 "pos_end": 25225628,
-                "hgvs_c": "KRAS(NM_004985.5)c.436_438",
+                "hgvs_c": "KRAS(NM_004985.5):c.436_438",
                 "gene": "KRAS",
                 "counts_cosmic": 282,
                 "percent_cosmic": 1.06
@@ -464,7 +464,7 @@
                 "chr": 12,
                 "pos_start": 25225712,
                 "pos_end": 25225715,
-                "hgvs_c": "KRAS(NM_004985.5)c.349_351",
+                "hgvs_c": "KRAS(NM_004985.5):c.349_351",
                 "gene": "KRAS",
                 "counts_cosmic": 48,
                 "percent_cosmic": 0.18
@@ -473,7 +473,7 @@
                 "chr": 12,
                 "pos_start": 25227340,
                 "pos_end": 25227343,
-                "hgvs_c": "KRAS(NM_004985.5)c.181_183",
+                "hgvs_c": "KRAS(NM_004985.5):c.181_183",
                 "gene": "KRAS",
                 "counts_cosmic": 316,
                 "percent_cosmic": 1.19
@@ -482,7 +482,7 @@
                 "chr": 12,
                 "pos_start": 25227346,
                 "pos_end": 25227349,
-                "hgvs_c": "KRAS(NM_004985.5)c.175_177",
+                "hgvs_c": "KRAS(NM_004985.5):c.175_177",
                 "gene": "KRAS",
                 "counts_cosmic": 30,
                 "percent_cosmic": 0.11

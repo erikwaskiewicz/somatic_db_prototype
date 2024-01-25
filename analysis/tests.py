@@ -1,5 +1,7 @@
 from django.test import TestCase
+from django.contrib.auth.models import User
 from analysis.utils import *
+from analysis.models import *
 
 from decimal import Decimal
 
@@ -1063,6 +1065,41 @@ class TestDna(TestCase):
         sample_data = get_sample_info(sample_obj)
 
         self.assertEqual(sample_data['is_myeloid_referral'], False)
+        
+    def test_variant_format_check(self):
+        """
+        Test utils function which checks format of manual variant entry
+        """
+        
+        panel_obj = Panel.objects.get(panel_name='Lung', assay='1', genome_build=37, live=True)
+        
+        #Correct format
+        variant1_check, error = variant_format_check('7', 55241609, 'A', 'T', panel_obj.bed_file.path, 100, 10)
+        self.assertTrue(variant1_check)
+        
+        #Incorrect format - position not in bed
+        variant2_check, error = variant_format_check('7', 1, 'A', 'T', panel_obj.bed_file.path, 100, 10)
+        self.assertFalse(variant2_check)
+        
+        #Incorrect format - ref not a nucleotide
+        variant3_check, error = variant_format_check('7', 55241609, 'X', 'T', panel_obj.bed_file.path, 100, 10)
+        self.assertFalse(variant3_check)
+        
+        #Incorrect format - alt not a nucleotide
+        variant4_check, error = variant_format_check('7', 55241609, 'A', 'delin', panel_obj.bed_file.path, 100, 10)
+        self.assertFalse(variant4_check)
+        
+        #Incorrect format - total reads 0
+        variant5_check, error = variant_format_check('7', 55241609, 'A', 'T', panel_obj.bed_file.path, 0, 10)
+        self.assertFalse(variant5_check)
+        
+        #Incorrect format - alt reads 0
+        variant6_check, error = variant_format_check('7', 55241609, 'A', 'T', panel_obj.bed_file.path, 100, 0)
+        self.assertFalse(variant6_check)
+
+        #Incorrect format - not a chromosome
+        variant7_check, error = variant_format_check('86', 55241609, 'A', 'T', panel_obj.bed_file.path, 100, 0)
+        self.assertFalse(variant7_check)
 
 
 class TestNTCCalls(TestCase):
@@ -1959,3 +1996,131 @@ class TestChecks(TestCase):
         # loop through and test each line
         for line in failed_checks:
             self.assertEqual(complete_checks(line), expected_out)
+
+
+    def test_manual_fusion_formatting(self):
+        """
+        Checks that breakpoints are formatted correctly for manual RNA variant entry
+        """
+
+        correct_breakpoint_autosomal = "chr12:12022900"
+        correct_breakpoint_x = "chrX:12345"
+        incorrect_breakpoint_autosomal = "chr93:12345"
+        incorrect_breakpoint = "NOT A BREAKPOINT"
+
+        # check if_breakpoint regex function
+        self.assertTrue(if_breakpoint(correct_breakpoint_autosomal))
+        self.assertTrue(if_breakpoint(correct_breakpoint_x))
+        self.assertFalse(if_breakpoint(incorrect_breakpoint))
+
+        # check breakpoint_format_check function (uses if_chrom)
+        both_breakpoints_correct, both_breakpoints_correct_message = breakpoint_format_check(correct_breakpoint_autosomal, correct_breakpoint_x)
+        left_breakpoint_incorrect, left_breakpoint_incorrect_message = breakpoint_format_check(incorrect_breakpoint_autosomal, correct_breakpoint_autosomal)
+        right_breakpoint_incorrect, right_breakpoint_incorrect_message = breakpoint_format_check(correct_breakpoint_autosomal, incorrect_breakpoint_autosomal)
+        self.assertTrue(both_breakpoints_correct)
+        self.assertFalse(left_breakpoint_incorrect)
+        self.assertFalse(right_breakpoint_incorrect)
+
+
+
+class TestGnomad(TestCase):
+    """
+    Correctly handle displaying the Gnomad scores and links
+
+    """
+    def setUp(self):
+        ''' runs before each test '''
+        # make mock sample object
+        self.sample_obj = Sample(sample_id='test_sample')
+
+        # make mock variant object, build 37 for most tests as build doesnt matter for most
+        self.variant_obj = Variant(variant='1:2345C>G', genome_build=37)
+
+        # make mock variant instance, gnomad values will be added in each test
+        self.variant_instance_obj = VariantInstance(
+            sample = self.sample_obj,
+            variant = self.variant_obj,
+            gene = 'BRAF',
+            exon = '1/5',
+            hgvs_c = 'c.12345C>G',
+            hgvs_p = 'p.Ala456Arg',
+            total_count = 10,
+            alt_count = 1,
+            in_ntc = False,
+            manual_upload = False,
+            final_decision = '-',
+        )
+
+    # test the gnomad display function with a range of values
+    def test_gnomad_display_null(self):
+        ''' if gnomad score is None '''
+        self.variant_instance_obj.gnomad_popmax = None
+        self.assertEqual(self.variant_instance_obj.gnomad_display(), '')
+
+    def test_gnomad_display_not_in_gnomad(self):
+        ''' if the variant is not found in gnomad '''
+        self.variant_instance_obj.gnomad_popmax = -1.00000
+        self.assertEqual(self.variant_instance_obj.gnomad_display(), 'Not found')
+
+    def test_gnomad_display_with_values_0(self):
+        ''' if variant in gnomad but not present in any population '''
+        self.variant_instance_obj.gnomad_popmax = 0
+        self.assertEqual(self.variant_instance_obj.gnomad_display(), '0.00%')
+
+    def test_gnomad_display_with_values_very_small(self):
+        ''' very low AF in gnomad, 2dp, should round up '''
+        self.variant_instance_obj.gnomad_popmax = 0.00001
+        self.assertEqual(self.variant_instance_obj.gnomad_display(), '0.01%')
+
+    def test_gnomad_display_with_values_10(self):
+        ''' medium value '''
+        self.variant_instance_obj.gnomad_popmax = 0.1
+        self.assertEqual(self.variant_instance_obj.gnomad_display(), '10.00%')
+
+    def test_gnomad_display_with_values_100(self):
+        ''' 100% in gnomad '''
+        self.variant_instance_obj.gnomad_popmax = 1
+        self.assertEqual(self.variant_instance_obj.gnomad_display(), '100.00%')
+
+    # test the gnomad link function with a range of values
+    def test_gnomad_link_37(self):
+        ''' link if build 37 '''
+        self.variant_obj.genome_build=37
+        self.assertEqual(self.variant_instance_obj.gnomad_link(), 'https://gnomad.broadinstitute.org/variant/1:2345C>G?dataset=gnomad_r2_1')
+
+    def test_gnomad_link_38(self):
+        ''' link if build 38 '''
+        self.variant_obj.genome_build=38
+        self.assertEqual(self.variant_instance_obj.gnomad_link(), 'https://gnomad.broadinstitute.org/variant/1:2345C>G?dataset=gnomad_r3')
+
+    def test_gnomad_link_invalid_build(self):
+        ''' value error should be thrown if not build 37 or 38 '''
+        self.variant_obj.genome_build=100
+        with self.assertRaises(ValueError):
+            self.variant_instance_obj.gnomad_link()
+
+
+class TestLIMSInitials(TestCase):
+    """
+    Check to make sure that someone doesnt set their initials to a value already used by someone else
+
+    """
+    def setUp(self):
+        ''' runs before each test '''
+        # make mock user and user settings objects
+        self.user = User.objects.create_user(username='test_user', password='test_user_1')
+        self.usersettings = UserSettings(
+            user = self.user,
+            lims_initials = 'ABC'
+        )
+        self.usersettings.save()
+
+    def test_initials_check_pass(self):
+        ''' check will return true as initials dont exist '''
+        initials_check, warning_message = lims_initials_check('XYZ')
+        self.assertEqual(initials_check, True)
+
+    def test_initials_check_fail(self):
+        ''' check will return false as initials already used by user '''
+        initials_check, warning_message = lims_initials_check('ABC')
+        self.assertEqual(initials_check, False)

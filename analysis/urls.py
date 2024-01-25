@@ -28,4 +28,5 @@ urlpatterns = [
 
     path('variant_lists/polys/<str:list_name>', views.view_polys, name='view_polys'),
     path('variant_lists/artefacts/<str:list_name>', views.view_artefacts, name='view_artefacts'),
+    path('variant_lists/fusion_artefacts/<str:list_name>', views.view_fusion_artefacts, name='view_fusion_artefacts')
 ]

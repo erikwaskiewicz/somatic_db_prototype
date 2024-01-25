@@ -14,7 +14,7 @@
 
         <small_variants>
             {% for v in variant_data.variant_calls %}
-            {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
+            {% if v.final_decision == "Genuine" %}
             <variant>
                 <variant_ID>{{ v.genomic }}</variant_ID>
                 <gene>{{ v.gene }}</gene>
@@ -23,10 +23,14 @@
                 <hgvs_p>{{ v.hgvs_p_short }}</hgvs_p>
                 <exon>{{ v.exon }}</exon>
                 <genome_build>{{ sample_data.genome_build }}</genome_build>
-                {% if sample_data.panel_obj.assay == '3' %}  {# VAF rounded to 2dp for ctDNA, whole number for the rest #}
-                <vaf>{{ v.vaf.vaf }}</vaf>
+                {% if sample_data.panel_obj.report_snv_vaf %}
+                    {% if sample_data.panel_obj.assay == '3' %}  {# VAF rounded to 2dp for ctDNA, whole number for the rest #}
+                    <vaf>{{ v.vaf.vaf }}</vaf>
+                    {% else %}
+                    <vaf>{{ v.vaf.vaf_rounded }}</vaf>
+                    {% endif %}
                 {% else %}
-                <vaf>{{ v.vaf.vaf_rounded }}</vaf>
+                <vaf></vaf>
                 {% endif %}
                 <igv_outcome>{{ v.final_decision }}</igv_outcome>
             </variant>
@@ -36,7 +40,7 @@
 
         <structural_variants>
             {% for v in fusion_data.fusion_calls %}
-            {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
+            {% if v.final_decision == "Genuine" %}
             <variant>
                 <genes>{{ v.fusion_genes }}</genes>
                 <hgvs>{{ v.fusion_hgvs }}</hgvs>
@@ -66,6 +70,7 @@
                 {% for gene, values in coverage_data.regions.items %}
                 {% for gap in values.gaps_135 %}
                 <gap>
+                    <gene>{{ gap.gene }}</gene>
                     <region_name>{{ gap.hgvs_c }}</region_name>
                     <cosmic>{{ gap.percent_cosmic }}</cosmic>
                 </gap>
@@ -76,6 +81,7 @@
                 {% for gene, values in coverage_data.regions.items %}
                 {% for gap in values.gaps_270 %}
                 <gap>
+                    <gene>{{ gap.gene }}</gene>
                     <region_name>{{ gap.hgvs_c }}</region_name>
                     <cosmic>{{ gap.percent_cosmic }}</cosmic>
                 </gap>
@@ -86,6 +92,7 @@
                 {% for gene, values in coverage_data.regions.items %}
                 {% for gap in values.gaps_500 %}
                 <gap>
+                    <gene>{{ gap.gene }}</gene>
                     <region_name>{{ gap.hgvs_c }}</region_name>
                     <cosmic>{{ gap.percent_cosmic }}</cosmic>
                 </gap>
@@ -96,6 +103,7 @@
                 {% for gene, values in coverage_data.regions.items %}
                 {% for gap in values.gaps_1000 %}
                 <gap>
+                    <gene>{{ gap.gene }}</gene>
                     <region_name>{{ gap.hgvs_c }}</region_name>
                     <cosmic>{{ gap.percent_cosmic }}</cosmic>
                 </gap>

@@ -71,20 +71,10 @@
 
         {% endif %}
       </td>
-      
-        {% if v.genome_build == 37 %}
-        <td>
-          {% if v.gnomad_popmax != None %}{{ v.gnomad_popmax }} {% endif %}
-          <a href="https://gnomad.broadinstitute.org/variant/{{ v.genomic }}" target="_blank" class="btn btn-sm btn-secondary" role="button"><span class="fa fa-link"></span></a>
-        </td>
-
-        {% elif v.genome_build == 38 %}
-        <td>
-          {% if v.gnomad_popmax != None %}{{ v.gnomad_popmax }} {% endif %}
-          <a href="https://gnomad.broadinstitute.org/variant/{{ v.genomic }}?dataset=gnomad_r3" target="_blank" class="btn btn-sm btn-secondary" role="button"><span class="fa fa-link"></span></a>
-        </td>
-        {% endif %}
-
+      <td>
+        {{ v.gnomad_popmax }}
+        <a href="{{ v.gnomad_link }}" target="_blank" class="btn btn-sm btn-secondary" role="button"><span class="fa fa-link"></span></a>
+      </td>
       <td>
         {% for check in v.checks %}
           {{ forloop.counter }}: {{ check }}<br>
