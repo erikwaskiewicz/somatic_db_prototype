@@ -44,7 +44,7 @@ class Worksheet(models.Model):
     signed_off_time = models.DateTimeField(blank=True, null=True)
     signed_off_user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True)
     auto_qc_pass_fail = models.CharField(max_length=1, choices=QC_CHOICES, default='-') # will need to change to P for migrations
-    auto_qc_pk = models.CharField(max_length=20, blank=True, null=True)
+    auto_qc_pk = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return self.ws_id

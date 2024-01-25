@@ -63,7 +63,7 @@ class RunQCForm(forms.Form):
     )
     qc_result = forms.ChoiceField(choices=QC_CHOICES, required=True, label='Whole run pass/fail, as performed in AutoQC')
     confirm = forms.BooleanField(required=True, label='All individual sample fails have been failed below')
-    auto_qc_pk = forms.CharField(label='AutoQC primary key')
+    auto_qc_pk = forms.IntegerField(min_value=1, label='AutoQC primary key')
 
     def __init__(self, *args, **kwargs):
         super(RunQCForm, self).__init__(*args, **kwargs)

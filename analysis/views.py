@@ -219,13 +219,6 @@ def view_worksheets(request, query):
     Displays all worksheets and links to the page to show all samples 
     within the worksheet
 
-    # TODO ability to set as bioinf qc fail
-    # TODO if whole run fail it should set all samples to fail. 
-    # TODO Maybe a not analysed for whole run option too? would need a generic 'not analysed' panel probably
-    # TODO Include training samples in assigned to me bit?
-
-    # TODO add checks to finalise form
-    # TODO mixture of passes/ fails still allowed
     """
     # check if user is in the qc user group
     in_qc_user_group = request.user.groups.filter(name='qc_signoff').exists()
@@ -456,6 +449,13 @@ def analysis_sheet(request, sample_id):
     """
     Display coverage and variant metrics to allow checking of data 
     in IGV
+
+    # TODO ability to set as bioinf qc fail without clicking through the whole analysis page
+    # TODO if whole run fail it should set all samples to fail, hide variants tabs in QC fail? 
+    # TODO 'not analysed' option for sample/run, would need a generic 'not analysed' panel probably
+    # TODO Include training samples in 'assigned to me' bit?
+
+    # TODO make finalise form more robust, add checks from views, stop mixture of passes/ fails
     """
     # load sample object, error if the paperwork check hasnt been done
     sample_obj = SampleAnalysis.objects.get(pk = sample_id)
