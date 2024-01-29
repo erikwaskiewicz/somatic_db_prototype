@@ -1,8 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.template.loader import render_to_string
 
 from auditlog.registry import auditlog
+
 import decimal
+import json
 
 
 class UserSettings(models.Model):
@@ -246,6 +249,31 @@ class SampleAnalysis(models.Model):
             'lims_checks': ','.join(lims_checks),
         }
 
+    def finalise(self):
+        """ verify if a sample analysis can be closed """
+
+        error_list = []
+        all_checks = self.get_checks()
+
+        # at least two checks required
+        if len(all_checks['all_checks']) < 2:
+            error_list.append("There haven't been at least two checks for this sample")
+
+        # TODO pass/fail of last two checks agrees
+
+        # select template based on whether there were any errors
+        if len(error_list) == 0:
+            pass_fail = True
+            template = f'analysis/forms/ajax_finalise_form_check_3_pass.html'
+        else:
+            pass_fail = False
+            template = f'analysis/forms/ajax_finalise_form_check_3_fail.html'
+        
+        # render HTML for AJAX form
+        html = render_to_string(template, {'errors': error_list})
+
+        return pass_fail, html
+
 
 class Check(models.Model):
     """
@@ -268,6 +296,92 @@ class Check(models.Model):
     overall_comment = models.CharField(max_length=2000, blank=True)
     overall_comment_updated = models.DateTimeField(blank=True, null=True)
     signoff_time = models.DateTimeField(blank=True, null=True)
+
+    def finalise(self, step):
+        """ verify and finalise a sample check """
+        error_list = []
+        if step == 'demographics':
+            data = self.demographics_checks()
+
+        elif 'next_step_' in step:
+            if step == 'next_step_pass':
+                pass_fail_check_2, html_check_2 = self.data_checks()
+            elif step == 'next_step_fail':
+                pass_fail_check_2 = True
+                html_check_2 = render_to_string(f'analysis/forms/ajax_finalise_form_check_2_pass.html', {'errors': []})
+
+            pass_fail_check_3, html_check_3 = self.analysis.finalise()
+            data = json.dumps({
+                'pass_check_2': pass_fail_check_2,
+                'html_check_2': html_check_2,
+                'pass_check_3': pass_fail_check_3,
+                'html_check_3': html_check_3,
+            })
+
+        return data
+
+    def demographics_checks(self):
+        """ verify demographics checks have been performed and return object for AJAX """
+
+        error_list = []
+
+        # check for errors - patient name filled in, demogrpahics check done, NTC check done
+        if self.analysis.sample.sample_name == None:
+            error_list.append('The patient name for this sample is empty')
+        if self.patient_info_check == False:
+            error_list.append("The patient demographics for this sample haven't been checked")
+
+        # select template based on whether there were any errors
+        if len(error_list) == 0:
+            pass_fail = True
+            template = f'analysis/forms/ajax_finalise_form_check_1_pass.html'
+        else:
+            pass_fail = False
+            template = f'analysis/forms/ajax_finalise_form_check_1_fail.html'
+
+        # render HTML for AJAX form
+        html = render_to_string(template, {'errors': error_list})
+
+        # package data and return as JSON object
+        data = json.dumps({
+            'pass': pass_fail,
+            'html': html,
+        })
+
+        return data
+
+    def data_checks(self):
+        """ verify data checks have been performed and return object for AJAX """
+
+        error_list = []
+
+        # all assays except RNA
+        if self.analysis.panel.assay != '2':
+            if self.coverage_ntc_check == False:
+                error_list.append("The NTC coverage hasn't been checked for this sample")
+
+        # manual variant review if required
+        if self.analysis.panel.manual_review_required:
+            if self.manual_review_check == False:
+                error_list.append("Manual search for variants in IGV hasn't been completed (top of 'SNVs & indels' tab)")
+
+        # TODO - finish these
+        # no variants on pending
+        # at least two variant checks for each variant - highlight which variant if not
+        # lastest two variant checks agree - highlight which variant if not
+
+        # select template based on whether there were any errors
+        if len(error_list) == 0:
+            pass_fail = True
+            template = f'analysis/forms/ajax_finalise_form_check_2_pass.html'
+        else:
+            pass_fail = False
+            template = f'analysis/forms/ajax_finalise_form_check_2_fail.html'
+
+        # render HTML for AJAX form
+        html = render_to_string(template, {'errors': error_list})
+
+        return pass_fail, html
 
 
 class Variant(models.Model):

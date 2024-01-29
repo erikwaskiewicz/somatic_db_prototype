@@ -378,7 +378,7 @@ def view_samples(request, worksheet_id=None, user_pk=None):
                 sample_pk = unassign_form.cleaned_data['unassign']
                 sample_analysis_obj = SampleAnalysis.objects.get(pk=sample_pk)
 
-                # get latest check and reset
+                # get latest check and reset # TODO this isnt reopening the IGV check bool
                 unassign_check(sample_analysis_obj)
 
                 # redirect to force refresh, otherwise form could accidentally be resubmitted when refreshing the page
@@ -849,26 +849,13 @@ def analysis_sheet(request, sample_id):
                         context['warning'].append(err)
 
 
-        # if finalise check submit form is clicked - this is no longer used, checks need to be moved to ajax call
+        # if finalise check submit form is clicked - TODO this is no longer used, checks need to be moved to ajax call
         if 'next_step_old' in request.POST:
             old_submit_form = SubmitForm(request.POST)
 
             if old_submit_form.is_valid():
                 next_step = old_submit_form.cleaned_data['next_step']
                 current_step = sample_data['checks']['current_status']
-                
-                if sample_data['sample_name'] == None:
-                    context['warning'].append('Did not finalise check - input patient name before continuing')
-
-                if (sample_data['panel_obj'].show_snvs == True) and (current_step_obj.coverage_ntc_check == False) and (next_step != "Fail sample"):
-                    context['warning'].append('Did not finalise check - check NTC before continuing')
-
-                if current_step_obj.patient_info_check == False:
-                    context['warning'].append('Did not finalise check - check patient demographics before continuing')
-
-                if sample_data['panel_obj'].manual_review_required:
-                    if not current_step_obj.manual_review_check:
-                        context['warning'].append('Did not finalise check - manual variant review in IGV required, see top of SNVs & indels tab')
 
                 # only enter this loop if there are no warnings so far, otherwise the warnings above get skipped
                 if len(context['warning']) == 0:
@@ -962,98 +949,12 @@ def ajax_finalise_check(request):
         pk = request.GET.get('current_check')
         option_selected = request.GET.get('option_selected')
 
-        # get objects from query
+        # get check object from query
         current_check_obj = Check.objects.get(id=pk)
-        sample_analysis_obj = current_check_obj.analysis
-        panel_obj = sample_analysis_obj.panel
 
-        error_list = []
+        # call finalise check command
+        data = current_check_obj.finalise(option_selected)
 
-        # demographics checks
-        if option_selected == 'demographics':
-
-            # check for errors - patient name filled in, demogrpahics check done, NTC check done
-            if sample_analysis_obj.sample.sample_name == None:
-                error_list.append('The patient name for this sample is empty')
-            if current_check_obj.patient_info_check == False:
-                error_list.append("The patient demographics for this sample haven't been checked")
-            # all assays except RNA
-            if panel_obj.assay != '2':
-                if current_check_obj.coverage_ntc_check == False:
-                    error_list.append("The NTC coverage hasn't been checked for this sample")
-
-            # select template based on whether there were any errors
-            if len(error_list) == 0:
-                pass_fail = True
-                template = f'analysis/forms/ajax_finalise_form_check_1_pass.html'
-            else:
-                pass_fail = False
-                template = f'analysis/forms/ajax_finalise_form_check_1_fail.html'
-
-            # package data and return as JSON object
-            html = render_to_string(template, {'errors': error_list})
-            data = json.dumps({
-                'pass': pass_fail,
-                'html': html,
-            })
-
-
-        elif 'next_step_' in option_selected:
-
-            # variant checks for when a check has passed only
-            if option_selected == 'next_step_pass':
-                # manual variant review if required
-                if panel_obj.manual_review_required:
-                    if current_check_obj.manual_review_check == False:
-                        error_list.append("Manual search for variants in IGV hasn't been completed (top of 'SNVs & indels' tab)")
-                # TODO - finish these
-                # no variants on pending
-                # at least two variant checks for each variant - highlight which variant if not
-                # lastest two variant checks agree - highlight which variant if not
-
-                # select template based on whether there were any errors
-                if len(error_list) == 0:
-                    pass_fail_check_2 = True
-                    template_check_2 = f'analysis/forms/ajax_finalise_form_check_2_pass.html'
-                else:
-                    pass_fail_check_2 = False
-                    template_check_2 = f'analysis/forms/ajax_finalise_form_check_2_fail.html'
-
-                html_check_2 = render_to_string(template_check_2, {'errors': error_list})
-
-            # there are no variant analysis checks for fails, return the success alert
-            if option_selected == 'next_step_fail':
-                pass_fail_check_2 = True
-                template_check_2 = f'analysis/forms/ajax_finalise_form_check_2_pass.html'
-                html_check_2 = render_to_string(template_check_2, {'errors': error_list})
-
-
-            # checks to close a case - run for both pass and fails
-            error_list = []
-            all_checks = sample_analysis_obj.get_checks()
-
-            # at least two checks
-            if len(all_checks['all_checks']) < 2:
-                error_list.append("There haven't been at least two checks for this sample")
-            # pass/fail of last two checks agrees
-
-            # select template based on whether there were any errors
-            if len(error_list) == 0:
-                pass_fail_check_3 = True
-                template_check_3 = f'analysis/forms/ajax_finalise_form_check_3_pass.html'
-            else:
-                pass_fail_check_3 = False
-                template_check_3 = f'analysis/forms/ajax_finalise_form_check_3_fail.html'
-            html_check_3 = render_to_string(template_check_3, {'errors': error_list})
-
-
-            # package data and return as JSON object
-            data = json.dumps({
-                'pass_check_2': pass_fail_check_2,
-                'html_check_2': html_check_2,
-                'pass_check_3': pass_fail_check_3,
-                'html_check_3': html_check_3,
-            })
         return HttpResponse(data, 'application/json')
 
 
