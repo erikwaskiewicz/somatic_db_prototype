@@ -1,9 +1,12 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
+from django.core.management import call_command
+
 from analysis.utils import *
 from analysis.models import *
 
 from decimal import Decimal
+import contextlib
 
 
 class TestViews(TestCase):
@@ -50,6 +53,246 @@ class TestViews(TestCase):
         ''' Access logout page '''
         response = self.client.get('/logout', follow=True)
         self.assertEqual(response.status_code, 200)
+
+
+class TestUpload(TestCase):
+    """
+    Test that data is correctly imported through the import management command
+    """
+
+    # load in all panels
+    fixtures = ['panels.json']
+
+    def test_upload_TSO500_DNA(self):
+        '''
+        test import for TSO500_DNA test data
+        '''
+        # needed arguments for upload
+        kwargs = {
+            'run': ['run_test38'],
+            'worksheet': ['test38'],
+            'assay': ['TSO500_DNA'],
+            'sample': ['sample22'],
+            'panel': ['lung'],
+            'genome': ['GRCh38'],
+            'debug': ['True'],
+            'snvs': ['analysis/test_data/Database_38/sample22_variants.tsv'],
+            'snv_coverage': ['analysis/test_data/Database_38/sample22_lung_coverage.json']
+        }
+
+        # run import management command - wrap in contextlib to prevent output printing to screen
+        with contextlib.redirect_stdout(None):
+            call_command('import', **kwargs)
+
+        # get db objects
+        ws_obj = Worksheet.objects.get(ws_id = 'test38')
+        sample_obj = Sample.objects.get(sample_id = 'sample22')
+        panel_obj = Panel.objects.get(panel_name='lung', assay='1', live=True, genome_build=38)
+        sample_analysis_obj = SampleAnalysis.objects.get(worksheet = ws_obj, sample=sample_obj, panel=panel_obj)
+
+        # test genome build
+        self.assertEqual(sample_analysis_obj.genome_build, 38)
+
+        # test number of reads is empty - RNA only
+        self.assertEqual(sample_analysis_obj.total_reads, None)
+        self.assertEqual(sample_analysis_obj.total_reads_ntc, None)
+
+        # test than num SNVs uploaded was correct
+        self.assertEqual(Variant.objects.count(), 2)
+        self.assertEqual(VariantInstance.objects.count(), 2)
+
+        # test that num of coverage records is correct
+        self.assertEqual(GeneCoverageAnalysis.objects.count(), 3)
+        self.assertEqual(RegionCoverageAnalysis.objects.count(), 11)
+        self.assertEqual(GapsAnalysis.objects.count(), 9)
+
+        # check that no fusions have been added
+        self.assertFalse(Fusion.objects.exists())
+        self.assertFalse(FusionAnalysis.objects.exists())
+        self.assertFalse(FusionAnalysis.objects.filter(fusion_caller='Fusion').exists())
+        self.assertFalse(FusionAnalysis.objects.filter(fusion_caller='Splice').exists())
+
+
+    def test_upload_TSO500_RNA(self):
+        '''
+        test import for TSO500_RNA test data
+        '''
+
+        # needed arguments for upload
+        kwargs = {
+            'run': ['rna_test_1'],
+            'worksheet': ['rna_ws_1'],
+            'assay': ['TSO500_RNA'],
+            'sample': ['rna_test_1'],
+            'panel': ['Tumour'],
+            'genome': ['GRCh37'],
+            'debug': ['True'],
+            'fusions': ['analysis/test_data/Database_37/rna_test_1_fusion_check.csv'],
+            'fusion_coverage': ['9000004,596']
+        }
+
+        # run import management command - wrap in contextlib to prevent output printing to screen
+        with contextlib.redirect_stdout(None):
+            call_command('import', **kwargs)
+
+        # get db objects
+        ws_obj = Worksheet.objects.get(ws_id = 'rna_ws_1')
+        sample_obj = Sample.objects.get(sample_id = 'rna_test_1')
+        panel_obj = Panel.objects.get(panel_name='Tumour', assay='2', live=True, genome_build=37)
+        sample_analysis_obj = SampleAnalysis.objects.get(worksheet = ws_obj, sample=sample_obj, panel=panel_obj)
+
+        # test genome build
+        self.assertEqual(sample_analysis_obj.genome_build, 37)
+
+        # test number of reads - RNA only
+        self.assertEqual(sample_analysis_obj.total_reads, 9000004)
+        self.assertEqual(sample_analysis_obj.total_reads_ntc, 596)
+
+        # test than no SNV data was uploaded
+        self.assertFalse(Variant.objects.exists())
+        self.assertFalse(VariantInstance.objects.exists())
+
+        # test that no SNV coverage data has been populated
+        self.assertFalse(GeneCoverageAnalysis.objects.exists())
+        self.assertFalse(RegionCoverageAnalysis.objects.exists())
+        self.assertFalse(GapsAnalysis.objects.exists())
+
+        # check number of calls - total in import file, total in tumour panel, fusion only and splice only
+        self.assertEqual(Fusion.objects.count(), 18)
+        self.assertEqual(FusionAnalysis.objects.count(), 13)
+        self.assertEqual(FusionAnalysis.objects.filter(fusion_caller='Fusion').count(), 11)
+        self.assertEqual(FusionAnalysis.objects.filter(fusion_caller='Splice').count(), 2)
+
+        # check splice variant exons are labelled correctly
+        self.assertTrue(Fusion.objects.filter(fusion_genes='MET 14/21').exists())
+        self.assertTrue(Fusion.objects.filter(fusion_genes='EGFR 2-7/28').exists())
+
+        # check sanitisation of fusions with a slash instead of dash
+        self.assertTrue(Fusion.objects.filter(fusion_genes='NCOA4-RET').exists())
+        self.assertFalse(Fusion.objects.filter(fusion_genes='NCOA4/RET').exists())
+
+        # check sanitisation of fusions with a double dash instead of a single one
+        self.assertTrue(Fusion.objects.filter(fusion_genes='CCDC6-RET').exists())
+        self.assertFalse(Fusion.objects.filter(fusion_genes='CCDC6--RET').exists())
+
+        # possible edge cases?
+        # ? test incorrect assay
+        # ? test incorrect genome build
+        # ? test duplicate ws
+
+
+    def test_upload_TSO500_ctDNA(self):
+        '''
+        test import for TSO500_ctDNA test data
+        '''
+
+        # needed arguments for upload
+        kwargs = {
+            'run': ['ctDNA_run_1'],
+            'worksheet': ['ctdna_ws_1'],
+            'assay': ['TSO500_ctDNA'],
+            'sample': ['ctdna_test_1'],
+            'panel': ['lung'],
+            'genome': ['GRCh37'],
+            'debug': ['True'],
+            'snvs': ['analysis/test_data/Database_37/ctdna_test_1_variants.tsv'],
+            'snv_coverage': ['analysis/test_data/Database_37/ctdna_test_1_lung_coverage.json'],
+            'fusions': ['analysis/test_data/Database_37/ctdna_test_1_fusion_check.csv'],
+        }
+
+        # run import management command - wrap in contextlib to prevent output printing to screen
+        with contextlib.redirect_stdout(None):
+            call_command('import', **kwargs)
+
+        # get db objects
+        ws_obj = Worksheet.objects.get(ws_id = 'ctdna_ws_1')
+        sample_obj = Sample.objects.get(sample_id = 'ctdna_test_1')
+        panel_obj = Panel.objects.get(panel_name='lung', assay='3', live=True, genome_build=37)
+        sample_analysis_obj = SampleAnalysis.objects.get(worksheet = ws_obj, sample=sample_obj, panel=panel_obj)
+
+        # test genome build
+        self.assertEqual(sample_analysis_obj.genome_build, 37)
+
+        # test number of reads is empty - RNA only
+        self.assertEqual(sample_analysis_obj.total_reads, None)
+        self.assertEqual(sample_analysis_obj.total_reads_ntc, None)
+
+        # test than num SNVs uploaded was correct
+        self.assertEqual(Variant.objects.count(), 3690)
+        self.assertEqual(VariantInstance.objects.count(), 6)
+
+        # test that num of coverage records is correct
+        self.assertEqual(GeneCoverageAnalysis.objects.count(), 3)
+        self.assertEqual(RegionCoverageAnalysis.objects.count(), 11)
+        self.assertEqual(GapsAnalysis.objects.count(), 1)
+
+        # check number of calls - total in import file, total in tumour panel, fusion only and splice only
+        self.assertEqual(Fusion.objects.count(), 18)
+        self.assertEqual(FusionAnalysis.objects.count(), 10)
+        self.assertEqual(FusionAnalysis.objects.filter(fusion_caller='Fusion').count(), 10)
+        self.assertEqual(FusionAnalysis.objects.filter(fusion_caller='Splice').count(), 0)
+
+        # check splice variant exons are labelled correctly (not in panel but in input csv)
+        self.assertTrue(Fusion.objects.filter(fusion_genes='MET 14/21').exists())
+        self.assertTrue(Fusion.objects.filter(fusion_genes='EGFR 2-7/28').exists())
+
+        # check sanitisation of fusions with a slash instead of dash
+        self.assertTrue(Fusion.objects.filter(fusion_genes='NCOA4-RET').exists())
+        self.assertFalse(Fusion.objects.filter(fusion_genes='NCOA4/RET').exists())
+
+        # check sanitisation of fusions with a double dash instead of a single one
+        self.assertTrue(Fusion.objects.filter(fusion_genes='CCDC6-RET').exists())
+        self.assertFalse(Fusion.objects.filter(fusion_genes='CCDC6--RET').exists())
+
+
+    def test_upload_GeneRead_CRM(self):
+        '''
+        test import for GeneRead_CRM test data
+        '''
+        # needed arguments for upload
+        kwargs = {
+            'run': ['run_3'],
+            'worksheet': ['crm_ws_1'],
+            'assay': ['GeneRead_CRM'],
+            'sample': ['crm_test_1'],
+            'panel': ['tumour'],
+            'genome': ['GRCh37'],
+            'debug': ['True'],
+            'snvs': ['analysis/test_data/Database_37/crm_test_1_variants.tsv'],
+            'snv_coverage': ['analysis/test_data/Database_37/crm_test_1_tumour_coverage.json']
+        }
+
+        # run import management command - wrap in contextlib to prevent output printing to screen
+        with contextlib.redirect_stdout(None):
+            call_command('import', **kwargs)
+
+        # get db objects
+        ws_obj = Worksheet.objects.get(ws_id = 'crm_ws_1')
+        sample_obj = Sample.objects.get(sample_id = 'crm_test_1')
+        panel_obj = Panel.objects.get(panel_name='tumour', assay='4', live=True, genome_build=37)
+        sample_analysis_obj = SampleAnalysis.objects.get(worksheet = ws_obj, sample=sample_obj, panel=panel_obj)
+
+        # test genome build
+        self.assertEqual(sample_analysis_obj.genome_build, 37)
+
+        # test number of reads is empty - RNA only
+        self.assertEqual(sample_analysis_obj.total_reads, None)
+        self.assertEqual(sample_analysis_obj.total_reads_ntc, None)
+
+        # test than num SNVs uploaded was correct
+        self.assertEqual(Variant.objects.count(), 67)
+        self.assertEqual(VariantInstance.objects.count(), 11)
+
+        # test that num of coverage records is correct
+        self.assertEqual(GeneCoverageAnalysis.objects.count(), 13)
+        self.assertEqual(RegionCoverageAnalysis.objects.count(), 55)
+        self.assertEqual(GapsAnalysis.objects.count(), 0)
+
+        # check that no fusions have been added
+        self.assertFalse(Fusion.objects.exists())
+        self.assertFalse(FusionAnalysis.objects.exists())
+        self.assertFalse(FusionAnalysis.objects.filter(fusion_caller='Fusion').exists())
+        self.assertFalse(FusionAnalysis.objects.filter(fusion_caller='Splice').exists())
 
 
 class TestDna(TestCase):
