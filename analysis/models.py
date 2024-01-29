@@ -297,6 +297,18 @@ class Check(models.Model):
     overall_comment_updated = models.DateTimeField(blank=True, null=True)
     signoff_time = models.DateTimeField(blank=True, null=True)
 
+    def get_snv_checks(self):
+        return VariantCheck.objects.filter(check_object = self)
+
+    def check_snvs_pending(self):
+        return self.get_snv_checks().filter(decision = '-').exists()
+
+    def get_fusion_checks(self):
+        return FusionCheck.objects.filter(check_object = self)
+
+    def check_fusions_pending(self):
+        return self.get_fusion_checks().filter(decision = '-').exists()
+
     def finalise(self, step):
         """ verify and finalise a sample check """
         error_list = []
@@ -366,9 +378,17 @@ class Check(models.Model):
                 error_list.append("Manual search for variants in IGV hasn't been completed (top of 'SNVs & indels' tab)")
 
         # TODO - finish these
-        # no variants on pending
-        # at least two variant checks for each variant - highlight which variant if not
-        # lastest two variant checks agree - highlight which variant if not
+        if self.analysis.panel.show_snvs:
+            # no variants on pending
+            if self.check_snvs_pending():
+                error_list.append("Did not finalise check - not all SNVs have been checked")
+
+            # at least two variant checks for each variant - highlight which variant if not - maybe on sample analysis model?
+            # lastest two variant checks agree - highlight which variant if not - as above
+
+        if self.analysis.panel.show_fusions:
+            if self.check_fusions_pending():
+                error_list.append("Did not finalise check - not all fusions have been checked")
 
         # select template based on whether there were any errors
         if len(error_list) == 0:
