@@ -76,10 +76,9 @@ class Worksheet(models.Model):
             if s.sample_pass_fail == '-':
                 return 'IGV checking'
         return 'Complete'
-        # TODO get samples function
 
     def get_samples(self):
-        # get all sample analysis objects
+        """ get all sample analysis objects """
         samples = SampleAnalysis.objects.filter(worksheet = self)
         sample_list = [i.sample.sample_id for i in samples]
         return sample_list
@@ -92,10 +91,9 @@ class Sample(models.Model):
     """
     sample_id = models.CharField(max_length=50, primary_key=True)
     sample_name = models.CharField(max_length=200, blank=True, null=True)
-    sample_name_check = models.BooleanField(default=False) # TODO - dont think this is being used? its part of check istead
 
     def get_worksheets(self):
-        # get all worksheets that the sample appears on
+        """ get all worksheets that the sample appears on """
         sample_analyses = SampleAnalysis.objects.filter(sample=self)
         worksheets = []
         for s in sample_analyses:
@@ -200,6 +198,29 @@ class SampleAnalysis(models.Model):
             perc_ntc = perc_ntc_full.quantize(decimal.Decimal('.01'), rounding = decimal.ROUND_UP)
         return perc_ntc
 
+    def all_checks(self):
+        return Check.objects.filter(analysis=self).order_by('pk')
+
+    def current_check(self):
+        all_checks_reversed = self.all_checks().order_by('-pk')
+        return all_checks_reversed[0]
+
+    def previous_check(self):
+        all_checks_reversed = self.all_checks().order_by('-pk')
+        if len(all_checks_reversed) > 1:
+            return all_checks_reversed[1]
+        else:
+            return None
+
+    def concatenate_lims_initials(self):
+        lims_checks = []
+        for c in self.all_checks():
+            if c.user:
+                lims_initials = c.user.usersettings.lims_initials
+                if lims_initials not in lims_checks:
+                    lims_checks.append(lims_initials)
+        return ','.join(lims_checks)
+
     def get_status(self):
         """return current status of sample"""
         # sample_pass_fail is set when analysis is complete, so use that value if its set
@@ -213,40 +234,14 @@ class SampleAnalysis(models.Model):
     def get_checks(self):
         """
         Get all associated checks and work out the status
-        TODO - make this a bit better
-        TODO - this is getting called twice when samples page is loaded
+        TODO - this is getting called twice when samples page is loaded - think its an AJAX issue
         """
-        all_checks = Check.objects.filter(analysis = self).order_by('pk')
-        assigned_to = None
-
-        # get most recent two checks (if there is at least 2 checks total)
-        all_checks_reversed = all_checks.order_by('-pk')
-        current_check_object = all_checks_reversed[0]
-        if len(all_checks_reversed) > 1:
-            previous_check_object = all_checks_reversed[1]
-        else:
-            previous_check_object = None
-
-        # find the current check/user
-        for n, c in enumerate(all_checks):
-            if c.status == 'P':
-                assigned_to = c.user
-                current_check_object = c
-
-        # make list of checks initials for LIMS XML
-        lims_checks = []
-        for c in all_checks:
-            if c.user:
-                lims_initials = c.user.usersettings.lims_initials
-                if lims_initials not in lims_checks:
-                    lims_checks.append(lims_initials)
-
         return {
-            'assigned_to': assigned_to,
-            'current_check_object': current_check_object,
-            'previous_check_object': previous_check_object,
-            'all_checks': all_checks,
-            'lims_checks': ','.join(lims_checks),
+            'assigned_to': self.current_check().user,
+            'current_check_object': self.current_check(),
+            'previous_check_object': self.previous_check(),
+            'all_checks': self.all_checks(),
+            'lims_checks': self.concatenate_lims_initials(),
         }
 
     def finalise(self, step):

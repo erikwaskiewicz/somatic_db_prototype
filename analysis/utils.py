@@ -672,7 +672,6 @@ def get_coverage_data(sample_obj, depth_cutoffs):
             regions.append(regions_dict)
 
         # create a dictionary of gaps in the sample for the given gene, split by depths
-        # TODO - not a great long term fix, need to update models to handle different depths
         gaps_135, gaps_270, gaps_500, gaps_1000 = [], [], [], []
 
         gaps_analysis_obj = GapsAnalysis.objects.filter(gene=gene_coverage_obj)
