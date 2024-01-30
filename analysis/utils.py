@@ -123,27 +123,6 @@ def signoff_check(user, current_step_obj, sample_obj, status='C', complete=False
     Signs off a check, returns true if successful, returns false if not, along with an error message
     TODO - check this, status is not C for complete and passed, F1 for QC fail, or F2 for analysis fail
     """
-    # get all SNV checks for the sample
-    if sample_obj.panel.show_snvs:
-        snv_checks = VariantCheck.objects.filter(check_object=current_step_obj)
-
-        # make sure that none of the variant checks are still pending
-        # this trigers view to render the error on the page, skip this validation for failed samples
-        if status != 'F':
-            for v in snv_checks:
-                if v.decision == '-':
-                    return False, 'Did not finalise check - not all SNVs have been checked'
-
-    # get all fusion checks for the sample
-    if sample_obj.panel.show_fusions:
-            fusion_checks = FusionCheck.objects.filter(check_object=current_step_obj)
-            # make sure that none of the variant checks are still pending
-            # this trigers view to render the error on the page, skip this validation for failed samples
-            if status != 'F':
-                for v in fusion_checks:
-                    if v.decision == '-':
-                        return False, 'Did not finalise check - not all fusions have been checked'
-
     # commit to database if its the last check
     if complete:
 
@@ -264,11 +243,11 @@ def complete_checks(variant_checks_list):
 
     """
     # throw error if theres only one check
-    if len(variant_checks_list) < 2:
-        return False, "Did not finalise check - not all variants have been checked at least twice (excluding 'Not analysed')"
+    #if len(variant_checks_list) < 2:
+    #    return False, "Did not finalise check - not all variants have been checked at least twice (excluding 'Not analysed')"
 
     # if all checks are not analysed, set final decision as not analysed
-    elif set(variant_checks_list) == set(['N']):
+    if set(variant_checks_list) == set(['N']):
         final_decision = 'N'
 
     # if theres other options than just not analysed
@@ -280,8 +259,8 @@ def complete_checks(variant_checks_list):
                 checks_minus_na.append(c)
 
         # error if theres less than 2 checks
-        if len(checks_minus_na) < 2:
-            return False, "Did not finalise check - not all variants have been checked at least twice (excluding 'Not analysed')"
+        #if len(checks_minus_na) < 2:
+        #    return False, "Did not finalise check - not all variants have been checked at least twice (excluding 'Not analysed')"
 
         # error if the last two checks dont agree
         last2 = checks_minus_na[-2:]

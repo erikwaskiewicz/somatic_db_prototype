@@ -249,7 +249,7 @@ class SampleAnalysis(models.Model):
             'lims_checks': ','.join(lims_checks),
         }
 
-    def finalise(self):
+    def finalise(self, step):
         """ verify if a sample analysis can be closed """
 
         error_list = []
@@ -259,7 +259,26 @@ class SampleAnalysis(models.Model):
         if len(all_checks['all_checks']) < 2:
             error_list.append("There haven't been at least two checks for this sample")
 
-        # TODO pass/fail of last two checks agrees
+        # pass/fail of last two checks agrees
+        previous_pass_fail = all_checks['previous_check_object'].get_status_display()
+        if (step == 'next_step_pass') and (previous_pass_fail != 'Complete'):
+            error_list.append('Pass/ fail of previous two checks doesnt match')
+        elif (step == 'next_step_fail') and (previous_pass_fail != 'Fail'):
+            error_list.append('Pass/ fail of previous two checks doesnt match')
+
+        # only check these if the above checks are okay
+        else:
+            # at least two variant checks for each variant - highlight which variant if not
+            status, err = self.variants_have_2_checks()
+            if status == False:
+                error_list.append(err)
+
+            # lastest two variant checks agree - highlight which variant if not
+            status, err = self.variant_checks_agree()
+            if status == False:
+                error_list.append(err)
+
+            # TODO fusion checks
 
         # select template based on whether there were any errors
         if len(error_list) == 0:
@@ -273,6 +292,59 @@ class SampleAnalysis(models.Model):
         html = render_to_string(template, {'errors': error_list})
 
         return pass_fail, html
+
+    def all_panel_variants(self):
+        return [v for v in VariantPanelAnalysis.objects.filter(sample_analysis=self)]
+
+    def variants_have_2_checks(self):
+        error_list = []
+        for v in self.all_panel_variants():
+            all_var_checks = v.get_all_checks()
+            all_var_checks_excluding_na = all_var_checks.exclude(decision='N')
+
+            # must be at least 2 variant checks
+            if all_var_checks.count() < 2:
+                error_list.append(v.variant_instance.variant.variant)
+
+            # if both checks are 'not analysed' then thats fine
+            elif all_var_checks_excluding_na.count() == 0:
+                pass
+
+            # where theres amixture of analysed/not analysed, there must be at least 2 checks after excluding any 'not analysed'
+            elif all_var_checks_excluding_na.count() < 2:
+                error_list.append(v.variant_instance.variant.variant)
+
+        # throw error if any variants fail checks
+        if len(error_list) > 0:
+            pass_fail = False
+            message = 'Not all variants have been checked at least twice: ' + ', '.join(error_list)
+
+        else:
+            pass_fail = True
+            message = ''
+
+        return pass_fail, message
+
+    def variant_checks_agree(self):
+        error_list = []
+        for v in self.all_panel_variants():
+            all_var_checks_excluding_na = v.get_all_checks().exclude(decision='N').order_by('-pk')
+            if all_var_checks_excluding_na.count() >= 2:
+
+                last_two = [c.decision for c in all_var_checks_excluding_na][0:2]
+                if len(set(last_two)) != 1:
+                    error_list.append(v.variant_instance.variant.variant)
+
+        # throw error if any variants fail checks
+        if len(error_list) > 0:
+            pass_fail = False
+            message = "Last checkers don't agree for SNVs: " + ", ".join(error_list)
+
+        else:
+            pass_fail = True
+            message = ''
+
+        return pass_fail, message
 
 
 class Check(models.Model):
@@ -322,7 +394,7 @@ class Check(models.Model):
                 pass_fail_check_2 = True
                 html_check_2 = render_to_string(f'analysis/forms/ajax_finalise_form_check_2_pass.html', {'errors': []})
 
-            pass_fail_check_3, html_check_3 = self.analysis.finalise()
+            pass_fail_check_3, html_check_3 = self.analysis.finalise(step)
             data = json.dumps({
                 'pass_check_2': pass_fail_check_2,
                 'html_check_2': html_check_2,
@@ -377,15 +449,13 @@ class Check(models.Model):
             if self.manual_review_check == False:
                 error_list.append("Manual search for variants in IGV hasn't been completed (top of 'SNVs & indels' tab)")
 
-        # TODO - finish these
+        # checks for SNVs
         if self.analysis.panel.show_snvs:
             # no variants on pending
             if self.check_snvs_pending():
                 error_list.append("Did not finalise check - not all SNVs have been checked")
 
-            # at least two variant checks for each variant - highlight which variant if not - maybe on sample analysis model?
-            # lastest two variant checks agree - highlight which variant if not - as above
-
+        # checks for fusions
         if self.analysis.panel.show_fusions:
             if self.check_fusions_pending():
                 error_list.append("Did not finalise check - not all fusions have been checked")
