@@ -254,15 +254,16 @@ class SampleAnalysis(models.Model):
         if len(all_checks['all_checks']) < 2:
             error_list.append("There haven't been at least two checks for this sample")
 
-        # pass/fail of last two checks agrees
-        previous_pass_fail = all_checks['previous_check_object'].get_status_display()
-        if (step == 'next_step_pass') and (previous_pass_fail != 'Complete'):
-            error_list.append('Pass/ fail of previous two checks doesnt match')
-        elif (step == 'next_step_fail') and (previous_pass_fail != 'Fail'):
-            error_list.append('Pass/ fail of previous two checks doesnt match')
-
         # only check these if the above checks are okay
         else:
+
+            # pass/fail of last two checks agrees
+            previous_pass_fail = all_checks['previous_check_object'].get_status_display()
+            if (step == 'next_step_pass') and (previous_pass_fail != 'Complete'):
+                error_list.append('Pass/ fail of previous two checks doesnt match')
+            elif (step == 'next_step_fail') and (previous_pass_fail != 'Fail'):
+                error_list.append('Pass/ fail of previous two checks doesnt match')
+
             # at least two variant checks for each variant - highlight which variant if not
             status, err = self.variants_have_2_checks()
             if status == False:
