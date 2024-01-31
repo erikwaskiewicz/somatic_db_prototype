@@ -251,7 +251,7 @@ class SampleAnalysis(models.Model):
     def all_panel_fusions(self):
         return FusionPanelAnalysis.objects.filter(sample_analysis=self)
 
-    def variants_have_2_checks(self):
+    def snvs_have_2_checks(self):
         error_list = []
         for v in self.all_panel_snvs():
             all_var_checks = v.get_all_checks()
@@ -272,7 +272,7 @@ class SampleAnalysis(models.Model):
         # throw error if any variants fail checks
         if len(error_list) > 0:
             pass_fail = False
-            message = 'Not all variants have been checked at least twice: ' + ', '.join(error_list)
+            message = 'Not all SNV/ indels have been checked at least twice: ' + ', '.join(error_list)
 
         else:
             pass_fail = True
@@ -280,7 +280,7 @@ class SampleAnalysis(models.Model):
 
         return pass_fail, message
 
-    def variant_checks_agree(self):
+    def snv_checks_agree(self):
         error_list = []
         for v in self.all_panel_snvs():
             all_var_checks_excluding_na = v.get_all_checks().exclude(decision='N').order_by('-pk')
@@ -293,7 +293,7 @@ class SampleAnalysis(models.Model):
         # throw error if any variants fail checks
         if len(error_list) > 0:
             pass_fail = False
-            message = "Last checkers don't agree for SNVs: " + ", ".join(error_list)
+            message = "Last checkers don't agree for SNV/ indels: " + ", ".join(error_list)
 
         else:
             pass_fail = True
@@ -301,7 +301,57 @@ class SampleAnalysis(models.Model):
 
         return pass_fail, message
 
-    def finalise_checks(self, step):
+    def fusions_have_2_checks(self):
+        error_list = []
+        for v in self.all_panel_fusions():
+            all_var_checks = v.get_all_checks()
+            all_var_checks_excluding_na = all_var_checks.exclude(decision='N')
+
+            # must be at least 2 variant checks
+            if all_var_checks.count() < 2:
+                error_list.append(v.fusion_instance.fusion_genes.fusion_genes)
+
+            # if both checks are 'not analysed' then thats fine
+            elif all_var_checks_excluding_na.count() == 0:
+                pass
+
+            # where theres amixture of analysed/not analysed, there must be at least 2 checks after excluding any 'not analysed'
+            elif all_var_checks_excluding_na.count() < 2:
+                error_list.append(v.fusion_instance.fusion_genes.fusion_genes)
+
+        # throw error if any variants fail checks
+        if len(error_list) > 0:
+            pass_fail = False
+            message = 'Not all fusions have been checked at least twice: ' + ', '.join(error_list)
+
+        else:
+            pass_fail = True
+            message = ''
+
+        return pass_fail, message
+
+    def fusion_checks_agree(self):
+        error_list = []
+        for v in self.all_panel_fusions():
+            all_var_checks_excluding_na = v.get_all_checks().exclude(decision='N').order_by('-pk')
+            if all_var_checks_excluding_na.count() >= 2:
+
+                last_two = [c.decision for c in all_var_checks_excluding_na][0:2]
+                if len(set(last_two)) != 1:
+                    error_list.append(v.fusion_instance.fusion_genes.fusion_genes)
+
+        # throw error if any variants fail checks
+        if len(error_list) > 0:
+            pass_fail = False
+            message = "Last checkers don't agree for fusions: " + ", ".join(error_list)
+
+        else:
+            pass_fail = True
+            message = ''
+
+        return pass_fail, message
+
+    def finalise_checks(self, selection):
         """ verify if a sample analysis can be closed """
 
         error_list = []
@@ -316,22 +366,30 @@ class SampleAnalysis(models.Model):
 
             # pass/fail of last two checks agrees
             previous_pass_fail = all_checks['previous_check_object'].get_status_display()
-            if (step == 'next_step_pass') and (previous_pass_fail != 'Complete'):
+            if (selection == 'next_step_pass') and (previous_pass_fail != 'Complete'):
                 error_list.append('Pass/ fail of previous two checks doesnt match')
-            elif (step == 'next_step_fail') and (previous_pass_fail != 'Fail'):
+            elif (selection == 'next_step_fail') and (previous_pass_fail != 'Fail'):
                 error_list.append('Pass/ fail of previous two checks doesnt match')
 
-            # at least two variant checks for each variant - highlight which variant if not
-            status, err = self.variants_have_2_checks()
+            # at least two variant checks for each snv
+            status, err = self.snvs_have_2_checks()
             if status == False:
                 error_list.append(err)
 
-            # lastest two variant checks agree - highlight which variant if not
-            status, err = self.variant_checks_agree()
+            # lastest two snv checks agree
+            status, err = self.snv_checks_agree()
             if status == False:
                 error_list.append(err)
 
-            # TODO fusion checks
+            # at least two checks for each fusion
+            status, err = self.fusions_have_2_checks()
+            if status == False:
+                error_list.append(err)
+
+            # lastest two fusion checks agree
+            status, err = self.fusion_checks_agree()
+            if status == False:
+                error_list.append(err)
 
         # select template based on whether there were any errors
         if len(error_list) == 0:
@@ -512,20 +570,20 @@ class Check(models.Model):
 
         return pass_fail, html
 
-    def finalise_checks(self, step):
+    def finalise_checks(self, selection):
         """ verify and finalise a sample check """
         error_list = []
-        if step == 'demographics':
+        if selection == 'demographics':
             data = self.demographics_checks()
 
-        elif 'next_step_' in step:
-            if step == 'next_step_pass':
+        elif 'next_step_' in selection:
+            if selection == 'next_step_pass':
                 pass_fail_check_2, html_check_2 = self.data_checks()
-            elif step == 'next_step_fail':
+            elif selection == 'next_step_fail':
                 pass_fail_check_2 = True
                 html_check_2 = render_to_string(f'analysis/forms/ajax_finalise_form_check_2_pass.html', {'errors': []})
 
-            pass_fail_check_3, html_check_3 = self.analysis.finalise_checks(step)
+            pass_fail_check_3, html_check_3 = self.analysis.finalise_checks(selection)
             data = json.dumps({
                 'pass_check_2': pass_fail_check_2,
                 'html_check_2': html_check_2,
