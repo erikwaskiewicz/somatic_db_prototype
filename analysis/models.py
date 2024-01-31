@@ -570,6 +570,13 @@ class VariantPanelAnalysis(models.Model):
     def get_all_checks(self):
         return VariantCheck.objects.filter(variant_analysis=self).order_by('pk')
 
+    def calculate_final_decision(self):
+        all_checks = self.get_all_checks().exclude(decision='N')
+        if all_checks.count() == 0:
+            return 'N'
+        else:
+            return all_checks.last().decision
+
 
 class VariantCheck(models.Model):
     """
@@ -799,6 +806,13 @@ class FusionPanelAnalysis(models.Model):
 
     def get_all_checks(self):
         return FusionCheck.objects.filter(fusion_analysis=self).order_by('pk')
+
+    def calculate_final_decision(self):
+        all_checks = self.get_all_checks().exclude(decision='N')
+        if all_checks.count() == 0:
+            return 'N'
+        else:
+            return all_checks.last().decision
 
 
 auditlog.register(Run)

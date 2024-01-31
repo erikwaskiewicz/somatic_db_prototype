@@ -828,112 +828,19 @@ def analysis_sheet(request, sample_id):
                 pass_fail = submit_form.cleaned_data['analysis_pass_fail']
                 next_step = submit_form.cleaned_data['next_step']
 
-                if next_step == 'finalise':
-                    submitted, err = signoff_check(request.user, current_step_obj, sample_obj, status=pass_fail, complete=True)
+                if next_step == 'finalise':  # TODO can this be one command and the loops moved to utils?
+                    submitted = signoff_check(request.user, current_step_obj, sample_obj, status=pass_fail, complete=True)
                     if submitted:
                         # update sample pass/fail
                         sample_obj.sample_pass_fail = pass_fail
                         sample_obj.save()
                         return redirect('view_ws_samples', sample_data['worksheet_id'])
 
-                    # throw warning if not all variants are checked
-                    else:
-                        context['warning'].append(err)
-
                 elif next_step == 'extra_check':
-                    submitted, err = signoff_check(request.user, current_step_obj, sample_obj, status=pass_fail)
+                    submitted = signoff_check(request.user, current_step_obj, sample_obj, status=pass_fail)
                     if submitted:
                         make_next_check(sample_obj)
                         return redirect('view_ws_samples', sample_data['worksheet_id'])
-                    else:
-                        context['warning'].append(err)
-
-
-        # if finalise check submit form is clicked - TODO this is no longer used, checks need to be moved to ajax call
-        if 'next_step_old' in request.POST:
-            old_submit_form = SubmitForm(request.POST)
-
-            if old_submit_form.is_valid():
-                next_step = old_submit_form.cleaned_data['next_step']
-                current_step = sample_data['checks']['current_status']
-
-                # only enter this loop if there are no warnings so far, otherwise the warnings above get skipped
-                if len(context['warning']) == 0:
-                    if next_step == 'Complete check':
-
-                        # if 1st IGV, make 2nd IGV
-                        if current_step == 'IGV check 1':
-                            submitted, err = signoff_check(request.user, current_step_obj, sample_obj)
-                            if submitted:
-                                make_next_check(sample_obj, 'IGV')
-                                return redirect('view_ws_samples', sample_data['worksheet_id'])
-                            else:
-                                context['warning'].append(err)
-                            
-                        # if 2nd IGV (or 3rd...)
-                        else:
-                            # Check whether the last two checkers disagree
-                            variants_match = True
-                            non_matching_variants = []
-
-                            # check for variants/fusions with disagreeing checks
-                            if sample_data['panel_obj'].show_snvs == True:
-                                for variant in context['variant_data']['variant_calls']:
-                                    if not variant['latest_checks_agree']:
-                                        variants_match = False
-                                        non_matching_variants.append(variant['genomic'])
-
-                            if sample_data['panel_obj'].show_fusions == True:
-                                for fusion in context['fusion_data']['fusion_calls']:
-                                    if not fusion['latest_checks_agree']:
-                                        variants_match = False
-                                        non_matching_variants.append(fusion['fusion_genes'])
-
-                            if not variants_match:
-                                warning_text = ', '.join(non_matching_variants)
-                                context['warning'].append(f'Did not finalise check - the last two checkers dont agree for the following variants: {warning_text}')
-                            
-                            # final signoff
-                            else:
-                                submitted, err = signoff_check(request.user, current_step_obj, sample_obj, complete=True)
-                                if submitted:
-                                    # update sample pass/fail
-                                    sample_obj.sample_pass_fail = 'C'
-                                    sample_obj.save()
-                                    return redirect('view_ws_samples', sample_data['worksheet_id'])
-
-                                # throw warning if not all variants are checked
-                                else:
-                                    context['warning'].append(err)
-
-                    elif next_step == 'Request extra check':
-
-                        # make extra IGV check
-                        submitted, err = signoff_check(request.user, current_step_obj, sample_obj)
-                        if submitted:
-                            make_next_check(sample_obj, 'IGV')
-                            return redirect('view_ws_samples', sample_data['worksheet_id'])
-                        else:
-                            context['warning'].append(err)
-
-
-                    elif next_step == 'Fail sample':
-
-                        # TODO other checks on fails??? - will only count total fails, not two in a row/ mixture of fails and passes
-
-                        # if failed 1st check, make 2nd check 
-                        if current_step == 'IGV check 1':
-                            signoff_check(request.user, current_step_obj, sample_obj, status='F')
-                            make_next_check(sample_obj, 'IGV')
-                            return redirect('view_ws_samples', sample_data['worksheet_id'])
-
-                        # otherwise sign off and make sample failed
-                        else:
-                            signoff_check(request.user, current_step_obj, sample_obj, status='F')
-                            # update sample pass/fail
-                            sample_obj.sample_pass_fail = 'F2'
-                            sample_obj.save()
-                            return redirect('view_ws_samples', sample_data['worksheet_id'])
 
 
     # render the pages
