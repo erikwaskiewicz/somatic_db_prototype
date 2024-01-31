@@ -12,7 +12,7 @@
       <td><b>Patient name</b></td>
       <td>
         {{ sample_data.sample_name }}
-        {% if 'IGV' in sample_data.status %}
+        {% if 'IGV' in sample_data.status or sample_data.status == 'Bioinformatics QC' %}
         <button type="button" style="float: right;" class="btn btn-sm btn-warning w-25" data-toggle="modal" data-target="#update-name">Update</button>
         {% endif %}
       </td>
@@ -45,6 +45,13 @@
 </table>
 <br>
 
+{% if sample_data.status == 'Bioinformatics QC' %}
+<div class="alert alert-danger">
+  <strong>Sample failed bioinformatics QC?</strong>
+  <p>TODO - form</p>
+</div>
+
+{% elif 'IGV' in sample_data.status %}
 <div class="card">
   <div class="card-body">
     <h5>Patient demographics check</h5>
@@ -52,6 +59,8 @@
     {% crispy demographics_form %}
   </div>
 </div>
+
+{% endif %}
 <br>
 
 

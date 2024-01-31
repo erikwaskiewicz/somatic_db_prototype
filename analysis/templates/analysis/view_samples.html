@@ -143,9 +143,9 @@
             <a class="btn btn-light btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">View</a>
 
             <!-- button when analysis is a fail and the logged in user did the most recent check -->
-            {% elif analysis.status == 'Analysis fail' and request.user == analysis.checks.current_check_object.user %}
+            {% elif 'fail' in analysis.status and request.user == analysis.checks.current_check_object.user %}
             <div class="btn-group btn-block">
-              <a class="btn btn-danger btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">Analysis fail</a>
+              <a class="btn btn-danger btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">{{ analysis.status }}</a>
               <button type="button btn-block" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
@@ -157,8 +157,7 @@
             </div>
 
             <!-- button when analysis is a fail -->
-            <!-- TODO also include bioinformatics QC fail -->
-            {% elif analysis.status == 'Analysis fail' %}
+            {% elif 'fail' in analysis.status %}
             <a class="btn btn-danger btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">Analysis fail</a>
 
             <!-- button when no one is assigned to an analysis 1st check (goes to check modal for 1st check only)-->

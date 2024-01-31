@@ -54,21 +54,25 @@
       <a class="nav-link section-button active" href="#details" data-target="details">Patient details</a>
     </li>
 
-    <!-- SNV specific tabs -->
-    {% if sample_data.panel_obj.show_snvs %}
-    <li class="nav-item">
-      <a class="nav-link section-button" href="#depth" data-target="depth">Depth</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link section-button" href="#snvs" data-target="snvs">SNVs & indels</a>
-    </li>
-    {% endif %}
+    {% if 'QC' not in sample_data.status %}
 
-    <!-- fusion specific tab -->
-    {% if sample_data.panel_obj.show_fusions %}
-    <li class="nav-item">
-      <a class="nav-link section-button" href="#rna" data-target="rna">Fusions</a>
-    </li>
+      <!-- SNV specific tabs -->
+      {% if sample_data.panel_obj.show_snvs %}
+      <li class="nav-item">
+        <a class="nav-link section-button" href="#depth" data-target="depth">Depth</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link section-button" href="#snvs" data-target="snvs">SNVs & indels</a>
+      </li>
+      {% endif %}
+
+      <!-- fusion specific tab -->
+      {% if sample_data.panel_obj.show_fusions %}
+      <li class="nav-item">
+        <a class="nav-link section-button" href="#rna" data-target="rna">Fusions</a>
+      </li>
+      {% endif %}
+
     {% endif %}
 
     <!-- show finalise tab if analysis not yet complete -->
@@ -78,12 +82,14 @@
     </li>
 
     <!-- otherwise show report tab -->
-    {% else %}
+    {% elif sample_data.status == 'QC fail' or sample_data.status == 'Complete' or sample_data.status == 'Analysis fail' %}
     <li class="nav-item">
       <a class="nav-link section-button" href="#report" data-target="report">Report summary</a>
     </li>
 
     {% endif %}
+
+
   </ul>
 </div>
 <br>
@@ -92,22 +98,27 @@
 <!-- load in each section from template -->
 <div class="container" id="details">{% include 'analysis/analysis-info.html' %}</div>
 
-{% if sample_data.panel_obj.show_snvs %}
-<div class="container-fluid" id="depth">{% include 'analysis/analysis-depth.html' %}</div>
-<div class="container-fluid" id="snvs">{% include 'analysis/analysis-snvs.html' %}</div>
-{% endif %}
+{% if 'QC' not in sample_data.status %}
 
-{% if sample_data.panel_obj.show_fusions %}
-<div class="container-fluid" id="rna">{% include 'analysis/analysis-fusions.html' %}</div>
+  {% if sample_data.panel_obj.show_snvs %}
+  <div class="container-fluid" id="depth">{% include 'analysis/analysis-depth.html' %}</div>
+  <div class="container-fluid" id="snvs">{% include 'analysis/analysis-snvs.html' %}</div>
+  {% endif %}
+
+  {% if sample_data.panel_obj.show_fusions %}
+  <div class="container-fluid" id="rna">{% include 'analysis/analysis-fusions.html' %}</div>
+  {% endif %}
+
 {% endif %}
 
 {% if 'IGV' in sample_data.status %}
 <div class="container" id="finalise">{% include 'analysis/analysis-finalise.html' %}</div>
 
-{% else %}
+{% elif sample_data.status == 'QC fail' or sample_data.status == 'Complete' or sample_data.status == 'Analysis fail' %}
 <div class="container-fluid" id="report">{% include 'analysis/analysis-report.html' %}</div>
 
 {% endif %}
+
 
 
 

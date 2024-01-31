@@ -224,8 +224,11 @@ class SampleAnalysis(models.Model):
 
     def get_status(self):
         """return current status of sample"""
+        # if worksheet pass/fail isnt set then sample is still in bioinformatics QC
+        if self.worksheet.auto_qc_pass_fail == '-':
+            return 'Bioinformatics QC'
         # sample_pass_fail is set when analysis is complete, so use that value if its set
-        if self.sample_pass_fail != '-':
+        elif self.sample_pass_fail != '-':
             return self.get_sample_pass_fail_display()
         # otherwise the status is IGV checking, use total num checks to get the check number
         else:
