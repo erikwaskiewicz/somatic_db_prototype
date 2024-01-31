@@ -117,86 +117,90 @@ def reopen_check(user, sample_analysis_obj):
     return True
 
 
-@transaction.atomic
-def signoff_check(user, current_step_obj, sample_obj, status='C', complete=False):
-    """
-    Signs off a check, returns true if successful
+# @transaction.atomic
+# def signoff_check(sample_analysis_obj):
+#     """
+#     Signs off a check, returns true if successful
 
-    """
-    # commit to database if its the last check
-    if complete:
+#     """
+#     # commit to database if its the last check
+#     #if complete:
 
-        # SNVs
-        if sample_obj.panel.show_snvs:
+#     # SNVs
+#     if sample_analysis_obj.panel.show_snvs:
 
-            # loop through all variants
-            variants = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
-            for v in variants:
+#         # loop through all variants
+#         variants = VariantPanelAnalysis.objects.filter(sample_analysis=sample_analysis_obj)
+#         for v in variants:
 
-                # calculate final decison and commit to database
-                final_decision = v.calculate_final_decision()
-                variant_instance_obj = v.variant_instance
-                variant_instance_obj.final_decision = final_decision
-                variant_instance_obj.save()
+#             # calculate final decison and commit to database
+#             final_decision = v.calculate_final_decision()
+#             variant_instance_obj = v.variant_instance
+#             variant_instance_obj.final_decision = final_decision
+#             variant_instance_obj.save()
 
-        # fusions
-        if sample_obj.panel.show_fusions:
+#     # fusions
+#     if sample_analysis_obj.panel.show_fusions:
 
-            # loop through all fusions
-            variants = FusionPanelAnalysis.objects.filter(sample_analysis=sample_obj)
-            for v in variants:
+#         # loop through all fusions
+#         variants = FusionPanelAnalysis.objects.filter(sample_analysis=sample_analysis_obj)
+#         for v in variants:
 
-                # calculate final decison and commit to database
-                final_decision = v.calculate_final_decision()
-                variant_instance_obj = v.fusion_instance
-                variant_instance_obj.final_decision = final_decision
-                variant_instance_obj.save()
+#             # calculate final decison and commit to database
+#             final_decision = v.calculate_final_decision()
+#             variant_instance_obj = v.fusion_instance
+#             variant_instance_obj.final_decision = final_decision
+#             variant_instance_obj.save()
 
-    # signoff current check
-    now = timezone.now()
-    current_step_obj.user = user
-    current_step_obj.signoff_time = now
-    current_step_obj.status = status
-    current_step_obj.save()
+#     # sample pass/fail
+#     sample_analysis_obj.sample_pass_fail = pass_fail
+#     sample_analysis_obj.save()
 
-    return True
+#     # signoff current check
+#     #now = timezone.now()
+#     #current_step_obj.user = user
+#     #current_step_obj.signoff_time = now
+#     #current_step_obj.status = status
+#     #current_step_obj.save()
+
+#     return True
 
 
-def make_next_check(sample_obj):
-    """
-    Sets up the next check and associated variant checks
+# def make_next_check(sample_obj):
+#     """
+#     Sets up the next check and associated variant checks
 
-    """
-    # add new check object
-    new_check_obj = Check(
-        analysis=sample_obj, 
-        status='P',
-    )
+#     """
+#     # add new check object
+#     new_check_obj = Check(
+#         analysis=sample_obj, 
+#         status='P',
+#     )
 
-    # save object
-    new_check_obj.save()
+#     # save object
+#     new_check_obj.save()
 
-    if sample_obj.panel.show_snvs:
-        # make check objects for all variants
-        variant_objects = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
-        for v in variant_objects:
-            new_variant_check = VariantCheck(
-                variant_analysis = v,
-                check_object = new_check_obj,
-            )
-            new_variant_check.save()
+#     if sample_obj.panel.show_snvs:
+#         # make check objects for all variants
+#         variant_objects = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
+#         for v in variant_objects:
+#             new_variant_check = VariantCheck(
+#                 variant_analysis = v,
+#                 check_object = new_check_obj,
+#             )
+#             new_variant_check.save()
     
-    if sample_obj.panel.show_fusions:
-        # make check objects for all variants
-        variant_objects = FusionPanelAnalysis.objects.filter(sample_analysis=sample_obj)
-        for v in variant_objects:
-            new_variant_check = FusionCheck(
-                fusion_analysis = v,
-                check_object = new_check_obj,
-            )
-            new_variant_check.save()
+#     if sample_obj.panel.show_fusions:
+#         # make check objects for all variants
+#         variant_objects = FusionPanelAnalysis.objects.filter(sample_analysis=sample_obj)
+#         for v in variant_objects:
+#             new_variant_check = FusionCheck(
+#                 fusion_analysis = v,
+#                 check_object = new_check_obj,
+#             )
+#             new_variant_check.save()
 
-    return True
+#     return True
 
 
 def get_sample_info(sample_obj):

@@ -13,7 +13,7 @@ from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatien
     ManualVariantCheckForm, ReopenSampleAnalysisForm, ChangeLimsInitials, EditedPasswordChangeForm, EditedUserCreationForm, 
     RunQCForm, ReopenRunQCForm, SendCheckBackForm, DetailsCheckForm, AddNewFusionArtefactForm, NewFusionForm)
 
-from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
+from .utils import (get_samples, unassign_check, reopen_check, 
     get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, get_fusion_list, 
     create_myeloid_coverage_summary, variant_format_check, breakpoint_format_check, lims_initials_check)
 from .models import *
@@ -827,21 +827,8 @@ def analysis_sheet(request, sample_id):
             if submit_form.is_valid():
                 pass_fail = submit_form.cleaned_data['analysis_pass_fail']
                 next_step = submit_form.cleaned_data['next_step']
-
-                if next_step == 'finalise':  # TODO can this be one command and the loops moved to utils?
-                    submitted = signoff_check(request.user, current_step_obj, sample_obj, status=pass_fail, complete=True)
-                    if submitted:
-                        # update sample pass/fail
-                        sample_obj.sample_pass_fail = pass_fail
-                        sample_obj.save()
-                        return redirect('view_ws_samples', sample_data['worksheet_id'])
-
-                elif next_step == 'extra_check':
-                    submitted = signoff_check(request.user, current_step_obj, sample_obj, status=pass_fail)
-                    if submitted:
-                        make_next_check(sample_obj)
-                        return redirect('view_ws_samples', sample_data['worksheet_id'])
-
+                current_step_obj.finalise(pass_fail, next_step, request.user)
+                return redirect('view_ws_samples', sample_data['worksheet_id'])
 
     # render the pages
     return render(request, 'analysis/analysis_sheet.html', context)
@@ -860,7 +847,8 @@ def ajax_finalise_check(request):
         current_check_obj = Check.objects.get(id=pk)
 
         # call finalise check command
-        data = current_check_obj.finalise(option_selected)
+        data = current_check_obj.finalise_checks(option_selected)
+        #TODO cannot close sample with 3 checks and last two matching fails on RNA (button greyed out)
 
         return HttpResponse(data, 'application/json')
 

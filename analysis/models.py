@@ -1,6 +1,7 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models, transaction
 from django.template.loader import render_to_string
+from django.utils import timezone
 
 from auditlog.registry import auditlog
 
@@ -244,7 +245,63 @@ class SampleAnalysis(models.Model):
             'lims_checks': self.concatenate_lims_initials(),
         }
 
-    def finalise(self, step):
+    def all_panel_snvs(self):
+        return VariantPanelAnalysis.objects.filter(sample_analysis=self)
+
+    def all_panel_fusions(self):
+        return FusionPanelAnalysis.objects.filter(sample_analysis=self)
+
+    def variants_have_2_checks(self):
+        error_list = []
+        for v in self.all_panel_snvs():
+            all_var_checks = v.get_all_checks()
+            all_var_checks_excluding_na = all_var_checks.exclude(decision='N')
+
+            # must be at least 2 variant checks
+            if all_var_checks.count() < 2:
+                error_list.append(v.variant_instance.variant.variant)
+
+            # if both checks are 'not analysed' then thats fine
+            elif all_var_checks_excluding_na.count() == 0:
+                pass
+
+            # where theres amixture of analysed/not analysed, there must be at least 2 checks after excluding any 'not analysed'
+            elif all_var_checks_excluding_na.count() < 2:
+                error_list.append(v.variant_instance.variant.variant)
+
+        # throw error if any variants fail checks
+        if len(error_list) > 0:
+            pass_fail = False
+            message = 'Not all variants have been checked at least twice: ' + ', '.join(error_list)
+
+        else:
+            pass_fail = True
+            message = ''
+
+        return pass_fail, message
+
+    def variant_checks_agree(self):
+        error_list = []
+        for v in self.all_panel_snvs():
+            all_var_checks_excluding_na = v.get_all_checks().exclude(decision='N').order_by('-pk')
+            if all_var_checks_excluding_na.count() >= 2:
+
+                last_two = [c.decision for c in all_var_checks_excluding_na][0:2]
+                if len(set(last_two)) != 1:
+                    error_list.append(v.variant_instance.variant.variant)
+
+        # throw error if any variants fail checks
+        if len(error_list) > 0:
+            pass_fail = False
+            message = "Last checkers don't agree for SNVs: " + ", ".join(error_list)
+
+        else:
+            pass_fail = True
+            message = ''
+
+        return pass_fail, message
+
+    def finalise_checks(self, step):
         """ verify if a sample analysis can be closed """
 
         error_list = []
@@ -283,64 +340,64 @@ class SampleAnalysis(models.Model):
         else:
             pass_fail = False
             template = f'analysis/forms/ajax_finalise_form_check_3_fail.html'
-        
+
         # render HTML for AJAX form
         html = render_to_string(template, {'errors': error_list})
 
         return pass_fail, html
 
-    def all_panel_variants(self):
-        return [v for v in VariantPanelAnalysis.objects.filter(sample_analysis=self)]
+    @transaction.atomic
+    def finalise(self, pass_fail):
+        """ closes a case and sets final decision for all snvs/fusions """
+        # calculate final decison for all snvs and commit to database
+        if self.panel.show_snvs:
+            for v in self.all_panel_snvs():
+                final_decision = v.calculate_final_decision()
+                v.variant_instance.final_decision = final_decision
+                v.variant_instance.save()
 
-    def variants_have_2_checks(self):
-        error_list = []
-        for v in self.all_panel_variants():
-            all_var_checks = v.get_all_checks()
-            all_var_checks_excluding_na = all_var_checks.exclude(decision='N')
+        # calculate final decison for all fusions and commit to database
+        if self.panel.show_fusions:
+            for v in all_panel_fusions():
+                final_decision = v.calculate_final_decision()
+                v.fusion_instance.final_decision = final_decision
+                v.fusion_instance.save()
 
-            # must be at least 2 variant checks
-            if all_var_checks.count() < 2:
-                error_list.append(v.variant_instance.variant.variant)
+        # sample pass/fail
+        self.sample_pass_fail = pass_fail
+        self.save()
 
-            # if both checks are 'not analysed' then thats fine
-            elif all_var_checks_excluding_na.count() == 0:
-                pass
+        return True
 
-            # where theres amixture of analysed/not analysed, there must be at least 2 checks after excluding any 'not analysed'
-            elif all_var_checks_excluding_na.count() < 2:
-                error_list.append(v.variant_instance.variant.variant)
+    @transaction.atomic
+    def make_next_check(self):
+        """ sets up the next check and associated variant checks """
+        # add new check object
+        new_check_obj = Check(
+            analysis=self,
+            status='P',
+        )
+        new_check_obj.save()
 
-        # throw error if any variants fail checks
-        if len(error_list) > 0:
-            pass_fail = False
-            message = 'Not all variants have been checked at least twice: ' + ', '.join(error_list)
+        # make check objects for all variants
+        if self.panel.show_snvs:
+            for v in self.all_panel_snvs():
+                new_variant_check = VariantCheck(
+                    variant_analysis = v,
+                    check_object = new_check_obj,
+                )
+                new_variant_check.save()
 
-        else:
-            pass_fail = True
-            message = ''
+        # make check objects for all fusions
+        if self.panel.show_fusions:
+            for v in self.all_panel_fusions():
+                new_variant_check = FusionCheck(
+                    fusion_analysis = v,
+                    check_object = new_check_obj,
+                )
+                new_variant_check.save()
 
-        return pass_fail, message
-
-    def variant_checks_agree(self):
-        error_list = []
-        for v in self.all_panel_variants():
-            all_var_checks_excluding_na = v.get_all_checks().exclude(decision='N').order_by('-pk')
-            if all_var_checks_excluding_na.count() >= 2:
-
-                last_two = [c.decision for c in all_var_checks_excluding_na][0:2]
-                if len(set(last_two)) != 1:
-                    error_list.append(v.variant_instance.variant.variant)
-
-        # throw error if any variants fail checks
-        if len(error_list) > 0:
-            pass_fail = False
-            message = "Last checkers don't agree for SNVs: " + ", ".join(error_list)
-
-        else:
-            pass_fail = True
-            message = ''
-
-        return pass_fail, message
+        return True
 
 
 class Check(models.Model):
@@ -377,28 +434,14 @@ class Check(models.Model):
     def check_fusions_pending(self):
         return self.get_fusion_checks().filter(decision = '-').exists()
 
-    def finalise(self, step):
-        """ verify and finalise a sample check """
-        error_list = []
-        if step == 'demographics':
-            data = self.demographics_checks()
-
-        elif 'next_step_' in step:
-            if step == 'next_step_pass':
-                pass_fail_check_2, html_check_2 = self.data_checks()
-            elif step == 'next_step_fail':
-                pass_fail_check_2 = True
-                html_check_2 = render_to_string(f'analysis/forms/ajax_finalise_form_check_2_pass.html', {'errors': []})
-
-            pass_fail_check_3, html_check_3 = self.analysis.finalise(step)
-            data = json.dumps({
-                'pass_check_2': pass_fail_check_2,
-                'html_check_2': html_check_2,
-                'pass_check_3': pass_fail_check_3,
-                'html_check_3': html_check_3,
-            })
-
-        return data
+    @transaction.atomic
+    def close(self, pass_fail, signoff_user):
+        """ close current check """
+        self.user = signoff_user
+        self.signoff_time = timezone.now()
+        self.status = pass_fail
+        self.save()
+        return True
 
     def demographics_checks(self):
         """ verify demographics checks have been performed and return object for AJAX """
@@ -468,6 +511,41 @@ class Check(models.Model):
         html = render_to_string(template, {'errors': error_list})
 
         return pass_fail, html
+
+    def finalise_checks(self, step):
+        """ verify and finalise a sample check """
+        error_list = []
+        if step == 'demographics':
+            data = self.demographics_checks()
+
+        elif 'next_step_' in step:
+            if step == 'next_step_pass':
+                pass_fail_check_2, html_check_2 = self.data_checks()
+            elif step == 'next_step_fail':
+                pass_fail_check_2 = True
+                html_check_2 = render_to_string(f'analysis/forms/ajax_finalise_form_check_2_pass.html', {'errors': []})
+
+            pass_fail_check_3, html_check_3 = self.analysis.finalise_checks(step)
+            data = json.dumps({
+                'pass_check_2': pass_fail_check_2,
+                'html_check_2': html_check_2,
+                'pass_check_3': pass_fail_check_3,
+                'html_check_3': html_check_3,
+            })
+
+        return data
+
+    @transaction.atomic
+    def finalise(self, pass_fail, next_step, signoff_user):
+        """ signoff current step and either close case or make next check """
+        sample_analysis_obj = self.analysis
+        if next_step == 'finalise':
+            sample_analysis_obj.finalise(pass_fail)
+            self.close(pass_fail, signoff_user)
+
+        elif next_step == 'extra_check':
+            self.close(pass_fail, signoff_user)
+            sample_analysis_obj.make_next_check()
 
 
 class Variant(models.Model):
