@@ -1,7 +1,7 @@
 {% load crispy_forms_tags %}
 
 <!-- box that only appears when manual checks for variants have to be done-->
-{% if sample_data.panel_obj.manual_review_required %}
+{% if sample_data.panel_obj.manual_review_required and 'IGV' in sample_data.status %}
 
   {% if sample_data.checks.current_check_object.manual_review_check %}
     <div class="alert alert-success">

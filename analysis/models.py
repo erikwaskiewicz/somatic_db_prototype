@@ -409,7 +409,6 @@ class SampleAnalysis(models.Model):
     @transaction.atomic
     def finalise(self, pass_fail):
         """ closes a case and sets final decision for all snvs/fusions """
-        # TODO hide IGV check section from failed samples, show final decison in variants tabs after finalised?
         # calculate final decison for all snvs and commit to database
         if self.panel.show_snvs:
             for v in self.all_panel_snvs():
