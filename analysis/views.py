@@ -454,8 +454,8 @@ def analysis_sheet(request, sample_id):
     # TODO if whole run fail it should set all samples to fail, hide variants tabs in QC fail? 
     # TODO 'not analysed' option for sample/run, would need a generic 'not analysed' panel probably
     # TODO Include training samples in 'assigned to me' bit?
+    # TODO hide IGV check section from failed samples, show final decison in variants tabs after finalised?
 
-    # TODO make finalise form more robust, add checks from views, stop mixture of passes/ fails
     """
     # load sample object, error if the paperwork check hasnt been done
     sample_obj = SampleAnalysis.objects.get(pk = sample_id)

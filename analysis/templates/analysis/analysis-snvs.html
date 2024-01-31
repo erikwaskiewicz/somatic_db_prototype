@@ -254,7 +254,7 @@
         {% endif %}
 
         <!-- comment form here -->
-        {% if sample_data.status == 'Pending' %}
+        {% if 'IGV' in sample_data.status %}
         {% crispy v.comment_form %}
         {% endif %}
 

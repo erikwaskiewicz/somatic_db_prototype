@@ -367,29 +367,31 @@ class SampleAnalysis(models.Model):
             # pass/fail of last two checks agrees
             previous_pass_fail = all_checks['previous_check_object'].get_status_display()
             if (selection == 'next_step_pass') and (previous_pass_fail != 'Complete'):
-                error_list.append('Pass/ fail of previous two checks doesnt match')
+                error_list.append("Overall pass/ fail of previous two checks doesn't match")
             elif (selection == 'next_step_fail') and (previous_pass_fail != 'Fail'):
-                error_list.append('Pass/ fail of previous two checks doesnt match')
+                error_list.append("Overall pass/ fail of previous two checks doesn't match")
 
-            # at least two variant checks for each snv
-            status, err = self.snvs_have_2_checks()
-            if status == False:
-                error_list.append(err)
+            # only run variant checks when analysis is a pass
+            if selection == 'next_step_pass':
+                # at least two variant checks for each snv
+                status, err = self.snvs_have_2_checks()
+                if status == False:
+                    error_list.append(err)
 
-            # lastest two snv checks agree
-            status, err = self.snv_checks_agree()
-            if status == False:
-                error_list.append(err)
+                # lastest two snv checks agree
+                status, err = self.snv_checks_agree()
+                if status == False:
+                    error_list.append(err)
 
-            # at least two checks for each fusion
-            status, err = self.fusions_have_2_checks()
-            if status == False:
-                error_list.append(err)
+                # at least two checks for each fusion
+                status, err = self.fusions_have_2_checks()
+                if status == False:
+                    error_list.append(err)
 
-            # lastest two fusion checks agree
-            status, err = self.fusion_checks_agree()
-            if status == False:
-                error_list.append(err)
+                # lastest two fusion checks agree
+                status, err = self.fusion_checks_agree()
+                if status == False:
+                    error_list.append(err)
 
         # select template based on whether there were any errors
         if len(error_list) == 0:
@@ -407,17 +409,18 @@ class SampleAnalysis(models.Model):
     @transaction.atomic
     def finalise(self, pass_fail):
         """ closes a case and sets final decision for all snvs/fusions """
+        # TODO hide IGV check section from failed samples, show final decison in variants tabs after finalised?
         # calculate final decison for all snvs and commit to database
         if self.panel.show_snvs:
             for v in self.all_panel_snvs():
-                final_decision = v.calculate_final_decision()
+                final_decision = v.calculate_final_decision(pass_fail)
                 v.variant_instance.final_decision = final_decision
                 v.variant_instance.save()
 
         # calculate final decison for all fusions and commit to database
         if self.panel.show_fusions:
-            for v in all_panel_fusions():
-                final_decision = v.calculate_final_decision()
+            for v in self.all_panel_fusions():
+                final_decision = v.calculate_final_decision(pass_fail)
                 v.fusion_instance.final_decision = final_decision
                 v.fusion_instance.save()
 
@@ -706,9 +709,13 @@ class VariantPanelAnalysis(models.Model):
     def get_all_checks(self):
         return VariantCheck.objects.filter(variant_analysis=self).order_by('pk')
 
-    def calculate_final_decision(self):
+    def calculate_final_decision(self, pass_fail):
         all_checks = self.get_all_checks().exclude(decision='N')
-        if all_checks.count() == 0:
+        # if whole sample analysis failed then set as not analysed
+        if pass_fail == 'F':
+            return 'N'
+        # if list is empty then it would have consisted of just not analysed, so set as not analysed
+        elif all_checks.count() == 0:
             return 'N'
         else:
             return all_checks.last().decision
@@ -943,8 +950,12 @@ class FusionPanelAnalysis(models.Model):
     def get_all_checks(self):
         return FusionCheck.objects.filter(fusion_analysis=self).order_by('pk')
 
-    def calculate_final_decision(self):
+    def calculate_final_decision(self, pass_fail):
         all_checks = self.get_all_checks().exclude(decision='N')
+        # if whole sample analysis failed then set as not analysed
+        if pass_fail == 'F':
+            return 'N'
+        # if list is empty then it would have consisted of just not analysed, so set as not analysed
         if all_checks.count() == 0:
             return 'N'
         else:
