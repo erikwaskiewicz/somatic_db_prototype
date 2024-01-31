@@ -69,6 +69,7 @@ def unassign_check(sample_analysis_obj):
     latest_check.coverage_comment = ''
     latest_check.coverage_comment_updated = None
     latest_check.patient_info_check = False
+    latest_check.manual_review_check = False
     latest_check.overall_comment = ''
     latest_check.overall_comment_updated = None
     latest_check.signoff_time = None

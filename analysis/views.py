@@ -378,7 +378,7 @@ def view_samples(request, worksheet_id=None, user_pk=None):
                 sample_pk = unassign_form.cleaned_data['unassign']
                 sample_analysis_obj = SampleAnalysis.objects.get(pk=sample_pk)
 
-                # get latest check and reset # TODO this isnt reopening the IGV check bool
+                # get latest check and reset
                 unassign_check(sample_analysis_obj)
 
                 # redirect to force refresh, otherwise form could accidentally be resubmitted when refreshing the page
