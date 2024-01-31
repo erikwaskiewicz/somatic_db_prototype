@@ -110,7 +110,7 @@
         <tr>
           <td>{{ sample }}</td>
           {% if template == 'user' %}
-          <td>{{ analysis.worksheet }}</td>
+          <td>{{ analysis.worksheet }} {% if not analysis.diagnostic %}<span class="badge badge-pill badge-info">Training</span>{% endif %}</td>
           <td>{{ analysis.assay }}</td>
           {% endif %}
           <td>{{ analysis.panel }}</td>
