@@ -11,7 +11,7 @@ from django.utils import timezone
 from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, 
     SampleCommentForm, UnassignForm, PaperworkCheckForm, ConfirmPolyForm, ConfirmArtefactForm, AddNewPolyForm, AddNewArtefactForm, 
     ManualVariantCheckForm, ReopenSampleAnalysisForm, ChangeLimsInitials, EditedPasswordChangeForm, EditedUserCreationForm, 
-    RunQCForm, ReopenRunQCForm, SendCheckBackForm, DetailsCheckForm, AddNewFusionArtefactForm, NewFusionForm)
+    RunQCForm, ReopenRunQCForm, SendCheckBackForm, DetailsCheckForm, AddNewFusionArtefactForm, NewFusionForm, SampleQCForm)
 
 from .utils import (get_samples, unassign_check, reopen_check, 
     get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, get_fusion_list, 
@@ -495,7 +495,8 @@ def analysis_sheet(request, sample_id):
             comment=current_step_obj.coverage_comment,
             ntc_check=current_step_obj.coverage_ntc_check,
         ),
-        'send_back_form': SendCheckBackForm()
+        'send_back_form': SendCheckBackForm(),
+        'sample_qc_form': SampleQCForm(),
     }
 
     # pull out coverage summary for myeloid, otherwise return false
@@ -594,6 +595,8 @@ def analysis_sheet(request, sample_id):
                     context['sample_data'] = get_sample_info(sample_obj)
                     current_step_obj = context['sample_data']['checks']['current_check_object']
                     context['demographics_form'] = DetailsCheckForm(info_check=current_step_obj.patient_info_check)
+
+        # TODO sample QC form submit
 
         # comments submit button
         if 'variant_comment' in request.POST:

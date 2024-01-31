@@ -172,7 +172,7 @@ class SampleAnalysis(models.Model):
         ('-', 'Pending'),
         ('C', 'Complete'),
         ('F', 'Analysis fail'),
-        ('QC', 'QC fail'),
+        ('Q', 'QC fail'),
     )
     worksheet = models.ForeignKey('Worksheet', on_delete=models.CASCADE)
     sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
@@ -182,7 +182,7 @@ class SampleAnalysis(models.Model):
     total_reads_ntc = models.IntegerField(blank=True, null=True)
     genome_build = models.IntegerField(default=37)
     upload_time = models.DateTimeField(blank=True, null=True)
-    sample_pass_fail = models.CharField(max_length=2, default='-', choices=QC_CHOICES)
+    sample_pass_fail = models.CharField(max_length=1, default='-', choices=QC_CHOICES)
 
     def percent_reads_ntc(self):
         """

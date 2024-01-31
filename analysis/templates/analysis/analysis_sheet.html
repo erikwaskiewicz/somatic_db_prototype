@@ -76,13 +76,13 @@
     {% endif %}
 
     <!-- show finalise tab if analysis not yet complete -->
-    {% if 'IGV' in sample_data.status %}
+    {% if 'IGV' in sample_data.status or sample_data.status == 'Bioinformatics QC' %}
     <li class="nav-item">
       <a class="nav-link section-button" href="#finalise" data-target="finalise">Finalise</a>
     </li>
 
     <!-- otherwise show report tab -->
-    {% elif sample_data.status == 'QC fail' or sample_data.status == 'Complete' or sample_data.status == 'Analysis fail' %}
+    {% else %}
     <li class="nav-item">
       <a class="nav-link section-button" href="#report" data-target="report">Report summary</a>
     </li>
@@ -111,10 +111,10 @@
 
 {% endif %}
 
-{% if 'IGV' in sample_data.status %}
+{% if 'IGV' in sample_data.status or sample_data.status == 'Bioinformatics QC' %}
 <div class="container" id="finalise">{% include 'analysis/analysis-finalise.html' %}</div>
 
-{% elif sample_data.status == 'QC fail' or sample_data.status == 'Complete' or sample_data.status == 'Analysis fail' %}
+{% else %}
 <div class="container-fluid" id="report">{% include 'analysis/analysis-report.html' %}</div>
 
 {% endif %}

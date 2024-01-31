@@ -89,6 +89,25 @@ class ReopenRunQCForm(forms.Form):
         )
 
 
+class SampleQCForm(forms.Form):
+    """
+    """
+    confirm = forms.BooleanField(required=True, label='Patient name has been checked')
+    sample_comment = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 2}),
+        required=True,
+        label='Reason for QC fail:'
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(SampleQCForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Fail sample', css_class='btn btn-danger w-100')
+        )
+
+
 class NewVariantForm(forms.Form):
     """
     Manually add a SNV. Splitting HGVS into components to stop formatting errors

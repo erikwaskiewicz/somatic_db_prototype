@@ -35,13 +35,22 @@
   {% endfor %}
 </table>
 
+{% if sample_data.status == 'Bioinformatics QC' %}
+<br>
+<br>
+<div class="alert alert-danger">
+  <h5>Sample failed bioinformatics QC?</h5>
+  <br>
+  {% crispy sample_qc_form %}
+</div>
+
+{% else %}
 <div class="card-body">
   {% crispy sample_comment_form %}
 </div>
-
-
 <br>
 <br>
+
 <div class="card-body bg-light">
 
   <h5>Analysis complete?</h5>
@@ -55,6 +64,7 @@
 
 </div>
 
+{% endif %}
 
 <!-- sign off modal -->
 <div class="modal fade" id="finalise-modal" tabindex="-1" role="dialog" aria-labelledby="finalise-modalLabel" aria-hidden="true">
