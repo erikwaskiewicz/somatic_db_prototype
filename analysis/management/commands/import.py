@@ -11,6 +11,7 @@ import yaml
 import pybedtools
 import numpy as np
 from datetime import datetime
+from django.utils import timezone
 
 
 class Command(BaseCommand):
@@ -192,17 +193,17 @@ class Command(BaseCommand):
             genome_build = 37
         else:
             raise IOError(f'Genome build {genome} is neither GRCh37 or GRCh38')
-            
-        #Check that worksheet not already uploaded with another sequencing run
-        exist_worksheets = Worksheet.objects.filter(ws_id = ws)
-        
-        if len(exist_worksheets) != 0:
-        
-        	for worksheet in exist_worksheets:
-        	
-        		if worksheet.run.run_id != run_id:
-        			raise IOError(f'Worksheet {ws} uploaded already on another sequencing run {worksheet.run.run_id}. Please edit worksheet ID and try again e.g. {ws}R')
 
+        # check that worksheet not already uploaded with another sequencing run
+        exist_worksheets = Worksheet.objects.filter(ws_id = ws)
+
+        if len(exist_worksheets) != 0:
+            for worksheet in exist_worksheets:
+                if worksheet.run.run_id != run_id:
+                    raise IOError(f'Worksheet {ws} uploaded already on another sequencing run {worksheet.run.run_id}. Please edit worksheet ID and try again e.g. {ws}R')
+
+        # current time for upload timestamps
+        current_time = timezone.now()
 
         # ---------------------------------------------------------------------------------------------------------
         # Sample level objects
@@ -216,11 +217,15 @@ class Command(BaseCommand):
         new_run, created = Run.objects.get_or_create(run_id=run_id)
 
         # make ws
-        new_ws = Worksheet(
+        new_ws, created = Worksheet.objects.get_or_create(
             ws_id=ws,
             run=new_run,
             assay=assay,
         )
+        # only add timestamp when worksheet is initially created (dont update when a new sample added)
+        if created:
+            new_ws.upload_time = current_time
+
         new_ws.save()
 
         # make samples
@@ -234,6 +239,7 @@ class Command(BaseCommand):
             sample=new_sample,
             panel=panel_obj,
             genome_build=genome_build,
+            upload_time=current_time,
         )
         # add num reads if in panel settings
         if panel_obj.show_fusion_coverage:
@@ -510,13 +516,18 @@ class Command(BaseCommand):
                 reader = csv.DictReader(f, delimiter=',')
                 for f in reader:
 
+                    # sanitise the fusion input to prevent multiple fusions with the same breakpoints but different names
+                    # we want to remove GENE1/GENE2 and GENE1--GENE2 and just have GENE1-GENE2
+                    fusion_name = f['fusion']
+                    sanitised_fusion_name = fusion_name.replace("/","-").replace("--","-")
+
                     # format fusion field and filter panel
                     in_panel = False
                         
                     # splice variants
                     if f['type'] == 'Splice':
                         # add exon number to gene name
-                        fusion = f"{f['fusion']} {f['exons']}"
+                        fusion = f"{sanitised_fusion_name} {f['exons']}"
 
                         # check splicing gene list and set variable if matches
                         if 'splicing' in virtual_panel.keys():
@@ -526,7 +537,7 @@ class Command(BaseCommand):
                     # gene fusions
                     elif f['type'] == 'Fusion':
                         # use pipeline output directly (will be GENE_A--GENE_B)
-                        fusion = f['fusion']
+                        fusion = sanitised_fusion_name
 
                         # check fusion gene list and set variable if matches
                         for g in virtual_panel['fusions']:

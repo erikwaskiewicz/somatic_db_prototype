@@ -34,6 +34,7 @@ class Worksheet(models.Model):
     run = models.ForeignKey('Run', on_delete=models.CASCADE)
     assay = models.CharField(max_length=50)
     diagnostic = models.BooleanField(default=True)
+    upload_time = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return self.ws_id
@@ -60,6 +61,15 @@ class Sample(models.Model):
     sample_id = models.CharField(max_length=50, primary_key=True)
     sample_name = models.CharField(max_length=200, blank=True, null=True)
     sample_name_check = models.BooleanField(default=False)
+
+    def get_worksheets(self):
+        # get all worksheets that the sample appears on
+        sample_analyses = SampleAnalysis.objects.filter(sample=self)
+        worksheets = []
+        for s in sample_analyses:
+            if s.worksheet not in worksheets:
+                worksheets.append(s.worksheet)
+        return worksheets
 
 
 def make_bedfile_path(instance, filename):
@@ -104,6 +114,7 @@ class Panel(models.Model):
     manual_review_required = models.BooleanField(default=False)
     manual_review_desc = models.CharField(max_length=200, blank=True, null=True) # pipe seperated, no spaces
     bed_file = models.FileField(upload_to=make_bedfile_path, blank=True, null=True)
+    report_snv_vaf = models.BooleanField(default=False)
 
     # fusion settings
     show_fusions = models.BooleanField()
@@ -132,6 +143,8 @@ class SampleAnalysis(models.Model):
     total_reads = models.IntegerField(blank=True, null=True)
     total_reads_ntc = models.IntegerField(blank=True, null=True)
     genome_build = models.IntegerField(default=37)
+    upload_time = models.DateTimeField(blank=True, null=True)
+
 
     def percent_reads_ntc(self):
         """
@@ -261,28 +274,47 @@ class VariantInstance(models.Model):
     final_decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
 
     def vaf(self):
-        """
-        calculate VAF of variant from total and alt read counts
-        VAF is always displayed to two decimal places
-
-        """
+        """ calculate VAF of variant from total and alt read counts """
         vaf = decimal.Decimal(self.alt_count / self.total_count) * 100
-        vaf_rounded = vaf.quantize(decimal.Decimal('.01'), rounding = decimal.ROUND_DOWN)
+        vaf_rounded = vaf.quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_DOWN)
 
         return vaf_rounded
 
     def vaf_ntc(self):
-        """
-        calculate VAF of NTC variant if its seen in NTC, otherwise return None
-        VAF is always displayed to two decimal places
-
-        """
+        """ calculate VAF of NTC variant if its seen in NTC, otherwise return None """
         if self.in_ntc:
             vaf = decimal.Decimal(self.alt_count_ntc / self.total_count_ntc) * 100
-            vaf_rounded = vaf.quantize(decimal.Decimal('.01'), rounding = decimal.ROUND_DOWN)
+            vaf_rounded = vaf.quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_DOWN)
             return vaf_rounded
         else:
             return None
+
+    def gnomad_display(self):
+        """ format the Gnoamd popmax AF into human readable text """
+        # gnomad score missing in older runs
+        if self.gnomad_popmax == None:
+            return ''
+        # -1 means that the variant is missing from gnomad
+        elif self.gnomad_popmax == -1.00000:
+            return 'Not found'
+        # otherwise, format the value as a percentage, round up to prevent very low AFs appearing as 0
+        else:
+            gnomad_popmax = decimal.Decimal(self.gnomad_popmax * 100)
+            popmax_rounded = gnomad_popmax.quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_UP)
+            return f'{popmax_rounded}%'
+
+    def gnomad_link(self):
+        """ link to the Gnomad webpage """
+        genome_build = self.variant.genome_build
+        var = self.variant.variant
+
+        # format link specific to genome build
+        if genome_build == 37:
+            return f'https://gnomad.broadinstitute.org/variant/{var}?dataset=gnomad_r2_1'
+        elif genome_build == 38:
+            return f'https://gnomad.broadinstitute.org/variant/{var}?dataset=gnomad_r3'
+        else:
+            raise ValueError('Genome build should be either 37 or 38')
 
 
 class VariantPanelAnalysis(models.Model):
@@ -327,9 +359,10 @@ class VariantList(models.Model):
 
     """
     TYPE_CHOICES = (
-        ('P', 'Poly'),
+        ('P', 'SNV Poly'),
         ('K', 'Known'),
-        ('A', 'Artefact'),
+        ('A', 'SNV Artefact'),
+        ('F', 'Fusion Artefact')
     )
     name = models.CharField(max_length=50, primary_key=True)
     list_type = models.CharField(max_length=1, choices=TYPE_CHOICES)
@@ -350,7 +383,8 @@ class VariantToVariantList(models.Model):
 
     """
     variant_list = models.ForeignKey('VariantList', on_delete=models.CASCADE)
-    variant = models.ForeignKey('Variant', on_delete=models.CASCADE)
+    variant = models.ForeignKey('Variant', on_delete=models.CASCADE, blank=True, null=True)
+    fusion = models.ForeignKey('Fusion', on_delete=models.CASCADE, blank=True, null=True)
     classification = models.CharField(max_length=50, blank=True, null=True)
     vaf_cutoff = models.DecimalField(decimal_places=5, max_digits=10, default=0.0)
     upload_user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True, related_name='upload_user')
@@ -477,6 +511,7 @@ class FusionAnalysis(models.Model):
     fusion_score = models.CharField(max_length=50, blank=True, null=True)
     in_ntc = models.BooleanField(default=False)
     final_decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
+    manual_upload=models.BooleanField(default=False)
 
     def vaf(self):
         """

@@ -1,7 +1,12 @@
 from django.test import TestCase
+from django.contrib.auth.models import User
+from django.core.management import call_command
+
 from analysis.utils import *
+from analysis.models import *
 
 from decimal import Decimal
+import contextlib
 
 
 class TestViews(TestCase):
@@ -48,6 +53,246 @@ class TestViews(TestCase):
         ''' Access logout page '''
         response = self.client.get('/logout', follow=True)
         self.assertEqual(response.status_code, 200)
+
+
+class TestUpload(TestCase):
+    """
+    Test that data is correctly imported through the import management command
+    """
+
+    # load in all panels
+    fixtures = ['panels.json']
+
+    def test_upload_TSO500_DNA(self):
+        '''
+        test import for TSO500_DNA test data
+        '''
+        # needed arguments for upload
+        kwargs = {
+            'run': ['run_test38'],
+            'worksheet': ['test38'],
+            'assay': ['TSO500_DNA'],
+            'sample': ['sample22'],
+            'panel': ['lung'],
+            'genome': ['GRCh38'],
+            'debug': ['True'],
+            'snvs': ['analysis/test_data/Database_38/sample22_variants.tsv'],
+            'snv_coverage': ['analysis/test_data/Database_38/sample22_lung_coverage.json']
+        }
+
+        # run import management command - wrap in contextlib to prevent output printing to screen
+        with contextlib.redirect_stdout(None):
+            call_command('import', **kwargs)
+
+        # get db objects
+        ws_obj = Worksheet.objects.get(ws_id = 'test38')
+        sample_obj = Sample.objects.get(sample_id = 'sample22')
+        panel_obj = Panel.objects.get(panel_name='lung', assay='1', live=True, genome_build=38)
+        sample_analysis_obj = SampleAnalysis.objects.get(worksheet = ws_obj, sample=sample_obj, panel=panel_obj)
+
+        # test genome build
+        self.assertEqual(sample_analysis_obj.genome_build, 38)
+
+        # test number of reads is empty - RNA only
+        self.assertEqual(sample_analysis_obj.total_reads, None)
+        self.assertEqual(sample_analysis_obj.total_reads_ntc, None)
+
+        # test than num SNVs uploaded was correct
+        self.assertEqual(Variant.objects.count(), 2)
+        self.assertEqual(VariantInstance.objects.count(), 2)
+
+        # test that num of coverage records is correct
+        self.assertEqual(GeneCoverageAnalysis.objects.count(), 3)
+        self.assertEqual(RegionCoverageAnalysis.objects.count(), 11)
+        self.assertEqual(GapsAnalysis.objects.count(), 9)
+
+        # check that no fusions have been added
+        self.assertFalse(Fusion.objects.exists())
+        self.assertFalse(FusionAnalysis.objects.exists())
+        self.assertFalse(FusionAnalysis.objects.filter(fusion_caller='Fusion').exists())
+        self.assertFalse(FusionAnalysis.objects.filter(fusion_caller='Splice').exists())
+
+
+    def test_upload_TSO500_RNA(self):
+        '''
+        test import for TSO500_RNA test data
+        '''
+
+        # needed arguments for upload
+        kwargs = {
+            'run': ['rna_test_1'],
+            'worksheet': ['rna_ws_1'],
+            'assay': ['TSO500_RNA'],
+            'sample': ['rna_test_1'],
+            'panel': ['Tumour'],
+            'genome': ['GRCh37'],
+            'debug': ['True'],
+            'fusions': ['analysis/test_data/Database_37/rna_test_1_fusion_check.csv'],
+            'fusion_coverage': ['9000004,596']
+        }
+
+        # run import management command - wrap in contextlib to prevent output printing to screen
+        with contextlib.redirect_stdout(None):
+            call_command('import', **kwargs)
+
+        # get db objects
+        ws_obj = Worksheet.objects.get(ws_id = 'rna_ws_1')
+        sample_obj = Sample.objects.get(sample_id = 'rna_test_1')
+        panel_obj = Panel.objects.get(panel_name='Tumour', assay='2', live=True, genome_build=37)
+        sample_analysis_obj = SampleAnalysis.objects.get(worksheet = ws_obj, sample=sample_obj, panel=panel_obj)
+
+        # test genome build
+        self.assertEqual(sample_analysis_obj.genome_build, 37)
+
+        # test number of reads - RNA only
+        self.assertEqual(sample_analysis_obj.total_reads, 9000004)
+        self.assertEqual(sample_analysis_obj.total_reads_ntc, 596)
+
+        # test than no SNV data was uploaded
+        self.assertFalse(Variant.objects.exists())
+        self.assertFalse(VariantInstance.objects.exists())
+
+        # test that no SNV coverage data has been populated
+        self.assertFalse(GeneCoverageAnalysis.objects.exists())
+        self.assertFalse(RegionCoverageAnalysis.objects.exists())
+        self.assertFalse(GapsAnalysis.objects.exists())
+
+        # check number of calls - total in import file, total in tumour panel, fusion only and splice only
+        self.assertEqual(Fusion.objects.count(), 18)
+        self.assertEqual(FusionAnalysis.objects.count(), 13)
+        self.assertEqual(FusionAnalysis.objects.filter(fusion_caller='Fusion').count(), 11)
+        self.assertEqual(FusionAnalysis.objects.filter(fusion_caller='Splice').count(), 2)
+
+        # check splice variant exons are labelled correctly
+        self.assertTrue(Fusion.objects.filter(fusion_genes='MET 14/21').exists())
+        self.assertTrue(Fusion.objects.filter(fusion_genes='EGFR 2-7/28').exists())
+
+        # check sanitisation of fusions with a slash instead of dash
+        self.assertTrue(Fusion.objects.filter(fusion_genes='NCOA4-RET').exists())
+        self.assertFalse(Fusion.objects.filter(fusion_genes='NCOA4/RET').exists())
+
+        # check sanitisation of fusions with a double dash instead of a single one
+        self.assertTrue(Fusion.objects.filter(fusion_genes='CCDC6-RET').exists())
+        self.assertFalse(Fusion.objects.filter(fusion_genes='CCDC6--RET').exists())
+
+        # possible edge cases?
+        # ? test incorrect assay
+        # ? test incorrect genome build
+        # ? test duplicate ws
+
+
+    def test_upload_TSO500_ctDNA(self):
+        '''
+        test import for TSO500_ctDNA test data
+        '''
+
+        # needed arguments for upload
+        kwargs = {
+            'run': ['ctDNA_run_1'],
+            'worksheet': ['ctdna_ws_1'],
+            'assay': ['TSO500_ctDNA'],
+            'sample': ['ctdna_test_1'],
+            'panel': ['lung'],
+            'genome': ['GRCh37'],
+            'debug': ['True'],
+            'snvs': ['analysis/test_data/Database_37/ctdna_test_1_variants.tsv'],
+            'snv_coverage': ['analysis/test_data/Database_37/ctdna_test_1_lung_coverage.json'],
+            'fusions': ['analysis/test_data/Database_37/ctdna_test_1_fusion_check.csv'],
+        }
+
+        # run import management command - wrap in contextlib to prevent output printing to screen
+        with contextlib.redirect_stdout(None):
+            call_command('import', **kwargs)
+
+        # get db objects
+        ws_obj = Worksheet.objects.get(ws_id = 'ctdna_ws_1')
+        sample_obj = Sample.objects.get(sample_id = 'ctdna_test_1')
+        panel_obj = Panel.objects.get(panel_name='lung', assay='3', live=True, genome_build=37)
+        sample_analysis_obj = SampleAnalysis.objects.get(worksheet = ws_obj, sample=sample_obj, panel=panel_obj)
+
+        # test genome build
+        self.assertEqual(sample_analysis_obj.genome_build, 37)
+
+        # test number of reads is empty - RNA only
+        self.assertEqual(sample_analysis_obj.total_reads, None)
+        self.assertEqual(sample_analysis_obj.total_reads_ntc, None)
+
+        # test than num SNVs uploaded was correct
+        self.assertEqual(Variant.objects.count(), 3690)
+        self.assertEqual(VariantInstance.objects.count(), 6)
+
+        # test that num of coverage records is correct
+        self.assertEqual(GeneCoverageAnalysis.objects.count(), 3)
+        self.assertEqual(RegionCoverageAnalysis.objects.count(), 11)
+        self.assertEqual(GapsAnalysis.objects.count(), 1)
+
+        # check number of calls - total in import file, total in tumour panel, fusion only and splice only
+        self.assertEqual(Fusion.objects.count(), 18)
+        self.assertEqual(FusionAnalysis.objects.count(), 10)
+        self.assertEqual(FusionAnalysis.objects.filter(fusion_caller='Fusion').count(), 10)
+        self.assertEqual(FusionAnalysis.objects.filter(fusion_caller='Splice').count(), 0)
+
+        # check splice variant exons are labelled correctly (not in panel but in input csv)
+        self.assertTrue(Fusion.objects.filter(fusion_genes='MET 14/21').exists())
+        self.assertTrue(Fusion.objects.filter(fusion_genes='EGFR 2-7/28').exists())
+
+        # check sanitisation of fusions with a slash instead of dash
+        self.assertTrue(Fusion.objects.filter(fusion_genes='NCOA4-RET').exists())
+        self.assertFalse(Fusion.objects.filter(fusion_genes='NCOA4/RET').exists())
+
+        # check sanitisation of fusions with a double dash instead of a single one
+        self.assertTrue(Fusion.objects.filter(fusion_genes='CCDC6-RET').exists())
+        self.assertFalse(Fusion.objects.filter(fusion_genes='CCDC6--RET').exists())
+
+
+    def test_upload_GeneRead_CRM(self):
+        '''
+        test import for GeneRead_CRM test data
+        '''
+        # needed arguments for upload
+        kwargs = {
+            'run': ['run_3'],
+            'worksheet': ['crm_ws_1'],
+            'assay': ['GeneRead_CRM'],
+            'sample': ['crm_test_1'],
+            'panel': ['tumour'],
+            'genome': ['GRCh37'],
+            'debug': ['True'],
+            'snvs': ['analysis/test_data/Database_37/crm_test_1_variants.tsv'],
+            'snv_coverage': ['analysis/test_data/Database_37/crm_test_1_tumour_coverage.json']
+        }
+
+        # run import management command - wrap in contextlib to prevent output printing to screen
+        with contextlib.redirect_stdout(None):
+            call_command('import', **kwargs)
+
+        # get db objects
+        ws_obj = Worksheet.objects.get(ws_id = 'crm_ws_1')
+        sample_obj = Sample.objects.get(sample_id = 'crm_test_1')
+        panel_obj = Panel.objects.get(panel_name='tumour', assay='4', live=True, genome_build=37)
+        sample_analysis_obj = SampleAnalysis.objects.get(worksheet = ws_obj, sample=sample_obj, panel=panel_obj)
+
+        # test genome build
+        self.assertEqual(sample_analysis_obj.genome_build, 37)
+
+        # test number of reads is empty - RNA only
+        self.assertEqual(sample_analysis_obj.total_reads, None)
+        self.assertEqual(sample_analysis_obj.total_reads_ntc, None)
+
+        # test than num SNVs uploaded was correct
+        self.assertEqual(Variant.objects.count(), 67)
+        self.assertEqual(VariantInstance.objects.count(), 11)
+
+        # test that num of coverage records is correct
+        self.assertEqual(GeneCoverageAnalysis.objects.count(), 13)
+        self.assertEqual(RegionCoverageAnalysis.objects.count(), 55)
+        self.assertEqual(GapsAnalysis.objects.count(), 0)
+
+        # check that no fusions have been added
+        self.assertFalse(Fusion.objects.exists())
+        self.assertFalse(FusionAnalysis.objects.exists())
+        self.assertFalse(FusionAnalysis.objects.filter(fusion_caller='Fusion').exists())
+        self.assertFalse(FusionAnalysis.objects.filter(fusion_caller='Splice').exists())
 
 
 class TestDna(TestCase):
@@ -1063,6 +1308,41 @@ class TestDna(TestCase):
         sample_data = get_sample_info(sample_obj)
 
         self.assertEqual(sample_data['is_myeloid_referral'], False)
+        
+    def test_variant_format_check(self):
+        """
+        Test utils function which checks format of manual variant entry
+        """
+        
+        panel_obj = Panel.objects.get(panel_name='Lung', assay='1', genome_build=37, live=True)
+        
+        #Correct format
+        variant1_check, error = variant_format_check('7', 55241609, 'A', 'T', panel_obj.bed_file.path, 100, 10)
+        self.assertTrue(variant1_check)
+        
+        #Incorrect format - position not in bed
+        variant2_check, error = variant_format_check('7', 1, 'A', 'T', panel_obj.bed_file.path, 100, 10)
+        self.assertFalse(variant2_check)
+        
+        #Incorrect format - ref not a nucleotide
+        variant3_check, error = variant_format_check('7', 55241609, 'X', 'T', panel_obj.bed_file.path, 100, 10)
+        self.assertFalse(variant3_check)
+        
+        #Incorrect format - alt not a nucleotide
+        variant4_check, error = variant_format_check('7', 55241609, 'A', 'delin', panel_obj.bed_file.path, 100, 10)
+        self.assertFalse(variant4_check)
+        
+        #Incorrect format - total reads 0
+        variant5_check, error = variant_format_check('7', 55241609, 'A', 'T', panel_obj.bed_file.path, 0, 10)
+        self.assertFalse(variant5_check)
+        
+        #Incorrect format - alt reads 0
+        variant6_check, error = variant_format_check('7', 55241609, 'A', 'T', panel_obj.bed_file.path, 100, 0)
+        self.assertFalse(variant6_check)
+
+        #Incorrect format - not a chromosome
+        variant7_check, error = variant_format_check('86', 55241609, 'A', 'T', panel_obj.bed_file.path, 100, 0)
+        self.assertFalse(variant7_check)
 
 
 class TestNTCCalls(TestCase):
@@ -1959,3 +2239,131 @@ class TestChecks(TestCase):
         # loop through and test each line
         for line in failed_checks:
             self.assertEqual(complete_checks(line), expected_out)
+
+
+    def test_manual_fusion_formatting(self):
+        """
+        Checks that breakpoints are formatted correctly for manual RNA variant entry
+        """
+
+        correct_breakpoint_autosomal = "chr12:12022900"
+        correct_breakpoint_x = "chrX:12345"
+        incorrect_breakpoint_autosomal = "chr93:12345"
+        incorrect_breakpoint = "NOT A BREAKPOINT"
+
+        # check if_breakpoint regex function
+        self.assertTrue(if_breakpoint(correct_breakpoint_autosomal))
+        self.assertTrue(if_breakpoint(correct_breakpoint_x))
+        self.assertFalse(if_breakpoint(incorrect_breakpoint))
+
+        # check breakpoint_format_check function (uses if_chrom)
+        both_breakpoints_correct, both_breakpoints_correct_message = breakpoint_format_check(correct_breakpoint_autosomal, correct_breakpoint_x)
+        left_breakpoint_incorrect, left_breakpoint_incorrect_message = breakpoint_format_check(incorrect_breakpoint_autosomal, correct_breakpoint_autosomal)
+        right_breakpoint_incorrect, right_breakpoint_incorrect_message = breakpoint_format_check(correct_breakpoint_autosomal, incorrect_breakpoint_autosomal)
+        self.assertTrue(both_breakpoints_correct)
+        self.assertFalse(left_breakpoint_incorrect)
+        self.assertFalse(right_breakpoint_incorrect)
+
+
+
+class TestGnomad(TestCase):
+    """
+    Correctly handle displaying the Gnomad scores and links
+
+    """
+    def setUp(self):
+        ''' runs before each test '''
+        # make mock sample object
+        self.sample_obj = Sample(sample_id='test_sample')
+
+        # make mock variant object, build 37 for most tests as build doesnt matter for most
+        self.variant_obj = Variant(variant='1:2345C>G', genome_build=37)
+
+        # make mock variant instance, gnomad values will be added in each test
+        self.variant_instance_obj = VariantInstance(
+            sample = self.sample_obj,
+            variant = self.variant_obj,
+            gene = 'BRAF',
+            exon = '1/5',
+            hgvs_c = 'c.12345C>G',
+            hgvs_p = 'p.Ala456Arg',
+            total_count = 10,
+            alt_count = 1,
+            in_ntc = False,
+            manual_upload = False,
+            final_decision = '-',
+        )
+
+    # test the gnomad display function with a range of values
+    def test_gnomad_display_null(self):
+        ''' if gnomad score is None '''
+        self.variant_instance_obj.gnomad_popmax = None
+        self.assertEqual(self.variant_instance_obj.gnomad_display(), '')
+
+    def test_gnomad_display_not_in_gnomad(self):
+        ''' if the variant is not found in gnomad '''
+        self.variant_instance_obj.gnomad_popmax = -1.00000
+        self.assertEqual(self.variant_instance_obj.gnomad_display(), 'Not found')
+
+    def test_gnomad_display_with_values_0(self):
+        ''' if variant in gnomad but not present in any population '''
+        self.variant_instance_obj.gnomad_popmax = 0
+        self.assertEqual(self.variant_instance_obj.gnomad_display(), '0.00%')
+
+    def test_gnomad_display_with_values_very_small(self):
+        ''' very low AF in gnomad, 2dp, should round up '''
+        self.variant_instance_obj.gnomad_popmax = 0.00001
+        self.assertEqual(self.variant_instance_obj.gnomad_display(), '0.01%')
+
+    def test_gnomad_display_with_values_10(self):
+        ''' medium value '''
+        self.variant_instance_obj.gnomad_popmax = 0.1
+        self.assertEqual(self.variant_instance_obj.gnomad_display(), '10.00%')
+
+    def test_gnomad_display_with_values_100(self):
+        ''' 100% in gnomad '''
+        self.variant_instance_obj.gnomad_popmax = 1
+        self.assertEqual(self.variant_instance_obj.gnomad_display(), '100.00%')
+
+    # test the gnomad link function with a range of values
+    def test_gnomad_link_37(self):
+        ''' link if build 37 '''
+        self.variant_obj.genome_build=37
+        self.assertEqual(self.variant_instance_obj.gnomad_link(), 'https://gnomad.broadinstitute.org/variant/1:2345C>G?dataset=gnomad_r2_1')
+
+    def test_gnomad_link_38(self):
+        ''' link if build 38 '''
+        self.variant_obj.genome_build=38
+        self.assertEqual(self.variant_instance_obj.gnomad_link(), 'https://gnomad.broadinstitute.org/variant/1:2345C>G?dataset=gnomad_r3')
+
+    def test_gnomad_link_invalid_build(self):
+        ''' value error should be thrown if not build 37 or 38 '''
+        self.variant_obj.genome_build=100
+        with self.assertRaises(ValueError):
+            self.variant_instance_obj.gnomad_link()
+
+
+class TestLIMSInitials(TestCase):
+    """
+    Check to make sure that someone doesnt set their initials to a value already used by someone else
+
+    """
+    def setUp(self):
+        ''' runs before each test '''
+        # make mock user and user settings objects
+        self.user = User.objects.create_user(username='test_user', password='test_user_1')
+        self.usersettings = UserSettings(
+            user = self.user,
+            lims_initials = 'ABC'
+        )
+        self.usersettings.save()
+
+    def test_initials_check_pass(self):
+        ''' check will return true as initials dont exist '''
+        initials_check, warning_message = lims_initials_check('XYZ')
+        self.assertEqual(initials_check, True)
+
+    def test_initials_check_fail(self):
+        ''' check will return false as initials already used by user '''
+        initials_check, warning_message = lims_initials_check('ABC')
+        self.assertEqual(initials_check, False)

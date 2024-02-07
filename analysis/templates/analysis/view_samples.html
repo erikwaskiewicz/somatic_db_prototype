@@ -1,29 +1,66 @@
 {% extends 'analysis/base.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
 
 {% block breadcrumbs %}
-<nav class="breadcrumb flex-nowrap" aria-label="breadcrumb">
+<div class="container-fluid breadcrumbs-custom">
   <div class="container">
-    <a class="breadcrumb-item active" href="{% url 'home' %}"><span class="fa fa-home"></span></a>
-    <a class="breadcrumb-item active" href="{% url 'view_worksheets' 'recent' %}" aria-current="page">Worksheets</a>
-    <a class="breadcrumb-item active" aria-current="page">{{ worksheet }}</a>
+    <ol class="breadcrumb" style="background-color: transparent;">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}"><span class="fa fa-home"></span></a></li>
+
+        {% if template == 'user' %}
+        <li class="breadcrumb-item active">Samples: {{ username }}</li>
+
+        {% elif template == 'worksheet' %}
+        <li class="breadcrumb-item"><a href="{% url 'view_worksheets' 'recent' %}">Worksheets</a></li>
+        <li class="breadcrumb-item active">{{ worksheet }}</li>
+
+        {% endif %}
+    </ol>
   </div>
-</nav>
+</div>
 {% endblock %}
 
 {% block content %}
 <div class="container">
-  <h5>Samples {{ worksheet }}</h5>
+  {% if template == 'user' %}
+  <h5>All samples assigned to <b>{{ username }}</b></h5>
+
+  {% elif template == 'worksheet' %}
+  <h5>All samples on worksheet <b>{{ worksheet }}</b></h5>
+  <br>
+
+  <table class="table table-bordered table-sm col-8">
+    <tbody>
+      <tr>
+        <th class="col-3">Worksheet ID</th>
+        <td class="col-9">{{ worksheet }}</td>
+      </tr>
+      <tr>
+        <th>Run ID</th>
+        <td>{{ run_id }}</td>
+      </tr>
+      <tr>
+        <th>Assay</th>
+        <td>{{ assay }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  {% endif %}
   <br>
 
   <table class="table" id="samples-table">
     <thead>
       <tr>
         <th scope="col">Sample ID</th>
+        {% if template == 'user' %}
+        <th scope="col">WS ID</th>
         <th scope="col">Assay</th>
+        {% endif %}
         <th scope="col">Panel</th>
         <th scope="col">Status</th>
-        <th scope="col">Assigned to</th>
+        {% if template == 'worksheet' %}<th scope="col">Assigned to</th>{% endif %}
         <th scope="col"></th>
       </tr>
     </thead>
@@ -32,10 +69,13 @@
         {% for analysis in sample_info.panels %}
         <tr>
           <td>{{ sample }}</td>
-          <td>{{ assay }}</td>
+          {% if template == 'user' %}
+          <td>{{ analysis.worksheet }}</td>
+          <td>{{ analysis.assay }}</td>
+          {% endif %}
           <td>{{ analysis.panel }}</td>
           <td>{{ analysis.checks.current_status }}</td>
-          <td>{{ analysis.checks.assigned_to }}</td>
+          {% if template == 'worksheet' %}<td>{{ analysis.checks.assigned_to }}</td>{% endif %}
           <td style="text-align:right">
 
             <!-- NOTE: order is important in the if loop below -->
@@ -47,7 +87,7 @@
               <button type="button btn-block" class="btn btn-info dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
-              <div class="dropdown-menu">
+              <div class="dropdown-menu dropdown-menu-right">
                 <a class="dropdown-item" data-toggle="modal" data-target="#reopen-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.current_check_object.user }}">
                   Reopen Previous Check
                 </a>
@@ -65,7 +105,7 @@
               <button type="button btn-block" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
-              <div class="dropdown-menu">
+              <div class="dropdown-menu dropdown-menu-right">
                 <a class="dropdown-item" data-toggle="modal" data-target="#reopen-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.current_check_object.user }}">
                   Reopen Previous Check
                 </a>
@@ -87,7 +127,7 @@
               <button type="button btn-block" class="btn btn-warning dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
-              <div class="dropdown-menu">
+              <div class="dropdown-menu dropdown-menu-right">
                 <a class="dropdown-item" data-toggle="modal" data-target="#unassign-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.assigned_to }}" data-status="{{ analysis.checks.current_status }}">
                   Unassign
                 </a>
@@ -101,7 +141,7 @@
               <button type="button btn-block" class="btn btn-warning dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
-              <div class="dropdown-menu">
+              <div class="dropdown-menu dropdown-menu-right">
                 <a class="dropdown-item" data-toggle="modal" data-target="#unassign-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.assigned_to }}" data-status="{{ analysis.checks.current_status }}">
                   Unassign
                 </a>
@@ -125,7 +165,7 @@
               <button type="button btn-block" class="btn btn-light dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
-              <div class="dropdown-menu">
+              <div class="dropdown-menu dropdown-menu-right">
                 <a class="dropdown-item" data-toggle="modal" data-target="#unassign-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.assigned_to }}" data-status="{{ analysis.checks.current_status }}">
                   Unassign
                 </a>
@@ -141,7 +181,7 @@
               <button type="button btn-block" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
-              <div class="dropdown-menu">
+              <div class="dropdown-menu dropdown-menu-right">
                 <a class="dropdown-item" data-toggle="modal" data-target="#unassign-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-user="{{ analysis.checks.assigned_to }}" data-status="{{ analysis.checks.current_status }}">
                   Unassign
                 </a>
@@ -323,104 +363,9 @@
   </div>
 </div>
 
-
-
-<script>
-    $(document).ready( function() {
-
-        // remove anthing after the hash in the URL, to prevent carrying over from a previous analysis (see issue #47)
-        var uri = window.location.toString();
-        if (uri.indexOf("#") > 0) {
-            var clean_uri = uri.substring(0, uri.indexOf("#"));
-            window.history.replaceState({}, document.title, clean_uri);
-        }
-
-        // Inititialise DataTable
-        $('#samples-table').DataTable({
-            paging: true,
-            columns: [
-                {orderable: true},
-                {orderable: true},
-                {orderable: true},
-                {orderable: true},
-                {orderable: true},
-                {orderable: false},
-            ],
-            info: true,
-            pageLength: 25,
-            searching: true,
-            aaSorting: [],
-            language: {
-                searchPlaceholder: "Search by sample ID, panel, status or user",
-                search: "",
-            },
-            initComplete: function () {
-                $('.dataTables_filter input[type="search"]').css({ 'width': '500px', 'display': 'inline-block' });
-            },
-        });
-    } );
-
-    // pull analysis PK into the unnassign modal
-    $('#unassign-modal').on('show.bs.modal', function (event) {
-        // extract variables from button tags
-        var button = $(event.relatedTarget);
-        var pk = button.data('pk');
-        var sample = button.data('sample');
-        var panel = button.data('panel');
-        var status = button.data('status');
-        var assigned = button.data('user');
-        var modal = $(this);
-
-        // fill out table of sample details
-        modal.find('.modal-sample').text(sample);
-        modal.find('.modal-panel').text(panel);
-        modal.find('.modal-status').text(status);
-        modal.find('.modal-assigned').text(assigned);
-
-        // put sample PK into hidden form so that it can be passed to backend
-        document.getElementById ('id_unassign').value = pk;
-    })
-
-    // pull analysis PK into the reopen modal
-    $('#reopen-modal').on('show.bs.modal', function (event) {
-        // extract variables from button tags
-        var button = $(event.relatedTarget);
-        var pk = button.data('pk');
-        var sample = button.data('sample');
-        var panel = button.data('panel');
-        var assigned = button.data('user');
-        var modal = $(this);
-
-        // fill out table of sample details
-        modal.find('.modal-sample').text(sample);
-        modal.find('.modal-panel').text(panel);
-        modal.find('.modal-assigned').text(assigned);
-
-        // put sample PK into hidden form so that it can be passed to backend
-        document.getElementById ('id_reopen').value = pk;
-    })
-
-    // pull analysis PK into the check modal
-    $('#check-modal').on('show.bs.modal', function (event) {
-        // extract variables from button tags
-        var button = $(event.relatedTarget);
-        var pk = button.data('pk');
-        var sample = button.data('sample');
-        var panel = button.data('panel');
-        var ws = button.data('ws');
-        var run = button.data('run');
-        var modal = $(this);
-
-        // fill out table of sample details
-        modal.find('.modal-pk').text(pk);
-        modal.find('.modal-sample').text(sample);
-        modal.find('.modal-panel').text(panel);
-        modal.find('.modal-ws').text(ws);
-        modal.find('.modal-run').text(run);
-
-        // put sample PK into hidden form so that it can be passed to backend
-        document.getElementById ('id_sample').value = pk;
-    })
+<!-- custom JS, pass in template variables through data attributes -->
+<script src="{% static 'custom/js/view_samples.js' %}" defer
+        data-template="{{ template }}">
 </script>
 
 {% endblock %}

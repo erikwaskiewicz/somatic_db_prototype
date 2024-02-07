@@ -195,7 +195,7 @@
                     <tbody>
                     {% for gap in value.gaps_135 %}
                       <tr>
-                        <td>{{ gap.hgvs_c }}</td>
+                        <td>{{ gap.gene }} {{ gap.hgvs_c }}</td>
                         <td>
                           {{ gap.genomic }}
                           {% if sample_data.genome_build == 37 %}
@@ -233,7 +233,7 @@
                     <tbody>
                     {% for gap in value.gaps_270 %}
                       <tr>
-                        <td>{{ gap.hgvs_c }}</td>
+                        <td>{{ gap.gene }} {{ gap.hgvs_c }}</td>
                         <td>
                           {{ gap.genomic }}
                           {% if sample_data.genome_build == 37 %}
@@ -265,19 +265,23 @@
                         <th scope="col" class="col-5">HGVS</th>
                         <th scope="col" class="col-5">Genomic</th>
                         <th scope="col" class="col-2">% COSMIC</th>
+                        <th scope="col" class="col-1">Counts COSMIC</th>
                       </tr>
                     </thead>
                     <tbody>
-                    {% for r in value.gaps_500 %}
+                    {% for gap in value.gaps_500 %}
                       <tr>
-                        <td>{{ r.hgvs_c }}</td>
-                        <td>{{ r.genomic }}</td>
-                        <!-- only show cosmic % when not none -->
-                        {% if r.percent_cosmic %}
-                          <td>{{ r.percent_cosmic }}%</td>
-                        {% else %}
-                          <td>N/A</td>
-                        {% endif %}
+                        <td>{{ gap.gene }} {{ gap.hgvs_c }}</td>
+                        <td>
+                          {{ gap.genomic }}
+                          {% if sample_data.genome_build == 37 %}
+                          <span class = "badge badge-info badge-pill">GRCh{{ sample_data.genome_build }}</span>
+                          {% elif sample_data.genome_build == 38 %}
+                          <span class = "badge badge-success badge-pill">GRCh{{ sample_data.genome_build }}</span>
+                          {% endif %}
+                        </td>
+                        <td>{{ gap.percent_cosmic }}</td>
+                        <td>{{ gap.counts_cosmic }}</td>
                       </tr>
                     {% endfor %}
                     </tbody>
@@ -299,12 +303,13 @@
                         <th scope="col" class="col-5">HGVS</th>
                         <th scope="col" class="col-5">Genomic</th>
                         <th scope="col" class="col-2">% COSMIC</th>
+                        <th scope="col" class="col-1">Counts COSMIC</th>
                       </tr>
                     </thead>
                     <tbody>
                     {% for gap in value.gaps_1000 %}
                       <tr>
-                        <td>{{ gap.hgvs_c }}</td>
+                        <td>{{ gap.gene }} {{ gap.hgvs_c }}</td>
                         <td>
                           {{ gap.genomic }}
                           {% if sample_data.genome_build == 37 %}
