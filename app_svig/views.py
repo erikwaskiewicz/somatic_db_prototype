@@ -38,7 +38,7 @@ def view_classifications(request):
                 svig_version = SVIG_CODE_VERSION,
             )
             new_classification_obj.save()
-            new_check_obj.make_new_check()
+            new_classification_obj.make_new_check()
 
             context['classifications'] = Classification.objects.all()
 
@@ -110,11 +110,12 @@ def classify(request, classification):
     }
 
     # load in extra classifation variables if its a full classification
-    if classification_obj.full_classification:
+    if check_obj.full_classification:
         current_score, current_class, class_css = check_obj.classify()
 
         context['all_codes'] = check_obj.codes_to_dict()
         context['codes_by_category'] = check_obj.codes_by_category()
+        context['previous_codes'] = classification_obj.get_previous_applied_codes()
         context['classification_info']['current_class'] = current_class
         context['classification_info']['current_score'] = current_score
         context['classification_info']['class_css'] = class_css
@@ -137,9 +138,8 @@ def classify(request, classification):
             if reopen_check_info_form.is_valid():
                 check_obj.info_check = False
                 check_obj.previous_classifications_check = False
+                check_obj.full_classification = False
                 check_obj.save()
-                classification_obj.full_classification = False
-                classification_obj.save()
                 check_obj.remove_codes()
 
         # button to select to use a previous classification or start a new one
@@ -163,7 +163,6 @@ def classify(request, classification):
                     context['classification_info']['current_class'] = current_class
                     context['classification_info']['current_score'] = current_score
                     context['classification_info']['class_css'] = class_css
-
 
         # button to revert previous/new classification form
         if 'reset_previous_class_check' in request.POST:

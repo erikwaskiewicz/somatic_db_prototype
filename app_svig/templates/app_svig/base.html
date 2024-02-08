@@ -6,70 +6,21 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Somatic variant database</title>
+    <title>SVD</title>
+    <link rel=icon href="{% static 'fontawesome-5.15.4/svgs/solid/dna.svg' %}">
 
     <!--Datatables and plugins packaged into one file-->
-    <link rel="stylesheet" type="text/css" href="{% static "bootstrap-4.1.3/css/bootstrap.min.css" %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static "DataTables/datatables.min.css" %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static "fontawesome-5.9.0/css/all.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap-4.6.2/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'DataTables/datatables.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'fontawesome-5.15.4/css/all.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'jquery-ui-1.13.2/jquery-ui.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'custom/css/custom.css' %}">
 
-    <script src="{% static "DataTables/datatables.min.js" %}"></script>
-    <script src="{% static "popper.js-1.14.3/popper.min.js" %}"></script>
-    <script src="{% static "bootstrap-4.1.3/js/bootstrap.min.js" %}"></script>
-    <script src="{% static "fontawesome-5.9.0/js/all.js" %}"></script>
-
-    <!-- custom CSS -->
-    <style>
-      /* Navbar colouring */
-      .navbar-custom {
-        background-color: #5F9EA0;
-      }
-      .navbar-custom .navbar-brand, 
-      .navbar-custom .navbar-text,
-      .navbar-custom .nav-link { 
-          color: rgb(22, 41, 22); 
-      } 
-
-      /* Sticky footer styles */
-      html {
-        position: relative;
-        min-height: 100%;
-      }
-      body {
-        /* Margin bottom by footer height */
-        margin-bottom: 100px;
-      }
-      .footer {
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        /* Set the fixed height of the footer here */
-        height: 100px;
-      }
-
-      /* colouring for section tabs */
-      .section-button {
-        background-color: #f7f7f7 !important;
-      }
-      .section-button.active {
-        background-color: white !important;
-      }
-      .nav-tabs > li > a {
-        margin-left:10px; margin-right:10px;
-      }
-
-      /* change datatables page number button colours */
-      .pagination .page-item.active .page-link { 
-        background-color: #5F9EA0; 
-      }
-      div.dataTables_wrapper div.dataTables_paginate ul.pagination .page-item.active .page-link:focus {
-        background-color: #5F9EA0;
-      }
-      .pagination .page-item.active .page-link:hover {
-        background-color: #5F9EA0;
-      }
-      
-    </style>
+    <script src="{% static 'DataTables/datatables.min.js' %}"></script>
+    <script src="{% static 'popper.js-1.14.3/popper.min.js' %}"></script>
+    <script src="{% static 'bootstrap-4.6.2/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'fontawesome-5.15.4/js/all.js' %}"></script>
+    <script src="{% static 'jquery-ui-1.13.2/jquery-ui.js' %}"></script>
 
   </head>
 

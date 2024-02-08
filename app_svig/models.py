@@ -22,12 +22,13 @@ class Classification(models.Model):
         return self.variant.variant_instance.hgvs_c
 
     def make_new_check(self):
-        new_check = Check.objects.create(
-            classification=self,
-        )
+        new_check = Check.objects.create(classification=self)
 
     def get_all_checks(self):
         return Check.objects.filter(classification=self).order_by('-pk')
+
+    def get_previous_checks(self):
+        return self.get_all_checks()[1:]
 
     def get_latest_check(self):
         return self.get_all_checks()[0]
@@ -38,6 +39,9 @@ class Classification(models.Model):
         else:
             num_checks = self.get_all_checks().count()
             return f'Pending - check {num_checks}'
+
+    def get_previous_applied_codes(self):
+        return list(reversed([c.codes_to_dict() for c in self.get_previous_checks()]))
 
 
 class Check(models.Model):
@@ -258,6 +262,8 @@ class Check(models.Model):
                 del all_dict[code1]
                 del all_dict[code2]
                 all_dict[c] = temp_dict
+
+        # TODO get a nicer version of the code for printing to screen
 
         return all_dict
 

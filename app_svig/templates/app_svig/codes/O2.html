@@ -26,14 +26,15 @@
     <p>Checks</p>
     <table class="table table-sm">
       <tbody>
+      {% for c in previous_codes %}
         <tr>
-          <td>Auto call:</td>
-          <td>???</td>
+          <td>Check {{ forloop.counter }}</td>
+          <td>{{ c.O2.value }}</td>
         </tr>
+      {% endfor %}
         <tr>
-          <td>1st check</td>
-          <td>Pending
-          </td>
+          <td>Current</td>
+          <td>{{ all_codes.O2.value }}</td>
         </tr>
       </tbody>
     </table>
