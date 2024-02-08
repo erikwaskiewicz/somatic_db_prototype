@@ -1,26 +1,45 @@
 {% load crispy_forms_tags %}
 
-<h5>Finalise classification</h5>
+<h5>Summary</h5>
 
-<p>TODO summary of codes applied</p>
-<p>TODO if any pending codes, show a warning that can be overridden</p>
-<p>TODO options to send to next checker or send back</p>
-<p>TODO comments on new tab - pull summary to LIMS</p>
+<button class="btn btn-block btn-lg btn-disabled btn-warning" type="button">
+  Current class: <b>VUS </b><span class="badge badge-light">2</span>
+</button>
+<br>
 
-<table class="table table-sm">
+<div class="alert alert-warning" role="alert">
+  Not all codes have been completed, are you sure you want to continue? Go to the previous tab to complete them
+</div>
+<br>
+
+
+<h5>Reporting comment</h5>
+{% crispy comment_form %}
+<br>
+
+
+<h5>Checks summary</h5>
+<table class="table table-sm table-hover">
+  <thead>
+    <tr>
+      <th>Check</th>
+      <th>Add check info here</th>
+    </tr>
+  </thead>
   <tbody>
   {% for c in classification_info.all_checks %}
     <tr>
+      <td>{{ forloop.counter }}</td>
       <td>{{ c }}</td>
-
     </tr>
   {% endfor %}
   </tbody>
 </table>
+<br>
 
-{{ all_codes }}
-{{ codes_by_category }}
+<div class="card-body bg-light">
+  <h5>Finalise check</h5>
+  {% crispy finalise_form %}
 
-<br><br>
-
-{% crispy finalise_form %}
+  <p>TODO options to send to next checker or send back</p>
+</div>

@@ -68,6 +68,7 @@ def classify(request, classification):
     reopen_check_info_form = ResetCheckInfoForm()
     previous_class_form = PreviousClassificationForm()
     reopen_previous_class_form = ResetPreviousClassificationsForm()
+    comment_form = CommentForm()
     finalise_form = FinaliseCheckForm()
 
     # get sample specific variables
@@ -104,7 +105,8 @@ def classify(request, classification):
         'reopen_check_info_form': reopen_check_info_form,
         'previous_class_form': previous_class_form,
         'reopen_previous_class_form': reopen_previous_class_form,
-		'finalise_form': finalise_form,
+        'comment_form': comment_form,
+        'finalise_form': finalise_form,
     }
 
     # load in extra classifation variables if its a full classification

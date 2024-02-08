@@ -106,3 +106,21 @@ class FinaliseCheckForm(forms.Form):
         self.helper.add_input(
             Submit('submit', 'Complete check', css_class='btn btn-danger w-100')
         )
+
+
+class CommentForm(forms.Form):
+    """
+    Add a sample wide comment
+
+    """
+    comment = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 4}),
+        required=False,
+        label='Comments:'
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(CommentForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-warning'))
