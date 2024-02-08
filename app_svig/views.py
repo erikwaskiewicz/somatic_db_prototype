@@ -31,10 +31,15 @@ def view_classifications(request):
         new_classifications_form = NewClassification(request.POST)
         if new_classifications_form.is_valid():
             # get variant instance
-            var = VariantPanelAnalysis(id = 291) # TODO this is hardcoded for testing
+            var = VariantPanelAnalysis(id = 1) # TODO this is hardcoded for testing
+
+            new_var_obj = Variant(
+                svd_variant = var
+            )
+            new_var_obj.save()
 
             new_classification_obj = Classification(
-                variant = var,
+                variant = new_var_obj,
                 svig_version = SVIG_CODE_VERSION,
             )
             new_classification_obj.save()
@@ -53,73 +58,20 @@ def classify(request, classification):
     """
     # load in classification and check objects from url args
     classification_obj = Classification.objects.get(id = classification)
-    all_checks = classification_obj.get_all_checks()
     current_check_obj = classification_obj.get_latest_check()
 
-    # get variables for this classification
-    classification_info = {
-            'classification_obj': classification_obj,
-            'current_check': current_check_obj,
-            'all_checks': all_checks,
+    # load context from classification obj
+    context = classification_obj.get_context()
+
+    # load in forms and add to context
+    context['forms'] = {
+        'check_info_form': CheckInfoForm(),
+        'reopen_check_info_form': ResetCheckInfoForm(),
+        'previous_class_form': PreviousClassificationForm(),
+        'reopen_previous_class_form': ResetPreviousClassificationsForm(),
+        'comment_form': CommentForm(),
+        'finalise_form': FinaliseCheckForm(),
     }
-
-    # load in forms
-    check_info_form = CheckInfoForm()
-    reopen_check_info_form = ResetCheckInfoForm()
-    previous_class_form = PreviousClassificationForm()
-    reopen_previous_class_form = ResetPreviousClassificationsForm()
-    comment_form = CommentForm()
-    finalise_form = FinaliseCheckForm()
-
-    # get sample specific variables
-    sample_info = {
-        'sample_id': classification_obj.variant.sample_analysis.sample.sample_id,
-        'worksheet_id': classification_obj.variant.sample_analysis.worksheet.ws_id,
-        'svd_panel': classification_obj.variant.sample_analysis.panel,
-        'specific_tumour_type': 'TODO', # e.g. AML, add to sample analysis model? And set options from panel model?',
-    }
-
-    # get variant specific variables
-    build = classification_obj.variant.variant_instance.variant.genome_build
-    if build == 37:
-        build_css_tag = 'info'
-    elif build == 38:
-        genome_build = 'success'
-
-    variant_info = {
-        'genomic': classification_obj.variant.variant_instance.variant.variant,
-        'build': build,
-        'build_css_tag': build_css_tag,
-        'hgvs_c': classification_obj.variant.variant_instance.hgvs_c,
-        'hgvs_p': classification_obj.variant.variant_instance.hgvs_p,
-        'consequence': 'TODO',
-        'mode_action': 'TODO',
-    }
-
-    # load into context
-    context = {
-        'sample_info': sample_info,
-        'variant_info': variant_info,
-        'classification_info': classification_info,
-        'check_info_form': check_info_form,
-        'reopen_check_info_form': reopen_check_info_form,
-        'previous_class_form': previous_class_form,
-        'reopen_previous_class_form': reopen_previous_class_form,
-        'comment_form': comment_form,
-        'finalise_form': finalise_form,
-    }
-
-    # load in extra classifation variables if its a full classification
-    if current_check_obj.full_classification:
-        current_score, current_class, class_css = current_check_obj.classify()
-
-        context['all_codes'] = current_check_obj.codes_to_dict()
-        context['codes_by_category'] = current_check_obj.codes_by_category()
-        context['all_applied_codes'] = classification_obj.get_all_applied_codes()
-        context['classification_info']['current_class'] = current_class
-        context['classification_info']['current_score'] = current_score
-        context['classification_info']['class_css'] = class_css
-
 
     # ------------------------------------------------------------------------
     # when buttons are pressed
@@ -156,15 +108,9 @@ def classify(request, classification):
                     current_check_obj.full_classification = True
                     current_check_obj.save()
                     current_check_obj.make_new_codes()
-                    # TODO - stop this from resubmitting on refresh
 
+                    # redirect so that form isnt resubmitted on refresh
                     return redirect('svig-analysis', classification_obj.pk)
-
-                    # reload context
-                    current_score, current_class, class_css = current_check_obj.classify()
-                    context['classification_info']['current_class'] = current_class
-                    context['classification_info']['current_score'] = current_score
-                    context['classification_info']['class_css'] = class_css
 
         # button to revert previous/new classification form
         if 'reset_previous_class_check' in request.POST:

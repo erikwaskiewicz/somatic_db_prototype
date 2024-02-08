@@ -88,14 +88,14 @@
             Population databases
             <br>
             <div id="codes-summary-population_db">
-            {% for c in codes_by_category.population_db.applied_codes %}
+            {% for c in classification_info.codes_by_category.population_db.applied_codes %}
             <span class="badge badge-pill badge-{{ c.css_class }}">{{ c.code }}</span>
             {% endfor %}
             </div>
           </div>
           <div class="col-2">
             <div id="complete-population_db">
-            {% if codes_by_category.population_db.complete %}
+            {% if classification_info.codes_by_category.population_db.complete %}
             <span class="fa fa-check" style="color:#1ab81a"></span>
             {% else %}
             <span class="fa fa-stopwatch"></span>
@@ -110,14 +110,14 @@
             Mode of action
             <br>
             <div id="codes-summary-mode_of_action">
-            {% for c in codes_by_category.mode_of_action.applied_codes %}
+            {% for c in classification_info.codes_by_category.mode_of_action.applied_codes %}
             <span class="badge badge-pill badge-{{ c.css_class }}">{{ c.code }}</span>
             {% endfor %}
           </div>
           </div>
           <div class="col-2">
             <div id="complete-mode_of_action">
-            {% if codes_by_category.mode_of_action.complete %}
+            {% if classification_info.codes_by_category.mode_of_action.complete %}
             <span class="fa fa-check" style="color:#1ab81a"></span>
             {% else %}
             <span class="fa fa-stopwatch"></span>
@@ -189,7 +189,7 @@
 
 
 <!-- gets the all_codes variable and wraps in a script tag that can be fetched further down -->
-{{ all_codes|json_script:"all_codes" }}
+{{ classification_info.all_codes|json_script:"all_codes" }}
 
 
 <script>

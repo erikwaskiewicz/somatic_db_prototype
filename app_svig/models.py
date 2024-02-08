@@ -8,18 +8,84 @@ import os
 from collections import OrderedDict
 
 
-# Create your models here.
+class Variant(models.Model):
+    svd_variant = models.ForeignKey('analysis.VariantPanelAnalysis', on_delete=models.CASCADE)
+    # TODO can have seperate links here for e.g. SWGS variants/ manually added variants
+    # TODO can add annotations here
+
+    def __str__(self):
+        return self.svd_variant.variant_instance.gene + ' ' + self.svd_variant.variant_instance.hgvs_c
+
+    def get_variant_info(self):
+        # get variant specific variables
+        build = self.svd_variant.variant_instance.variant.genome_build
+        if build == 37:
+            build_css_tag = 'info'
+        elif build == 38:
+            build_css_tag = 'success'
+
+        variant_info = {
+            'genomic': self.svd_variant.variant_instance.variant.variant,
+            'build': build,
+            'build_css_tag': build_css_tag,
+            'hgvs_c': self.svd_variant.variant_instance.hgvs_c,
+            'hgvs_p': self.svd_variant.variant_instance.hgvs_p,
+            'consequence': 'TODO',
+            'mode_action': 'TODO',
+        }
+
+        return variant_info
+
+    def get_sample_info(self):
+        sample_info = {
+            'sample_id': self.svd_variant.sample_analysis.sample.sample_id,
+            'worksheet_id':  self.svd_variant.sample_analysis.worksheet.ws_id,
+            'svd_panel':  self.svd_variant.sample_analysis.panel,
+        }
+        return sample_info
+
+
 class Classification(models.Model):
     """
     An individual classification of a single variant
 
     """
-    variant = models.ForeignKey('analysis.VariantPanelAnalysis', on_delete=models.CASCADE)
+    variant = models.ForeignKey('Variant', on_delete=models.CASCADE)
     full_classification = models.BooleanField(default=False)
     svig_version = models.CharField(max_length=20)
 
     def __str__(self):
-        return self.variant.variant_instance.hgvs_c
+        return f'#{self.pk} - {self.variant}'
+
+    def get_sample_info(self):
+        sample_info = self.variant.get_sample_info()
+        sample_info['specific_tumour_type'] = 'TODO'  # will be from this object eventually?
+        return sample_info
+
+    def get_classification_info(self):
+        current_check_obj = self.get_latest_check()
+        classification_info = {
+            'classification_obj': self,
+            'current_check': current_check_obj,
+            'all_checks': self.get_all_checks(),
+        }
+        if current_check_obj.full_classification:
+            current_score, current_class, class_css = current_check_obj.classify()
+            classification_info['all_codes'] = current_check_obj.codes_to_dict()
+            classification_info['codes_by_category'] = current_check_obj.codes_by_category()
+            classification_info['all_applied_codes'] = self.get_all_applied_codes()
+            classification_info['current_class'] = current_class
+            classification_info['current_score'] = current_score
+            classification_info['class_css'] = class_css
+        return classification_info
+
+    def get_context(self):
+        context = {
+            'sample_info': self.get_sample_info(),
+            'variant_info': self.variant.get_variant_info(),
+            'classification_info': self.get_classification_info(),
+        }
+        return context
 
     def make_new_check(self):
         new_check = Check.objects.create(classification=self)
@@ -277,8 +343,6 @@ class Check(models.Model):
                 del all_dict[code2]
                 all_dict[c] = temp_dict
 
-        # TODO get a nicer version of the code for printing to screen
-
         return all_dict
 
     def codes_by_category(self):
@@ -303,7 +367,6 @@ class Check(models.Model):
                 #TODO complete variable is hard coded at the mo, need to add pending option first
 
             # check if the code is applied and add to list if it is
-            print(applied_codes)
             try:
                 current_code = applied_codes.get(code=code)
                 if values['type'] == 'benign':

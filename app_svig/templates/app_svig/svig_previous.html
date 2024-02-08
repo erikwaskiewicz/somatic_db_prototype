@@ -135,14 +135,14 @@
     <div class="alert alert-danger">
       <h5>Reopen?</h5>
       <p><b>Warning!</b> This will remove any S-VIG work you've done</p>
-      {% crispy reopen_previous_class_form %}
+      {% crispy forms.reopen_previous_class_form %}
     </div>
 
     {% else %}
     <div class="alert alert-warning">
       <h5>Please choose a previous classification to re-use or select 'New classification'</h5>
       <br>
-      {% crispy previous_class_form %}
+      {% crispy forms.previous_class_form %}
     </div>
 
     {% endif %}
