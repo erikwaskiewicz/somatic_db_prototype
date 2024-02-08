@@ -54,12 +54,12 @@ def classify(request, classification):
     # load in classification and check objects from url args
     classification_obj = Classification.objects.get(id = classification)
     all_checks = classification_obj.get_all_checks()
-    check_obj = classification_obj.get_latest_check()
+    current_check_obj = classification_obj.get_latest_check()
 
     # get variables for this classification
     classification_info = {
             'classification_obj': classification_obj,
-            'current_check': check_obj,
+            'current_check': current_check_obj,
             'all_checks': all_checks,
     }
 
@@ -110,12 +110,12 @@ def classify(request, classification):
     }
 
     # load in extra classifation variables if its a full classification
-    if check_obj.full_classification:
-        current_score, current_class, class_css = check_obj.classify()
+    if current_check_obj.full_classification:
+        current_score, current_class, class_css = current_check_obj.classify()
 
-        context['all_codes'] = check_obj.codes_to_dict()
-        context['codes_by_category'] = check_obj.codes_by_category()
-        context['previous_codes'] = classification_obj.get_previous_applied_codes()
+        context['all_codes'] = current_check_obj.codes_to_dict()
+        context['codes_by_category'] = current_check_obj.codes_by_category()
+        context['all_applied_codes'] = classification_obj.get_all_applied_codes()
         context['classification_info']['current_class'] = current_class
         context['classification_info']['current_score'] = current_score
         context['classification_info']['class_css'] = class_css
@@ -129,18 +129,18 @@ def classify(request, classification):
         if 'check_info_form' in request.POST:
             check_info_form = CheckInfoForm(request.POST)
             if check_info_form.is_valid():
-                check_obj.info_check = True
-                check_obj.save()
+                current_check_obj.info_check = True
+                current_check_obj.save()
 
         # button to reset sample/patient info tab
         if 'reset_info_check' in request.POST:
             reopen_check_info_form = ResetCheckInfoForm(request.POST)
             if reopen_check_info_form.is_valid():
-                check_obj.info_check = False
-                check_obj.previous_classifications_check = False
-                check_obj.full_classification = False
-                check_obj.save()
-                check_obj.remove_codes()
+                current_check_obj.info_check = False
+                current_check_obj.previous_classifications_check = False
+                current_check_obj.full_classification = False
+                current_check_obj.save()
+                current_check_obj.remove_codes()
 
         # button to select to use a previous classification or start a new one
         if 'use_previous_class' in request.POST:
@@ -153,13 +153,15 @@ def classify(request, classification):
 
                 elif use_previous == 'False':
                     # change setting in classification obj and load up codes linked to check
-                    check_obj.full_classification = True
-                    check_obj.save()
-                    check_obj.make_new_codes()
+                    current_check_obj.full_classification = True
+                    current_check_obj.save()
+                    current_check_obj.make_new_codes()
                     # TODO - stop this from resubmitting on refresh
 
+                    return redirect('svig-analysis', classification_obj.pk)
+
                     # reload context
-                    current_score, current_class, class_css = check_obj.classify()
+                    current_score, current_class, class_css = current_check_obj.classify()
                     context['classification_info']['current_class'] = current_class
                     context['classification_info']['current_score'] = current_score
                     context['classification_info']['class_css'] = class_css
@@ -168,15 +170,15 @@ def classify(request, classification):
         if 'reset_previous_class_check' in request.POST:
             reopen_previous_class_form = ResetPreviousClassificationsForm(request.POST)
             if reopen_previous_class_form.is_valid():
-                check_obj.full_classification = False
-                check_obj.save()
-                check_obj.remove_codes()
+                current_check_obj.full_classification = False
+                current_check_obj.save()
+                current_check_obj.remove_codes()
 
         if 'finalise_check' in request.POST:
             finalise_form = FinaliseCheckForm(request.POST)
             if finalise_form.is_valid():
                 next_step = finalise_form.cleaned_data['next_step']
-                check_obj.signoff_check(next_step)
+                current_check_obj.signoff_check(next_step)
                 return redirect('view-all-svig')
 
 
@@ -194,9 +196,9 @@ def ajax_svig(request):
         check_pk = request.POST.get('check_pk')
 
         # load variables needed for new display
-        check_obj = Check.objects.get(id=check_pk)
-        score, final_class, css_class = check_obj.update_codes(selections)
-        codes_by_category = check_obj.codes_by_category()
+        current_check_obj = Check.objects.get(id=check_pk)
+        score, final_class, css_class = current_check_obj.update_codes(selections)
+        codes_by_category = current_check_obj.codes_by_category()
 
         # empty dict for new html
         data = {}

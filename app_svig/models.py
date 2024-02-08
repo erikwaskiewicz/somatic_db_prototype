@@ -40,8 +40,8 @@ class Classification(models.Model):
             num_checks = self.get_all_checks().count()
             return f'Pending - check {num_checks}'
 
-    def get_previous_applied_codes(self):
-        return list(reversed([c.codes_to_dict() for c in self.get_previous_checks()]))
+    def get_all_applied_codes(self):
+        return list(reversed([c.codes_to_dict() for c in self.get_all_checks()]))
 
 
 class Check(models.Model):
@@ -214,6 +214,16 @@ class Check(models.Model):
         codes = self.get_codes()
         all_dict = {}
 
+        pretty_print_dict = {
+            'SA': 'Stand-alone',
+            'VS': 'Very strong',
+            'ST': 'Strong',
+            'MO': 'Moderate',
+            'SU': 'Supporting',
+            'PE': 'Pending',
+            'NA': 'Not applied',
+        }
+
         for c in codes:
             if c.pending:
                 css_class = 'warning'
@@ -232,6 +242,7 @@ class Check(models.Model):
                 'value': f'{c.code}_{strength}',
                 'applied': c.applied,
                 'css_class': css_class,
+                'pretty_print': f'{c.code} {pretty_print_dict[strength]}',
             }
 
 
@@ -244,16 +255,19 @@ class Check(models.Model):
                 temp_dict = {
                     'code': f'code_{c.lower()}',
                 }
-                if code1 in all_dict.keys() and all_dict[code1]['applied']:
+                if all_dict[code1]['applied']:
                     temp_dict['value'] = f'{all_dict[code1]["value"]}|{all_dict[code2]["value"]}'
                     temp_dict['css_class'] = all_dict[code1]['css_class']
+                    temp_dict['pretty_print'] = all_dict[code1]["pretty_print"]
 
-                elif code2 in all_dict.keys() and all_dict[code2]['applied']:
+                elif all_dict[code2]['applied']:
                     temp_dict['value'] = f'{all_dict[code1]["value"]}|{all_dict[code2]["value"]}'
                     temp_dict['css_class'] = all_dict[code2]['css_class']
+                    temp_dict['pretty_print'] = all_dict[code2]["pretty_print"]
 
                 else:
                     temp_dict['value'] = f'{all_dict[code1]["value"]}|{all_dict[code2]["value"]}'
+                    temp_dict['pretty_print'] = all_dict[code1]['pretty_print']
                     if 'PE' in all_dict[code1]["value"]:
                         temp_dict['css_class'] = 'warning'
                     elif 'NA' in all_dict[code1]["value"]:
