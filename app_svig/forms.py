@@ -85,3 +85,24 @@ class ResetPreviousClassificationsForm(forms.Form):
         self.helper.add_input(
             Submit('submit', 'Reopen', css_class='btn btn-danger w-100')
         )
+
+
+class FinaliseCheckForm(forms.Form):
+    """
+    Form to close a checkand specify the next action
+
+    """
+    NEXT_STEP_CHOICES = (
+        ('C', 'Sample passed check'),
+        ('E', 'Sample passed check, send for an extra check'),
+    )
+    next_step = forms.ChoiceField(choices=NEXT_STEP_CHOICES)
+    finalise_check = forms.BooleanField(required=True, label="Confirm that analysis is complete")
+
+    def __init__(self, *args, **kwargs):
+        super(FinaliseCheckForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Complete check', css_class='btn btn-danger w-100')
+        )

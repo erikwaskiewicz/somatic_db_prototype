@@ -29,7 +29,7 @@
         <td>{{ variant_info.hgvs_c }}<br>{{ variant_info.hgvs_p }}</td>
         <td>{{ sample_info.sample_id }}<br>{{ sample_info.worksheet_id }}</td>
         <td>{{ sample_info.svd_panel }}<br>{{ sample_info.specific_tumour_type }}</td>
-        <td>1st check</td>
+        <td>{{ classification_info.classification_obj.get_status }}</td>
         <td>
           <a class="btn btn-light" data-toggle="modal" href="#comments-modal" role="button" aria-expanded="false" aria-controls="comments-modal">
             View all comments
@@ -175,6 +175,12 @@
     $('.section-button').click(function() {
         var target = '#' + $(this).data('target');
         show_section(target, sections_list);
+        $(window).scrollTop(0); //TODO - doesnt work
+    });
+
+    // TODO this only works on page load, needs to run every tab change
+    $(document).ready(function(){
+        $(window).scrollTop(0);
     });
 
 </script>

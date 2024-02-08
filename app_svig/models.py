@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils import timezone
+
 from somatic_variant_db.settings import BASE_DIR, SVIG_CODE_VERSION
 
 import yaml
@@ -19,6 +21,24 @@ class Classification(models.Model):
     def __str__(self):
         return self.variant.variant_instance.hgvs_c
 
+    def make_new_check(self):
+        new_check = Check.objects.create(
+            classification=self,
+        )
+
+    def get_all_checks(self):
+        return Check.objects.filter(classification=self).order_by('-pk')
+
+    def get_latest_check(self):
+        return self.get_all_checks()[0]
+
+    def get_status(self):
+        if self.get_latest_check().check_complete:
+            return 'Complete'
+        else:
+            num_checks = self.get_all_checks().count()
+            return f'Pending - check {num_checks}'
+
 
 class Check(models.Model):
     """
@@ -27,7 +47,10 @@ class Check(models.Model):
     classification = models.ForeignKey('Classification', on_delete=models.CASCADE)
     info_check = models.BooleanField(default=False)
     previous_classifications_check = models.BooleanField(default=False)
+    full_classification = models.BooleanField(default=False)
     check_complete = models.BooleanField(default=False)
+    signoff_time = models.DateTimeField(blank=True, null=True)
+    # TODO assign user
 
     def make_new_codes(self):
         """
@@ -212,27 +235,29 @@ class Check(models.Model):
         for c in combinations:
             code1, code2 = c.split('_')
 
-            temp_dict = {
-                'code': f'code_{c.lower()}',
-            }
-            if all_dict[code1]['applied']:
-                temp_dict['value'] = f'{all_dict[code1]["value"]}|{all_dict[code2]["value"]}'
-                temp_dict['css_class'] = all_dict[code1]['css_class']
+            if (code1 in all_dict.keys()) and (code2 in all_dict.keys()):
 
-            elif all_dict[code2]['applied']:
-                temp_dict['value'] = f'{all_dict[code1]["value"]}|{all_dict[code2]["value"]}'
-                temp_dict['css_class'] = all_dict[code2]['css_class']
+                temp_dict = {
+                    'code': f'code_{c.lower()}',
+                }
+                if code1 in all_dict.keys() and all_dict[code1]['applied']:
+                    temp_dict['value'] = f'{all_dict[code1]["value"]}|{all_dict[code2]["value"]}'
+                    temp_dict['css_class'] = all_dict[code1]['css_class']
 
-            else:
-                temp_dict['value'] = f'{all_dict[code1]["value"]}|{all_dict[code2]["value"]}'
-                if 'PE' in all_dict[code1]["value"]:
-                    temp_dict['css_class'] = 'warning'
-                elif 'NA' in all_dict[code1]["value"]:
-                    temp_dict['css_class'] = 'secondary'
+                elif code2 in all_dict.keys() and all_dict[code2]['applied']:
+                    temp_dict['value'] = f'{all_dict[code1]["value"]}|{all_dict[code2]["value"]}'
+                    temp_dict['css_class'] = all_dict[code2]['css_class']
 
-            del all_dict[code1]
-            del all_dict[code2]
-            all_dict[c] = temp_dict
+                else:
+                    temp_dict['value'] = f'{all_dict[code1]["value"]}|{all_dict[code2]["value"]}'
+                    if 'PE' in all_dict[code1]["value"]:
+                        temp_dict['css_class'] = 'warning'
+                    elif 'NA' in all_dict[code1]["value"]:
+                        temp_dict['css_class'] = 'secondary'
+
+                del all_dict[code1]
+                del all_dict[code2]
+                all_dict[c] = temp_dict
 
         return all_dict
 
@@ -258,23 +283,35 @@ class Check(models.Model):
                 #TODO complete variable is hard coded at the mo, need to add pending option first
 
             # check if the code is applied and add to list if it is
-            current_code = applied_codes.get(code=code)
-            if values['type'] == 'benign':
-                css_class = 'info'
-            elif values['type'] == 'oncogenic':
-                css_class = 'danger'
-            if current_code.pending:
-                results_dict[current_category]['complete'] = False
-            if current_code.applied:
-                temp_dict = {
-                    'code': f'{current_code.code}_{current_code.applied_strength}',
-                    'css_class': css_class,
-                }
+            print(applied_codes)
+            try:
+                current_code = applied_codes.get(code=code)
+                if values['type'] == 'benign':
+                    css_class = 'info'
+                elif values['type'] == 'oncogenic':
+                    css_class = 'danger'
+                if current_code.pending:
+                    results_dict[current_category]['complete'] = False
+                if current_code.applied:
+                    temp_dict = {
+                        'code': f'{current_code.code}_{current_code.applied_strength}',
+                        'css_class': css_class,
+                    }
                 
-                results_dict[current_category]['applied_codes'].append(temp_dict)
+                    results_dict[current_category]['applied_codes'].append(temp_dict)
+            except:
+                pass  # TODO this will need removing when done, just to stop error in testing
 
         return results_dict
 
+    def signoff_check(self, next_step):
+        self.check_complete = True
+        self.signoff_time = timezone.now()
+        self.save()
+
+        if next_step == 'E':
+             self.classification.make_new_check()
+        # TODO save results to classification obj if final check
 
 class CodeAnswer(models.Model):
     """

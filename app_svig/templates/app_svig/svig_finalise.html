@@ -1,6 +1,26 @@
+{% load crispy_forms_tags %}
+
 <h5>Finalise classification</h5>
 
 <p>TODO summary of codes applied</p>
 <p>TODO if any pending codes, show a warning that can be overridden</p>
 <p>TODO options to send to next checker or send back</p>
-<p>TODO comments on new tab</p>
+<p>TODO comments on new tab - pull summary to LIMS</p>
+
+<table class="table table-sm">
+  <tbody>
+  {% for c in classification_info.all_checks %}
+    <tr>
+      <td>{{ c }}</td>
+
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{{ all_codes }}
+{{ codes_by_category }}
+
+<br><br>
+
+{% crispy finalise_form %}
