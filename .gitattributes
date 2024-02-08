@@ -1,0 +1,6 @@
+somatic_variant_db/static/DataTables/**/* linguist-generated
+somatic_variant_db/static/admin/**/* linguist-generated
+somatic_variant_db/static/bootstrap-4.6.2/**/* linguist-generated
+somatic_variant_db/static/fontawesome-5.15.4/**/* linguist-generated
+somatic_variant_db/static/jquery-ui-1.13.2/**/* linguist-generated
+somatic_variant_db/static/popper.js-1.14.3/**/* linguist-generated

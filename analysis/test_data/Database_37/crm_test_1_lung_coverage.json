@@ -1,0 +1,149 @@
+{
+    "KRAS": {
+        "average_depth": 7039.0,
+        "percent_500": 100.0,
+        "average_ntc": 6,
+        "percent_ntc": 0,
+        "hotspot_regions": [
+            {
+                "chr": 12,
+                "pos_start": 25378559,
+                "pos_end": 25378562,
+                "hgvs_c": "KRAS(NM_004985.3):c.436_438",
+                "average_coverage": 7205.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 1,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 12,
+                "pos_start": 25378646,
+                "pos_end": 25378649,
+                "hgvs_c": "KRAS(NM_004985.3):c.349_351",
+                "average_coverage": 5086.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 5,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 12,
+                "pos_start": 25380274,
+                "pos_end": 25380277,
+                "hgvs_c": "KRAS(NM_004985.3):c.181_183",
+                "average_coverage": 9269.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 8,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 12,
+                "pos_start": 25380280,
+                "pos_end": 25380283,
+                "hgvs_c": "KRAS(NM_004985.3):c.175_177",
+                "average_coverage": 9267.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 8,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 12,
+                "pos_start": 25398279,
+                "pos_end": 25398285,
+                "hgvs_c": "KRAS(NM_004985.3):c.34_39",
+                "average_coverage": 5702.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 6,
+                "percent_ntc": 0
+            }
+        ],
+        "gaps_500": []
+    },
+    "EGFR": {
+        "average_depth": 3956.0,
+        "percent_500": 98.2,
+        "average_ntc": 4,
+        "percent_ntc": 0,
+        "hotspot_regions": [
+            {
+                "chr": 7,
+                "pos_start": 55241608,
+                "pos_end": 55241741,
+                "hgvs_c": "EGFR(NM_005228.3):c.2062-5_2184+5",
+                "average_coverage": 3002.0,
+                "percent_500": 91.7,
+                "ntc_coverage": 6,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 7,
+                "pos_start": 55242409,
+                "pos_end": 55242518,
+                "hgvs_c": "EGFR(NM_005228.3):c.2185-5_2283+5",
+                "average_coverage": 3248.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 4,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 7,
+                "pos_start": 55248980,
+                "pos_end": 55249176,
+                "hgvs_c": "EGFR(NM_005228.3):c.2284-5_2469+5",
+                "average_coverage": 4494.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 4,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 7,
+                "pos_start": 55259406,
+                "pos_end": 55259572,
+                "hgvs_c": "EGFR(NM_005228.3):c.2470-5_2625+5",
+                "average_coverage": 4548.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 2,
+                "percent_ntc": 0
+            }
+        ],
+        "gaps_500": [
+            {
+                "chr": 7,
+                "pos_start": 55241722,
+                "pos_end": 55241733,
+                "hgvs_c": "EGFR(NM_005228.5):c.2171_2181",
+                "gene": "EGFR",
+                "counts_cosmic": 4,
+                "percent_cosmic": 0.02
+            }
+        ]
+    },
+    "BRAF": {
+        "average_depth": 3541.0,
+        "percent_500": 100.0,
+        "average_ntc": 3,
+        "percent_ntc": 0,
+        "hotspot_regions": [
+            {
+                "chr": 7,
+                "pos_start": 140453069,
+                "pos_end": 140453198,
+                "hgvs_c": "BRAF(NM_004333.4):c.1742-5_1860+5",
+                "average_coverage": 4498.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 3,
+                "percent_ntc": 0
+            },
+            {
+                "chr": 7,
+                "pos_start": 140481370,
+                "pos_end": 140481498,
+                "hgvs_c": "BRAF(NM_004333.4):c.1315-5_1432+5",
+                "average_coverage": 2577.0,
+                "percent_500": 100.0,
+                "ntc_coverage": 2,
+                "percent_ntc": 0
+            }
+        ],
+        "gaps_500": []
+    }
+}

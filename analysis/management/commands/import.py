@@ -11,6 +11,7 @@ import yaml
 import pybedtools
 import numpy as np
 from datetime import datetime
+from django.utils import timezone
 
 
 class Command(BaseCommand):
@@ -113,6 +114,7 @@ class Command(BaseCommand):
         """
         percent_135x = region.get('percent_135', None)
         percent_270x = region.get('percent_270', None)
+        percent_500x = region.get('percent_500', None)
         percent_1000x = region.get('percent_1000', None)
 
         new_regions_obj = RegionCoverageAnalysis(
@@ -126,6 +128,7 @@ class Command(BaseCommand):
             average_coverage = region['average_coverage'],
             percent_135x = percent_135x,
             percent_270x = percent_270x,
+            percent_500x = percent_500x,
             percent_1000x = percent_1000x,
             ntc_coverage = region['ntc_coverage'],
             percent_ntc = region['percent_ntc'],
@@ -175,6 +178,8 @@ class Command(BaseCommand):
             'TSO500_DNA': '1',
             'TSO500_RNA': '2',
             'TSO500_ctDNA': '3',
+            'GeneRead_CRM': '4',
+            'GeneRead_BRCA': '5',
         }
         if assay not in assay_choices.keys():
             print(f'ERROR\t{datetime.now()}\timport.py\tUnknown assay - {assay}')
@@ -188,17 +193,17 @@ class Command(BaseCommand):
             genome_build = 37
         else:
             raise IOError(f'Genome build {genome} is neither GRCh37 or GRCh38')
-            
-        #Check that worksheet not already uploaded with another sequencing run
-        exist_worksheets = Worksheet.objects.filter(ws_id = ws)
-        
-        if len(exist_worksheets) != 0:
-        
-        	for worksheet in exist_worksheets:
-        	
-        		if worksheet.run.run_id != run_id:
-        			raise IOError(f'Worksheet {ws} uploaded already on another sequencing run {worksheet.run.run_id}. Please edit worksheet ID and try again e.g. {ws}R')
 
+        # check that worksheet not already uploaded with another sequencing run
+        exist_worksheets = Worksheet.objects.filter(ws_id = ws)
+
+        if len(exist_worksheets) != 0:
+            for worksheet in exist_worksheets:
+                if worksheet.run.run_id != run_id:
+                    raise IOError(f'Worksheet {ws} uploaded already on another sequencing run {worksheet.run.run_id}. Please edit worksheet ID and try again e.g. {ws}R')
+
+        # current time for upload timestamps
+        current_time = timezone.now()
 
         # ---------------------------------------------------------------------------------------------------------
         # Sample level objects
@@ -212,11 +217,15 @@ class Command(BaseCommand):
         new_run, created = Run.objects.get_or_create(run_id=run_id)
 
         # make ws
-        new_ws = Worksheet(
+        new_ws, created = Worksheet.objects.get_or_create(
             ws_id=ws,
             run=new_run,
             assay=assay,
         )
+        # only add timestamp when worksheet is initially created (dont update when a new sample added)
+        if created:
+            new_ws.upload_time = current_time
+
         new_ws.save()
 
         # make samples
@@ -230,6 +239,7 @@ class Command(BaseCommand):
             sample=new_sample,
             panel=panel_obj,
             genome_build=genome_build,
+            upload_time=current_time,
         )
         # add num reads if in panel settings
         if panel_obj.show_fusion_coverage:
@@ -394,6 +404,7 @@ class Command(BaseCommand):
                 # get the coverage values, if they're missing default to none
                 percent_135x = values.get('percent_135', None)
                 percent_270x = values.get('percent_270', None)
+                percent_500x = values.get('percent_500', None)
                 percent_1000x = values.get('percent_1000', None)
 
                 # save to db
@@ -403,54 +414,67 @@ class Command(BaseCommand):
                     av_coverage=values['average_depth'],
                     percent_135x=percent_135x,
                     percent_270x=percent_270x,
+                    percent_500x=percent_500x,
                     percent_1000x=percent_1000x,
                     av_ntc_coverage=values['average_ntc'],
                     percent_ntc=values['percent_ntc'],
                 )
                 new_gene_coverage_obj.save()
 
+                # genescreen region
+                if 'genescreen_regions' in values:
+                    for r in values['genescreen_regions']:
+                        if isinstance(r, list):
+                            self.add_regions_from_list(r, 'G', new_gene_coverage_obj)
+
+                        elif isinstance(r, dict):
+                            self.add_regions_from_dict(r, 'G', new_gene_coverage_obj)
+
+
                 # hotspot regions
-                for r in values['hotspot_regions']:
-                    if isinstance(r, list):
-                        self.add_regions_from_list(r, 'H', new_gene_coverage_obj)
-
-                    elif isinstance(r, dict):
-                        self.add_regions_from_dict(r, 'H', new_gene_coverage_obj)
-
-                # genescreen regions
-                for r in values['genescreen_regions']:
-                    if isinstance(r, list):
-                        self.add_regions_from_list(r, 'G', new_gene_coverage_obj)
-
-                    elif isinstance(r, dict):
-                        self.add_regions_from_dict(r, 'G', new_gene_coverage_obj)
-
-                # gaps 135x
-                if '135' in coverage_thresholds:
-                    for gap in values['gaps_135']:
+                if 'hotspot_regions' in values:
+                    for r in values['hotspot_regions']:
                         if isinstance(r, list):
-                            self.add_gaps_from_list(gap, '135', new_gene_coverage_obj)
+                            self.add_regions_from_list(r, 'H', new_gene_coverage_obj)
 
                         elif isinstance(r, dict):
-                            self.add_gaps_from_dict(gap, '135', new_gene_coverage_obj)
+                            self.add_regions_from_dict(r, 'H', new_gene_coverage_obj)
 
-                # gaps 270x
-                if '270' in coverage_thresholds:
-                    for gap in values['gaps_270']:
-                        if isinstance(r, list):
-                            self.add_gaps_from_list(gap, '270', new_gene_coverage_obj)
+                    # gaps 135x
+                    if '135' in coverage_thresholds:
+                        for gap in values['gaps_135']:
+                            if isinstance(r, list):
+                                self.add_gaps_from_list(gap, '135', new_gene_coverage_obj)
 
-                        elif isinstance(r, dict):
-                            self.add_gaps_from_dict(gap, '270', new_gene_coverage_obj)
+                            elif isinstance(r, dict):
+                                self.add_gaps_from_dict(gap, '135', new_gene_coverage_obj)
 
-                # gaps 1000x
-                if '1000' in coverage_thresholds:
-                    for gap in values['gaps_1000']:
-                        if isinstance(r, list):
-                            self.add_gaps_from_list(gap, '1000', new_gene_coverage_obj)
+                    # gaps 270x
+                    if '270' in coverage_thresholds:
+                        for gap in values['gaps_270']:
+                            if isinstance(r, list):
+                                self.add_gaps_from_list(gap, '270', new_gene_coverage_obj)
 
-                        elif isinstance(r, dict):
-                            self.add_gaps_from_dict(gap, '1000', new_gene_coverage_obj)
+                            elif isinstance(r, dict):
+                                self.add_gaps_from_dict(gap, '270', new_gene_coverage_obj)
+
+                    # gaps 500
+                    if '500' in coverage_thresholds:
+                        for gap in values['gaps_500']:
+                            if isinstance(r, list):
+                                self.add_gaps_from_list(gap, '500', new_gene_coverage_obj)
+
+                            elif isinstance(r, dict):
+                                self.add_gaps_from_dict(gap, '500', new_gene_coverage_obj)
+
+                    # gaps 1000x
+                    if '1000' in coverage_thresholds:
+                        for gap in values['gaps_1000']:
+                            if isinstance(r, list):
+                                self.add_gaps_from_list(gap, '1000', new_gene_coverage_obj)
+
+                            elif isinstance(r, dict):
+                                self.add_gaps_from_dict(gap, '1000', new_gene_coverage_obj)
 
             # logging
             print(f'INFO\t{datetime.now()}\timport.py\tFinished uploading coverage data successfully')
@@ -474,7 +498,7 @@ class Command(BaseCommand):
                 splicing = panel_obj.splice_genes.split(',')
             if panel_obj.fusion_genes:
                 fusions = panel_obj.fusion_genes.split(',')
-            
+                
             # make panel dictionary
             virtual_panel = {
                 'splicing': splicing,
@@ -492,13 +516,18 @@ class Command(BaseCommand):
                 reader = csv.DictReader(f, delimiter=',')
                 for f in reader:
 
+                    # sanitise the fusion input to prevent multiple fusions with the same breakpoints but different names
+                    # we want to remove GENE1/GENE2 and GENE1--GENE2 and just have GENE1-GENE2
+                    fusion_name = f['fusion']
+                    sanitised_fusion_name = fusion_name.replace("/","-").replace("--","-")
+
                     # format fusion field and filter panel
                     in_panel = False
-                    
+                        
                     # splice variants
                     if f['type'] == 'Splice':
                         # add exon number to gene name
-                        fusion = f"{f['fusion']} {f['exons']}"
+                        fusion = f"{sanitised_fusion_name} {f['exons']}"
 
                         # check splicing gene list and set variable if matches
                         if 'splicing' in virtual_panel.keys():
@@ -508,7 +537,7 @@ class Command(BaseCommand):
                     # gene fusions
                     elif f['type'] == 'Fusion':
                         # use pipeline output directly (will be GENE_A--GENE_B)
-                        fusion = f['fusion']
+                        fusion = sanitised_fusion_name
 
                         # check fusion gene list and set variable if matches
                         for g in virtual_panel['fusions']:

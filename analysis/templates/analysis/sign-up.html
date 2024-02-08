@@ -1,9 +1,13 @@
 {% extends 'analysis/base.html' %}
 {% load crispy_forms_tags %}
-{% block content %}
 
-<div class="container">
-  <br>
+{% block breadcrumbs %}
+<br>
+{% endblock %}
+
+{% block content %}
+<br>
+<div class="container" style="width: 50rem;">
 
   <div class="card bg-light mb-6">
     <div class="card-header">
@@ -15,16 +19,15 @@
         <p>Use your <b>NHS email address</b> as your username.</p>
         <p>Email <b>bioinformatics.team@wales.nhs.uk</b> after filling in this form to activate your account.</p>
       </div>
-      <form class="form-horizontal" method="post">{% csrf_token %}
-        {{ form.as_p }}
-        <br>
-        <div class="form-actions">
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
-      </form>
+
+      {% crispy signup_form %}
+
     </div>
   </div>
+  <br>
 
+  <div class="alert alert-success">
+    <p>Already have an account? <a href="{% url 'login' %}">Click here to sign in</a></p>
+  </div>
 </div>
-
 {% endblock %}

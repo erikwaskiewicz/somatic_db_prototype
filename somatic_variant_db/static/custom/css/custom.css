@@ -1,0 +1,66 @@
+/* Navbar colouring */
+.navbar-custom {
+    background-color: #5F9EA0;
+}
+.navbar-custom .navbar-brand, 
+.navbar-custom .navbar-text,
+.navbar-custom .nav-link { 
+      color: rgb(22, 41, 22); 
+} 
+
+/* Sticky footer styles */
+html {
+    position: relative;
+    min-height: 100%;
+}
+body {
+    /* Margin bottom by footer height */
+    margin-bottom: 100px;
+}
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 100px;
+}
+
+/* colouring for section tabs */
+.section-button {
+    background-color: #f7f7f7 !important;
+}
+.section-button.active {
+    background-color: white !important;
+}
+.nav-tabs > li > a {
+    margin-left:10px; margin-right:10px;
+}
+
+/* change datatables page number button colours */
+.pagination .page-item.active .page-link { 
+    background-color: #5F9EA0; 
+}
+div.dataTables_wrapper div.dataTables_paginate ul.pagination .page-item.active .page-link:focus {
+    background-color: #5F9EA0;
+}
+.pagination .page-item.active .page-link:hover {
+    background-color: #5F9EA0;
+}
+
+/* jumbotron colour - same as breadcrumbs */
+.jumbotron {
+    background-color: #d1dedf;
+}
+
+/* colour the breadcrumb section on the top of the page */
+.breadcrumbs-custom {
+    background-color: #d1dedf;
+}
+.breadcrumbs-custom a:link, .breadcrumbs-custom a:visited {
+    color: #6c757d !important;
+}
+
+/* hidden class for loading spinner */
+.spinner-hidden {
+    visibility: hidden;
+}

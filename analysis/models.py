@@ -1,10 +1,19 @@
-from auditlog.registry import auditlog
 from django.db import models
+from django.contrib.auth.models import User
 
+from auditlog.registry import auditlog
 import decimal
 
 
-# Create your models here.
+class UserSettings(models.Model):
+    """
+    Extend the user model for specific settings
+
+    """
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    lims_initials = models.CharField(max_length=10)
+
+
 class Run(models.Model):
     """
     A sequencing run
@@ -25,6 +34,7 @@ class Worksheet(models.Model):
     run = models.ForeignKey('Run', on_delete=models.CASCADE)
     assay = models.CharField(max_length=50)
     diagnostic = models.BooleanField(default=True)
+    upload_time = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return self.ws_id
@@ -52,6 +62,15 @@ class Sample(models.Model):
     sample_name = models.CharField(max_length=200, blank=True, null=True)
     sample_name_check = models.BooleanField(default=False)
 
+    def get_worksheets(self):
+        # get all worksheets that the sample appears on
+        sample_analyses = SampleAnalysis.objects.filter(sample=self)
+        worksheets = []
+        for s in sample_analyses:
+            if s.worksheet not in worksheets:
+                worksheets.append(s.worksheet)
+        return worksheets
+
 
 def make_bedfile_path(instance, filename):
     """
@@ -76,6 +95,8 @@ class Panel(models.Model):
         ('1', 'TSO500 DNA'),
         ('2', 'TSO500 RNA'),
         ('3', 'TSO500 ctDNA'),
+        ('4', 'GeneRead CRM'),
+        ('5', 'GeneRead BRCA'),
     )
     panel_name = models.CharField(max_length=50)
     pretty_print = models.CharField(max_length=100)
@@ -83,15 +104,17 @@ class Panel(models.Model):
     live = models.BooleanField()
     assay = models.CharField(max_length=1, choices=ASSAY_CHOICES)
     genome_build = models.IntegerField(default=37)
+    lims_test_code = models.CharField(max_length=30)
 
     # snv settings
     show_snvs = models.BooleanField()
     show_myeloid_gaps_summary = models.BooleanField(default=False)
-    depth_cutoffs = models.CharField(max_length=50, blank=True, null=True) # either 135,270 or 1000, comma seperated, no spaces
+    depth_cutoffs = models.CharField(max_length=50, blank=True, null=True) # either 135,270, 500 or 1000, comma seperated, no spaces
     vaf_cutoff = models.DecimalField(decimal_places=5, max_digits=10, blank=True, null=True) # formatted as e.g. 1.4%, not 0.014
     manual_review_required = models.BooleanField(default=False)
     manual_review_desc = models.CharField(max_length=200, blank=True, null=True) # pipe seperated, no spaces
     bed_file = models.FileField(upload_to=make_bedfile_path, blank=True, null=True)
+    report_snv_vaf = models.BooleanField(default=False)
 
     # fusion settings
     show_fusions = models.BooleanField()
@@ -120,6 +143,8 @@ class SampleAnalysis(models.Model):
     total_reads = models.IntegerField(blank=True, null=True)
     total_reads_ntc = models.IntegerField(blank=True, null=True)
     genome_build = models.IntegerField(default=37)
+    upload_time = models.DateTimeField(blank=True, null=True)
+
 
     def percent_reads_ntc(self):
         """
@@ -161,19 +186,20 @@ class SampleAnalysis(models.Model):
         elif len(num_fails) > 1:
             current_status = 'Fail'
                 
-        # split out 1st and last checks for LIMS XML
-        first_check = all_checks[0].user
-        final_check = list(all_checks)[-1].user
-        extra_checks = ', '.join([str(c.user) for c in list(all_checks)[1:-1]])
+        # make list of checks initials for LIMS XML
+        lims_checks = []
+        for c in all_checks:
+            if c.user:
+                lims_initials = c.user.usersettings.lims_initials
+                if lims_initials not in lims_checks:
+                    lims_checks.append(lims_initials)
 
         return {
             'current_status': current_status,
             'assigned_to': assigned_to,
             'current_check_object': current_check_object,
             'all_checks': all_checks,
-            'first_check': first_check,
-            'final_check': final_check,
-            'extra_checks': extra_checks,
+            'lims_checks': ','.join(lims_checks),
         }
 
 
@@ -248,28 +274,47 @@ class VariantInstance(models.Model):
     final_decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
 
     def vaf(self):
-        """
-        calculate VAF of variant from total and alt read counts
-        VAF is always displayed to two decimal places
-
-        """
+        """ calculate VAF of variant from total and alt read counts """
         vaf = decimal.Decimal(self.alt_count / self.total_count) * 100
-        vaf_rounded = vaf.quantize(decimal.Decimal('.01'), rounding = decimal.ROUND_DOWN)
+        vaf_rounded = vaf.quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_DOWN)
 
         return vaf_rounded
 
     def vaf_ntc(self):
-        """
-        calculate VAF of NTC variant if its seen in NTC, otherwise return None
-        VAF is always displayed to two decimal places
-
-        """
+        """ calculate VAF of NTC variant if its seen in NTC, otherwise return None """
         if self.in_ntc:
             vaf = decimal.Decimal(self.alt_count_ntc / self.total_count_ntc) * 100
-            vaf_rounded = vaf.quantize(decimal.Decimal('.01'), rounding = decimal.ROUND_DOWN)
+            vaf_rounded = vaf.quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_DOWN)
             return vaf_rounded
         else:
             return None
+
+    def gnomad_display(self):
+        """ format the Gnoamd popmax AF into human readable text """
+        # gnomad score missing in older runs
+        if self.gnomad_popmax == None:
+            return ''
+        # -1 means that the variant is missing from gnomad
+        elif self.gnomad_popmax == -1.00000:
+            return 'Not found'
+        # otherwise, format the value as a percentage, round up to prevent very low AFs appearing as 0
+        else:
+            gnomad_popmax = decimal.Decimal(self.gnomad_popmax * 100)
+            popmax_rounded = gnomad_popmax.quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_UP)
+            return f'{popmax_rounded}%'
+
+    def gnomad_link(self):
+        """ link to the Gnomad webpage """
+        genome_build = self.variant.genome_build
+        var = self.variant.variant
+
+        # format link specific to genome build
+        if genome_build == 37:
+            return f'https://gnomad.broadinstitute.org/variant/{var}?dataset=gnomad_r2_1'
+        elif genome_build == 38:
+            return f'https://gnomad.broadinstitute.org/variant/{var}?dataset=gnomad_r3'
+        else:
+            raise ValueError('Genome build should be either 37 or 38')
 
 
 class VariantPanelAnalysis(models.Model):
@@ -314,13 +359,22 @@ class VariantList(models.Model):
 
     """
     TYPE_CHOICES = (
-        ('P', 'Poly'),
+        ('P', 'SNV Poly'),
         ('K', 'Known'),
-        ('A', 'Artefact'),
+        ('A', 'SNV Artefact'),
+        ('F', 'Fusion Artefact')
     )
     name = models.CharField(max_length=50, primary_key=True)
     list_type = models.CharField(max_length=1, choices=TYPE_CHOICES)
     genome_build = models.IntegerField(default=37)
+    assay = models.CharField(blank=True, max_length=1, choices=Panel.ASSAY_CHOICES)
+
+    def header(self):
+        if self.genome_build == 37:
+            build_css = 'info'
+        elif self.genome_build == 38:
+            build_css = 'success'
+        return f'{self.get_assay_display()} {self.get_list_type_display()} list <span class="badge badge-{build_css}">GRCh{self.genome_build}</span>'
 
 
 class VariantToVariantList(models.Model):
@@ -329,8 +383,10 @@ class VariantToVariantList(models.Model):
 
     """
     variant_list = models.ForeignKey('VariantList', on_delete=models.CASCADE)
-    variant = models.ForeignKey('Variant', on_delete=models.CASCADE)
+    variant = models.ForeignKey('Variant', on_delete=models.CASCADE, blank=True, null=True)
+    fusion = models.ForeignKey('Fusion', on_delete=models.CASCADE, blank=True, null=True)
     classification = models.CharField(max_length=50, blank=True, null=True)
+    vaf_cutoff = models.DecimalField(decimal_places=5, max_digits=10, default=0.0)
     upload_user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True, related_name='upload_user')
     upload_time = models.DateTimeField(blank=True, null=True)
     upload_comment = models.CharField(max_length=500, blank=True, null=True)
@@ -367,6 +423,7 @@ class GeneCoverageAnalysis(models.Model):
     av_coverage = models.IntegerField()
     percent_135x = models.IntegerField(blank=True, null=True)
     percent_270x = models.IntegerField(blank=True, null=True)
+    percent_500x = models.IntegerField(blank=True, null=True)
     percent_1000x = models.IntegerField(blank=True, null=True)
     av_ntc_coverage = models.IntegerField()
     percent_ntc = models.IntegerField()
@@ -391,6 +448,7 @@ class RegionCoverageAnalysis(models.Model):
     average_coverage = models.IntegerField()
     percent_135x = models.IntegerField(blank=True, null=True)
     percent_270x = models.IntegerField(blank=True, null=True)
+    percent_500x = models.IntegerField(blank=True, null=True)
     percent_1000x = models.IntegerField(blank=True, null=True)
     ntc_coverage = models.IntegerField()
     percent_ntc = models.IntegerField()
@@ -453,6 +511,7 @@ class FusionAnalysis(models.Model):
     fusion_score = models.CharField(max_length=50, blank=True, null=True)
     in_ntc = models.BooleanField(default=False)
     final_decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
+    manual_upload=models.BooleanField(default=False)
 
     def vaf(self):
         """

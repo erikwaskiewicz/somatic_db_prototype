@@ -4,6 +4,8 @@ from .forms import NewVariantForm, SubmitForm, VariantCommentForm, FusionComment
 from django.utils import timezone
 from django.db import transaction
 
+import pybedtools
+import re
 
 def get_samples(samples):
     """
@@ -23,6 +25,8 @@ def get_samples(samples):
                 'sample_id': sample_id,
                 'panels': [{
                     'analysis_id': s.pk,
+                    'worksheet': s.worksheet,
+                    'assay': s.panel.get_assay_display(),
                     'panel': s.panel,
                     'checks': s.get_checks(),
                 }]
@@ -32,6 +36,8 @@ def get_samples(samples):
         else:
             sample_dict[sample_id]['panels'].append({
                     'analysis_id': s.pk,
+                    'worksheet': s.worksheet,
+                    'assay': s.panel.get_assay_display(),
                     'panel': s.panel,
                     'checks': s.get_checks(),
                 }
@@ -102,7 +108,7 @@ def reopen_check(current_user, sample_analysis_obj):
     sample_analysis_obj.save()
 
     return True
-        
+
 
 @transaction.atomic
 def signoff_check(user, current_step_obj, sample_obj, status='C', complete=False):
@@ -309,6 +315,7 @@ def get_sample_info(sample_obj):
         'percent_reads_ntc': sample_obj.percent_reads_ntc(),
         'checks': sample_obj.get_checks(),
         'genome_build': sample_obj.genome_build,
+        'test_code': sample_obj.panel.lims_test_code,
     }
     return sample_data
 
@@ -318,39 +325,73 @@ def get_variant_info(sample_data, sample_obj):
     Get information on all variants in a sample analysis to generate the variant portion of the context dictionary
 
     """
-
+    # load in all variants in sample
     sample_variants = VariantPanelAnalysis.objects.filter(sample_analysis=sample_obj)
 
+    # make empty variables for storing results
     variant_calls = []
-    polys_list = []
     reportable_list = []
+    filtered_list = []
+    other_calls_list = []
+    poly_count = 0
+    artefact_count = 0
 
+
+    # loop through each sample variant
     for sample_variant in sample_variants:
 
+        # load instance of variant
         variant_obj = sample_variant.variant_instance.variant
-
-        # set poly list based on genome build
-        if variant_obj.genome_build == 37:
-             poly_list_name = "build_37_polys"
-
-        elif variant_obj.genome_build == 38:
-            poly_list_name = "build_38_polys"
-
-        # get whether the variant falls within a poly/ known list
-        # TODO - will have to handle multiple poly/ known lists in future
-        previous_classifications = []
-        for l in VariantToVariantList.objects.filter(variant=variant_obj):
-            if l.variant_list.name == 'TSO500_known':
-                previous_classifications.append(l.classification)
-            elif l.variant_list.name == poly_list_name:
-                # only add if polys have been checked twice
-                if l.signed_off():
-                    previous_classifications.append('Poly')
 
         # get checks for each variant
         variant_checks = VariantCheck.objects.filter(variant_analysis=sample_variant).order_by('pk')
         variant_checks_list = [ v.get_decision_display() for v in variant_checks ]
         latest_check = variant_checks.latest('pk')
+
+        # marker to tell whether a variant should be filtered downstream
+        filter_call = False
+        filter_reason = ''
+
+        # get VAF and round to nearest whole number - used in artefact list so must be on top
+        vaf = sample_variant.variant_instance.vaf()
+        vaf_rounded = vaf.quantize(decimal.Decimal('1'), rounding=decimal.ROUND_HALF_UP)
+
+        # get poly/artefact lists relevent to this sample
+        poly_lists = VariantList.objects.filter(genome_build=variant_obj.genome_build, list_type='P')
+        artefact_lists = VariantList.objects.filter(genome_build=variant_obj.genome_build, list_type='A', assay = sample_obj.panel.assay)
+        variant_lists = poly_lists | artefact_lists
+
+        # get whether the variant falls within a poly/ artefact list
+        for l in VariantToVariantList.objects.filter(variant=variant_obj):
+
+            # if signed off and in one of the variant lists for this sample
+            if l.signed_off() and (l.variant_list in variant_lists):
+
+                # if its a poly
+                if l.variant_list.list_type == 'P':
+                    # set variables and update variant check
+                    poly_count += 1
+                    filter_call = True
+                    filter_reason = 'Poly'
+                    latest_check.decision = 'P'
+                    latest_check.save()
+
+                # if its an artefact
+                elif l.variant_list.list_type == 'A':
+                    # only add if above the VAF cutoff or there is no cutoff
+                    if l.vaf_cutoff == None or l.vaf_cutoff == 0.0 or vaf < l.vaf_cutoff:
+                        # set variables and update variant check
+                        artefact_count += 1
+                        filter_call = True
+                        latest_check.decision = 'A'
+                        latest_check.save()
+
+                        # add VAF cutoff to reason for filtering
+                        if vaf < l.vaf_cutoff:
+                            vaf_cutoff_rounded = l.vaf_cutoff.quantize(decimal.Decimal('1'), rounding=decimal.ROUND_HALF_UP)
+                            filter_reason = f'Artefact at <{vaf_cutoff_rounded}% VAF'
+                        else:
+                            filter_reason = 'Artefact'
 
         # remove Not analysed from checks list
         variant_checks_analysed = []
@@ -365,15 +406,13 @@ def get_variant_info(sample_data, sample_obj):
             if last2[0] != last2[1]:
                 last_two_checks_agree = False
 
-        # set decision if falls in poly list, otherwise the finilise sample validation will fail
-        if 'Poly' in previous_classifications:
-            latest_check.decision ='P'
-            latest_check.save()
-        var_comment_form = VariantCommentForm(pk=latest_check.pk, comment=latest_check.comment)
-
         # if variant is to appear on report tab, add to list
-        if sample_variant.variant_instance.get_final_decision_display() in ['Genuine', 'Miscalled']:
+        if sample_variant.variant_instance.get_final_decision_display() in ['Genuine']:
             reportable_list.append(variant_obj.variant)
+
+        # list of other calls to go in the footer of the report
+        if sample_variant.variant_instance.get_final_decision_display() in ['Miscalled', 'Failed call']:
+            other_calls_list.append(f'{sample_variant.variant_instance.gene} {sample_variant.variant_instance.hgvs_c}')
 
         # get list of comments for variant
         variant_comments_list = []
@@ -383,9 +422,24 @@ def get_variant_info(sample_data, sample_obj):
                     { 'comment': v.comment, 'user': v.check_object.user, 'updated': v.comment_updated, }
                 )
 
-        # get VAF and round to nearest whole number
-        vaf = sample_variant.variant_instance.vaf()
-        vaf_rounded = vaf.quantize(decimal.Decimal('1'), rounding=decimal.ROUND_HALF_UP)
+        # load comments into variant comment form
+        var_comment_form = VariantCommentForm(pk=latest_check.pk, comment=latest_check.comment)
+
+        # split out transcript and c./p., wrap in try/except because sometimes its empty
+        try:
+            hgvs_c_short = sample_variant.variant_instance.hgvs_c.split(':')[1]
+        except IndexError:
+            hgvs_c_short = ''
+
+        try:
+            hgvs_p_short = sample_variant.variant_instance.hgvs_p.split(':')[1]
+        except IndexError:
+            hgvs_p_short = ''
+
+        try:
+            transcript = sample_variant.variant_instance.hgvs_c.split(':')[0]
+        except IndexError:
+            transcript = ''
 
         #Create a variant calls dictionary to pass to analysis-snvs.html
         variant_calls_dict = {
@@ -398,18 +452,17 @@ def get_variant_info(sample_data, sample_obj):
             'exon': sample_variant.variant_instance.exon,
             'hgvs_c': sample_variant.variant_instance.hgvs_c,
             'hgvs_p': sample_variant.variant_instance.hgvs_p,
-            'transcript': sample_variant.variant_instance.hgvs_c.split(':')[0],
-            'gnomad_popmax': sample_variant.variant_instance.gnomad_popmax,
+            'hgvs_c_short': hgvs_c_short,
+            'hgvs_p_short': hgvs_p_short,
+            'transcript': transcript,
+            'gnomad_popmax': sample_variant.variant_instance.gnomad_display(),
+            'gnomad_link': sample_variant.variant_instance.gnomad_link(),
             'this_run': {
                 'ntc': sample_variant.variant_instance.in_ntc,
                 'alt_count_ntc': sample_variant.variant_instance.alt_count_ntc,
                 'total_count_ntc': sample_variant.variant_instance.total_count_ntc,
                 'vaf_ntc': sample_variant.variant_instance.vaf_ntc(),
             },   
-            'previous_runs': {
-                'known': ' | '.join(previous_classifications),
-                'count': 'N/A', #previous_runs,
-            },
             'vaf': {
                 'vaf': vaf,
                 'vaf_rounded': vaf_rounded,
@@ -426,8 +479,8 @@ def get_variant_info(sample_data, sample_obj):
         }
 
         # add to poly list if appears in the poly variant list, otherwise add to variant calls list
-        if 'Poly' in previous_classifications:
-            polys_list.append(variant_calls_dict)
+        if filter_call == True:
+            filtered_list.append((variant_calls_dict, filter_reason))
         else:
             variant_calls.append(variant_calls_dict)
 
@@ -437,27 +490,38 @@ def get_variant_info(sample_data, sample_obj):
     else:
         no_calls = False
 
+    # make list of other calls to go in footer of PDF report
+    if len(other_calls_list) == 0:
+        other_calls_text = 'None'
+    else:
+        other_calls_text = ', '.join(other_calls_list)
+
+    # return as variantr data dictionary
     variant_data = {
         'variant_calls': variant_calls, 
-        'polys': polys_list,
+        'filtered_calls': filtered_list,
+        'poly_count': poly_count,
+        'artefact_count': artefact_count,
         'no_calls': no_calls,
+        'other_calls_text': other_calls_text,
         'check_options': VariantCheck.DECISION_CHOICES,
     }
 
     return variant_data
 
 
-
 def get_fusion_info(sample_data, sample_obj):
     """
     Get information on all fusions in a sample analysis to generate the fusion portion of the context dictionary
-
     """
 
     fusions = FusionPanelAnalysis.objects.filter(sample_analysis=sample_obj)
 
     fusion_calls = []
     reportable_list = []
+    filtered_list = []
+    other_calls_list = []
+    artefact_count = 0
 
     for fusion_object in fusions:
 
@@ -472,6 +536,10 @@ def get_fusion_info(sample_data, sample_obj):
             if c != 'Not analysed':
                 fusion_checks_analysed.append(c)
 
+        # marker to tell whether a variant should be filtered downstream
+        filter_call = False
+        filter_reason = ''
+        
         # do the last two checks agree?
         last_two_checks_agree = True
         if len(fusion_checks_analysed) > 1:
@@ -494,8 +562,12 @@ def get_fusion_info(sample_data, sample_obj):
                 )
 
         # if variant is to appear on report tab, add to list
-        if fusion_object.fusion_instance.get_final_decision_display() in ['Genuine', 'Miscalled']:
+        if fusion_object.fusion_instance.get_final_decision_display() in ['Genuine']:
             reportable_list.append(fusion_object)
+
+        # list of other calls to go in the footer of the report
+        if fusion_object.fusion_instance.get_final_decision_display() in ['Miscalled', 'Failed call']:
+            other_calls_list.append(fusion_object.fusion_instance.fusion_genes.fusion_genes)
 
         # only get VAF when panel setting says so, otherwise return none
         panel = sample_obj.panel
@@ -503,6 +575,24 @@ def get_fusion_info(sample_data, sample_obj):
             vaf = fusion_object.fusion_instance.vaf()
         else:
             vaf = None
+
+        # get artefact lists relevant to this sample
+        artefact_lists = VariantList.objects.filter(genome_build=sample_obj.genome_build, list_type='F', assay = sample_obj.panel.assay)
+
+        # get fusions in artefact list
+        for fusion_artefact in VariantToVariantList.objects.filter(fusion=fusion_object.fusion_instance.fusion_genes):
+
+            # if signed off and in one of the variant lists for this sample
+            if fusion_artefact.signed_off() and (fusion_artefact.variant_list in artefact_lists):
+
+                # if it's an artefact
+                if fusion_artefact.variant_list.list_type == 'F':
+                    # set variables and update variant check
+                    artefact_count += 1
+                    filter_call = True
+                    latest_check.decision = 'A'
+                    latest_check.save()
+                    filter_reason = 'Artefact'
 
         # combine all into context dict
         fusion_calls_dict = {
@@ -523,9 +613,14 @@ def get_fusion_info(sample_data, sample_obj):
             'latest_checks_agree': last_two_checks_agree,
             'comment_form': fusion_comment_form,
             'comments': fusion_comments_list,
-            'final_decision': fusion_object.fusion_instance.get_final_decision_display()
+            'final_decision': fusion_object.fusion_instance.get_final_decision_display(),
+            'manual_upload': fusion_object.fusion_instance.manual_upload
         }
-        fusion_calls.append(fusion_calls_dict)
+        # add to artefact list if appears in the artefact list, otherwise add to the fusion calls list
+        if filter_call == True:
+            filtered_list.append((fusion_calls_dict, filter_reason))
+        else:
+            fusion_calls.append(fusion_calls_dict)
 
     # set true or false for whether there are reportable variants
     if len(reportable_list) == 0:
@@ -533,14 +628,22 @@ def get_fusion_info(sample_data, sample_obj):
     else:
         no_calls = False
 
+        # make list of other calls to go in footer of PDF report
+    if len(other_calls_list) == 0:
+        other_calls_text = 'None'
+    else:
+        other_calls_text = ', '.join(other_calls_list)
+
     fusion_data = {
         'fusion_calls': fusion_calls,
+        'filtered_calls': filtered_list,
+        'artefact_count': artefact_count,
         'no_calls': no_calls,
+        'other_calls_text': other_calls_text,
         'check_options': FusionCheck.DECISION_CHOICES,
     }
 
     return fusion_data
-
 
 
 def get_coverage_data(sample_obj, depth_cutoffs):
@@ -554,6 +657,7 @@ def get_coverage_data(sample_obj, depth_cutoffs):
     # will set to true in loop below when it hits a gap
     gaps_present_135 = False
     gaps_present_270 = False
+    gaps_present_500 = False
     gaps_present_1000 = False
 
     # create a coverage dictionary
@@ -574,6 +678,7 @@ def get_coverage_data(sample_obj, depth_cutoffs):
                 'hotspot_or_genescreen': region.get_hotspot_display(),
                 'percent_135x': region.percent_135x,
                 'percent_270x': region.percent_270x,
+                'percent_500x': region.percent_500x,
                 'percent_1000x': region.percent_1000x,
                 'ntc_coverage': region.ntc_coverage,
                 'percent_ntc': region.percent_ntc,
@@ -582,7 +687,7 @@ def get_coverage_data(sample_obj, depth_cutoffs):
 
         # create a dictionary of gaps in the sample for the given gene, split by depths
         # TODO - not a great long term fix, need to update models to handle different depths
-        gaps_135, gaps_270, gaps_1000 = [], [], []
+        gaps_135, gaps_270, gaps_500, gaps_1000 = [], [], [], []
 
         gaps_analysis_obj = GapsAnalysis.objects.filter(gene=gene_coverage_obj)
         for gap in gaps_analysis_obj:
@@ -598,37 +703,34 @@ def get_coverage_data(sample_obj, depth_cutoffs):
             else:
                 counts_cosmic = 'N/A'
 
+            # make temp dict of info for each gap
+            gaps_dict = {
+                'genomic': gap.genomic(),
+                'gene': gap.hgvs_c.split('(')[0],
+                'hgvs_c': gap.hgvs_c.split(':')[1],
+                'percent_cosmic': percent_cosmic,
+                'counts_cosmic': counts_cosmic,
+            }
+
+            # add the dict to the list for the correct coverage cutoff
             # gaps at 135x
             if gap.coverage_cutoff == 135:
                 gaps_present_135 = True
-                gaps_dict = {
-                    'genomic': gap.genomic(),
-                    'hgvs_c': gap.hgvs_c,
-                    'percent_cosmic': percent_cosmic,
-                    'counts_cosmic': counts_cosmic,
-                }
                 gaps_135.append(gaps_dict)
 
             # gaps at 270x
             elif gap.coverage_cutoff == 270:
                 gaps_present_270 = True
-                gaps_dict = {
-                    'genomic': gap.genomic(),
-                    'hgvs_c': gap.hgvs_c,
-                    'percent_cosmic': percent_cosmic,
-                    'counts_cosmic': counts_cosmic,
-                }
                 gaps_270.append(gaps_dict)
+
+            # gaps at 500x
+            elif gap.coverage_cutoff == 500:
+                gaps_present_500 = True
+                gaps_500.append(gaps_dict)
 
             # gaps at 1000x
             elif gap.coverage_cutoff == 1000:
                 gaps_present_1000 = True
-                gaps_dict = {
-                    'genomic': gap.genomic(),
-                    'hgvs_c': gap.hgvs_c,
-                    'percent_cosmic': percent_cosmic,
-                    'counts_cosmic': counts_cosmic,
-                }
                 gaps_1000.append(gaps_dict)
 
         # combine gaps and regions dictionaries
@@ -636,18 +738,21 @@ def get_coverage_data(sample_obj, depth_cutoffs):
             'av_coverage': gene_coverage_obj.av_coverage,
             'percent_135x': gene_coverage_obj.percent_135x,
             'percent_270x': gene_coverage_obj.percent_270x,
+            'percent_500x': gene_coverage_obj.percent_500x,
             'percent_1000x': gene_coverage_obj.percent_1000x,
             'av_ntc_coverage': gene_coverage_obj.av_ntc_coverage,
             'percent_ntc': gene_coverage_obj.percent_ntc,
             'regions': regions,
             'gaps_135': gaps_135,
             'gaps_270': gaps_270,
+            'gaps_500': gaps_500,
             'gaps_1000': gaps_1000,
         }
 
         coverage_data['regions'][gene_coverage_obj.gene.gene] = gene_dict
         coverage_data['gaps_present_135'] = gaps_present_135
         coverage_data['gaps_present_270'] = gaps_present_270
+        coverage_data['gaps_present_500'] = gaps_present_500
         coverage_data['gaps_present_1000'] = gaps_present_1000
 
     return coverage_data
@@ -808,7 +913,7 @@ def get_poly_list(poly_list_obj, user):
 
     """
     # get all variant objects from the poly list
-    variants = VariantToVariantList.objects.filter(variant_list=poly_list_obj)
+    variants = VariantToVariantList.objects.filter(variant_list=poly_list_obj).order_by("variant__variant")
 
     # make empty lists before collecting data from loop
     confirmed_list = []
@@ -824,6 +929,12 @@ def get_poly_list(poly_list_obj, user):
             genes.append(annotation.gene)
             hgvs_cs.append(annotation.hgvs_c)
             hgvs_ps.append(annotation.hgvs_p)
+        
+        # tidy up vaf formatting
+        if v.vaf_cutoff == None or v.vaf_cutoff == 0:
+            vaf_cutoff = 'N/A'
+        else:
+            vaf_cutoff = str(v.vaf_cutoff.quantize(decimal.Decimal('1'), rounding=decimal.ROUND_HALF_UP)) + '%'
 
         # format variant info info dictionary 
         formatted_variant = {
@@ -831,12 +942,13 @@ def get_poly_list(poly_list_obj, user):
             'variant_pk': v.id,
             'variant': v.variant.variant,
             'genome_build': v.variant.genome_build,
-            'gene': '|'.join(set(genes)),
-            'hgvs_c': '|'.join(set(hgvs_cs)),
-            'hgvs_p': '|'.join(set(hgvs_ps)),
+            'gene': ' | '.join(set(genes)),
+            'hgvs_c': ' | '.join(set(hgvs_cs)),
+            'hgvs_p': ' | '.join(set(hgvs_ps)),
             'upload_user': v.upload_user,
             'upload_time': v.upload_time,
             'upload_comment': v.upload_comment,
+            'vaf_cutoff': vaf_cutoff,
             'check_user': v.check_user,
             'check_time': v.check_time,
             'check_comment': v.check_comment,
@@ -859,3 +971,171 @@ def get_poly_list(poly_list_obj, user):
             checking_list.append(formatted_variant)
 
     return confirmed_list, checking_list
+
+
+def get_fusion_list(artefact_list_obj, user):
+    """
+    get all polys and split into a list of confirmed fusion artefacts and a list of fusion artefacts that need checking
+
+    """
+    # get all variant objects from the poly list
+    fusions = VariantToVariantList.objects.filter(variant_list=artefact_list_obj).order_by("fusion__left_breakpoint")
+
+    # make empty lists before collecting data from loop
+    confirmed_list = []
+    checking_list = []
+
+    for n, f in enumerate(fusions):
+
+        # format variant info info dictionary 
+        formatted_variant = {
+            'counter': n,
+            'variant_pk': f.id,
+            'fusion': f.fusion.fusion_genes,
+            'left_breakpoint': f.fusion.left_breakpoint,
+            'right_breakpoint': f.fusion.right_breakpoint,
+            'genome_build': f.fusion.genome_build,
+            'upload_user': f.upload_user,
+            'upload_time': f.upload_time,
+            'upload_comment': f.upload_comment,
+            'check_user': f.check_user,
+            'check_time': f.check_time,
+            'check_comment': f.check_comment,
+        }
+
+        # add polys with two checks to the confirmed list
+        if f.signed_off():
+            confirmed_list.append(formatted_variant)
+
+        # otherwise add to the checking list
+        else:
+            # check if the current user is the person who submitted the poly
+            # if it is then disable the button to sign off
+            if user == f.upload_user:
+                formatted_variant['able_to_sign_off'] = False
+            else:
+                formatted_variant['able_to_sign_off'] = True
+
+            # add to checking list
+            checking_list.append(formatted_variant)
+
+    return confirmed_list, checking_list
+
+
+def if_nucleotide(string):
+    """
+    Function to check if nucleotide is a string
+    """
+    check = True
+    for char in string:
+    
+        if char not in 'ATCGN':
+        
+            check = False
+            
+    return check
+
+
+def if_chrom(string):
+    """
+    Function to check if chromosome is 1-22 or X/Y
+    """
+    chroms = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "X", "Y"]
+    if string in chroms:
+        return True
+    else:
+        return False
+
+
+def variant_format_check(chrm, position, ref, alt, panel_bed_path, total_reads, alt_reads):
+    """
+    Function to check if format of a manually entered variant is correct
+    """
+
+    #Check the chromosome is sensible
+    chrm_check = if_chrom(chrm)
+    if not chrm_check:
+
+        return False, f'{chrm} is not a chromosome - please correct. Do not include "chr" in this box.'
+    
+    #Check position is right genome build and panel
+    #Get overlap with panel bed to check genome build (check below)
+    panel_bed_file = panel_bed_path
+    panel_bed = pybedtools.BedTool(panel_bed_file)
+    variant_as_bed=f"{chrm}\t{int(position)-1}\t{position}"
+    variant_bed_region = pybedtools.BedTool(variant_as_bed, from_string=True)
+    overlaps_panel = len(panel_bed.intersect(variant_bed_region)) > 0
+    
+    #If the coordinates are in the wrong genome build - check they overlap with bed (calculated above)
+    if overlaps_panel == 0:
+            
+        return False, 'Genomic coordinates given are not on the panel - Have you used coordinates for the correct genome build?'
+                
+    #Check ref/alt format (check below)
+    ref_check = if_nucleotide(ref)
+    alt_check = if_nucleotide(alt)
+    
+    #Error out if the REF or ALT has non NGS characters (calculated above)
+    if not ref_check or not alt_check:
+                
+        return False, 'Ref or Alt nucleotide is not A,T,C or G - please correct'
+                
+    #Error out if total depth is set to zero
+    if total_reads == 0:
+                      	
+        return False, 'Total read counts can not be zero'
+                
+    #Error out if alt read depth is set to zero
+    if alt_reads == 0:
+                
+        return False, 'Alt read counts can not be zero'
+
+    return True, ''
+
+
+def if_breakpoint(breakpoint:str):
+    """
+    Checks that a breakpoints has been entered correctly as chromosome coordinates
+    """
+
+    expected_format = r'chr([0-9]{1,2}|X|Y):[0-9]+'
+
+    if re.fullmatch(expected_format, breakpoint):
+        return True
+    else:
+        return False
+
+      
+def breakpoint_format_check(left_breakpoint:str, right_breakpoint:str):
+    """
+    Checks both breakpoints for manual fusions and raises a warning if one or more is incorrect
+    """
+
+    left_breakpoint_check = if_breakpoint(left_breakpoint)
+    right_breakpoint_check = if_breakpoint(right_breakpoint)
+    left_chrom_check = if_chrom(left_breakpoint.split(":")[0][3:])
+    right_chrom_check = if_chrom(right_breakpoint.split(":")[0][3:])
+
+    # Error if left breakpoint incorrectly formatted
+    if not left_breakpoint_check or not left_chrom_check:
+        return False, 'Left breakpoint not formatted using genomic co-ordinates, please correct'
+    
+    # Error if right breakpoint incorrectly formatted
+    if not right_breakpoint_check or not right_chrom_check:
+        return False, 'Right breakpoint not formatted using genomic co-ordinates, please correct'
+    
+    # Otherwise the breakpoints are formatted correctly
+    return True, ''
+
+
+def lims_initials_check(lims_initials:str):
+    """
+    Checks that LIMS initials are unique in the database
+    """
+    all_user_settings = UserSettings.objects.all()
+    all_lims_initials = [u.lims_initials for u in all_user_settings]
+
+    if lims_initials in all_lims_initials:
+        return False, f'Initials {lims_initials} already used by another user'
+    else:
+        return True, ''
