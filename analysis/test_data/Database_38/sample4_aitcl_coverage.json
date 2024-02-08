@@ -481,7 +481,7 @@
                 "chr": 15,
                 "pos_start": 90088604,
                 "pos_end": 90088607,
-                "hgvs_c": "IDH2(NM_002168.4)c.514_516",
+                "hgvs_c": "IDH2(NM_002168.4):c.514_516",
                 "gene": "IDH2",
                 "counts_cosmic": NaN,
                 "percent_cosmic": NaN

@@ -15,7 +15,7 @@ output_list = [['pk', 'status', 'sample', 'panel', 'ws', 'run', 'new_0x', 'new_2
 
 
 # get all samples in myeloid panel
-myeloid_panel_obj = Panel.objects.get(panel_name = 'myeloid')
+myeloid_panel_obj = Panel.objects.get(panel_name = 'myeloid', version = '1', genome_build = '37', assay = '1')
 myeloid_samples = SampleAnalysis.objects.filter(panel = myeloid_panel_obj)
 
 # loop through samples and pull out summary statement plus metadata

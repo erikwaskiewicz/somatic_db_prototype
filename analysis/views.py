@@ -10,11 +10,11 @@ from django.shortcuts import get_object_or_404
 
 from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, 
     CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, 
-    ConfirmPolyForm, ConfirmArtefactForm, AddNewPolyForm, AddNewArtefactForm, ManualVariantCheckForm, ReopenForm, ChangeLimsInitials, 
-    EditedPasswordChangeForm, EditedUserCreationForm)
+    ConfirmPolyForm, ConfirmArtefactForm, AddNewPolyForm, AddNewArtefactForm, AddNewFusionArtefactForm, 
+    ManualVariantCheckForm, ReopenForm, ChangeLimsInitials, EditedPasswordChangeForm, EditedUserCreationForm, NewFusionForm)
 from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
-    get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, 
-    create_myeloid_coverage_summary, variant_format_check)
+    get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, get_fusion_list, 
+    create_myeloid_coverage_summary, variant_format_check, breakpoint_format_check, lims_initials_check)
 from .models import *
 
 import json
@@ -35,27 +35,37 @@ def signup(request):
         signup_form = EditedUserCreationForm(request.POST)
 
         if signup_form.is_valid():
-            signup_form.save()
 
             # get data from form
             username = signup_form.cleaned_data.get('username')
             raw_password = signup_form.cleaned_data.get('password1')
             lims_initials = signup_form.cleaned_data.get('lims_initials')
 
-            # save user object and authenticate
-            user = authenticate(username=username, password=raw_password)
-            user.is_active = False
-            user.save()
+            # check if LIMS initials already exists
+            initials_check, warning_message = lims_initials_check(lims_initials)
 
-            # add lims initials
-            usersettings = UserSettings(
-                user = user,
-                lims_initials = lims_initials
-            )
-            usersettings.save()
+            if initials_check:
+                # user is created on this save command
+                signup_form.save()
 
-            return redirect('home')
-            #TODO - add some kind of confirmation
+                # edit user object
+                user = authenticate(username=username, password=raw_password)
+                user.is_active = False
+                user.save()
+
+                # add lims initials
+                usersettings = UserSettings(
+                    user = user,
+                    lims_initials = lims_initials
+                )
+                usersettings.save()
+
+                return redirect('home')
+                #TODO - add some kind of confirmation
+
+            # if LIMS initials already exists then throw an error
+            else:
+                warnings.append(warning_message)
 
         else:
             warnings.append('Could not create an account, check that your password meets the requirements below')
@@ -385,6 +395,7 @@ def analysis_sheet(request, sample_id):
         'warning': [],
         'sample_data': sample_data,
         'new_variant_form': NewVariantForm(),
+        'new_fusion_form': NewFusionForm(),
         'manual_check_form': ManualVariantCheckForm(regions=sample_data['panel_manual_regions']),
         'submit_form': SubmitForm(),
         'update_name_form': UpdatePatientName(),
@@ -564,9 +575,8 @@ def analysis_sheet(request, sample_id):
                 variant_check, warning_message = variant_format_check(new_variant_data['chrm'], new_variant_data['position'], new_variant_data['ref'], new_variant_data['alt'], sample_obj.panel.bed_file.path, new_variant_data['total_reads'], new_variant_data['alt_reads'])
                 
                 if not variant_check:
-                
-                	context['warning'].append(warning_message)
-                                    
+                    context['warning'].append(warning_message)
+
                 else:
                 
                     #Lock to same genome build as sample_analysis 
@@ -600,9 +610,72 @@ def analysis_sheet(request, sample_id):
                     )
                     new_variant_check_object.save()
 
-                    # reload context
-                    context['variant_data'] = get_variant_info(sample_data, sample_obj)
+                    # redirect to same page (if you just reload comtext then form will be resubmitted on refresh)
+                    return redirect('analysis_sheet', sample_id)
 
+        # if add new fusion form is clicked
+        if 'fusion_genes' in request.POST:
+            new_fusion_form = NewFusionForm(request.POST)
+
+            if new_fusion_form.is_valid():
+
+                new_fusion_data = new_fusion_form.cleaned_data
+
+                breakpoint_check, warning_message = breakpoint_format_check(
+                    new_fusion_form.cleaned_data['left_breakpoint'],
+                    new_fusion_form.cleaned_data['right_breakpoint']
+                )
+
+                if not breakpoint_check:
+
+                    context['warning'].append(warning_message)
+
+                else:
+
+                    # Create new Fusion object with same genome build as SampleAnalysis
+                    new_fusion_object, created = Fusion.objects.get_or_create(
+                        fusion_genes=new_fusion_data['fusion_genes'],
+                        left_breakpoint=new_fusion_data['left_breakpoint'],
+                        right_breakpoint=new_fusion_data['right_breakpoint'],
+                        genome_build=sample_obj.genome_build
+                    )
+                    new_fusion_object.save()
+
+                    # Create new FusionAnalysis object
+                    # Set ref_reads_1 as 0 for RNA as not needed
+                    if new_fusion_form.cleaned_data['ref_reads_1']:
+                        ref_reads_1 = new_fusion_form.cleaned_data['ref_reads_1']
+                    else:
+                        ref_reads_1 = 0
+
+                    new_fusion_analysis_object = FusionAnalysis(
+                        fusion_genes=new_fusion_object,
+                        sample=sample_obj,
+                        hgvs=new_fusion_data['hgvs'],
+                        in_ntc=new_fusion_data['in_ntc'],
+                        ref_reads_1=ref_reads_1,
+                        fusion_supporting_reads=new_fusion_data['fusion_supporting_reads'],
+                        manual_upload=True,
+                        fusion_caller="Manual"
+                    )
+                    new_fusion_analysis_object.save()
+
+                    # Create new FusionPanelAnalysis object
+                    new_fusion_panel_analysis_object = FusionPanelAnalysis(
+                        fusion_instance=new_fusion_analysis_object,
+                        sample_analysis=sample_obj
+                    )
+                    new_fusion_panel_analysis_object.save()
+
+                    # Create new FusionCheck object
+                    new_fusion_check_object = FusionCheck(
+                        fusion_analysis=new_fusion_panel_analysis_object,
+                        check_object=sample_obj.get_checks().get('current_check_object')
+                    )
+                    new_fusion_check_object.save()
+
+                    # redirect to same page (if you just reload comtext then form will be resubmitted on refresh)
+                    return redirect('analysis_sheet', sample_id)
 
         # overall sample comments form
         if 'sample_comment' in request.POST:
@@ -979,12 +1052,123 @@ def view_artefacts(request, list_name):
 
 
 @login_required
+def view_fusion_artefacts(request, list_name):
+    """
+    Page to view all confirmed artefacts and add and check new ones
+
+    """
+    # get artefact list and pull out list of confirmed polys and polys to be checked
+    artefact_list = VariantList.objects.get(name=list_name, list_type='F')
+    confirmed_list, checking_list = get_fusion_list(artefact_list, request.user)
+
+    # set genome build
+    genome = artefact_list.genome_build
+    if genome == 37:
+        build_tag = 'info'
+    elif genome == 38:
+        build_tag = 'success'
+    assay = artefact_list.get_assay_display()
+
+    # make context dictionary
+    context = {
+        'success': [],
+        'warning': [],
+        'list_name': list_name,
+        'genome_build': genome,
+        'build_tag': build_tag,
+        'assay': assay,
+        'confirmed_list': confirmed_list,
+        'checking_list': checking_list,
+        'confirm_form': ConfirmArtefactForm(),
+        'add_new_form': AddNewFusionArtefactForm(),
+    }
+
+    #----------------------------------------------------------
+    #  If any buttons are pressed
+    if request.method == 'POST':
+
+        # if confirm poly button is pressed
+        if 'variant_pk' in request.POST:
+
+            confirm_form = ConfirmArtefactForm(request.POST)
+            if confirm_form.is_valid():
+
+                # get form dataNCOA4/RET and CCDC6--RETNCOA4/RET and CCDC6--RET
+                variant_pk = confirm_form.cleaned_data['variant_pk']
+                comment = confirm_form.cleaned_data['comment']
+
+                # update artefact list
+                variant_to_variant_list_obj = VariantToVariantList.objects.get(pk=variant_pk)
+                variant_to_variant_list_obj.check_user = request.user
+                variant_to_variant_list_obj.check_time = timezone.now()
+                variant_to_variant_list_obj.check_comment = comment
+                variant_to_variant_list_obj.save()
+
+                # get genomic coords for confirmation popup
+                fusion_obj = variant_to_variant_list_obj.fusion
+                fusion = fusion_obj.fusion_genes
+
+                # reload context
+                confirmed_list, checking_list = get_fusion_list(artefact_list, request.user)
+                context['confirmed_list'] = confirmed_list
+                context['checking_list'] = checking_list
+                context['success'].append(f'Fusion {fusion} added to artefact list')
+
+        # if add new artefact button is pressed
+        if 'left_breakpoint' in request.POST:
+            add_new_form = AddNewFusionArtefactForm(request.POST)
+
+            if add_new_form.is_valid():
+
+                # get form data
+                left_breakpoint = add_new_form.cleaned_data['left_breakpoint']
+                right_breakpoint = add_new_form.cleaned_data['right_breakpoint']
+                comment = add_new_form.cleaned_data['comment']
+
+                # wrap in try/ except to handle when a variant doesnt match the input
+                try:
+                    # load in fusion and variant to list objects
+                    fusion_obj = Fusion.objects.get(left_breakpoint=left_breakpoint, right_breakpoint=right_breakpoint)
+
+                    variant_to_variant_list_obj, created = VariantToVariantList.objects.get_or_create(
+                        variant_list = artefact_list,
+                        fusion = fusion_obj,
+                    )
+
+                    fusion = fusion_obj.fusion_genes
+
+                    # add user info if a new model is created
+                    if created:
+                        variant_to_variant_list_obj.upload_user = request.user
+                        variant_to_variant_list_obj.upload_time = timezone.now()
+                        variant_to_variant_list_obj.upload_comment = comment
+                        variant_to_variant_list_obj.save()
+
+                        # give success message
+                        context['success'].append(f'Fusion {fusion} added to artefact checking list')
+
+                    # throw error if already in poly list
+                    else:
+                        context['warning'].append(f'Fusion {fusion} is already in the artefact list')
+
+                    # reload context
+                    confirmed_list, checking_list = get_fusion_list(artefact_list, request.user)
+                    context['confirmed_list'] = confirmed_list
+                    context['checking_list'] = checking_list
+
+                # throw error if there isnt a variant matching the input
+                except Fusion.DoesNotExist:
+                    context['warning'].append(f'Cannot find fusion, have you entered the correct breakpoints?')
+
+    # render the page
+    return render(request, 'analysis/view_fusion_artefacts.html', context)
+
+@login_required
 def options_page(request):
     """
     Display a page of all other options e.g. poly lists
     """
     variant_lists = VariantList.objects.all()
-
     return render(request, 'analysis/options_page.html', {'variant_lists': variant_lists})
 
 
@@ -993,7 +1177,10 @@ def user_settings(request):
     """
     Display a page of user setting options
     """
-    lims_form = ChangeLimsInitials()
+    context = {
+        'lims_form': ChangeLimsInitials(),
+        'warning': []
+    }
 
     #----------------------------------------------------------
     #  If any buttons are pressed
@@ -1008,20 +1195,30 @@ def user_settings(request):
                 # get form data and change LIMS data
                 new_lims_initials = lims_form.cleaned_data['lims_initials']
 
-                # update value if it already exists
-                try:
-                    request.user.usersettings.lims_initials = new_lims_initials
-                    request.user.usersettings.save()
+                # check if LIMS initials are already in the database
 
-                # add new record if it doesnt exist
-                except ObjectDoesNotExist:
-                    user = UserSettings(
-                        user = request.user,
-                        lims_initials = new_lims_initials
-                    )
-                    user.save()
+                initials_check, warning_message = lims_initials_check(new_lims_initials)
 
-    return render(request, 'analysis/user_settings.html', {'lims_form': lims_form,})
+                if not initials_check:
+
+                    context['warning'].append(warning_message)
+
+                else:
+
+                    # update value if it already exists
+                    try:
+                        request.user.usersettings.lims_initials = new_lims_initials
+                        request.user.usersettings.save()
+
+                    # add new record if it doesnt exist
+                    except ObjectDoesNotExist:
+                        user = UserSettings(
+                            user = request.user,
+                            lims_initials = new_lims_initials
+                        )
+                        user.save()
+
+    return render(request, 'analysis/user_settings.html', context)
 
 
 @login_required

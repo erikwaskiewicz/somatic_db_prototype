@@ -55,7 +55,6 @@ class PaperworkCheckForm(forms.Form):
 class NewVariantForm(forms.Form):
     """
     Manually add a SNV. Splitting HGVS into components to stop formatting errors
-
     """
 
     chrm = forms.CharField(label='Chromosome')
@@ -82,6 +81,31 @@ class NewVariantForm(forms.Form):
         self.fields['hgvs_p'].widget.attrs['placeholder'] = 'e.g. NP_004324.2:p.(Val600Glu)'
         self.fields['gene'].widget.attrs['placeholder'] = 'e.g. BRAF'
         self.fields['exon'].widget.attrs['placeholder'] = 'e.g. 15 | 18 (for exon 15 of 18)'
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Submit', css_class='btn btn-info w-25')
+        )
+
+
+class NewFusionForm(forms.Form):
+    """
+    Manually add a fusion
+    """
+    fusion_genes = forms.CharField(label='Fusion')
+    hgvs = forms.CharField(label='HGVS', required=False)
+    fusion_supporting_reads = forms.IntegerField(label='Number of reads supporting the fusion')
+    ref_reads_1 = forms.IntegerField(label='Number of reference reads (only needed for ctDNA)', required=False)
+    left_breakpoint = forms.CharField(label='Left breakpoint')
+    right_breakpoint = forms.CharField(label='Right breakpoint')
+    in_ntc = forms.BooleanField(required=False, label='Variant seen in NTC?')
+
+    def __init__(self, *args, **kwargs):
+        super(NewFusionForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'new-fusion-form'
+        self.fields['fusion_genes'].widget.attrs['placeholder'] = 'e.g. EML4-ALK'
+        self.fields['left_breakpoint'].widget.attrs['placeholder'] = 'e.g. chr2:234567'
+        self.fields['right_breakpoint'].widget.attrs['placeholder'] = 'e.g. chr2:4567890'
         self.helper.form_method = 'POST'
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-25')
@@ -280,6 +304,7 @@ class ConfirmPolyForm(forms.Form):
             Submit('submit', 'Submit', css_class='btn btn-info w-100')
         )
 
+
 class ConfirmArtefactForm(forms.Form):
     """
     Confirm that a variant should be added to the artefact list
@@ -322,7 +347,8 @@ class AddNewPolyForm(forms.Form):
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-25')
         )
-        
+
+       
 class AddNewArtefactForm(forms.Form):
     """
     Add a variant to the artefact list
@@ -346,12 +372,36 @@ class AddNewArtefactForm(forms.Form):
             Submit('submit', 'Submit', css_class='btn btn-info w-25')
         )
 
+
+class AddNewFusionArtefactForm(forms.Form):
+    """
+    Add a fusion to the artefact list
+    """
+    left_breakpoint = forms.CharField()
+    right_breakpoint = forms.CharField()
+    comment = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 4}),
+        label='Comments'
+    )
+
+    def __init__(self,*args,**kwargs):
+        super(AddNewFusionArtefactForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.fields['comment'].help_text = 'Add comments or evidence to support this fusion being an artefact\ne.g. filepaths to documented evidence, sample IDs to check...'
+        self.fields['left_breakpoint'].help_text = 'Must be in genomic format e.g. chr1:123456'
+        self.fields['right_breakpoint'].help_text = 'Must be in genomic format e.g. chr2:789012'
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Submit', css_class='btn btn-info w-25')
+        )
+
+
 class ChangeLimsInitials(forms.Form):
     """
     Add/ change the user initials as displayed in LIMS
 
     """
-    lims_initials = forms.CharField(label='LIMS initials')
+    lims_initials = forms.CharField(label='LIMS initials', max_length=10)
 
     def __init__(self, *args, **kwargs):
         super(ChangeLimsInitials, self).__init__(*args, **kwargs)
@@ -376,7 +426,6 @@ class EditedPasswordChangeForm(PasswordChangeForm):
         self.helper.add_input(
             Submit('submit', 'Change password', css_class='btn btn-danger w-100')
         )
-
 
 
 class EditedUserCreationForm(UserCreationForm):

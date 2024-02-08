@@ -114,6 +114,7 @@ class Panel(models.Model):
     manual_review_required = models.BooleanField(default=False)
     manual_review_desc = models.CharField(max_length=200, blank=True, null=True) # pipe seperated, no spaces
     bed_file = models.FileField(upload_to=make_bedfile_path, blank=True, null=True)
+    report_snv_vaf = models.BooleanField(default=False)
 
     # fusion settings
     show_fusions = models.BooleanField()
@@ -358,9 +359,10 @@ class VariantList(models.Model):
 
     """
     TYPE_CHOICES = (
-        ('P', 'Poly'),
+        ('P', 'SNV Poly'),
         ('K', 'Known'),
-        ('A', 'Artefact'),
+        ('A', 'SNV Artefact'),
+        ('F', 'Fusion Artefact')
     )
     name = models.CharField(max_length=50, primary_key=True)
     list_type = models.CharField(max_length=1, choices=TYPE_CHOICES)
@@ -381,7 +383,8 @@ class VariantToVariantList(models.Model):
 
     """
     variant_list = models.ForeignKey('VariantList', on_delete=models.CASCADE)
-    variant = models.ForeignKey('Variant', on_delete=models.CASCADE)
+    variant = models.ForeignKey('Variant', on_delete=models.CASCADE, blank=True, null=True)
+    fusion = models.ForeignKey('Fusion', on_delete=models.CASCADE, blank=True, null=True)
     classification = models.CharField(max_length=50, blank=True, null=True)
     vaf_cutoff = models.DecimalField(decimal_places=5, max_digits=10, default=0.0)
     upload_user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True, related_name='upload_user')
@@ -508,6 +511,7 @@ class FusionAnalysis(models.Model):
     fusion_score = models.CharField(max_length=50, blank=True, null=True)
     in_ntc = models.BooleanField(default=False)
     final_decision = models.CharField(max_length=1, default='-', choices=DECISION_CHOICES)
+    manual_upload=models.BooleanField(default=False)
 
     def vaf(self):
         """
