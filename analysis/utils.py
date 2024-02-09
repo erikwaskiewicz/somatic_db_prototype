@@ -707,6 +707,7 @@ def get_coverage_data(sample_obj, depth_cutoffs):
             gaps_dict = {
                 'genomic': gap.genomic(),
                 'gene': gap.hgvs_c.split('(')[0],
+                'hgvs_transcript': gap.hgvs_c.split('(')[1].split(')')[0],
                 'hgvs_c': gap.hgvs_c.split(':')[1],
                 'percent_cosmic': percent_cosmic,
                 'counts_cosmic': counts_cosmic,
