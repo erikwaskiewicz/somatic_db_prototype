@@ -526,7 +526,7 @@ def get_fusion_info(sample_data, sample_obj):
     for fusion_object in fusions:
 
         # get checks for each variant
-        fusion_checks = FusionCheck.objects.filter(fusion_analysis=fusion_object)
+        fusion_checks = FusionCheck.objects.filter(fusion_analysis=fusion_object).order_by('pk')
         fusion_checks_list = [ v.get_decision_display() for v in fusion_checks ]
         latest_check = fusion_checks.latest('pk')
 
@@ -707,6 +707,7 @@ def get_coverage_data(sample_obj, depth_cutoffs):
             gaps_dict = {
                 'genomic': gap.genomic(),
                 'gene': gap.hgvs_c.split('(')[0],
+                'hgvs_transcript': gap.hgvs_c.split('(')[1].split(')')[0],
                 'hgvs_c': gap.hgvs_c.split(':')[1],
                 'percent_cosmic': percent_cosmic,
                 'counts_cosmic': counts_cosmic,
