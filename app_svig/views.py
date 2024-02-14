@@ -31,10 +31,17 @@ def view_classifications(request):
         new_classifications_form = NewClassification(request.POST)
         if new_classifications_form.is_valid():
             # get variant instance
-            var = VariantPanelAnalysis(id = 1) # TODO this is hardcoded for testing
+            var = VariantPanelAnalysis(id = 28) # TODO this is hardcoded for testing
+
+            # get latest annotations obj
+            annotation_versions_obj = AnnotationVersions.objects.latest('version')
 
             new_var_obj = Variant(
-                svd_variant = var
+                svd_variant = var,
+                vep_csq = 'missense_variant',
+                cgc_mode_action = 'TSG',
+                cgc_mutation_types = 'Mis; N; F',
+                annotation_versions = annotation_versions_obj,
             )
             new_var_obj.save()
 
@@ -72,6 +79,13 @@ def classify(request, classification):
         'comment_form': CommentForm(),
         'finalise_form': FinaliseCheckForm(),
     }
+    # TODO check if refreshes needed after form submit
+    # TODO visualise different forms depending on check etc
+    # TODO comments modal
+    # TODO when checks disagree
+    # TODO generic template for all codes
+    # TODO papers model with pubmed api
+    # TODO previous classifications page
 
     # ------------------------------------------------------------------------
     # when buttons are pressed

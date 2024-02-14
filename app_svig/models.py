@@ -8,10 +8,20 @@ import os
 from collections import OrderedDict
 
 
+class AnnotationVersions(models.Model):
+    version = models.IntegerField(primary_key=True)
+    vep_version = models.IntegerField()
+    cgc_version = models.CharField(max_length=20)
+    gnomad_version = models.CharField(max_length=20)
+
+
 class Variant(models.Model):
     svd_variant = models.ForeignKey('analysis.VariantPanelAnalysis', on_delete=models.CASCADE)
     # TODO can have seperate links here for e.g. SWGS variants/ manually added variants
-    # TODO can add annotations here
+    vep_csq = models.CharField(max_length=20)
+    cgc_mode_action = models.CharField(max_length=20)
+    cgc_mutation_types = models.CharField(max_length=20)
+    annotation_versions = models.ForeignKey('AnnotationVersions', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.svd_variant.variant_instance.gene + ' ' + self.svd_variant.variant_instance.hgvs_c
@@ -19,10 +29,8 @@ class Variant(models.Model):
     def get_variant_info(self):
         # get variant specific variables
         build = self.svd_variant.variant_instance.variant.genome_build
-        if build == 37:
-            build_css_tag = 'info'
-        elif build == 38:
-            build_css_tag = 'success'
+        build_css_dict = {37: 'info', 38: 'success'} # TODO add to global settings file? probably used a few times
+        build_css_tag = build_css_dict[build]
 
         variant_info = {
             'genomic': self.svd_variant.variant_instance.variant.variant,
@@ -30,8 +38,12 @@ class Variant(models.Model):
             'build_css_tag': build_css_tag,
             'hgvs_c': self.svd_variant.variant_instance.hgvs_c,
             'hgvs_p': self.svd_variant.variant_instance.hgvs_p,
-            'consequence': 'TODO',
-            'mode_action': 'TODO',
+            'gene': self.svd_variant.variant_instance.gene,
+            'exon': self.svd_variant.variant_instance.exon,
+            'consequence': self.vep_csq,
+            'mode_action': self.cgc_mode_action,
+            'mutation_types': self.cgc_mutation_types,
+            'annotation_versions': self.annotation_versions
         }
 
         return variant_info
@@ -395,6 +407,7 @@ class Check(models.Model):
         if next_step == 'E':
              self.classification.make_new_check()
         # TODO save results to classification obj if final check
+
 
 class CodeAnswer(models.Model):
     """

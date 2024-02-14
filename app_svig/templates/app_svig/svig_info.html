@@ -36,29 +36,42 @@
     <tbody>
       <tr>
         <th class="col-4">Genomic co-ords</th>
-        <td class="col-8">{{ variant_info.genomic }} <span class="badge badge-{{ variant_info.build_css_tag }} badge-pill">GRCh{{ variant_info.build }}</span></td>
+        <td class="col-4">{{ variant_info.genomic }} <span class="badge badge-{{ variant_info.build_css_tag }} badge-pill">GRCh{{ variant_info.build }}</span></td>
+        <td class="col-4"></td>
+      </tr>
+      <tr>
+        <th>Gene</th>
+        <td>{{ variant_info.gene }} ({{ variant_info.exon }})</td>
+        <td></td>
       </tr>
       <tr>
         <th>HGVS c.</th>
         <td>{{ variant_info.hgvs_c }}</td>
+        <td></td>
       </tr>
       <tr>
         <th>HGVS p.</th>
         <td>{{ variant_info.hgvs_p }}</td>
+        <td></td>
       </tr>
       <tr>
         <th>Variant consequence</th>
         <td>{{ variant_info.consequence }}</td>
+        <td>VEP v{{ variant_info.annotation_versions.vep_version }}</td>
       </tr>
       <tr>
         <th>Mode of action</th>
         <td>{{ variant_info.mode_action }}</td>
+        <td>CGC downloaded {{ variant_info.annotation_versions.cgc_version }}</td>
+      </tr>
+      <tr>
+        <th>Mutation types</th>
+        <td>{{ variant_info.mutation_types }}</td>
+        <td>CGC downloaded {{ variant_info.annotation_versions.cgc_version }}</td>
       </tr>
     </tbody>
   </table>
 
-  <p>TODO - form to confirm all correct and edit if needs be</p>
-  <p>TODO - annotations and versions of sources. Possibly ability to edit?</p>
   </div>
 
   <!-- forms on side of page -->
