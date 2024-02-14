@@ -56,6 +56,18 @@ class Variant(models.Model):
         }
         return sample_info
 
+    def get_canonical_variants(self):
+        canonical_variants = CanonicalList.objects.filter(gene=self.svd_variant.variant_instance.gene)
+        return canonical_variants
+
+    def get_previous_classifications(self):
+        """ get all previous classifications of a variant """
+        return {'canonical_list': self.get_canonical_variants()}
+        # get all previous classifications
+        # check canonical list - how is this stored?
+        # check same tumour type
+        # check all others
+
 
 class Classification(models.Model):
     """
@@ -96,6 +108,7 @@ class Classification(models.Model):
             'sample_info': self.get_sample_info(),
             'variant_info': self.variant.get_variant_info(),
             'classification_info': self.get_classification_info(),
+            'previous_classifications': self.variant.get_previous_classifications(),
         }
         return context
 
@@ -426,4 +439,10 @@ class CodeAnswer(models.Model):
         elif self.code[0] == 'O':
             return 'Oncogenic'
 
-#class Annotation(models.Model):
+
+class CanonicalList(models.Model):
+    gene = models.CharField(max_length=20, null=True, blank=True)
+    tumour_type = models.CharField(max_length=20, null=True, blank=True)
+    hgvs_c = models.CharField(max_length=50, null=True, blank=True)
+    hgvs_p = models.CharField(max_length=50, null=True, blank=True)
+    variants = models.ManyToManyField('Variant', blank=True)  # TODO this is actually more like a variant instance, should be specific variant

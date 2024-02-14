@@ -1,156 +1,129 @@
 {% load crispy_forms_tags %}
-{% if classification_info.current_check.info_check %}
-<div class="row">
 
-  <!-- Main area ------------------------------------------------------------------------------->
-  <div class="col-9">
-    <p>TODO Canonical list here?</p>
-    <p>TODO add variant group so that canonical list can be done</p>
-    <p>TODO options - use most recent same tumour type, use most recent sinilar tumour type, new classification</p>
-
-    <br>
-    <div id="accordion">
-      <div class="card">
-        <div class="card-header" id="headingOne">
-          <h5 class="mb-0">
-            <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-              Seen ??? times previously in specific tumour type
-            </button>
-          </h5>
-        </div>
-
-        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
-          <div class="card-body">
-            <table class="table table-hover">
-              <thead>
-                <th>Variant</th>
-                <th>Date</th>
-                <th>Class</th>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>TODO</td>
-                  <td>TODO</td>
-                  <td>TODO</td>
-                </tr>
-                <tr>
-                  <td>TODO</td>
-                  <td>TODO</td>
-                  <td>TODO</td>
-                </tr>
-                <tr>
-                  <td>TODO</td>
-                  <td>TODO</td>
-                  <td>TODO</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header" id="headingTwo">
-          <h5 class="mb-0">
-            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-              Seen ??? times previously in myeloid tumour subtype
-            </button>
-          </h5>
-        </div>
-        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
-          <div class="card-body">
-            <table class="table table-hover">
-                <thead>
-                  <th>Variant</th>
-                  <th>Date</th>
-                  <th>Class</th>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>TODO</td>
-                    <td>TODO</td>
-                    <td>TODO</td>
-                  </tr>
-                  <tr>
-                    <td>TODO</td>
-                    <td>TODO</td>
-                    <td>TODO</td>
-                  </tr>
-                  <tr>
-                    <td>TODO</td>
-                    <td>TODO</td>
-                    <td>TODO</td>
-                  </tr>
-                </tbody>
-              </table>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header" id="headingThree">
-          <h5 class="mb-0">
-            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-              Seen ??? times previously in all other tumour types
-            </button>
-          </h5>
-        </div>
-        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
-          <div class="card-body">
-            <table class="table table-hover">
-                <thead>
-                  <th>Variant</th>
-                  <th>Date</th>
-                  <th>Class</th>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>TODO</td>
-                    <td>TODO</td>
-                    <td>TODO</td>
-                  </tr>
-                  <tr>
-                    <td>TODO</td>
-                    <td>TODO</td>
-                    <td>TODO</td>
-                  </tr>
-                  <tr>
-                    <td>TODO</td>
-                    <td>TODO</td>
-                    <td>TODO</td>
-                  </tr>
-                </tbody>
-              </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- forms on side of page -->
-  <div class="col-3">
-    {% if classification_info.current_check.full_classification %}
-    <div class="alert alert-success">
-      <h5>Section complete!</h5>
-      <p>You have selected to perform a full S-VIG classification</p>
-    </div>
-    <div class="alert alert-danger">
-      <h5>Reopen?</h5>
-      <p><b>Warning!</b> This will remove any S-VIG work you've done</p>
-      {% crispy forms.reopen_previous_class_form %}
-    </div>
-
-    {% else %}
-    <div class="alert alert-warning">
-      <h5>Please choose a previous classification to re-use or select 'New classification'</h5>
-      <br>
-      {% crispy forms.previous_class_form %}
-    </div>
-
-    {% endif %}
-  </div>
-</div>
-
-{% else %}
+<!-- if previous section not completed yet, show warning-->
+{% if not classification_info.current_check.info_check %}
 <div class="alert alert-warning">
   Please complete the Variant details tab first
 </div>
+
+{% else %}
+
+  <!-- alert if step is complete -->
+  {% if classification_info.current_check.full_classification %}
+  <div class="alert alert-success">
+    <h5>Section complete!</h5>
+    <p>You have selected to perform a full S-VIG classification</p>
+  </div>
+  <div class="alert alert-danger">
+    <h5>Reopen?</h5>
+    <p><b>Warning!</b> This will remove any S-VIG work you've done</p>
+    {% crispy forms.reopen_previous_class_form %}
+  </div>
+  {% endif %}
+
+  <!-- main section -->
+  <div class="alert alert-success">
+    <h5>This variant is on the canonical list</h5>
+    <h5>This variant has been recently classified in another MPN sample</h5>
+  </div>
+  <div class="alert alert-warning">
+    <h5>We havent been able to match this variant to the canonical list or any previously classified variants</h5>
+    <p>Please review the variants below and select the next option from the dropdown</p>
+  </div>
+
+
+  <h5>Canonical variants in {{ variant_info.gene }}</h5>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th class="col-5">HGVS c.</th>
+        <th class="col-5">HGVS p.</th>
+        <th class="col-2"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in previous_classifications.canonical_list %}
+      <tr>
+        <td>{{ v.hgvs_c }}</td>
+        <td>{{ v.hgvs_p }}</td>
+        <td><a class="btn btn-light w-100">Use this</a></td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="3">There are no canonical variants in this gene</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <br>
+
+
+  <h5>Recent full classifications of this variant in {{ sample_info.specific_tumour_type }}</h5>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th class="col-5">Classification</th>
+        <th class="col-5">Date of classification</th>
+        <th class="col-2"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in previous_classifications.recent_list %}
+      <tr>
+        <td>{{ v.hgvs_p }}</td>
+        <td>TODO</td>
+        <td><a class="btn btn-light w-100">Use this</a></td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="3">There are no recent full classifications of this variant in {{ sample_info.specific_tumour_type }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <!-- TODO show most recent full classifications, limit to ?5 -->
+  <br>
+  <br>
+
+
+  <div class="row">
+    <div class="col-6"><h5>All recent full classifications of this variant</h5></div>
+    <div class="col-6">
+      <a class="btn btn-light w-100" data-toggle="modal" href="#previous-modal" role="button" aria-expanded="false" aria-controls="previous-modal">
+        View <span class="badge badge-pill badge-secondary">5</span>
+      </a>
+    </div>
+  </div>
+  <br>
+  <br>
+
+
+  <!-- form to complete section-->
+  {% if not classification_info.current_check.full_classification %}
+  <div class="alert alert-warning">
+    <h5>Please choose a previous classification to re-use or select 'New classification'</h5>
+    <br>
+    {% crispy forms.previous_class_form %}
+  </div>
+  {% endif %}
+
+
 {% endif %}
+
+
+<!-- previous modal -->
+<div class="modal fade" id="previous-modal" tabindex="-1" role="dialog" aria-labelledby="previous-modal-label" aria-hidden="true">
+  <div class="modal-dialog" style="min-width:60%;" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="previous-modal-label">Previous classifications</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>TODO</p>
+      </div>
+    </div>
+  </div>
+</div>
