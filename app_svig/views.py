@@ -71,10 +71,11 @@ def classify(request, classification):
     context = classification_obj.get_context()
 
     # load in forms and add to context
+    previous_class_choices = classification_obj.get_previous_classification_choices()
     context['forms'] = {
         'check_info_form': CheckInfoForm(),
         'reopen_check_info_form': ResetCheckInfoForm(),
-        'previous_class_form': PreviousClassificationForm(),
+        'previous_class_form': PreviousClassificationForm(previous_class_choices=previous_class_choices),
         'reopen_previous_class_form': ResetPreviousClassificationsForm(),
         'comment_form': CommentForm(),
         'finalise_form': FinaliseCheckForm(),
@@ -110,14 +111,18 @@ def classify(request, classification):
 
         # button to select to use a previous classification or start a new one
         if 'use_previous_class' in request.POST:
-            previous_class_form = PreviousClassificationForm(request.POST)
+            previous_class_form = PreviousClassificationForm(request.POST, previous_class_choices=previous_class_choices)
             if previous_class_form.is_valid():
                 use_previous = previous_class_form.cleaned_data['use_previous_class']
-                if use_previous == 'True':
+                if use_previous == 'canonical':
                     print(use_previous)
                     #TODO change setting in classification obj and save link to reused classification
 
-                elif use_previous == 'False':
+                elif use_previous == 'previous':
+                    print(use_previous)
+                    #TODO change setting in classification obj and save link to reused classification
+
+                elif use_previous == 'new':
                     # change setting in classification obj and load up codes linked to check
                     current_check_obj.full_classification = True
                     current_check_obj.save()

@@ -22,16 +22,6 @@
   {% endif %}
 
   <!-- main section -->
-  <div class="alert alert-success">
-    <h5>This variant is on the canonical list</h5>
-    <h5>This variant has been recently classified in another MPN sample</h5>
-  </div>
-  <div class="alert alert-warning">
-    <h5>We havent been able to match this variant to the canonical list or any previously classified variants</h5>
-    <p>Please review the variants below and select the next option from the dropdown</p>
-  </div>
-
-
   <h5>Canonical variants in {{ variant_info.gene }}</h5>
   <table class="table table-hover">
     <thead>
@@ -42,8 +32,8 @@
       </tr>
     </thead>
     <tbody>
-      {% for v in previous_classifications.canonical_list %}
-      <tr>
+      {% for v in previous_classifications.gene_canonical_list %}
+      <tr {% if v.match %}class="table-info"{% endif %}>
         <td>{{ v.hgvs_c }}</td>
         <td>{{ v.hgvs_p }}</td>
         <td><a class="btn btn-light w-100">Use this</a></td>
@@ -81,13 +71,13 @@
       {% endfor %}
     </tbody>
   </table>
-  <!-- TODO show most recent full classifications, limit to ?5 -->
+  <!-- TODO show most recent full classification -->
   <br>
   <br>
 
 
   <div class="row">
-    <div class="col-6"><h5>All recent full classifications of this variant</h5></div>
+    <div class="col-6"><h5>All recent classifications of this variant</h5></div>
     <div class="col-6">
       <a class="btn btn-light w-100" data-toggle="modal" href="#previous-modal" role="button" aria-expanded="false" aria-controls="previous-modal">
         View <span class="badge badge-pill badge-secondary">5</span>
@@ -100,9 +90,19 @@
 
   <!-- form to complete section-->
   {% if not classification_info.current_check.full_classification %}
-  <div class="alert alert-warning">
-    <h5>Please choose a previous classification to re-use or select 'New classification'</h5>
-    <br>
+  <div class="card-body bg-light">
+    <h5>Pick next step</h5>
+    <!--{% if previous_classifications.canonical_match %}
+    <div class="alert alert-success">
+      <p><b>This variant is on the canonical list</b></p>
+      <p><b>TODO add loop for this - This variant has been recently classified in another MPN sample</b></p>
+    </div>
+    {% else %}
+    <div class="alert alert-warning">
+      <p>Cannot match this variant to the canonical list or any previously classified variants, please review the variants above and select the next option from the dropdown</p>
+    </div>
+    {% endif %}-->
+
     {% crispy forms.previous_class_form %}
   </div>
   {% endif %}
@@ -122,7 +122,19 @@
         </button>
       </div>
       <div class="modal-body">
-        <p>TODO</p>
+        <table class="table table-hover">
+            <thead>
+              <tr>
+                <th class="col-2">Worksheet</th>
+                <th class="col-2">Sample</th>
+                <th class="col-2">Tumour type</th>
+                <th class="col-2">Full classification?</th>
+                <th class="col-2">Class</th>
+                <th class="col-2">Date</th>
+              </tr>
+            </thead>
+
+          </table>
       </div>
     </div>
   </div>

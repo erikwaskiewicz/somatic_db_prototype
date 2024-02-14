@@ -56,13 +56,32 @@ class Variant(models.Model):
         }
         return sample_info
 
-    def get_canonical_variants(self):
+    def get_canonical_gene_variants(self):
         canonical_variants = CanonicalList.objects.filter(gene=self.svd_variant.variant_instance.gene)
-        return canonical_variants
+        l = []
+        matching = self.get_canonical_exact_match()
+        for c in canonical_variants:
+            temp_dict = {
+                'hgvs_c': c.hgvs_c,
+                'hgvs_p': c.hgvs_p,
+                'match': c == matching,
+            }
+            l.append(temp_dict)
+        return l
+
+    def get_canonical_exact_match(self):
+        try:
+            c = CanonicalList.objects.filter(variants=self.pk).latest('pk')
+            return c
+        except:
+            return False
 
     def get_previous_classifications(self):
         """ get all previous classifications of a variant """
-        return {'canonical_list': self.get_canonical_variants()}
+        return {
+            'gene_canonical_list': self.get_canonical_gene_variants(),
+            'canonical_match': self.get_canonical_exact_match(),
+            }
         # get all previous classifications
         # check canonical list - how is this stored?
         # check same tumour type
@@ -133,6 +152,16 @@ class Classification(models.Model):
 
     def get_all_applied_codes(self):
         return list(reversed([c.codes_to_dict() for c in self.get_all_checks()]))
+
+    def get_previous_classification_choices(self):
+        canonical_variant = self.variant.get_canonical_exact_match()
+        previous_classification = False  # TODO
+        if canonical_variant:
+            return (('canonical', f'Confirm selected canonical variant - {canonical_variant.hgvs_p}'), ('new', 'Perform full classification'), )
+        elif previous_classification:
+            return (('previous', f'Use selected previous classification - ???'), ('new', 'Perform full classification'), )
+        else:
+            return (('new', 'Perform full classification'),)
 
 
 class Check(models.Model):
@@ -445,4 +474,7 @@ class CanonicalList(models.Model):
     tumour_type = models.CharField(max_length=20, null=True, blank=True)
     hgvs_c = models.CharField(max_length=50, null=True, blank=True)
     hgvs_p = models.CharField(max_length=50, null=True, blank=True)
-    variants = models.ManyToManyField('Variant', blank=True)  # TODO this is actually more like a variant instance, should be specific variant
+    variants = models.ManyToManyField('Variant', blank=True, related_name='canonical_list')  # TODO this is actually more like a variant instance, should be specific variant
+
+    def contains_variant(self, variant):
+        return self.objects.filter(variants__id=variant)

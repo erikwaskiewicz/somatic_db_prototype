@@ -55,17 +55,16 @@ class PreviousClassificationForm(forms.Form):
     Choose whether to use a previous class of start a new one
 
     """
-    PREVIOUS_CLASS_CHOICES = (
-        (True, 'Use previous'),
-        (False, 'New classification'),
-    )
-    use_previous_class = forms.ChoiceField(choices=PREVIOUS_CLASS_CHOICES)
+    use_previous_class = forms.ChoiceField(label='Choose next step')
     confirm_use_previous_class = forms.BooleanField(required=True, label='Confirm decision')
 
     def __init__(self, *args, **kwargs):
+        self.previous_class_choices = kwargs.pop('previous_class_choices')
+
         super(PreviousClassificationForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = 'POST'
+        self.fields['use_previous_class'].choices = self.previous_class_choices
         self.helper.add_input(
             Submit('submit', "Submit", css_class='btn btn-warning w-100')
         )
