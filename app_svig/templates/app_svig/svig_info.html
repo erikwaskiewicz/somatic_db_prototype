@@ -1,102 +1,106 @@
 {% load crispy_forms_tags %}
-<div class="row">
 
-  <!-- main section -->
-  <div class="col-9">
-
-  <h5>Sample info</h5>
-  <br>
-
-  <table class="table table-hover">
-    <tbody>
-      <tr>
-        <th class="col-4">Sample ID</th>
-        <td class="col-8">{{ sample_info.sample_id }}</td>
-      </tr>
-      <tr>
-        <th>Worksheet</th>
-        <td>{{ sample_info.worksheet_id }}</td>
-      </tr>
-      <tr>
-        <th>SVD panel</th>
-        <td>{{ sample_info.svd_panel }}</td>
-      </tr>
-      <tr>
-        <th>Specific tumour type</th>
-        <td>{{ sample_info.specific_tumour_type }}</td>
-      </tr>
-    </tbody>
-  </table>
-  <br>
-
-  <h5>Variant info</h5>
-  <br>
-
-  <table class="table table-hover">
-    <tbody>
-      <tr>
-        <th class="col-4">Genomic co-ords</th>
-        <td class="col-4">{{ variant_info.genomic }} <span class="badge badge-{{ variant_info.build_css_tag }} badge-pill">GRCh{{ variant_info.build }}</span></td>
-        <td class="col-4"></td>
-      </tr>
-      <tr>
-        <th>Gene</th>
-        <td>{{ variant_info.gene }} ({{ variant_info.exon }})</td>
-        <td></td>
-      </tr>
-      <tr>
-        <th>HGVS c.</th>
-        <td>{{ variant_info.hgvs_c }}</td>
-        <td></td>
-      </tr>
-      <tr>
-        <th>HGVS p.</th>
-        <td>{{ variant_info.hgvs_p }}</td>
-        <td></td>
-      </tr>
-      <tr>
-        <th>Variant consequence</th>
-        <td>{{ variant_info.consequence }}</td>
-        <td>VEP v{{ variant_info.annotation_versions.vep_version }}</td>
-      </tr>
-      <tr>
-        <th>Mode of action</th>
-        <td>{{ variant_info.mode_action }}</td>
-        <td>CGC downloaded {{ variant_info.annotation_versions.cgc_version }}</td>
-      </tr>
-      <tr>
-        <th>Mutation types</th>
-        <td>{{ variant_info.mutation_types }}</td>
-        <td>CGC downloaded {{ variant_info.annotation_versions.cgc_version }}</td>
-      </tr>
-    </tbody>
-  </table>
-
-  </div>
-
-  <!-- forms on side of page -->
-  <div class="col-3">
-
-    <!-- forms when check is complete-->
-    {% if classification_info.current_check.info_check %}
-    <div class="alert alert-success">
-      <h5>Section complete!</h5>
-      <p>You have confirmed that the information on this page is accurate</p>
-    </div>
-    <div class="alert alert-danger">
-      <h5>Reopen?</h5>
-      <p><b>Warning!</b> This will reset any work you've done on the Previous classifications and S-VIG tabs</p>
-        {% crispy forms.reopen_check_info_form %}
-    </div>
-
-    <!-- forms to complete check-->
-    {% else %}
-    <div class="alert alert-warning">
-      <h5>Please confirm that this page has been checked</h5>
-      <br>
-      {% crispy forms.check_info_form %}
-    </div>
-
-    {% endif %}
-  </div>
+<!-- forms when check is complete-->
+{% if classification_info.current_check.info_check %}
+<div class="alert alert-success">
+  <h5>Section complete!</h5>
+  <p>You have confirmed that the information on this page is accurate</p>
 </div>
+<div class="alert alert-danger">
+  <h5>Reopen?</h5>
+  <p><b>Warning!</b> This will reset any work you've done on the Previous classifications and S-VIG tabs</p>
+  {% crispy forms.reopen_check_info_form %}
+</div>
+{% endif %}
+
+
+<!-- main section -->
+<h5>Sample info</h5>
+<br>
+
+<table class="table table-hover">
+  <tbody>
+    <tr>
+      <th class="col-4">Sample ID</th>
+      <td class="col-8">{{ sample_info.sample_id }}</td>
+    </tr>
+    <tr>
+      <th>Worksheet</th>
+      <td>{{ sample_info.worksheet_id }}</td>
+    </tr>
+    <tr>
+      <th>SVD panel</th>
+      <td>{{ sample_info.svd_panel }}</td>
+    </tr>
+    <tr>
+      <th>Specific tumour type</th>
+      <td>{{ sample_info.specific_tumour_type }}</td>
+    </tr>
+  </tbody>
+</table>
+<br>
+
+<h5>Variant info</h5>
+<br>
+
+<table class="table table-hover">
+  <tbody>
+    <tr>
+      <th class="col-4">Genomic co-ords</th>
+      <td class="col-4">{{ variant_info.genomic }} <span class="badge badge-{{ variant_info.build_css_tag }} badge-pill">GRCh{{ variant_info.build }}</span></td>
+      <td class="col-4"></td>
+    </tr>
+    <tr>
+      <th>Gene</th>
+      <td>{{ variant_info.gene }} ({{ variant_info.exon }})</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>HGVS c.</th>
+      <td>{{ variant_info.hgvs_c }}</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>HGVS p.</th>
+      <td>{{ variant_info.hgvs_p }}</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>Variant consequence</th>
+      <td>{{ variant_info.consequence }}</td>
+      <td>VEP v{{ variant_info.annotation_versions.vep_version }}</td>
+    </tr>
+  </tbody>
+</table>
+<br>
+
+<h5>Gene info</h5>
+<br>
+
+<table class="table table-hover">
+  <tbody>
+    <tr>
+      <th class="col-4">Mode of action</th>
+      <td class="col-4">{{ variant_info.mode_action }}</td>
+      <td class="col-4">CGC downloaded {{ variant_info.annotation_versions.cgc_version }}</td>
+    </tr>
+    <tr>
+      <th>Mutation types</th>
+      <td>{{ variant_info.mutation_types }}</td>
+      <td>CGC downloaded {{ variant_info.annotation_versions.cgc_version }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<br><br>
+
+
+<!-- forms to complete check-->
+{% if not classification_info.current_check.info_check %}
+<div class="alert alert-warning">
+  <h5>Please confirm that this page has been checked</h5>
+  <br>
+  {% crispy forms.check_info_form %}
+</div>
+
+{% endif %}
