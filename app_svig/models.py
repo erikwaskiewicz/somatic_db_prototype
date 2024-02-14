@@ -71,7 +71,7 @@ class Classification(models.Model):
 
     def get_sample_info(self):
         sample_info = self.variant.get_sample_info()
-        sample_info['specific_tumour_type'] = 'TODO'  # will be from this object eventually?
+        sample_info['specific_tumour_type'] = 'MDS'  # TODO where will this come from? hopefully analysis app
         return sample_info
 
     def get_classification_info(self):
@@ -116,7 +116,7 @@ class Classification(models.Model):
             return 'Complete'
         else:
             num_checks = self.get_all_checks().count()
-            return f'Pending - check {num_checks}'
+            return f'S-VIG check {num_checks}'
 
     def get_all_applied_codes(self):
         return list(reversed([c.codes_to_dict() for c in self.get_all_checks()]))
