@@ -1072,7 +1072,8 @@ def variant_format_check(chrm, position, ref, alt, panel_bed_path, total_reads, 
 
         #Check to see if the coordinate is an overlapping/intronic variant within a maximum acceptable distance. absolute_distance returns a generator object
         max_acceptable_distance = 20
-        closest_match = min(variant_bed_region.absolute_distance(panel_bed))
+        closest_matches = panel_bed.absolute_distance(variant_bed_region)
+        closest_match = min([match for match in closest_matches if match >= 0])
         if closest_match > max_acceptable_distance:
             
             #Coordinates are not close to any of the BED regions - return error
