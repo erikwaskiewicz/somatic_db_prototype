@@ -1072,9 +1072,17 @@ def variant_format_check(chrm, position, ref, alt, panel_bed_path, total_reads, 
 
         #Check to see if the coordinate is an overlapping/intronic variant within a maximum acceptable distance. absolute_distance returns a generator object
         max_acceptable_distance = 20
-        closest_matches = panel_bed.absolute_distance(variant_bed_region)
-        closest_match = min([match for match in closest_matches if match >= 0])
-        if closest_match > max_acceptable_distance:
+        minimum_distance = max_acceptable_distance + 1 # outside of panel - will fail unless the varaint is close to the bed file
+        for region in panel_bed:
+            if variant_bed_region[0].chrom == region.chrom:
+                distance_downstream = abs(region.start - variant_bed_region[0].start)
+                distance_upstream = abs(region.end - variant_bed_region[0].end)
+                if distance_downstream < minimum_distance:
+                    minimum_distance = distance_downstream
+                if distance_upstream < minimum_distance:
+                    minimum_distance = distance_upstream
+
+        if minimum_distance > max_acceptable_distance:
             
             #Coordinates are not close to any of the BED regions - return error
             return False, 'Genomic coordinates given are not on the panel - Have you used coordinates for the correct genome build?'
