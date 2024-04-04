@@ -11,8 +11,8 @@ from django.contrib.humanize.templatetags.humanize import ordinal
 
 
 # set date range
-start_date = datetime.date(2023, 1, 1)
-end_date = datetime.date(2023, 7, 25)
+start_date = datetime.date(2021, 1, 1)
+end_date = datetime.date(2024, 3, 8)
 
 # headers and list to save output
 out_list = [['Sample', 'Worksheet', 'Assay', 'Run', 'Date', 'Check #', 'Number of checks', 'Check result', 'User', 'Database link']]
