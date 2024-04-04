@@ -112,3 +112,8 @@ To save a new fixture, activate the conda environment and run `python manage.py 
 To save the whole database leave the `<optional model name>` bit blank.
 
 After updating fixtures, you may see the error shown in [issue #15](https://github.com/AWGL/somatic_db/issues/15) when running tests or loading fixtures, follow the instructions in the issue to fix this
+
+
+### Deploy
+
+See [issue #74](https://github.com/AWGL/somatic_db/issues/74) for details on deploying with nginx and gunicorn
