@@ -251,16 +251,17 @@ class VEPAnnotationsConsequence(models.Model):
     The variant consequences used by VEP, described here:
     https://www.ensembl.org/info/genome/variation/prediction/predicted_data.html
     """
-    #TODO make a fixture
     consequence = models.CharField(primary_key=True, max_length=50)
     impact = models.ForeignKey("VEPAnnotationsImpact", on_delete=models.PROTECT)
+
+    def format_display_term(self):
+        return self.consequence.replace("_"," ")
 
 class VEPAnnotationsImpact(models.Model):
     """
     The impact levels for the different VEP consequences, described here:
     https://www.ensembl.org/info/genome/variation/prediction/predicted_data.html
     """
-    #TODO make a fixture
     impact_level = models.CharField(primary_key=True, max_length=20)
 
 class VEPAnnotationsExistingVariation(models.Model):
