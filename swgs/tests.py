@@ -1,7 +1,52 @@
 from django.test import TestCase
-from swgs.tests.test_data.example_inputs import *
-from swgs.tests.test_data.expected_results import *
-from swgs.utils import *
+from swgs.models import *
+from swgs.test_data.example_inputs import *
+from swgs.test_data.expected_results import *
+from swgs.utils import * 
+
+
+class TestPatient(TestCase):
+    """
+    Tests for the Patient model
+    """
+
+    def test_generate_standin_nhs_number(self):
+        standin_nhs_number = Patient.generate_standin_nhs_number()
+        # this is randomly generated but should be 10 characters long and all lowercase
+        self.assertEqual(len(standin_nhs_number), 10)
+        self.assertEqual(standin_nhs_number, standin_nhs_number.lower())
+
+
+class TestVEPAnnotationsPubmed(TestCase):
+    """
+    Tests for the VEPAnnotationsPubmed model
+    """
+
+    def test_format_pubmed_link(self):
+        p = VEPAnnotationsPubmed(pubmed_id="123456")
+        expected_link = "https://pubmed.ncbi.nlm.nih.gov/123456/"
+        self.assertEqual(p.format_pubmed_link(), expected_link)
+
+
+class TestVEPAnnotationsClinvar(TestCase):
+    """
+    Tests for the VEPAnnotationsClinvar model
+    """
+
+    def test_format_clinvar_link(self):
+        pass
+
+
+class TestVEPAnnotationsConsequence(TestCase):
+    """
+    Tests for the VEPAnnotaitonsConsequence model
+    """
+
+    def test_display_term(self):
+        i = VEPAnnotationsImpact(impact_level="HIGH")
+        c = VEPAnnotationsConsequence(consequence="transcript_ablation", impact=i)
+        expected_display_term = "transcript ablation"
+        self.assertEqual(expected_display_term, c.format_display_term())
 
 class TestVCFToDict(TestCase):
     """
@@ -10,7 +55,7 @@ class TestVCFToDict(TestCase):
     """
 
     def setUp(self):
-        self.somatic_vcf = "swgs/tests/test_data/Test_somatic.vcf.gz"
+        self.somatic_vcf = "swgs/test_data/Test_somatic.vcf.gz"
 
     def test_read_in_vcf(self):
         header_lines, variants = read_in_vcf(self.somatic_vcf)
