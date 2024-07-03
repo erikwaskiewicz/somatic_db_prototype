@@ -150,7 +150,7 @@
 
             <!-- button when no one is assigned to an analysis 1st check (goes to check modal for 1st check only)-->
             {% elif analysis.checks.assigned_to == None and analysis.checks.current_status == 'IGV check 1' %}
-            <a class="btn btn-secondary btn-block" href="#" data-toggle="modal" data-target="#check-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-assay="{{ analysis.assay }}" data-ws="{{ worksheet }}" data-run="{{ run_id }}">
+            <a class="btn btn-secondary btn-block" href="#" data-toggle="modal" data-target="#check-modal" data-pk="{{ analysis.analysis_id }}" data-sample="{{ sample }}" data-panel="{{ analysis.panel }}" data-ws="{{ worksheet }}" data-run="{{ run_id }}">
               Assign to me & analyse
             </a>
 
@@ -313,7 +313,7 @@
             </tr>
             <tr>
               <th>Assay</td>
-              <td class="modal-assay"></td>
+              <td>{{ assay }}</td>
             </tr>
           </tbody>
         </table>
