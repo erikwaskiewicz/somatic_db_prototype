@@ -8,8 +8,8 @@
 
 - Developer guide
   - [Quick install](developer_guide/quick_install.md)
+  - [Deployment](developer_guide/deploy.md)
   - [Unit tests](developer_guide/unit_tests.md)
   - [Database schema](developer_guide/schema.md)
-  - [Deployment](developer_guide/deploy.md)
   - [Common errors](developer_guide/common_errors.md)
   - [Updating documentation](developer_guide/docs.md)

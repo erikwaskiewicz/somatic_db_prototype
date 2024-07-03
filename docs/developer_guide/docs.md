@@ -2,11 +2,11 @@
 
 This documentation has been build using docsify - https://docsify.js.org/
 
-### Deploying these docs
+## Deploying these docs
 
 The docs will be hosted using Github pages following these instructions - https://docsify.js.org/#/deploy
 
-### Previewing changes
+## Previewing changes
 
 The docs will be rendered nicely once pushed up to Github, however if you are updating the docs and would like to preview your changes, follow these commands:
 
