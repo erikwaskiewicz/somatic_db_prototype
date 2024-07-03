@@ -111,6 +111,7 @@ def ajax_num_pending_worksheets(request):
     """
     AJAX call for the number of uncompleted worksheets
     Loaded in the background when the home page is loaded
+    TODO this isnt being called anymore because it might be causing the database to be slow, will test on live database
     """
     if request.is_ajax():
         # get all worksheets then filter for only ones that have a current IGV check in them

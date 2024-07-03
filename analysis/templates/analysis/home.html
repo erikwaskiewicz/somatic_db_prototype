@@ -50,7 +50,7 @@
         </div>
       </div>
 
-      <div id="num_pending_alert" class="alert alert-warning" role="alert">
+      <!--<div id="num_pending_alert" class="alert alert-warning" role="alert">
         <div class="row">
           <div class="col-10">
             <h5>
@@ -64,7 +64,7 @@
           </div>
           <div class="col-2"><a class="btn btn-light w-100" href="{% url 'view_worksheets' 'pending' %}"><i class="fa fa-search"></i></a></div>
         </div>
-      </div>
+      </div>-->
 
       <div id="num_qc_alert" class="alert alert-warning" role="alert">
         <div class="row">
@@ -123,8 +123,6 @@
 <script src="{% static 'custom/js/home.js' %}" defer
         data-ajax-search-url='{% url "ajax-search-ws" %}'
         data-temp-sample-url='{% url "view_ws_samples" "temp" %}'
-        data-num-pending-url='{% url "ajax-num-pending" %}'
-        data-num-qc-url='{% url "ajax-num-qc" %}'
         data-num-assigned-url='{% url "ajax-num-assigned" request.user.pk %}'>
 </script>
 

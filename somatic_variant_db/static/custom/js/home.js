@@ -69,28 +69,28 @@ $(document).ready(function(){
         }
     });
 
-    // AJAX for number of non-complete worksheets - seperate call as this is likely to take longer
-    $.ajax({
-        url: num_pending_url,
-        type: 'GET',
-        success: function(data) {
-            setTimeout(function() {
-                // set number of checks value and CSS
-                num_checks_span = document.getElementById('num_pending_text')
-                num_checks_span.innerHTML = '<b>' + data.num_pending + '</b>';
-                num_checks_span.classList.remove('badge-warning');
-                num_checks_span.classList.add('badge-' + data.css_class);
+    // AJAX for number of non-complete worksheets - seperate call as this is likely to take longer - commented out as database is slow
+    //$.ajax({
+    //    url: num_pending_url,
+    //    type: 'GET',
+    //    success: function(data) {
+    //        setTimeout(function() {
+    //            // set number of checks value and CSS
+    //            num_checks_span = document.getElementById('num_pending_text')
+    //            num_checks_span.innerHTML = '<b>' + data.num_pending + '</b>';
+    //            num_checks_span.classList.remove('badge-warning');
+    //            num_checks_span.classList.add('badge-' + data.css_class);
 
-                // set background colour of the box
-                num_checks_alert = document.getElementById('num_pending_alert');
-                num_checks_alert.classList.remove('alert-warning');
-                num_checks_alert.classList.add('alert-' + data.css_class);
-            }, 500)
-        },
-        failure: function(data) {
-            alert('Got an error');
-        }
-    });
+    //            // set background colour of the box
+    //            num_checks_alert = document.getElementById('num_pending_alert');
+    //            num_checks_alert.classList.remove('alert-warning');
+    //            num_checks_alert.classList.add('alert-' + data.css_class);
+    //        }, 500)
+    //    },
+    //    failure: function(data) {
+    //        alert('Got an error');
+    //    }
+    //});
 
     // AJAX for number of worksheets waiting on bioinf QC - seperate call as this is likely to take longer
     $.ajax({
