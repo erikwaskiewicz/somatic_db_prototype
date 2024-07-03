@@ -97,6 +97,7 @@ $('#check-modal').on('show.bs.modal', function (event) {
     var pk = button.data('pk');
     var sample = button.data('sample');
     var panel = button.data('panel');
+    var assay = button.data('assay');
     var ws = button.data('ws');
     var run = button.data('run');
     var modal = $(this);
@@ -105,6 +106,7 @@ $('#check-modal').on('show.bs.modal', function (event) {
     modal.find('.modal-pk').text(pk);
     modal.find('.modal-sample').text(sample);
     modal.find('.modal-panel').text(panel);
+    modal.find('.modal-assay').text(assay);
     modal.find('.modal-ws').text(ws);
     modal.find('.modal-run').text(run);
 
