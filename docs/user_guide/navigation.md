@@ -1,4 +1,4 @@
-# Navigating the Somatic Variant Database
+# SVD user guide - Navigation
 
 ## The home page
 

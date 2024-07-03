@@ -1,4 +1,4 @@
-# The SVD options page
+# SVD user guide - Options page
 
 ## How to access
 
