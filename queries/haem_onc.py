@@ -8,7 +8,7 @@
 # Date 11/05/23 - NT
 # Use: python manage.py shell < /home/ew/somatic_db/queries/haem_onc.py (with somatic_variant_db env activate)
 
-from analysis.models import SampleAnalysis, VariantInstance, Panel
+from analysis.models import SampleAnalysis, VariantInstance, Panel, VariantCheck
 from django.contrib.humanize.templatetags.humanize import ordinal
 from django.db.models import Q
 import pandas as pd
@@ -19,10 +19,13 @@ myeloid_samples = SampleAnalysis.objects.filter(panel = myeloid_panel_obj)
 
 myeloid_variant_sample_obj = VariantInstance.objects.all()
 
+myeloid_comment_obj = VariantCheck.objects.all()
+
 # Loop through samples and pull out data
 myeloid_sample_list = []
 myeloid_outlist = []
 myeloid_variant_list = []
+myeloid_comment = []
 
 for v in myeloid_variant_sample_obj:
 	myeloid_sample_list.append(v.sample.sample_id)
@@ -45,12 +48,22 @@ for s in myeloid_samples:
 	else:
 		print('fuck')
 
+for c in myeloid_comment_obj:
+	if c.variant_analysis.sample_analysis.sample.sample_id in myeloid_sample_list:
+		myeloid_comment.append([c.variant_analysis.sample_analysis.sample.sample_id,
+			, c.decision
+			, c.comment
+			, c.comment_updated])
+
 myeloid_variant_df = pd.DataFrame(myeloid_outlist, columns = ['sample', 'panel', 'worksheet', 'run'])
 
 myeloid_sample_df = pd.DataFrame(myeloid_variant_list, columns = ['sample', 'gene', 'variant', 'hgvs_p', 'hgvs_c', 'total_reads', 'vaf'])	
 
-myeloid_final = pd.merge(myeloid_variant_df, myeloid_sample_df, on='sample')
+myeloid_comment_df pd.DataFrame(myeloid_variant_list, columns = ['sample', 'decision', 'comment', 'comment_updated'])
 
+myeloid_first = pd.merge(myeloid_variant_df, myeloid_sample_df, on='sample')
+
+myeloid_final = pd.merge(myeloid_first, myeloid_comment_df, on='sample')
 
 
 

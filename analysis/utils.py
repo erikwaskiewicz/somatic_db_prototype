@@ -108,7 +108,7 @@ def reopen_check(current_user, sample_analysis_obj):
     sample_analysis_obj.save()
 
     return True
-        
+
 
 @transaction.atomic
 def signoff_check(user, current_step_obj, sample_obj, status='C', complete=False):
@@ -332,6 +332,7 @@ def get_variant_info(sample_data, sample_obj):
     variant_calls = []
     reportable_list = []
     filtered_list = []
+    other_calls_list = []
     poly_count = 0
     artefact_count = 0
 
@@ -406,8 +407,12 @@ def get_variant_info(sample_data, sample_obj):
                 last_two_checks_agree = False
 
         # if variant is to appear on report tab, add to list
-        if sample_variant.variant_instance.get_final_decision_display() in ['Genuine', 'Miscalled']:
+        if sample_variant.variant_instance.get_final_decision_display() in ['Genuine']:
             reportable_list.append(variant_obj.variant)
+
+        # list of other calls to go in the footer of the report
+        if sample_variant.variant_instance.get_final_decision_display() in ['Miscalled', 'Failed call']:
+            other_calls_list.append(f'{sample_variant.variant_instance.gene} {sample_variant.variant_instance.hgvs_c}')
 
         # get list of comments for variant
         variant_comments_list = []
@@ -485,6 +490,12 @@ def get_variant_info(sample_data, sample_obj):
     else:
         no_calls = False
 
+    # make list of other calls to go in footer of PDF report
+    if len(other_calls_list) == 0:
+        other_calls_text = 'None'
+    else:
+        other_calls_text = ', '.join(other_calls_list)
+
     # return as variantr data dictionary
     variant_data = {
         'variant_calls': variant_calls, 
@@ -492,6 +503,7 @@ def get_variant_info(sample_data, sample_obj):
         'poly_count': poly_count,
         'artefact_count': artefact_count,
         'no_calls': no_calls,
+        'other_calls_text': other_calls_text,
         'check_options': VariantCheck.DECISION_CHOICES,
     }
 
@@ -508,12 +520,13 @@ def get_fusion_info(sample_data, sample_obj):
     fusion_calls = []
     reportable_list = []
     filtered_list = []
+    other_calls_list = []
     artefact_count = 0
 
     for fusion_object in fusions:
 
         # get checks for each variant
-        fusion_checks = FusionCheck.objects.filter(fusion_analysis=fusion_object)
+        fusion_checks = FusionCheck.objects.filter(fusion_analysis=fusion_object).order_by('pk')
         fusion_checks_list = [ v.get_decision_display() for v in fusion_checks ]
         latest_check = fusion_checks.latest('pk')
 
@@ -549,8 +562,12 @@ def get_fusion_info(sample_data, sample_obj):
                 )
 
         # if variant is to appear on report tab, add to list
-        if fusion_object.fusion_instance.get_final_decision_display() in ['Genuine', 'Miscalled']:
+        if fusion_object.fusion_instance.get_final_decision_display() in ['Genuine']:
             reportable_list.append(fusion_object)
+
+        # list of other calls to go in the footer of the report
+        if fusion_object.fusion_instance.get_final_decision_display() in ['Miscalled', 'Failed call']:
+            other_calls_list.append(fusion_object.fusion_instance.fusion_genes.fusion_genes)
 
         # only get VAF when panel setting says so, otherwise return none
         panel = sample_obj.panel
@@ -611,11 +628,18 @@ def get_fusion_info(sample_data, sample_obj):
     else:
         no_calls = False
 
+        # make list of other calls to go in footer of PDF report
+    if len(other_calls_list) == 0:
+        other_calls_text = 'None'
+    else:
+        other_calls_text = ', '.join(other_calls_list)
+
     fusion_data = {
         'fusion_calls': fusion_calls,
         'filtered_calls': filtered_list,
         'artefact_count': artefact_count,
         'no_calls': no_calls,
+        'other_calls_text': other_calls_text,
         'check_options': FusionCheck.DECISION_CHOICES,
     }
 
@@ -679,48 +703,35 @@ def get_coverage_data(sample_obj, depth_cutoffs):
             else:
                 counts_cosmic = 'N/A'
 
+            # make temp dict of info for each gap
+            gaps_dict = {
+                'genomic': gap.genomic(),
+                'gene': gap.hgvs_c.split('(')[0],
+                'hgvs_transcript': gap.hgvs_c.split('(')[1].split(')')[0],
+                'hgvs_c': gap.hgvs_c.split(':')[1],
+                'percent_cosmic': percent_cosmic,
+                'counts_cosmic': counts_cosmic,
+            }
+
+            # add the dict to the list for the correct coverage cutoff
             # gaps at 135x
             if gap.coverage_cutoff == 135:
                 gaps_present_135 = True
-                gaps_dict = {
-                    'genomic': gap.genomic(),
-                    'hgvs_c': gap.hgvs_c,
-                    'percent_cosmic': percent_cosmic,
-                    'counts_cosmic': counts_cosmic,
-                }
                 gaps_135.append(gaps_dict)
 
             # gaps at 270x
             elif gap.coverage_cutoff == 270:
                 gaps_present_270 = True
-                gaps_dict = {
-                    'genomic': gap.genomic(),
-                    'hgvs_c': gap.hgvs_c,
-                    'percent_cosmic': percent_cosmic,
-                    'counts_cosmic': counts_cosmic,
-                }
                 gaps_270.append(gaps_dict)
 
             # gaps at 500x
             elif gap.coverage_cutoff == 500:
                 gaps_present_500 = True
-                gaps_dict = {
-                    'genomic': gap.genomic(),
-                    'hgvs_c': gap.hgvs_c,
-                    'percent_cosmic': gap.percent_cosmic,
-                    'counts_cosmic': counts_cosmic,
-                }
                 gaps_500.append(gaps_dict)
 
             # gaps at 1000x
             elif gap.coverage_cutoff == 1000:
                 gaps_present_1000 = True
-                gaps_dict = {
-                    'genomic': gap.genomic(),
-                    'hgvs_c': gap.hgvs_c,
-                    'percent_cosmic': percent_cosmic,
-                    'counts_cosmic': counts_cosmic,
-                }
                 gaps_1000.append(gaps_dict)
 
         # combine gaps and regions dictionaries
@@ -1010,8 +1021,8 @@ def get_fusion_list(artefact_list_obj, user):
             checking_list.append(formatted_variant)
 
     return confirmed_list, checking_list
-  
-    
+
+
 def if_nucleotide(string):
     """
     Function to check if nucleotide is a string
@@ -1058,8 +1069,23 @@ def variant_format_check(chrm, position, ref, alt, panel_bed_path, total_reads, 
     
     #If the coordinates are in the wrong genome build - check they overlap with bed (calculated above)
     if overlaps_panel == 0:
+
+        #Check to see if the coordinate is an overlapping/intronic variant within a maximum acceptable distance. absolute_distance returns a generator object
+        max_acceptable_distance = 20
+        minimum_distance = max_acceptable_distance + 1 # outside of panel - will fail unless the varaint is close to the bed file
+        for region in panel_bed:
+            if variant_bed_region[0].chrom == region.chrom:
+                distance_downstream = abs(region.start - variant_bed_region[0].start)
+                distance_upstream = abs(region.end - variant_bed_region[0].end)
+                if distance_downstream < minimum_distance:
+                    minimum_distance = distance_downstream
+                if distance_upstream < minimum_distance:
+                    minimum_distance = distance_upstream
+
+        if minimum_distance > max_acceptable_distance:
             
-        return False, 'Genomic coordinates given are not on the panel - Have you used coordinates for the correct genome build?'
+            #Coordinates are not close to any of the BED regions - return error
+            return False, 'Genomic coordinates given are not on the panel - Have you used coordinates for the correct genome build?'
                 
     #Check ref/alt format (check below)
     ref_check = if_nucleotide(ref)

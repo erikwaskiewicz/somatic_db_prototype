@@ -74,6 +74,7 @@
   <!-- SNV section - variant calls ------------------------------>
   {% if sample_data.panel_obj.show_snvs %}
   <h2>SNVs & indels - variant calls</h2>
+  <small class="form-text text-muted">Only genuine variants are displayed here, any miscalled or failed calls are listed at the end of this report</small>
 
   <table>
     <thead>
@@ -91,10 +92,10 @@
     {% if variant_data.no_calls %}
       <tr><td colspan="7">No calls</td></tr>
 
-    <!-- otherwise list all genuine or miscalled variants -->
+    <!-- otherwise list all genuine variants -->
     {% else%}
       {% for v in variant_data.variant_calls %}
-        {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
+        {% if v.final_decision == "Genuine" %}
         <tr>
           <td>{{ v.genomic | truncatechars:20 }}
           {% if v.manual_upload %}
@@ -212,7 +213,7 @@
       {% for gene, values in coverage_data.regions.items %}
         {% for gap in values.gaps_135 %}
         <tr>
-          <td>{{ gap.hgvs_c }}</td>
+          <td>{{ gap.gene }}({{ gap.hgvs_transcript }}):{{ gap.hgvs_c }}</td>
           <td>{{ gap.percent_cosmic }}</td>
           <td>{{ gap.counts_cosmic }}</td>
         </tr>
@@ -241,7 +242,7 @@
       {% for gene, values in coverage_data.regions.items %}
         {% for gap in values.gaps_270 %}
         <tr>
-          <td>{{ gap.hgvs_c }}</td>
+          <td>{{ gap.gene }}({{ gap.hgvs_transcript }}):{{ gap.hgvs_c }}</td>
           <td>{{ gap.percent_cosmic }}</td>
           <td>{{ gap.counts_cosmic }}</td>
         </tr>
@@ -270,7 +271,7 @@
       {% for gene, values in coverage_data.regions.items %}
         {% for gap in values.gaps_500 %}
         <tr>
-          <td>{{ gap.hgvs_c }}</td>
+          <td>{{ gap.gene }}({{ gap.hgvs_transcript }}):{{ gap.hgvs_c }}</td>
           <td>{{ gap.percent_cosmic }}</td>
           <td>{{ gap.counts_cosmic }}</td>
         </tr>
@@ -299,7 +300,7 @@
       {% for gene, values in coverage_data.regions.items %}
         {% for gap in values.gaps_1000 %}
         <tr>
-          <td>{{ gap.hgvs_c }}</td>
+          <td>{{ gap.gene }}({{ gap.hgvs_transcript }}):{{ gap.hgvs_c }}</td>
           <td>{{ gap.percent_cosmic }}</td>
           <td>{{ gap.counts_cosmic }}</td>
         </tr>
@@ -321,6 +322,8 @@
 
   {% if sample_data.panel_obj.show_fusions %}
   <h2>Fusions</h2>
+  <small class="form-text text-muted">Only genuine fusions are displayed here, any miscalled or failed calls are listed at the end of this report</small>
+
   <table>
     <thead>
       <tr>
@@ -336,10 +339,13 @@
 
     <tbody>
     {% if fusion_data.no_calls %}
-      <tr><td colspan="6">No calls</td></tr>
+      {% if sample_data.panel_obj.show_fusion_vaf %}<tr><td colspan="7">No calls</td></tr>
+      {% else %}<tr><td colspan="6">No calls</td></tr>
+      {% endif %}
+
     {% else %}
       {% for v in fusion_data.fusion_calls %}
-      {% if v.final_decision == "Genuine" or v.final_decision == "Miscalled" %}
+      {% if v.final_decision == "Genuine" %}
       <tr>
         <td>{{ v.fusion_genes }}</td>
         <td>{{ v.fusion_supporting_reads }}</td>
@@ -432,6 +438,17 @@
   <br>
   
   <!-- footer -->
+  <!-- list any miscalled or failed variants -->
+  {% if sample_data.panel_obj.show_snvs %}
+  <p class="form-text text-muted">Miscalled or failed SNV/indels, please refer back to the SVD to see more detail: {{ variant_data.other_calls_text }}</p>
+  {% endif %}
+
+  <!-- list any miscalled or failed fusions -->
+  {% if sample_data.panel_obj.show_fusions %}
+  <p class="form-text text-muted">Miscalled or failed fusions, please refer back to the SVD to see more detail: {{ fusion_data.other_calls_text }}</p>
+  {% endif %}
+
+  <!-- audit trail -->
   <p>View report in somatic variant database: <a href="http://10.59.210.247:8000/analysis/{{ sample_data.sample_pk }}#report" target="_blank">http://10.59.210.247:8000/analysis/{{ sample_data.sample_pk }}#report</a></p>
   <p>PDF report generated {% now "jS F Y H:i" %}</p>
 
