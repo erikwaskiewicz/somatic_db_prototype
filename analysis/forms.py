@@ -40,7 +40,8 @@ class PaperworkCheckForm(forms.Form):
     """
     Form that users tick after they have checked patient paperwork to confirm referral is correct
     """
-    paperwork_check = forms.BooleanField(required=True, label='Confirm that paperwork is correct')
+    paperwork_check = forms.BooleanField(required=True, label='Confirm that paperwork is correct for the sample above')
+    igv_check = forms.BooleanField(required=True, label='Confirm that IGV settings are correct for the assay above')
     sample = forms.CharField(widget=forms.HiddenInput(), required=False)
 
     def __init__(self, *args, **kwargs):
