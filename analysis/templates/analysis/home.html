@@ -123,7 +123,8 @@
 <script src="{% static 'custom/js/home.js' %}" defer
         data-ajax-search-url='{% url "ajax-search-ws" %}'
         data-temp-sample-url='{% url "view_ws_samples" "temp" %}'
-        data-num-assigned-url='{% url "ajax-num-assigned" request.user.pk %}'>
+        data-num-assigned-url='{% url "ajax-num-assigned" request.user.pk %}'
+        data-num-qc-url='{% url "ajax-num-qc" %}'>
 </script>
 
 {% endblock %}
