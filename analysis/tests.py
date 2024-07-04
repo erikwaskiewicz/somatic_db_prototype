@@ -1344,6 +1344,10 @@ class TestDna(TestCase):
         variant7_check, error = variant_format_check('86', 55241609, 'A', 'T', panel_obj.bed_file.path, 100, 0)
         self.assertFalse(variant7_check)
 
+        #Correct format and close to bed region (note: this variant is 5bp out - test will fail if threshold in utils.py is set below 5)
+        variant8_check, error = variant_format_check('7', 55241746, 'A', 'T', panel_obj.bed_file.path, 100, 10)
+        self.assertTrue(variant8_check)
+
 
 class TestNTCCalls(TestCase):
     """

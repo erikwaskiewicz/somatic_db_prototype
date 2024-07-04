@@ -1,9 +1,9 @@
-
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
 
-from django.contrib.auth.models import User
 from analysis.models import *
 
 import os
@@ -15,7 +15,7 @@ from argparse import RawTextHelpFormatter
 class Command(BaseCommand):
     help = textwrap.dedent(
     """
-    Import a poly list from file, file should be in the following format:
+    Import a poly/ artefact list from file, file should be in the following format:
         Variant
         <genomic_coords_variant_1>
         <genomic_coords_variant_2>
@@ -37,8 +37,8 @@ class Command(BaseCommand):
 
 
     def add_arguments(self, parser):
-        parser.add_argument('--list', nargs=1, type=str, required=True, help='Poly list file')
-        parser.add_argument('--genome', nargs=1, type=str, required=True, help='Genome build as 37 or 38')
+        parser.add_argument('--variants', nargs=1, type=str, required=True, help='Poly/ artefact list file')
+        parser.add_argument('--list', nargs=1, type=str, required=True, help='Name of the variant list within the SVD')
         parser.add_argument('--both_checks', default=False, action='store_true', help='Autocomplete both checks for each poly. IMPORTANT for use in dev work only')
 
 
@@ -48,30 +48,36 @@ class Command(BaseCommand):
         Run poly upload script
         """
         # extract variables from argparse
-        poly_list = options['list'][0]
+        variant_file = options['variants'][0]
 
         # check that inputs are valid
-        if not os.path.isfile(poly_list):
-            raise IOError(f'{poly_list} file does not exist')
+        if not os.path.isfile(variant_file):
+            raise IOError(f'{variant_file} file does not exist')
 
         #  get poly list object
-        genome = options['genome'][0]
-        if genome == '37': 
-            list_obj = VariantList.objects.get(name='build_37_polys')
+        db_list = options['list'][0]
+        try:
+            list_obj = VariantList.objects.get(name=db_list)
 
-        elif genome == '38':
-            list_obj = VariantList.objects.get(name='build_38_polys')
+        # throw error if list doesnt exist and show all available lists
+        except ObjectDoesNotExist:
+            all_variant_lists = [v.name for v in VariantList.objects.all()]
+            all_variant_lists_str = ', '.join(all_variant_lists)
+            exit(f'ERROR\t{timezone.now()}\tVariant list does not exist, options are: {all_variant_lists_str}')
 
-        # error handling to make sure correct genome build is picked (otherwise it'll add a load of weird variants to the wrong list)
-        validate_build = input(f'You have entered "{genome}" for the genome build, to confirm that this is correct please re-enter the build: \n')
-        if genome != validate_build:
-            exit(f'ERROR\t{timezone.now()}\t"{validate_build}" does not match the input genome build "{genome}", check inputs and try again')
+        # error handling to make sure correct variant list is picked
+        validate_build = input(f'You have entered "{db_list}" for the variant list, to confirm that this is correct please re-enter the list name: \n')
+        if db_list != validate_build:
+            exit(f'ERROR\t{timezone.now()}\t"{validate_build}" does not match the input list "{db_list}", check inputs and try again')
 
         # get admin user to put aginst auto checks, must already exist
         user = User.objects.get(username='admin')
 
+        # get genome build from variant list - used if any new variant objects are added
+        genome = list_obj.genome_build
+
         # make variants and variant checks
-        with open(poly_list) as f:
+        with open(variant_file) as f:
             reader = csv.DictReader(f, delimiter=',')
 
             for v in reader:
