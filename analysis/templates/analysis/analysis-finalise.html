@@ -2,7 +2,6 @@
 
 <!-- this tab is only rendered if there are still checks to perform -->
 
-
 <h5>Comments</h5>
 <table class="table table-sm table-striped table-hover">
   <thead>
@@ -21,7 +20,7 @@
       <td>
         {% if check.status ==  'C' %}
         <span class="badge badge-pill badge-success">Pass</span>
-        {% elif check.status ==  'P' %}
+        {% elif check.status ==  '-' %}
         <span class="badge badge-pill badge-secondary">{{ check.get_status_display }}</span>
         {% else %}
         <span class="badge badge-pill badge-danger">{{ check.get_status_display }}</span>
@@ -35,7 +34,7 @@
   {% endfor %}
 </table>
 
-{% if sample_data.status == 'Bioinformatics QC' %}
+{% if 'Bioinformatics QC' in sample_data.status %}
 <br>
 <br>
 <div class="alert alert-danger">
@@ -44,7 +43,7 @@
   {% crispy sample_qc_form %}
 </div>
 
-{% else %}
+{% elif 'IGV' in sample_data.status %}
 <div class="card-body">
   {% crispy sample_comment_form %}
 </div>

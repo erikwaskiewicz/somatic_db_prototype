@@ -158,7 +158,7 @@
 
             <!-- button when analysis is a fail -->
             {% elif 'fail' in analysis.status %}
-            <a class="btn btn-danger btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">Analysis fail</a>
+            <a class="btn btn-danger btn-block" href="{% url 'analysis_sheet' analysis.analysis_id %}#report" role="button">{{ analysis.status }}</a>
 
             <!-- button when no one is assigned to an analysis 1st check (goes to check modal for 1st check only)-->
             {% elif analysis.checks.assigned_to == None and analysis.status == 'IGV check 1' %}

@@ -172,7 +172,7 @@ class SampleAnalysis(models.Model):
         ('-', 'Pending'),
         ('C', 'Complete'),
         ('F', 'Analysis fail'),
-        ('Q', 'QC fail'),
+        ('Q', 'Bioinformatics QC fail'),
     )
     worksheet = models.ForeignKey('Worksheet', on_delete=models.CASCADE)
     sample = models.ForeignKey('Sample', on_delete=models.CASCADE)
@@ -224,12 +224,15 @@ class SampleAnalysis(models.Model):
 
     def get_status(self):
         """return current status of sample"""
-        # if worksheet pass/fail isnt set then sample is still in bioinformatics QC
-        if self.worksheet.auto_qc_pass_fail == '-':
-            return 'Bioinformatics QC'
         # sample_pass_fail is set when analysis is complete, so use that value if its set
+        if self.worksheet.auto_qc_pass_fail == 'F':
+            return 'Bioinformatics QC fail'
         elif self.sample_pass_fail != '-':
             return self.get_sample_pass_fail_display()
+        # if worksheet pass/fail isnt set then sample is still in bioinformatics QC
+        elif self.worksheet.auto_qc_pass_fail == '-':
+            num_checks = Check.objects.filter(analysis = self).count()
+            return f'Bioinformatics QC {num_checks}'
         # otherwise the status is IGV checking, use total num checks to get the check number
         else:
             num_checks = Check.objects.filter(analysis = self).count()
@@ -371,7 +374,7 @@ class SampleAnalysis(models.Model):
             previous_pass_fail = all_checks['previous_check_object'].get_status_display()
             if (selection == 'next_step_pass') and (previous_pass_fail != 'Complete'):
                 error_list.append("Overall pass/ fail of previous two checks doesn't match")
-            elif (selection == 'next_step_fail') and (previous_pass_fail != 'Fail'):
+            elif (selection == 'next_step_fail') and (previous_pass_fail != 'Analysis fail'):
                 error_list.append("Overall pass/ fail of previous two checks doesn't match")
 
             # only run variant checks when analysis is a pass
@@ -412,19 +415,21 @@ class SampleAnalysis(models.Model):
     @transaction.atomic
     def finalise(self, pass_fail):
         """ closes a case and sets final decision for all snvs/fusions """
-        # calculate final decison for all snvs and commit to database
-        if self.panel.show_snvs:
-            for v in self.all_panel_snvs():
-                final_decision = v.calculate_final_decision(pass_fail)
-                v.variant_instance.final_decision = final_decision
-                v.variant_instance.save()
+        # skip this if a QC fail
+        if pass_fail != 'Q':
+            # calculate final decison for all snvs and commit to database
+            if self.panel.show_snvs:
+                for v in self.all_panel_snvs():
+                    final_decision = v.calculate_final_decision(pass_fail)
+                    v.variant_instance.final_decision = final_decision
+                    v.variant_instance.save()
 
-        # calculate final decison for all fusions and commit to database
-        if self.panel.show_fusions:
-            for v in self.all_panel_fusions():
-                final_decision = v.calculate_final_decision(pass_fail)
-                v.fusion_instance.final_decision = final_decision
-                v.fusion_instance.save()
+            # calculate final decison for all fusions and commit to database
+            if self.panel.show_fusions:
+                for v in self.all_panel_fusions():
+                    final_decision = v.calculate_final_decision(pass_fail)
+                    v.fusion_instance.final_decision = final_decision
+                    v.fusion_instance.save()
 
         # sample pass/fail
         self.sample_pass_fail = pass_fail
@@ -438,7 +443,7 @@ class SampleAnalysis(models.Model):
         # add new check object
         new_check_obj = Check(
             analysis=self,
-            status='P',
+            status='-',
         )
         new_check_obj.save()
 
@@ -469,9 +474,10 @@ class Check(models.Model):
 
     """
     STATUS_CHOICES = (
-        ('P', 'Pending'),
+        ('-', 'Pending'),
         ('C', 'Complete'),
-        ('F', 'Fail'),
+        ('F', 'Analysis fail'),
+        ('Q', 'Bioinformatics QC fail'),
     )
     analysis = models.ForeignKey('SampleAnalysis', on_delete=models.CASCADE)
     status = models.CharField(max_length=1, choices=STATUS_CHOICES)

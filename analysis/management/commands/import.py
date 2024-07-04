@@ -259,7 +259,7 @@ class Command(BaseCommand):
 
         new_check = Check(
             analysis=new_sample_analysis,
-            status='P',
+            status='-',
         )
         new_check.save()
 

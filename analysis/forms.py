@@ -94,7 +94,7 @@ class SampleQCForm(forms.Form):
     """
     """
     confirm = forms.BooleanField(required=True, label='Patient name has been checked')
-    sample_comment = forms.CharField(
+    fail_reason = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 2}),
         required=True,
         label='Reason for QC fail:'

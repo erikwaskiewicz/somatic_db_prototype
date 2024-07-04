@@ -62,7 +62,6 @@ def signup(request):
                 usersettings.save()
 
                 return redirect('home')
-                #TODO - add some kind of confirmation
 
             # if LIMS initials already exists then throw an error
             else:
@@ -451,19 +450,22 @@ def analysis_sheet(request, sample_id):
     Display coverage and variant metrics to allow checking of data 
     in IGV
 
-    # TODO ability to set as bioinf qc fail without clicking through the whole analysis page
-    # TODO if whole run fail it should set all samples to fail
+    # TODO send back for bioinformatics check4
+    # TODO completed or failed samples still show as assigned to the last check user
+    # TODO sometimes the wrong sections are rendered in the analysis page, could be simplfied
     # TODO 'not analysed' option for sample/run, would need a generic 'not analysed' panel probably
 
     """
-    # load sample object, error if the paperwork check hasnt been done
+    # load sample object
     sample_obj = SampleAnalysis.objects.get(pk = sample_id)
-    if sample_obj.paperwork_check == False:
-        raise Http404("Paperwork hasn't been checked")
 
     # load in data that is common to both RNA and DNA workflows
     sample_data = get_sample_info(sample_obj)
     current_step_obj = sample_data['checks']['current_check_object']
+
+    # error if the paperwork check hasnt been done, except from QC step
+    if (sample_obj.paperwork_check == False) and ('QC' not in sample_data['status']):
+        raise Http404("Paperwork hasn't been checked")
 
     # assign to whoever clicked the sample and reload check objects
     if sample_obj.sample_pass_fail == '-':
@@ -596,7 +598,24 @@ def analysis_sheet(request, sample_id):
                     current_step_obj = context['sample_data']['checks']['current_check_object']
                     context['demographics_form'] = DetailsCheckForm(info_check=current_step_obj.patient_info_check)
 
-        # TODO sample QC form submit
+        # if bioinformatics QC fail form submitted
+        if 'fail_reason' in request.POST:
+            sample_qc_form = SampleQCForm(request.POST)
+            if sample_qc_form.is_valid():
+
+                current_step_obj = context['sample_data']['checks']['current_check_object']
+                if context['sample_data']['checks']['previous_check_object']:
+                    next_step = 'finalise'
+                else:
+                    next_step = 'extra_check'
+
+                # TODO check that patient name added and set to true
+                current_step_obj.overall_comment = sample_qc_form.cleaned_data['fail_reason']
+                current_step_obj.overall_comment_updated = timezone.now()
+                current_step_obj.save()
+                current_step_obj.finalise('Q', next_step, request.user)
+
+                return redirect('view_ws_samples', sample_data['worksheet_id'])
 
         # comments submit button
         if 'variant_comment' in request.POST:
