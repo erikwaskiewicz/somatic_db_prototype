@@ -80,13 +80,13 @@ def classify(request, classification):
         'comment_form': CommentForm(),
         'finalise_form': FinaliseCheckForm(),
     }
-    # TODO check if refreshes needed after form submit
+    # TODO check if refreshes needed after form submit + hide reopen form in a modal
     # TODO visualise different forms depending on check etc
     # TODO comments modal
     # TODO when checks disagree
     # TODO generic template for all codes
     # TODO papers model with pubmed api
-    # TODO previous classifications page
+    # TODO finish previous classifications page
 
     # ------------------------------------------------------------------------
     # when buttons are pressed

@@ -157,7 +157,7 @@ class Classification(models.Model):
         canonical_variant = self.variant.get_canonical_exact_match()
         previous_classification = False  # TODO
         if canonical_variant:
-            return (('canonical', f'Confirm selected canonical variant - {canonical_variant.hgvs_p}'), ('new', 'Perform full classification'), )
+            return (('canonical', f'Confirm selected canonical variant - {canonical_variant.hgvs_p}'), )
         elif previous_classification:
             return (('previous', f'Use selected previous classification - ???'), ('new', 'Perform full classification'), )
         else:
