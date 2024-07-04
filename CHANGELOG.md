@@ -3,6 +3,14 @@ This format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+### Added
+- Tickbox for users to confirm they've checked IGV settings before starting sample analysis
+- `docs` folder that renders documentation with docsify
+- Added this changelog, filled from info in releases
+
+### Changed
+- Moved the pull request template to `.github` directory
+
 ## [v1.4.3] - 2024-04-18
 
 ### Removed
