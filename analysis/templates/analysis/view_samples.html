@@ -363,9 +363,31 @@
   </div>
 </div>
 
+</div>
+
+<!-- Button to run coverage CSV -->
+<div class="container">
+    <div class="row">
+      <div class="col-0">
+      </div>
+        <form method="GET">
+
+          <div class="btn-group btn-block">
+            <button type="submit" name="download-run-coverage" id="download" class="btn btn-secondary btn-block w-100">Download Run Coverage</button>
+              <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <div class="dropdown-menu">
+              <button type="submit" name="download-xml" id="download-xml" class="dropdown-item">Download XML</button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
 <!-- custom JS, pass in template variables through data attributes -->
 <script src="{% static 'custom/js/view_samples.js' %}" defer
         data-template="{{ template }}">
 </script>
 
 {% endblock %}
+
