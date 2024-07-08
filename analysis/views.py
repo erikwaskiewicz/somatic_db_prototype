@@ -21,7 +21,6 @@ import csv
 import json
 import os
 import pdfkit
-from collections import defaultdict
 
 def signup(request):
     """
