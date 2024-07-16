@@ -1,6 +1,6 @@
-# Common issues
+# SVD developer guide - Common issues
 
-### ISSUE CODE #1 - Wrong panel applied
+## ISSUE CODE #1 - Wrong panel applied
 
 The following information should be supplied along with the request:
 - *SampleAnalysis PK* - the primary key of the SampleAnalysis object that needs to be removed (unless requested otherwise)
@@ -16,7 +16,7 @@ Instructions
 - To add the correct panel, follow the process in part 8 - Uploading a sample with a new referral
 - To remove the incorrect panel (if required), follow part 2 - Removing a sample analysis from the somatic variant database
 
-### ISSUE CODE #2 - Variant needs to be removed from the poly list
+## ISSUE CODE #2 - Variant needs to be removed from the poly list
 
 The following information should be supplied along with the request:
 - *VariantToVariantList PK* - the primary key of the VaraintToVariantList object that needs to be removed
