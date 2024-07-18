@@ -3,7 +3,6 @@ import string
 
 from django.db import models
 from auditlog.registry import auditlog
-from natural_keys import NaturalKeyModel
 
 #####################
 ### Common Models ###
@@ -215,13 +214,13 @@ class GeneCoverage(models.Model):
 ### Variants ###
 ################
 
-class GenomeBuild(NaturalKeyModel):
+class GenomeBuild(models.Model):
     """
     Genome Builds
     """
     genome_build = models.CharField(primary_key=True, unique=True, max_length=10)
 
-class Variant(NaturalKeyModel):
+class Variant(models.Model):
     """
     An individual SNP/small indel
     """
