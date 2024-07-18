@@ -43,7 +43,7 @@ class TestVEPAnnotationsConsequence(TestCase):
     """
 
     def test_display_term(self):
-        i = VEPAnnotationsImpact(impact_level="HIGH")
+        i = VEPAnnotationsImpact(impact="HIGH")
         c = VEPAnnotationsConsequence(consequence="transcript_ablation", impact=i)
         expected_display_term = "transcript ablation"
         self.assertEqual(expected_display_term, c.format_display_term())
