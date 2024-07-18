@@ -3,6 +3,7 @@ import string
 
 from django.db import models
 from auditlog.registry import auditlog
+from natural_keys import NaturalKeyModel
 
 #####################
 ### Common Models ###
@@ -57,6 +58,9 @@ class Sample(models.Model):
 class Indication(models.Model):
     """
     Indication the patient is being tested for e.g. ALL
+    #panel_phase_zero = models.ForeignKey('Panel', on_delete=models.SET_NULL, null=True, related_name='panel_phase_zero')
+    #panel_phase_one = models.ForeignKey('Panel', on_delete=models.PROTECT, related_name='panel_phase_one')
+
     """
     indication = models.CharField(max_length=20, primary_key=True)
     indication_pretty_print = models.CharField(max_length=100)
@@ -154,7 +158,6 @@ class QCTumourInNormalContamination(AbstractQCCheck):
     """
     id = models.AutoField(primary_key=True)
     #TODO add fields when we've decided on script use
-    pass
 
     class Meta:
         unique_together = ["status", "message"]
@@ -212,13 +215,13 @@ class GeneCoverage(models.Model):
 ### Variants ###
 ################
 
-class GenomeBuild(models.Model):
+class GenomeBuild(NaturalKeyModel):
     """
     Genome Builds
     """
-    genome_build = models.CharField(primary_key=True, max_length=10)
+    genome_build = models.CharField(primary_key=True, unique=True, max_length=10)
 
-class Variant(models.Model):
+class Variant(NaturalKeyModel):
     """
     An individual SNP/small indel
     """
@@ -226,6 +229,7 @@ class Variant(models.Model):
     variant = models.CharField(primary_key=True, max_length=200)
     genome_build = models.ForeignKey("GenomeBuild", on_delete=models.PROTECT)
 
+    
 class AbstractVariantInstance(models.Model):
     """
     Abstract class for variant instance. Stores the fields common to germline and somatic instances
@@ -259,9 +263,11 @@ class VEPAnnotationsConsequence(models.Model):
     The variant consequences used by VEP, described here:
     https://www.ensembl.org/info/genome/variation/prediction/predicted_data.html
     """
-    #TODO make a fixture
     consequence = models.CharField(primary_key=True, max_length=50)
     impact = models.ForeignKey("VEPAnnotationsImpact", on_delete=models.PROTECT)
+
+    def format_display_term(self):
+        return self.consequence.replace("_"," ")
 
 class VEPAnnotationsImpact(models.Model):
     """
@@ -276,6 +282,8 @@ class VEPAnnotationsExistingVariation(models.Model):
     Existing Variations (e.g. rsids) as annotated by VEP
     """
     existing_variation = models.CharField(primary_key=True, max_length=50)
+
+    # TODO methods to link out e.g. to dbsnp
 
 class VEPAnnotationsPubmed(models.Model):
     """
