@@ -60,8 +60,8 @@ class Indication(models.Model):
     """
     indication = models.CharField(max_length=20, primary_key=True)
     indication_pretty_print = models.CharField(max_length=100)
-    panel_phase_zero = models.ForeignKey('Panel', on_delete=models.SET_NULL, null=True, related_name='panel_phase_zero')
-    panel_phase_one = models.ForeignKey('Panel', on_delete=models.PROTECT, related_name='panel_phase_one')
+    #panel_phase_zero = models.ForeignKey('Panel', on_delete=models.SET_NULL, null=True, related_name='panel_phase_zero')
+    #panel_phase_one = models.ForeignKey('Panel', on_delete=models.PROTECT, related_name='panel_phase_one')
 
     def __repr__(self):
         return f"Indication: {self.indication_pretty_print}"
@@ -132,20 +132,11 @@ class AbstractQCCheck(models.Model):
     Base class for QC checks - cannot be instantiated
     """
     status = models.CharField(max_length=1, choices=QC_CHOICES)
-    message = models.ForeignKey("QCMessage", on_delete=models.SET_NULL, null=True)
+    #TODO sort message out so there's not loads of data replication
+    message = models.TextField(max_length=1000)
 
     class Meta:
         abstract = True
-
-class QCMessage(models.Model):
-    """
-    Canned messages used for QC checks
-    """
-    id = models.AutoField(primary_key=True)
-    message = models.TextField(max_length=1000)
-
-    def __repr__(self):
-        return f"Message: {self.message}"
 
 class QCSomaticVAFDistribution(AbstractQCCheck):
     """
@@ -153,6 +144,9 @@ class QCSomaticVAFDistribution(AbstractQCCheck):
     """
     id = models.AutoField(primary_key=True)
     low_vaf_proportion = models.DecimalField(max_digits=7, decimal_places=6)
+
+    class Meta:
+        unique_together = ["status", "message", "low_vaf_proportion"]
 
 class QCTumourInNormalContamination(AbstractQCCheck):
     """
@@ -162,6 +156,9 @@ class QCTumourInNormalContamination(AbstractQCCheck):
     #TODO add fields when we've decided on script use
     pass
 
+    class Meta:
+        unique_together = ["status", "message"]
+
 class QCGermlineCNVQuality(AbstractQCCheck):
     """
     QC check for germline CNV quality
@@ -170,6 +167,9 @@ class QCGermlineCNVQuality(AbstractQCCheck):
     passing_cnv_count = models.IntegerField()
     passing_fraction = models.DecimalField(max_digits=7, decimal_places=6)
     log_loss_gain = models.DecimalField(max_digits=7, decimal_places=5)
+
+    class Meta:
+        unique_together = ["passing_cnv_count", "passing_fraction", "log_loss_gain"]
 
 class QCLowQualityTumourSample(AbstractQCCheck):
     """
@@ -181,12 +181,18 @@ class QCLowQualityTumourSample(AbstractQCCheck):
     at_drop = models.DecimalField(max_digits=7, decimal_places=4)
     cg_drop = models.DecimalField(max_digits=7, decimal_places=4)
 
+    class Meta:
+        unique_together = ["status", "message", "unevenness_of_coverage", "median_fragment_length", "at_drop", "cg_drop"]
+
 class QCNTCContamination(AbstractQCCheck):
     """
     QC check for NTC contamination
     """
     id = models.AutoField(primary_key=True)
     ntc_contamination = models.DecimalField(max_digits=7, decimal_places=6)
+
+    class Meta:
+        unique_together = ["status", "message", "ntc_contamination"]
 
 ################
 ### Coverage ###
@@ -216,6 +222,7 @@ class Variant(models.Model):
     """
     An individual SNP/small indel
     """
+    #TODO find a way to default to b38
     variant = models.CharField(primary_key=True, max_length=200)
     genome_build = models.ForeignKey("GenomeBuild", on_delete=models.PROTECT)
 
@@ -228,6 +235,7 @@ class AbstractVariantInstance(models.Model):
     ad = models.CharField(max_length=10)
     af = models.DecimalField(max_digits=7, decimal_places=6)
     dp = models.IntegerField()
+    qual = models.DecimalField(max_digits=7, decimal_places=2)
     
     class Meta:
         abstract = True
@@ -237,14 +245,14 @@ class GermlineVariantInstance(AbstractVariantInstance):
     
     """
     id = models.AutoField(primary_key=True)
-    vep_annotations = models.ForeignKey("GermlineVEPAnnotations", on_delete=models.PROTECT)
+    vep_annotations = models.ManyToManyField("GermlineVEPAnnotations")
 
 class SomaticVariantInstance(AbstractVariantInstance):
     """
     
     """
     id = models.AutoField(primary_key=True)
-    vep_annotations = models.ForeignKey("SomaticVEPAnnotations", on_delete=models.PROTECT)
+    vep_annotations = models.ManyToManyField("SomaticVEPAnnotations")
 
 class VEPAnnotationsConsequence(models.Model):
     """
@@ -261,7 +269,7 @@ class VEPAnnotationsImpact(models.Model):
     https://www.ensembl.org/info/genome/variation/prediction/predicted_data.html
     """
     #TODO make a fixture
-    impact_level = models.CharField(primary_key=True, max_length=20)
+    impact = models.CharField(primary_key=True, max_length=20)
 
 class VEPAnnotationsExistingVariation(models.Model):
     """
@@ -286,14 +294,16 @@ class AbstractVEPAnnotations(models.Model):
     VEP annotations are described here:
     https://www.ensembl.org/info/docs/tools/vep/vep_formats.html
     """
-    consequence = models.ManyToManyField("VEPAnnotationsConsequence")
-    transcript = models.ManyToManyField("Transcript")
+    #TODO change consequence back to ManyToMany once import script is working
+    #consequence = models.ManyToManyField("VEPAnnotationsConsequence")
+    consequence = models.CharField(max_length=50, null=True, blank=True)
+    transcript = models.ForeignKey("Transcript", on_delete=models.PROTECT)
     exon = models.CharField(max_length=20, null=True, blank=True)
     intron = models.CharField(max_length=10, null=True, blank=True)
-    hgvs_c = models.CharField(max_length=100, null=True, blank=True)
-    hgvs_p = models.CharField(max_length=100, null=True, blank=True)
+    hgvsc = models.CharField(max_length=100, null=True, blank=True)
+    hgvsp = models.CharField(max_length=100, null=True, blank=True)
     existing_variation = models.ManyToManyField("VEPAnnotationsExistingVariation")
-    pubmed = models.ManyToManyField("VEPAnnotationsPubmed")
+    pubmed_id = models.ManyToManyField("VEPAnnotationsPubmed")
 
     class Meta:
         abstract = True
@@ -302,32 +312,32 @@ class VEPAnnotationsClinvar(models.Model):
     """
     Clinvar
     """
+    CLINVAR_CHOICES = (
+        ("B", "Benign"),
+        ("BLB", "Benign/Likely benign"),
+        ("LB", "Likely benign"),
+        ("U", "Uncertain significance"),
+        ("LP", "Likely pathogenic"),
+        ("PLP", "Pathogenic/Likely pathogenic"),
+        ("P", "Pathogenic"),
+        ("C", "Conflicting classifications of pathogenicity"),
+        ("O", "Other")
+    )
+    #TODO change this to just clinsig and have it be a choice field
     clinvar_id = models.CharField(primary_key=True, max_length=20)
-    clinvar_clinsig = models.ManyToManyField("VEPAnnotationsClinvarClinsig")
-    clinvar_clinsigconf = models.ManyToManyField("VEPAnnotationsClinvarClinsigConf")
+    clinvar_clinsig = models.CharField(max_length=3, choices=CLINVAR_CHOICES)
 
     def format_clinvar_link(self):
         return f"https://www.ncbi.nlm.nih.gov/clinvar/{self.clinvar_id}/"
-    
-class VEPAnnotationsClinvarClinsig(models.Model):
-    """
-    Clinical signficance consequences for Clinvar variants
-    """
-    clinvar_clinsig = models.CharField(primary_key=True, max_length=50)
-
-
-class VEPAnnotationsClinvarClinsigConf(models.Model):
-    """
-    Clinical significance consequence scores for Clinvar variants
-    """
-    clinvar_clinsig_conf = models.CharField(primary_key=True, max_length=10)
 
 class GermlineVEPAnnotations(AbstractVEPAnnotations):
     """
     Adds germline-specific annotations (Clinvar)
     """
     id = models.AutoField(primary_key=True)
-    clinvar = models.ManyToManyField("VEPAnnotationsClinvar")
+    #clinvar = models.ManyToManyField("VEPAnnotationsClinvar")
+
+    #TODO unique together
 
 class SomaticVEPAnnotations(AbstractVEPAnnotations):
     """
@@ -335,4 +345,6 @@ class SomaticVEPAnnotations(AbstractVEPAnnotations):
     """
     #TODO fill in these fields once added in cancer hotspots annotations
     pass
+
+    #TODO unique_together
     
