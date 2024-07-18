@@ -3,6 +3,7 @@ import string
 
 from django.db import models
 from auditlog.registry import auditlog
+from natural_keys import NaturalKeyModel
 
 #####################
 ### Common Models ###
@@ -57,11 +58,12 @@ class Sample(models.Model):
 class Indication(models.Model):
     """
     Indication the patient is being tested for e.g. ALL
+    #panel_phase_zero = models.ForeignKey('Panel', on_delete=models.SET_NULL, null=True, related_name='panel_phase_zero')
+    #panel_phase_one = models.ForeignKey('Panel', on_delete=models.PROTECT, related_name='panel_phase_one')
+
     """
     indication = models.CharField(max_length=20, primary_key=True)
-    indication_pretty_print = models.CharField(max_length=100)
-    panel_phase_zero = models.ForeignKey('Panel', on_delete=models.SET_NULL, null=True, related_name='panel_phase_zero')
-    panel_phase_one = models.ForeignKey('Panel', on_delete=models.PROTECT, related_name='panel_phase_one')
+    indication_pretty_print = models.CharField(max_length=100, null=True, blank=True)
 
     def __repr__(self):
         return f"Indication: {self.indication_pretty_print}"
@@ -160,7 +162,6 @@ class QCTumourInNormalContamination(AbstractQCCheck):
     """
     id = models.AutoField(primary_key=True)
     #TODO add fields when we've decided on script use
-    pass
 
 class QCGermlineCNVQuality(AbstractQCCheck):
     """
@@ -206,19 +207,24 @@ class GeneCoverage(models.Model):
 ### Variants ###
 ################
 
-class GenomeBuild(models.Model):
+class GenomeBuild(NaturalKeyModel):
     """
     Genome Builds
     """
-    genome_build = models.CharField(primary_key=True, max_length=10)
+    genome_build = models.CharField(primary_key=True, unique=True, max_length=10)
 
-class Variant(models.Model):
+class Variant(NaturalKeyModel):
     """
     An individual SNP/small indel
     """
-    variant = models.CharField(primary_key=True, max_length=200)
-    genome_build = models.ForeignKey("GenomeBuild", on_delete=models.PROTECT)
 
+    def get_default_genome_build():
+        return GenomeBuild.objects.get_or_create(genome_build="GRCh38")
+
+    variant = models.CharField(primary_key=True, max_length=200)
+    genome_build = models.ForeignKey("GenomeBuild", on_delete=models.PROTECT, default=get_default_genome_build)
+
+    
 class AbstractVariantInstance(models.Model):
     """
     Abstract class for variant instance. Stores the fields common to germline and somatic instances
@@ -228,6 +234,7 @@ class AbstractVariantInstance(models.Model):
     ad = models.CharField(max_length=10)
     af = models.DecimalField(max_digits=7, decimal_places=6)
     dp = models.IntegerField()
+    qual = models.DecimalField(max_digits=7, decimal_places=2)
     
     class Meta:
         abstract = True
@@ -270,6 +277,8 @@ class VEPAnnotationsExistingVariation(models.Model):
     """
     existing_variation = models.CharField(primary_key=True, max_length=50)
 
+    # TODO methods to link out e.g. to dbsnp
+
 class VEPAnnotationsPubmed(models.Model):
     """
     Pubmed IDs sourced from VEP
@@ -287,7 +296,7 @@ class AbstractVEPAnnotations(models.Model):
     VEP annotations are described here:
     https://www.ensembl.org/info/docs/tools/vep/vep_formats.html
     """
-    consequence = models.ManyToManyField("VEPAnnotationsConsequence")
+    consequence = models.ManyToManyField("VEPAnnotationsConsequence") # change to choice field
     transcript = models.ManyToManyField("Transcript")
     exon = models.CharField(max_length=20, null=True, blank=True)
     intron = models.CharField(max_length=10, null=True, blank=True)
@@ -303,25 +312,24 @@ class VEPAnnotationsClinvar(models.Model):
     """
     Clinvar
     """
+    CLINVAR_CHOICES = (
+        ("B", "Benign"),
+        ("BLB", "Benign/Likely benign"),
+        ("LB", "Likely benign"),
+        ("U", "Uncertain significance"),
+        ("LP", "Likely pathogenic"),
+        ("PLP", "Pathogenic/Likely pathogenic"),
+        ("P", "Pathogenic"),
+        ("C", "Conflicting classifications of pathogenicity"),
+        ("O", "Other")
+    )
+    #TODO change this to just clinsig and have it be a choice field
     clinvar_id = models.CharField(primary_key=True, max_length=20)
-    clinvar_clinsig = models.ManyToManyField("VEPAnnotationsClinvarClinsig")
-    clinvar_clinsigconf = models.ManyToManyField("VEPAnnotationsClinvarClinsigConf")
+    clinvar_clinsig = models.CharField(max_length=1, choices=CLINVAR_CHOICES)
 
     def format_clinvar_link(self):
         return f"https://www.ncbi.nlm.nih.gov/clinvar/{self.clinvar_id}/"
     
-class VEPAnnotationsClinvarClinsig(models.Model):
-    """
-    Clinical signficance consequences for Clinvar variants
-    """
-    clinvar_clinsig = models.CharField(primary_key=True, max_length=50)
-
-
-class VEPAnnotationsClinvarClinsigConf(models.Model):
-    """
-    Clinical significance consequence scores for Clinvar variants
-    """
-    clinvar_clinsig_conf = models.CharField(primary_key=True, max_length=10)
 
 class GermlineVEPAnnotations(AbstractVEPAnnotations):
     """
