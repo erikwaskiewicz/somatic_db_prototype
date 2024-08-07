@@ -19,6 +19,7 @@
     <thead>
       <tr>
         <th scope="col">Variant</th>
+        <th scope="col">VAF</th>
         <th scope="col">GnomAD</th>
       </tr>
     </thead>
@@ -26,6 +27,7 @@
       {% for v in somatic_snvs %}
       <tr>
         <td>{{ v.pk }}</td>
+        <td>{{ v.vaf }}%</td>
         <td>{{ v.gnomad }}</td>
       </tr>
       {% endfor %}
@@ -38,6 +40,7 @@
     <thead>
       <tr>
         <th scope="col">Variant</th>
+        <th scope="col">VAF</th>
         <th scope="col">GnomAD</th>
       </tr>
     </thead>
@@ -45,6 +48,7 @@
       {% for v in germline_snvs %}
       <tr>
         <td>{{ v.pk }}</td>
+        <td>{{ v.vaf }}%</td>
         <td>{{ v.gnomad }}</td>
       </tr>
       {% endfor %}
