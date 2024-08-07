@@ -36,14 +36,16 @@ class Patient(models.Model):
     An individual patient. Primary key is the NHS number.
     If NHS number is not available, a random string of 10 letters is generated
     """
-    nhs_number = models.CharField(max_length=10)
 
-    @staticmethod
     def generate_standin_nhs_number():
         lowercase_letters = string.ascii_lowercase
         lowercase_list = [random.choice(lowercase_letters) for i in range(10)]
         standin_nhs_number = "".join(lowercase_list)
         return standin_nhs_number
+    
+    id = models.AutoField(primary_key=True)
+    nhs_number = models.CharField(max_length=10, default=generate_standin_nhs_number())
+
 
 class Sample(models.Model):
     """

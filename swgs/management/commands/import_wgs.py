@@ -14,7 +14,7 @@ class Command(BaseCommand):
         
         # get or create a patient object from the NHS number
         #TODO handle all these imports properly, for now we're doing dummy data
-        patient_obj, created = Patient.objects.get_or_create(nhs_number="TEST123")
+        patient_obj, created = Patient.objects.get_or_create()
 
         # get or create the tumour sample
         tumour_sample_obj, created = Sample.objects.get_or_create(sample_id="23M19543")
