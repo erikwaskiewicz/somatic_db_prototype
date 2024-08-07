@@ -23,7 +23,6 @@
         <th scope="col">WS ID</th>
         <th scope="col">Run ID</th>
         <th scope="col">Patient Analyses</th>
-        <th scope="col"></th>
       </tr>
     </thead>
     <tbody>
@@ -31,8 +30,11 @@
       <tr>
         <td>{{ run.worksheet }}</td>
         <td>{{ run.run }}</td>
-        <td>{{ run.get_patient_analyses }}</td>
-        <td></td>
+        <td style="text-align:left">
+          <a class="btn btn-secondary" href="{% url 'view_patient_analysis' run.patient_analyses %}" role="button">
+              View Patient Analysis
+          </a>
+        </td>
       </tr>
       {% endfor %}
     </tbody>

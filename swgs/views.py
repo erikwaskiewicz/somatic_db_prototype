@@ -17,10 +17,18 @@ def view_runs(request):
 
     # get all the runs
     runs = Run.objects.all().order_by("-run")
+    runs_list = []
+    for run in runs:
+        run_dict = {
+            "run": run.run,
+            "worksheet": run.worksheet,
+            "patient_analyses": run.get_patient_analysis()
+        }
+        runs_list.append(run_dict)
 
     # context dictionary
     context = {
-        'runs': runs
+        'runs': runs_list
     }
 
     return render(request, "swgs/view_runs.html", context)

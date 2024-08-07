@@ -90,10 +90,12 @@ class Run(models.Model):
 
     def get_patient_analysis(self):
         patient_analyses = PatientAnalysis.objects.filter(run=self)
-        patient_analysis_list = []
+        #patient_analysis_list = []
+        #for p in patient_analyses:
+            #patient_analysis_list.append(p.id)
+        #return patient_analysis_list
         for p in patient_analyses:
-            patient_analysis_list.append(p.id)
-        return patient_analysis_list
+            return p.id
 
 class PatientAnalysis(models.Model):
     """
