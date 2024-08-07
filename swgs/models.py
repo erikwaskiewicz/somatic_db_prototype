@@ -111,6 +111,7 @@ class PatientAnalysis(models.Model):
     low_quality_tumour_sample = models.ForeignKey('QCLowQualityTumourSample', on_delete=models.CASCADE)
     tumour_ntc_contamination = models.ForeignKey('QCNTCContamination', on_delete=models.CASCADE, related_name='tumour_ntc_contamination')
     germline_ntc_contamination = models.ForeignKey('QCNTCContamination', on_delete=models.CASCADE, related_name='germline_ntc_contamination')
+    relatedness = models.ForeignKey('QCRelatedness', on_delete=models.CASCADE)
     
 class MDTNotes(models.Model):
     """
@@ -197,6 +198,13 @@ class QCNTCContamination(AbstractQCCheck):
 
     class Meta:
         unique_together = ["status", "message", "ntc_contamination"]
+
+class QCRelatedness(AbstractQCCheck):
+    id = models.AutoField(primary_key=True)
+    relatedness = models.DecimalField(max_digits=4, decimal_places=3)
+
+    class Meta:
+        unique_together = ["status", "message", "relatedness"]
 
 ################
 ### Coverage ###
