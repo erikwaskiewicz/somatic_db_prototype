@@ -7,27 +7,30 @@ from swgs.models import *
 
 test_variant_json = "/home/na282549/code/somatic_db/test_vcf_to_json.json"
 test_qc_json = "/home/na282549/code/somatic_db/Test_overall_qc.json"
+test_patient_json = "/home/na282549/code/somatic_db/example_patient_info.json"
 
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
+
+        # load in the patient info json
+        with open(test_patient_json, "r") as f:
+            patient_info_dict = json.load(f)
         
-        # get or create a patient object from the NHS number
-        #TODO handle all these imports properly, for now we're doing dummy data
-        patient_obj, created = Patient.objects.get_or_create()
+        # create a patient object with a standin NHS number - this can be input by the scientists in SVD
+        patient_obj = Patient.objects.create()
 
         # get or create the tumour sample
-        tumour_sample_obj, created = Sample.objects.get_or_create(sample_id="23M19543")
+        tumour_sample_obj, created = Sample.objects.get_or_create(sample_id=patient_info_dict["tumour_sample_id"])
 
         # get or create the germline sample if it's being used
-        # TODO handle tumour only
-        germline_sample_obj, created = Sample.objects.get_or_create(sample_id="23M19542")
+        germline_sample_obj, created = Sample.objects.get_or_create(sample_id=patient_info_dict["germline_sample_id"])
 
         # get or create the indication
-        indication_obj, created = Indication.objects.get_or_create(indication="Development", indication_pretty_print="development")
+        indication_obj, created = Indication.objects.get_or_create(indication=patient_info_dict["indication"])
 
         # get or create the run
-        run_obj, created = Run.objects.get_or_create(run="231103_A01771_0322_AHMHMWDRX3", worklist="CELL_LINES_TEST")
+        run_obj, created = Run.objects.get_or_create(run=patient_info_dict["run_id"], worklist=patient_info_dict["worksheet_id"])
 
         # load in the qc data from the json file
         with open(test_qc_json, "r") as f:
