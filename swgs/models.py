@@ -248,7 +248,7 @@ class AbstractVariantInstance(models.Model):
     ad = models.CharField(max_length=10)
     af = models.DecimalField(max_digits=7, decimal_places=6)
     dp = models.IntegerField()
-    qual = models.DecimalField(max_digits=7, decimal_places=2)
+    qual = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
     
     class Meta:
         abstract = True
@@ -372,7 +372,7 @@ class SomaticVEPAnnotations(AbstractVEPAnnotations):
     Adds somatic-specific annotations (Cancer hotspots)
     """
     id = models.AutoField(primary_key=True)
-    cancer_hotspots = models.ForeignKey("VEPAnnotationsCancerHotspots", on_delete=models.CASCADE)
+    #cancer_hotspots = models.ForeignKey("VEPAnnotationsCancerHotspots", on_delete=models.CASCADE)
 
     #TODO unique_together
     
