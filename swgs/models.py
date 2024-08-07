@@ -64,7 +64,7 @@ class Indication(models.Model):
 
     """
     indication = models.CharField(max_length=20, primary_key=True)
-    indication_pretty_print = models.CharField(max_length=100)
+    indication_pretty_print = models.CharField(max_length=100, null=True, blank=True)
     #panel_phase_zero = models.ForeignKey('Panel', on_delete=models.SET_NULL, null=True, related_name='panel_phase_zero')
     #panel_phase_one = models.ForeignKey('Panel', on_delete=models.CASCADE, related_name='panel_phase_one')
 
