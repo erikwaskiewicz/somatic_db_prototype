@@ -36,15 +36,9 @@ class Patient(models.Model):
     An individual patient. Primary key is the NHS number.
     If NHS number is not available, a random string of 10 letters is generated
     """
-
-    def generate_standin_nhs_number():
-        lowercase_letters = string.ascii_lowercase
-        lowercase_list = [random.choice(lowercase_letters) for i in range(10)]
-        standin_nhs_number = "".join(lowercase_list)
-        return standin_nhs_number
     
     id = models.AutoField(primary_key=True)
-    nhs_number = models.CharField(max_length=10, default=generate_standin_nhs_number())
+    nhs_number = models.CharField(max_length=10, default=f"UNKNOWN{str(id)}")
 
 
 class Sample(models.Model):
@@ -92,7 +86,14 @@ class Run(models.Model):
     NGS Run. Using the Run as the primary key as new LIMS worklists are inconsistent
     """
     run = models.CharField(max_length=50, primary_key=True)
-    worklist = models.CharField(max_length=50, null=True, blank=True)
+    worksheet = models.CharField(max_length=50, null=True, blank=True)
+
+    def get_patient_analysis(self):
+        patient_analyses = PatientAnalysis.objects.filter(run=self)
+        patient_analysis_list = []
+        for p in patient_analyses:
+            patient_analysis_list.append(p.id)
+        return patient_analysis_list
 
 class PatientAnalysis(models.Model):
     """
@@ -249,6 +250,9 @@ class AbstractVariantInstance(models.Model):
     af = models.DecimalField(max_digits=7, decimal_places=6)
     dp = models.IntegerField()
     qual = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
+    max_splice_ai = models.DecimalField(max_digits=4, decimal_places=3, null=True, blank=True)
+    gnomad_popmax_af = models.DecimalField(max_digits=4, decimal_places=3, null=True, blank=True)
+    gnomad_nhomalt = models.IntegerField(null=True, blank=True)
     
     class Meta:
         abstract = True

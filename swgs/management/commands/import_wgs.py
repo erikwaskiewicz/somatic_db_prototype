@@ -49,7 +49,7 @@ class Command(BaseCommand):
         indication_obj, created = Indication.objects.get_or_create(indication=patient_info_dict["indication"])
 
         # get or create the run
-        run_obj, created = Run.objects.get_or_create(run=patient_info_dict["run_id"], worklist=patient_info_dict["worksheet_id"])
+        run_obj, created = Run.objects.get_or_create(run=patient_info_dict["run_id"], worksheet=patient_info_dict["worksheet_id"])
 
         # load in the qc data from the json file
         with open(qc_json, "r") as f:

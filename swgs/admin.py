@@ -45,8 +45,8 @@ class PanelAdmin(admin.ModelAdmin):
 admin.site.register(Panel, PanelAdmin)
 
 class RunAdmin (admin.ModelAdmin):
-    list_display = ["run", "worklist"]
-    search_fields = ["run", "worklist"]
+    list_display = ["run", "worksheet"]
+    search_fields = ["run", "worksheet"]
 
 admin.site.register(Run, RunAdmin)
 
