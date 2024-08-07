@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
-from swgs.models import *
+from .models import *
 
 @login_required
 def home_swgs(request):
@@ -61,7 +61,6 @@ def view_patient_analysis(request, patient_id):
         variant = v.variant.variant
         gnomad = v.gnomad_popmax_af
         if float(gnomad) >= 0.05:
-            print("in pass")
             pass
         elif float(gnomad) == -1:
             gnomad = "Not in Gnomad"

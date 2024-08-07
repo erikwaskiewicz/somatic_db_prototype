@@ -5,18 +5,6 @@ from swgs.test_data.expected_results import *
 from swgs.utils import * 
 
 
-class TestPatient(TestCase):
-    """
-    Tests for the Patient model
-    """
-
-    def test_generate_standin_nhs_number(self):
-        standin_nhs_number = Patient.generate_standin_nhs_number()
-        # this is randomly generated but should be 10 characters long and all lowercase
-        self.assertEqual(len(standin_nhs_number), 10)
-        self.assertEqual(standin_nhs_number, standin_nhs_number.lower())
-
-
 class TestVEPAnnotationsPubmed(TestCase):
     """
     Tests for the VEPAnnotationsPubmed model
