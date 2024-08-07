@@ -36,15 +36,6 @@ class IndicationAdmin(admin.ModelAdmin):
     list_display = ["indication", "indication_pretty_print"]
     search_fields = ["indication", "indication_pretty_print"]
 
-    #TODO add panels, make sure we're returning something sensible
-    """ example from analysis module
-    # get panel name rather than panel ID
-    def get_panel(self, obj):
-        return obj.panel.panel_name
-    get_panel.short_description = 'Panel'
-    get_panel.admin_order_field = 'panel__panel_name'
-    """
-
 admin.site.register(Indication, IndicationAdmin)
 
 class PanelAdmin(admin.ModelAdmin):
@@ -60,31 +51,51 @@ class RunAdmin (admin.ModelAdmin):
 admin.site.register(Run, RunAdmin)
 
 class PatientAnalysisAdmin(admin.ModelAdmin):
-    list_display = ["patient", "tumour_sample", "germline_sample", "indication", "run"]
+    list_display = ["patient", "get_tumour_sample", "get_germline_sample", "get_indication", "get_run"]
     search_fields = ["patient", "tumour_sample", "germline_sample", "run"]
+
+    def get_tumour_sample(self, obj):
+        return obj.tumour_sample.sample_id
+    get_tumour_sample.short_description = "Tumour Sample"
+    get_tumour_sample.admin_order_field = "tumour_sample__sample_id"
+
+    def get_germline_sample(self, obj):
+        return obj.germline_sample.sample_id
+    get_germline_sample.short_description = "Germline Sample"
+    get_germline_sample.admin_order_field = "germline_sample__sample_id"
+    
+    def get_indication(self, obj):
+        return obj.indication.indication
+    get_indication.short_description = "Indication"
+    get_indication.admin_order_field = "indication__indication"
+
+    def get_run(self, obj):
+        return obj.run.run
+    get_run.short_description = "Run"
+    get_run.admin_order_field = "run__run"
 
 admin.site.register(PatientAnalysis, PatientAnalysisAdmin)
 
 class QCSomaticVAFDistributionAdmin(admin.ModelAdmin):
-    list_display = ["status", "low_vaf_proportion"]
+    list_display = ["id", "status", "low_vaf_proportion"]
     search_fields = ["status"]
 
 admin.site.register(QCSomaticVAFDistribution, QCSomaticVAFDistributionAdmin)
 
 class QCTumourInNormalContaminationAdmin(admin.ModelAdmin):
-    list_display = ["status"]
+    list_display = ["id", "status"]
     search_fields = ["status"]
 
 admin.site.register(QCTumourInNormalContamination, QCTumourInNormalContaminationAdmin)
 
 class QCGermlineCNVQualityAdmin(admin.ModelAdmin):
-    list_display = ["status", "passing_cnv_count", "passing_fraction", "log_loss_gain"]
+    list_display = ["id", "status", "passing_cnv_count", "passing_fraction", "log_loss_gain"]
     search_fields = ["status"]
 
 admin.site.register(QCGermlineCNVQuality, QCGermlineCNVQualityAdmin)
 
 class QCNTCContaminationAdmin(admin.ModelAdmin):
-    list_display = ["status", "ntc_contamination"]
+    list_display = ["id", "status", "ntc_contamination"]
     search_fields = ["status"]
 
 admin.site.register(QCNTCContamination, QCNTCContaminationAdmin)
@@ -102,8 +113,11 @@ class VariantAdmin(admin.ModelAdmin):
 admin.site.register(Variant, VariantAdmin)
 
 class GermlineVariantInstanceAdmin(admin.ModelAdmin):
-    list_display = ["variant", "patient_analysis", "ad", "af"]
-    search_fields = ["variant", "patient_analysis"]
+    list_display = ["id", "get_variant", "patient_analysis", "af"]
+    search_fields = ["id", "variant", "patient_analysis"]
+
+    def get_variant(self, obj):
+        return obj.variant.variant
 
 admin.site.register(GermlineVariantInstance, GermlineVariantInstanceAdmin)
 
@@ -144,8 +158,8 @@ class VEPAnnotationsClinvarAdmin(admin.ModelAdmin):
 admin.site.register(VEPAnnotationsClinvar, VEPAnnotationsClinvarAdmin)
 
 class GermlineVEPAnnotationsAdmin(admin.ModelAdmin):
-    list_display = ["hgvsc", "hgvsp", "exon", "intron"]
-    search_fields = ["hgvsc", "hgvsp"]
+    list_display = ["id", "hgvsc", "hgvsp", "exon", "intron"]
+    search_fields = ["id", "hgvsc", "hgvsp"]
 
 admin.site.register(GermlineVEPAnnotations, GermlineVEPAnnotationsAdmin)
 
