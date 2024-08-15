@@ -16,6 +16,9 @@
 <div class="container">
   <h3>Variants for tumour sample {{ patient_analysis.tumour_sample.sample_id }} and germline sample {{ patient_analysis.germline_sample.sample_id }}</h3>
   <br>
+  <h5>Download SNVs for this patient in a CSV:</h5>
+  {% crispy form %}
+  <br>
   <br>
   <h5>Somatic SNVs</h5>
   <table class="table" id="runs-table">

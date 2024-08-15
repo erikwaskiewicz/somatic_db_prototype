@@ -1,7 +1,12 @@
+import csv
+import datetime
+
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 
 from .models import *
+from .forms import *
 
 @login_required
 def home_swgs(request):
@@ -39,6 +44,8 @@ def view_patient_analysis(request, patient_id):
     View variants in a PatientAnalysis
     """
 
+    download_csv_form = DownloadCsvForm()
+
     patient_analysis = PatientAnalysis.objects.get(id=patient_id)
 
     germline_snvs_query = GermlineVariantInstance.objects.filter(patient_analysis=patient_analysis)
@@ -66,7 +73,7 @@ def view_patient_analysis(request, patient_id):
             gnomad = "Not in Gnomad"
             variant_dict = {
                 "pk": variant,
-                "gnomad": str(gnomad),
+                "gnomad": gnomad,
                 "vaf": f"{vaf:.2f}",
                 "hgvsc": hgvsc,
                 "hgvsp": hgvsp,
@@ -77,7 +84,7 @@ def view_patient_analysis(request, patient_id):
         else:
             variant_dict = {
                 "pk": variant,
-                "gnomad": str(gnomad),
+                "gnomad": f"{gnomad:.3f}%",
                 "vaf": f"{vaf:.2f}",
                 "hgvsc": hgvsc,
                 "hgvsp": hgvsp,
@@ -104,7 +111,7 @@ def view_patient_analysis(request, patient_id):
             gnomad = "Not in Gnomad"
             variant_dict = {
                 "pk": variant,
-                "gnomad": str(gnomad),
+                "gnomad": gnomad,
                 "vaf": f"{vaf:.2f}",
                 "hgvsc": hgvsc,
                 "hgvsp": hgvsp,
@@ -115,7 +122,7 @@ def view_patient_analysis(request, patient_id):
         else:
             variant_dict = {
                 "pk": variant,
-                "gnomad": str(gnomad),
+                "gnomad": f"{gnomad:.3f}%",
                 "vaf": f"{vaf:.2f}",
                 "hgvsc": hgvsc,
                 "hgvsp": hgvsp,
@@ -125,10 +132,29 @@ def view_patient_analysis(request, patient_id):
             germline_snvs.append(variant_dict)
     
     context = {
+        "form": download_csv_form,
         "patient_analysis": patient_analysis,
         "somatic_snvs": somatic_snvs,
         "germline_snvs": germline_snvs
     }
+
+    # Download a csv
+    if request.POST:
+
+        today = datetime.date.today().strftime("%Y%m%d")
+        filename = f"{patient_analysis.tumour_sample.sample_id}_{patient_analysis.germline_sample.sample_id}_{today}"
+        response = HttpResponse(content_type = "text/csv")
+        response["Content-Disposition"] = f"attachement; filename={filename}"
+        
+        csv_writer = csv.writer(response)
+        header_line = ["Germline_or_Somatic", "Variant", "Gene", "Consequence", "HGVSC", "HGVSP", "VAF", "GnomAD"]
+        csv_writer.writerow(header_line)
+        for variant in somatic_snvs:
+            csv_writer.writerow(["somatic", variant["pk"], variant["gene"], variant["consequence"], variant["hgvsc"], variant["hgvsp"], f"{variant['vaf']}%", variant["gnomad"]])
+        for variant in germline_snvs:
+            csv_writer.writerow(["germline", variant["pk"], variant["gene"], variant["consequence"], variant["hgvsc"], variant["hgvsp"], f"{variant['vaf']}%", variant["gnomad"]])
+
+        return response
 
     return render(request, "swgs/view_patient_analysis.html", context)
     
