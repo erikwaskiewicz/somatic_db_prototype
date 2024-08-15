@@ -128,8 +128,11 @@ class SomaticVariantInstanceAdmin(admin.ModelAdmin):
 admin.site.register(SomaticVariantInstance, SomaticVariantInstanceAdmin)
 
 class VEPAnnotationsConsequenceAdmin(admin.ModelAdmin):
-    list_display = ["consequence", "impact"]
+    list_display = ["consequence", "get_impact"]
     search_fields = ["consequence"]
+
+    def get_impact(self, obj):
+        return obj.impact.impact
 
 admin.site.register(VEPAnnotationsConsequence, VEPAnnotationsConsequenceAdmin)
 

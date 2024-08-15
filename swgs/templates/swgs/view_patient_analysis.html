@@ -15,6 +15,11 @@
 {% block content %}
 <div class="container">
   <h3>Variants for tumour sample {{ patient_analysis.tumour_sample.sample_id }} and germline sample {{ patient_analysis.germline_sample.sample_id }}</h3>
+  <h5>Variants have been filtered in the following way:</h5>
+  <ul>
+    <li>Variants with a VAF of >5% in GnomAD have been removed</li>
+    <li>Variants are excluded if their most severe consequence is a MODIFIER strength - see <a href="https://www.ensembl.org/info/genome/variation/prediction/predicted_data.html">VEP Documentation</a></li>
+  </ul>
   <br>
   <h5>Download SNVs for this patient in a CSV:</h5>
   {% crispy form %}

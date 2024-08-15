@@ -317,9 +317,7 @@ class AbstractVEPAnnotations(models.Model):
     VEP annotations are described here:
     https://www.ensembl.org/info/docs/tools/vep/vep_formats.html
     """
-    #TODO change consequence back to ManyToMany once import script is working
-    #consequence = models.ManyToManyField("VEPAnnotationsConsequence")
-    consequence = models.CharField(max_length=50, null=True, blank=True)
+    consequence = models.ManyToManyField("VEPAnnotationsConsequence")
     transcript = models.ForeignKey("Transcript", on_delete=models.CASCADE)
     exon = models.CharField(max_length=20, null=True, blank=True)
     intron = models.CharField(max_length=10, null=True, blank=True)

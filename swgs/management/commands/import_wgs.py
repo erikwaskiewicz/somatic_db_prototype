@@ -2,6 +2,7 @@ import argparse
 import json
 
 from django.core.management.base import BaseCommand, CommandParser
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import transaction
 
 from swgs.models import *
@@ -115,11 +116,27 @@ class Command(BaseCommand):
             # create the Gene, Transcript and VEPAnnotations models
             for transcript, vep_dictionary in variant_dict["vep_annotations"].items():
                 vep_annotations_info = vep_dictionary["vep_annotations"]
+                # get the gene/transcript objects then remove the gene field
                 gene_obj, created = Gene.objects.get_or_create(gene=vep_annotations_info["gene"])
                 transcript_obj, created = Transcript.objects.get_or_create(transcript=transcript, gene=gene_obj)
                 vep_annotations_info["transcript"] = transcript_obj
                 vep_annotations_info.pop("gene")
-                germline_vep_annotations_obj, created = GermlineVEPAnnotations.objects.get_or_create(**vep_annotations_info)
+                # get the vep consequences for later then remove the field
+                vep_consequences = vep_annotations_info["consequence"].split("&")
+                vep_annotations_info.pop("consequence")
+                germline_vep_annotations_obj = GermlineVEPAnnotations.objects.create(**vep_annotations_info)
+
+                # get the annotation consequences and add. these should all be in fixtures as the info is taken from VEP - something has gone very wrong if there's a novel one
+                for vep_consequence in vep_consequences:
+                    try:
+                        consequence_obj = VEPAnnotationsConsequence.objects.get(consequence=vep_consequence)
+                        germline_vep_annotations_obj.consequence.add(consequence_obj)
+                    except ObjectDoesNotExist:
+                        # there shouldn't be VEP consequences we don't know about
+                        raise ObjectDoesNotExist(f"No configured VEP consequence for {vep_consequence}- has VEP been updated?")
+                    except MultipleObjectsReturned:
+                        # there also shouldn't be more than one
+                        raise MultipleObjectsReturned(f"More than one configured VEP consequence for {vep_consequence}")
 
                 # get or create pubmed object(s) and add
                 pubmed_annotations = vep_dictionary["vep_annotations_pubmed"]
@@ -156,7 +173,7 @@ class Command(BaseCommand):
             variant_instance_info = variant_dict["abstract_variant_instance"]
             variant_instance_info["variant"] = variant_obj
             variant_instance_info["patient_analysis"] = patient_analysis_obj
-            somatic_variant_instance_obj, created = SomaticVariantInstance.objects.get_or_create(**variant_instance_info)
+            somatic_variant_instance_obj = SomaticVariantInstance.objects.create(**variant_instance_info)
             
             # we may have information for one or more transcripts
             # create the Gene, Transcript and VEPAnnotations models
@@ -166,7 +183,22 @@ class Command(BaseCommand):
                 transcript_obj, created = Transcript.objects.get_or_create(transcript=transcript, gene=gene_obj)
                 vep_annotations_info["transcript"] = transcript_obj
                 vep_annotations_info.pop("gene")
+                # get the vep consequences for later then remove the field
+                vep_consequences = vep_annotations_info["consequence"].split("&")
+                vep_annotations_info.pop("consequence")
                 somatic_vep_annotations_obj, created = SomaticVEPAnnotations.objects.get_or_create(**vep_annotations_info)
+
+                # get the annotation consequences and add. these should all be in fixtures as the info is taken from VEP - something has gone very wrong if there's a novel one
+                for vep_consequence in vep_consequences:
+                    try:
+                        consequence_obj = VEPAnnotationsConsequence.objects.get(consequence=vep_consequence)
+                        somatic_vep_annotations_obj.consequence.add(consequence_obj)
+                    except ObjectDoesNotExist:
+                        # there shouldn't be VEP consequences we don't know about
+                        raise ObjectDoesNotExist("No configured VEP consequence - has VEP been updated?")
+                    except MultipleObjectsReturned:
+                        # there also shouldn't be more than one
+                        raise MultipleObjectsReturned(f"More than one configured VEP consequence for {vep_consequence}")
 
                 # get or create pubmed object(s) and add
                 pubmed_annotations = vep_dictionary["vep_annotations_pubmed"]
