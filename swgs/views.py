@@ -65,10 +65,11 @@ def view_patient_analysis(request, patient_id):
         hgvsp = vep_annotations.hgvsp
         gene = vep_annotations.transcript.gene.gene
         consequences = vep_annotations.consequence.all()
+        impacts = list(set(consequence.impact.impact for consequence in consequences))
         consequences = [c.consequence for c in consequences]
         consequences_formatted = [c.replace("_", " ") for c in consequences]
         consequences_formatted = " | ".join(consequences)
-        if float(gnomad) >= 0.05 or any(consequence in consequences for consequence in disallowed_consequences):
+        if float(gnomad) >= 0.05 or (len(impacts) == 1 and impacts[0] == "MODIFIER"):
             pass
         elif float(gnomad) == -1:
             
@@ -104,10 +105,11 @@ def view_patient_analysis(request, patient_id):
         hgvsp = vep_annotations.hgvsp
         gene = vep_annotations.transcript.gene.gene
         consequences = vep_annotations.consequence.all()
+        impacts = list(set(consequence.impact.impact for consequence in consequences))
         consequences = [c.consequence for c in consequences]
         consequences_formatted = [c.replace("_", " ") for c in consequences]
         consequences_formatted = " | ".join(consequences)
-        if float(gnomad) >= 0.05 or any(consequence in consequences for consequence in disallowed_consequences):
+        if float(gnomad) >= 0.05 or (len(impacts) == 1 and impacts[0] == "MODIFIER"):
             pass
         elif float(gnomad) == -1:
             
