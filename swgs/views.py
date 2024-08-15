@@ -50,6 +50,10 @@ def view_patient_analysis(request, patient_id):
         variant = v.variant.variant
         gnomad = v.gnomad_popmax_af
         vaf = float(v.af) * 100
+        vep_annotations = v.vep_annotations.first()
+        hgvsc = vep_annotations.hgvsc
+        hgvsp = vep_annotations.hgvsp
+        gene = vep_annotations.transcript.gene.gene
         if float(gnomad) >= 0.05:
             pass
         elif float(gnomad) == -1:
@@ -57,14 +61,20 @@ def view_patient_analysis(request, patient_id):
             variant_dict = {
                 "pk": variant,
                 "gnomad": str(gnomad),
-                "vaf": f"{vaf:.2f}"
+                "vaf": f"{vaf:.2f}",
+                "hgvsc": hgvsc,
+                "hgvsp": hgvsp,
+                "gene": gene
             }
             somatic_snvs.append(variant_dict)
         else:
             variant_dict = {
                 "pk": variant,
                 "gnomad": str(gnomad),
-                "vaf": f"{vaf:.2f}"
+                "vaf": f"{vaf:.2f}",
+                "hgvsc": hgvsc,
+                "hgvsp": hgvsp,
+                "gene": gene
             }
             somatic_snvs.append(variant_dict)
 
@@ -72,6 +82,10 @@ def view_patient_analysis(request, patient_id):
         variant = v.variant.variant
         gnomad = v.gnomad_popmax_af
         vaf = float(v.af) * 100
+        vep_annotations = v.vep_annotations.first()
+        hgvsc = vep_annotations.hgvsc
+        hgvsp = vep_annotations.hgvsp
+        gene = vep_annotations.transcript.gene.gene
         if float(gnomad) >= 0.05:
             pass
         elif float(gnomad) == -1:
@@ -79,14 +93,20 @@ def view_patient_analysis(request, patient_id):
             variant_dict = {
                 "pk": variant,
                 "gnomad": str(gnomad),
-                "vaf": f"{vaf:.2f}"
+                "vaf": f"{vaf:.2f}",
+                "hgvsc": hgvsc,
+                "hgvsp": hgvsp,
+                "gene": gene
             }
             germline_snvs.append(variant_dict)
         else:
             variant_dict = {
                 "pk": variant,
                 "gnomad": str(gnomad),
-                "vaf": f"{vaf:.2f}"
+                "vaf": f"{vaf:.2f}",
+                "hgvsc": hgvsc,
+                "hgvsp": hgvsp,
+                "gene": gene
             }
             germline_snvs.append(variant_dict)
     
