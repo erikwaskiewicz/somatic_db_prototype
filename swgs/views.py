@@ -46,6 +46,8 @@ def view_patient_analysis(request, patient_id):
     germline_snvs = []
     somatic_snvs = []
 
+    disallowed_consequences = ["intron variant", "downstream gene variant", "upstream gene variant", "intergenic variant"]
+
     for v in somatic_snvs_query:
         variant = v.variant.variant
         gnomad = v.gnomad_popmax_af
@@ -54,7 +56,11 @@ def view_patient_analysis(request, patient_id):
         hgvsc = vep_annotations.hgvsc
         hgvsp = vep_annotations.hgvsp
         gene = vep_annotations.transcript.gene.gene
-        if float(gnomad) >= 0.05:
+        consequence = vep_annotations.consequence
+        consequence = consequence.split("&")
+        consequence = [c.replace("_", " ") for c in consequence]
+        consequence = " | ".join(consequence)
+        if float(gnomad) >= 0.05 or consequence in disallowed_consequences:
             pass
         elif float(gnomad) == -1:
             gnomad = "Not in Gnomad"
@@ -64,7 +70,8 @@ def view_patient_analysis(request, patient_id):
                 "vaf": f"{vaf:.2f}",
                 "hgvsc": hgvsc,
                 "hgvsp": hgvsp,
-                "gene": gene
+                "gene": gene,
+                "consequence": consequence
             }
             somatic_snvs.append(variant_dict)
         else:
@@ -74,7 +81,8 @@ def view_patient_analysis(request, patient_id):
                 "vaf": f"{vaf:.2f}",
                 "hgvsc": hgvsc,
                 "hgvsp": hgvsp,
-                "gene": gene
+                "gene": gene,
+                "consequence": consequence
             }
             somatic_snvs.append(variant_dict)
 
@@ -86,7 +94,11 @@ def view_patient_analysis(request, patient_id):
         hgvsc = vep_annotations.hgvsc
         hgvsp = vep_annotations.hgvsp
         gene = vep_annotations.transcript.gene.gene
-        if float(gnomad) >= 0.05:
+        consequence = vep_annotations.consequence
+        consequence = consequence.split("&")
+        consequence = [c.replace("_", " ") for c in consequence]
+        consequence = " | ".join(consequence)
+        if float(gnomad) >= 0.05 or consequence in disallowed_consequences:
             pass
         elif float(gnomad) == -1:
             gnomad = "Not in Gnomad"
@@ -96,7 +108,8 @@ def view_patient_analysis(request, patient_id):
                 "vaf": f"{vaf:.2f}",
                 "hgvsc": hgvsc,
                 "hgvsp": hgvsp,
-                "gene": gene
+                "gene": gene,
+                "consequence": consequence
             }
             germline_snvs.append(variant_dict)
         else:
@@ -106,11 +119,13 @@ def view_patient_analysis(request, patient_id):
                 "vaf": f"{vaf:.2f}",
                 "hgvsc": hgvsc,
                 "hgvsp": hgvsp,
-                "gene": gene
+                "gene": gene,
+                "consequence": consequence
             }
             germline_snvs.append(variant_dict)
     
     context = {
+        "patient_analysis": patient_analysis,
         "somatic_snvs": somatic_snvs,
         "germline_snvs": germline_snvs
     }

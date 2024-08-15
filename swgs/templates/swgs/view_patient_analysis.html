@@ -14,6 +14,9 @@
 
 {% block content %}
 <div class="container">
+  <h3>Variants for tumour sample {{ patient_analysis.tumour_sample.sample_id }} and germline sample {{ patient_analysis.germline_sample.sample_id }}</h3>
+  <br>
+  <br>
   <h5>Somatic SNVs</h5>
   <table class="table" id="runs-table">
     <thead>
@@ -28,7 +31,7 @@
     <tbody>
       {% for v in somatic_snvs %}
       <tr>
-        <td>{{ v.pk }}</td>
+        <td>{{ v.pk }}</br>{{ v.consequence }}</td>
         <td>{{ v.hgvsc }}</br>{{ v.hgvsp }}</td>
         <td>{{ v.gene }}</td>
         <td>{{ v.vaf }}%</td>
@@ -53,7 +56,7 @@
     <tbody>
       {% for v in germline_snvs %}
       <tr>
-        <td>{{ v.pk }}</td>
+        <td>{{ v.pk }}</br>{{ v.consequence }}</td>
         <td>{{ v.hgvsc }}</br>{{ v.hgvsp }}</td>
         <td>{{ v.gene }}</td>
         <td>{{ v.vaf }}%</td>
