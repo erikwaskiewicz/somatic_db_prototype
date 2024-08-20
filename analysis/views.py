@@ -261,7 +261,7 @@ def view_worksheets(request, query):
 
 
 @login_required
-def view_samples(request, worksheet_id=None, user_pk=None, sample_id=None):
+def view_samples(request, worksheet_id=None, user_pk=None):
     """
     Displays a list of samples from either:
      - a worksheet: all samples on a worksheet
@@ -269,59 +269,6 @@ def view_samples(request, worksheet_id=None, user_pk=None, sample_id=None):
     Only one of the optional args will ever be passed in, each from different URLs, 
     this will control whether a worksheet or a user is displayed
     """
-
-    sample_data_list = []
-
-    # if all samples on a worksheet required
-    if worksheet_id:
-
-        # get list of samples
-        samples = SampleAnalysis.objects.filter(worksheet = worksheet_id)
-
-    # Add coverage csv
-    if request.method == 'GET':
-
-        if 'download-run-coverage' in request.GET:
-
-            # Info from the sample to get the worksheet
-            if samples:
-                ws = get_sample_info(samples[0])
-
-                filename = f"{ws['worksheet_id']}_coverage.tsv"
-
-                # Create a Django response object, and specify content_type as tsv
-                response = HttpResponse(content_type='text/tab-separated-values')
-                response['Content-Disposition'] = f'attachment; filename={filename}'
-
-                # Create a CSV writer object and write the header
-                writer = csv.writer(response, delimiter='\t')
-                writer.writerow(['Sample ID', 'Gene', 'Percent Coverage 270x'])
-
-                # load sample object, error if the paperwork check hasnt been done
-                for sample in samples:
-
-                    # load in data that is common to both RNA and DNA workflows
-                    sample_data = get_sample_info(sample)
-
-                    # SNV workflow
-                    if sample_data['panel_obj'].show_snvs == True:
-                        coverage_data = get_coverage_data(sample, sample_data['panel_obj'].depth_cutoffs)
-                      
-                        # Making sure the sample ID isn't repeated in the csv
-                        sample_id_written = False
-
-                        for gene, coverage in coverage_data['regions'].items():
-
-                            if not sample_id_written:
-
-                                writer.writerow([sample.sample.sample_id, gene, coverage['percent_270x']])
-
-                                sample_id_written = True
-
-                            else:
-
-                                writer.writerow(['', gene, coverage['percent_270x']])
-            return response
 
     # start context dictionary
     context = {
@@ -365,9 +312,70 @@ def view_samples(request, worksheet_id=None, user_pk=None, sample_id=None):
     else:
         raise Http404('Invalid URL, neither worksheet_id or user_pk were parsed')
 
+
     ####################################
     #  If any buttons are pressed
     ####################################
+
+    if request.method == 'GET':
+
+        # whole worksheet coverage tsv download
+        if 'download-run-coverage' in request.GET:
+
+            # Create a Django response object, and specify content_type as tsv
+            filename = f"{worksheet_id}_coverage.tsv"
+            response = HttpResponse(content_type='text/tab-separated-values')
+            response['Content-Disposition'] = f'attachment; filename={filename}'
+
+            # Create a CSV writer object and write the header
+            writer = csv.writer(response, delimiter='\t')
+            writer.writerow([
+                'Sample ID',
+                'Panel',
+                'Gene',
+                'Percent Coverage 135x',
+                'Percent Coverage 270x',
+                'Percent Coverage 500x',
+                'Percent Coverage 1000x',
+            ])
+
+            # loop through all samples and load in sample data
+            for sample in samples:
+                sample_data = get_sample_info(sample)
+
+                # only process samples that look at SNVs
+                if sample_data['panel_obj'].show_snvs == True:
+                    coverage_data = get_coverage_data(sample, sample_data['panel_obj'].depth_cutoffs)
+
+                    # Making sure the sample ID isn't repeated in the csv
+                    sample_id_written = False
+
+                    # output % coverage per gene at each coverage threshold
+                    for gene, coverage in coverage_data['regions'].items():
+
+                        # set sample and panel output based on if its the first occurance for the sample
+                        if not sample_id_written:
+                            sample_id_out = sample_data['sample_id']
+                            panel_out = sample_data['panel']
+                            sample_id_written = True
+
+                        else:
+                            sample_id_out = ''
+                            panel_out = ''
+
+                        # write to file
+                        writer.writerow([
+                            sample_id_out,
+                            panel_out,
+                            gene,
+                            coverage['percent_135x'],
+                            coverage['percent_270x'],
+                            coverage['percent_500x'],
+                            coverage['percent_1000x'],
+                        ])
+
+            return response
+
     if request.method == 'POST':
         # if unassign modal button is pressed
         if 'unassign' in request.POST:
