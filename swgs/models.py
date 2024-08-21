@@ -140,6 +140,7 @@ class AbstractQCCheck(models.Model):
     """
     Base class for QC checks - cannot be instantiated
     """
+    id = models.AutoField(primary_key=True)
     status = models.CharField(max_length=1, choices=QC_CHOICES)
     #TODO sort message out so there's not loads of data replication
     message = models.TextField(max_length=1000)
@@ -151,7 +152,6 @@ class QCSomaticVAFDistribution(AbstractQCCheck):
     """
     QC check for somatic VAF distribution
     """
-    id = models.AutoField(primary_key=True)
     low_vaf_proportion = models.DecimalField(max_digits=7, decimal_places=6)
 
     class Meta:
@@ -161,7 +161,6 @@ class QCTumourInNormalContamination(AbstractQCCheck):
     """
     QC check for TINC
     """
-    id = models.AutoField(primary_key=True)
     #TODO add fields when we've decided on script use
 
     class Meta:
@@ -171,7 +170,6 @@ class QCGermlineCNVQuality(AbstractQCCheck):
     """
     QC check for germline CNV quality
     """
-    id = models.AutoField(primary_key=True)
     passing_cnv_count = models.IntegerField()
     passing_fraction = models.DecimalField(max_digits=7, decimal_places=6)
     log_loss_gain = models.DecimalField(max_digits=7, decimal_places=5)
@@ -183,7 +181,6 @@ class QCLowQualityTumourSample(AbstractQCCheck):
     """
     QC check for low quality tumour sample QC
     """
-    id = models.AutoField(primary_key=True)
     unevenness_of_coverage = models.DecimalField(max_digits=7, decimal_places=4)
     median_fragment_length = models.DecimalField(max_digits=7, decimal_places=1)
     at_drop = models.DecimalField(max_digits=7, decimal_places=4)
@@ -196,14 +193,12 @@ class QCNTCContamination(AbstractQCCheck):
     """
     QC check for NTC contamination
     """
-    id = models.AutoField(primary_key=True)
     ntc_contamination = models.DecimalField(max_digits=7, decimal_places=6)
 
     class Meta:
         unique_together = ["status", "message", "ntc_contamination"]
 
 class QCRelatedness(AbstractQCCheck):
-    id = models.AutoField(primary_key=True)
     relatedness = models.DecimalField(max_digits=4, decimal_places=3)
 
     class Meta:
@@ -309,25 +304,6 @@ class VEPAnnotationsPubmed(models.Model):
         # create a link for the pubmed ID
         return f"https://pubmed.ncbi.nlm.nih.gov/{self.pubmed_id}/"
 
-
-class AbstractVEPAnnotations(models.Model):
-    """
-    Contains VEP annotation fields common to germline and somatic vep annotations
-    VEP annotations are described here:
-    https://www.ensembl.org/info/docs/tools/vep/vep_formats.html
-    """
-    consequence = models.ManyToManyField("VEPAnnotationsConsequence")
-    transcript = models.ForeignKey("Transcript", on_delete=models.CASCADE)
-    exon = models.CharField(max_length=20, null=True, blank=True)
-    intron = models.CharField(max_length=10, null=True, blank=True)
-    hgvsc = models.CharField(max_length=100, null=True, blank=True)
-    hgvsp = models.CharField(max_length=100, null=True, blank=True)
-    existing_variation = models.ManyToManyField("VEPAnnotationsExistingVariation")
-    pubmed_id = models.ManyToManyField("VEPAnnotationsPubmed")
-
-    class Meta:
-        abstract = True
-
 class VEPAnnotationsClinvar(models.Model):
     """
     Clinvar
@@ -361,11 +337,29 @@ class VEPAnnotationsCancerHotspots(models.Model):
         # you currently can't go to the website for a specific variant, return the main link
         return "https://www.cancerhotspots.org/#/home"
 
+class AbstractVEPAnnotations(models.Model):
+    """
+    Contains VEP annotation fields common to germline and somatic vep annotations
+    VEP annotations are described here:
+    https://www.ensembl.org/info/docs/tools/vep/vep_formats.html
+    """
+    id = models.AutoField(primary_key=True)
+    consequence = models.ManyToManyField("VEPAnnotationsConsequence")
+    transcript = models.ForeignKey("Transcript", on_delete=models.CASCADE)
+    exon = models.CharField(max_length=20, null=True, blank=True)
+    intron = models.CharField(max_length=10, null=True, blank=True)
+    hgvsc = models.CharField(max_length=100, null=True, blank=True)
+    hgvsp = models.CharField(max_length=100, null=True, blank=True)
+    existing_variation = models.ManyToManyField("VEPAnnotationsExistingVariation")
+    pubmed_id = models.ManyToManyField("VEPAnnotationsPubmed")
+
+    class Meta:
+        abstract = True
+
 class GermlineVEPAnnotations(AbstractVEPAnnotations):
     """
     Adds germline-specific annotations (Clinvar)
     """
-    id = models.AutoField(primary_key=True)
     #clinvar = models.ManyToManyField("VEPAnnotationsClinvar")
 
     #TODO unique together
@@ -374,7 +368,6 @@ class SomaticVEPAnnotations(AbstractVEPAnnotations):
     """
     Adds somatic-specific annotations (Cancer hotspots)
     """
-    id = models.AutoField(primary_key=True)
     #cancer_hotspots = models.ForeignKey("VEPAnnotationsCancerHotspots", on_delete=models.CASCADE)
 
     #TODO unique_together
