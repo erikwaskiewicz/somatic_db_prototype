@@ -3,6 +3,12 @@ This format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [v1.5.0] - 2024-08-21
+
+### Added
+- Download button to download whole worksheet coverage TSV
+- Added initial SWGS page in background
+
 ## [v1.4.4] - 2024-07-04
 
 ### Added
