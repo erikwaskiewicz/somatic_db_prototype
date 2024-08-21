@@ -17,6 +17,9 @@ class Gene(models.Model):
     def __repr__(self):
         return f"Gene: {self.gene}"
     
+    def __str__(self):
+        return f"{self.gene}"
+    
 class Transcript(models.Model):
     """
     NCBI transcript identifiers
@@ -26,6 +29,9 @@ class Transcript(models.Model):
 
     def __repr__(self):
         return f"Transcript {self.transcript} in gene {self.gene}"
+    
+    def __str__(self):
+        return f"{self.transcript}"
 
 ######################
 ### Analysis Setup ###
@@ -38,7 +44,10 @@ class Patient(models.Model):
     """
     
     id = models.AutoField(primary_key=True)
-    nhs_number = models.CharField(max_length=10, default=f"UNKNOWN{str(id)}")
+    nhs_number = models.CharField(max_length=10, default="UNKNOWN")
+
+    def __str__(self):
+        return f"{self.nhs_number}"
 
 
 class Sample(models.Model):
@@ -50,21 +59,8 @@ class Sample(models.Model):
     def __repr__(self):
         return f"Sample {self.sample_id}"
     
-class Indication(models.Model):
-    """
-    Indication the patient is being tested for e.g. ALL
-    #panel_phase_zero = models.ForeignKey('Panel', on_delete=models.SET_NULL, null=True, related_name='panel_phase_zero')
-    #panel_phase_one = models.ForeignKey('Panel', on_delete=models.CASCADE, related_name='panel_phase_one')
-
-    """
-    indication = models.CharField(max_length=20, primary_key=True)
-    indication_pretty_print = models.CharField(max_length=100, null=True, blank=True)
-    lims_code = models.CharField(max_length=20, null=True, blank=True)
-    #panel_phase_zero = models.ForeignKey('Panel', on_delete=models.SET_NULL, null=True, related_name='panel_phase_zero')
-    #panel_phase_one = models.ForeignKey('Panel', on_delete=models.CASCADE, related_name='panel_phase_one')
-
-    def __repr__(self):
-        return f"Indication: {self.indication_pretty_print}"
+    def __str__(self):
+        return f"{self.sample_id}"
     
 class Panel(models.Model):
     """
@@ -82,7 +78,37 @@ class Panel(models.Model):
         unique_together = ["panel_name", "panel_version"]
 
     def __repr__(self):
-        return f"Panel: {self.panel_name}"
+        return f"Panel: {self.panel_name} {self.panel_version}"
+    
+    def __str__(self):
+        return f"{self.panel_name}_{str(self.panel_version)}"
+
+class Indication(models.Model):
+    """
+    Indication the patient is being tested for e.g. ALL
+    """
+    indication = models.CharField(max_length=20, primary_key=True)
+    indication_pretty_print = models.CharField(max_length=100, null=True, blank=True)
+    lims_code = models.CharField(max_length=20, null=True, blank=True)
+    germline_panels_tier_zero = models.ManyToManyField("Panel", related_name="germline_panels_tier_zero", blank=True)
+    germline_panels_tier_one = models.ManyToManyField("Panel", related_name="germline_panels_tier_one")
+    germline_panels_tier_three = models.ManyToManyField("Panel", related_name="germline_panels_tier_three")
+    #TODO somatic panels
+
+    def __repr__(self):
+        return f"Indication: {self.indication_pretty_print}"
+    
+    def __str__(self):
+        return f"{self.indication}"
+    
+    def get_germline_tier_zero_genes(self):
+        pass
+
+    def get_germline_tier_one_genes(self):
+        pass
+
+    def get_germline_tier_three_genes(self):
+        pass
 
 class Run(models.Model):
     """
@@ -90,6 +116,9 @@ class Run(models.Model):
     """
     run = models.CharField(max_length=50, primary_key=True)
     worksheet = models.CharField(max_length=50, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.run}"
 
     def get_patient_analysis(self):
         patient_analyses = PatientAnalysis.objects.filter(run=self)
@@ -119,6 +148,9 @@ class PatientAnalysis(models.Model):
     germline_ntc_contamination = models.ForeignKey('QCNTCContamination', on_delete=models.CASCADE, related_name='germline_ntc_contamination')
     relatedness = models.ForeignKey('QCRelatedness', on_delete=models.CASCADE)
     
+    def __str__(self):
+        return f"{self.run}_{self.tumour_sample}_{self.germline_sample}"
+
 class MDTNotes(models.Model):
     """
     Notes on MDTs. Links to a patient so informaiton from multiple analyses is pulled through
@@ -231,6 +263,9 @@ class GenomeBuild(models.Model):
     """
     genome_build = models.CharField(primary_key=True, unique=True, max_length=10)
 
+    def __str__(self):
+        return f"{self.genome_build}"
+
 class Variant(models.Model):
     """
     An individual SNP/small indel
@@ -239,37 +274,8 @@ class Variant(models.Model):
     variant = models.CharField(primary_key=True, max_length=200)
     genome_build = models.ForeignKey("GenomeBuild", on_delete=models.CASCADE)
 
-    
-class AbstractVariantInstance(models.Model):
-    """
-    Abstract class for variant instance. Stores the fields common to germline and somatic instances
-    """
-    variant = models.ForeignKey("Variant", on_delete=models.CASCADE)
-    patient_analysis = models.ForeignKey("PatientAnalysis", on_delete=models.CASCADE)
-    ad = models.CharField(max_length=10)
-    af = models.DecimalField(max_digits=7, decimal_places=6)
-    dp = models.IntegerField()
-    qual = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
-    max_splice_ai = models.DecimalField(max_digits=4, decimal_places=3, null=True, blank=True)
-    gnomad_popmax_af = models.DecimalField(max_digits=4, decimal_places=3, null=True, blank=True)
-    gnomad_nhomalt = models.IntegerField(null=True, blank=True)
-    
-    class Meta:
-        abstract = True
-
-class GermlineVariantInstance(AbstractVariantInstance):
-    """
-    
-    """
-    id = models.AutoField(primary_key=True)
-    vep_annotations = models.ManyToManyField("GermlineVEPAnnotations")
-
-class SomaticVariantInstance(AbstractVariantInstance):
-    """
-    
-    """
-    id = models.AutoField(primary_key=True)
-    vep_annotations = models.ManyToManyField("SomaticVEPAnnotations")
+    def __str__(self):
+        return f"{self.variant}"
 
 class VEPAnnotationsConsequence(models.Model):
     """
@@ -374,4 +380,65 @@ class SomaticVEPAnnotations(AbstractVEPAnnotations):
     #cancer_hotspots = models.ForeignKey("VEPAnnotationsCancerHotspots", on_delete=models.CASCADE)
 
     #TODO unique_together
+
+class AbstractVariantInstance(models.Model):
+    """
+    Abstract class for variant instance. Stores the fields common to germline and somatic instances
+    """
+    variant = models.ForeignKey("Variant", on_delete=models.CASCADE)
+    patient_analysis = models.ForeignKey("PatientAnalysis", on_delete=models.CASCADE)
+    ad = models.CharField(max_length=10)
+    af = models.DecimalField(max_digits=7, decimal_places=6)
+    dp = models.IntegerField()
+    qual = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
+    max_splice_ai = models.DecimalField(max_digits=4, decimal_places=3, null=True, blank=True)
+    gnomad_popmax_af = models.DecimalField(max_digits=4, decimal_places=3, null=True, blank=True)
+    gnomad_nhomalt = models.IntegerField(null=True, blank=True)
     
+    class Meta:
+        abstract = True
+
+class GermlineVariantInstance(AbstractVariantInstance):
+    """
+    
+    """
+    id = models.AutoField(primary_key=True)
+    vep_annotations = models.ManyToManyField("GermlineVEPAnnotations")
+
+    def display_in_tier_zero(self):
+        variant_gene = self.vep_annotations.first().transcript.gene
+        associated_panels = variant_gene.panels.all()
+        # if any of the associated panels are in a tier 1 panel, display
+        for panel in associated_panels:
+            if panel in self.patient_analysis.indication.germline_panels_tier_zero.all():
+                return True
+        return False
+
+    def display_in_tier_one(self):
+        """
+        Returns a Boolean for if a panel should be displayed in Tier 1
+        """
+        print("In display tier one")
+        variant_gene = self.vep_annotations.first().transcript.gene
+        associated_panels = variant_gene.panels.all()
+        # if any of the associated panels are in a tier 1 panel, display
+        for panel in associated_panels:
+            if panel in self.patient_analysis.indication.germline_panels_tier_one.all():
+                return True
+        return False
+        
+    def display_in_tier_three(self):
+        variant_gene = self.vep_annotations.first().transcript.gene
+        associated_panels = variant_gene.panels.all()
+        # if any of the associated panels are in a tier 1 panel, display
+        for panel in associated_panels:
+            if panel in self.patient_analysis.indication.germline_panels_tier_three.all():
+                return True
+        return False
+
+class SomaticVariantInstance(AbstractVariantInstance):
+    """
+    
+    """
+    id = models.AutoField(primary_key=True)
+    vep_annotations = models.ManyToManyField("SomaticVEPAnnotations")
