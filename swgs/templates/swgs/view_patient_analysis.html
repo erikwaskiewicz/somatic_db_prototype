@@ -59,6 +59,7 @@
         <th scope="col">Gene</th>
         <th scope="col">VAF</th>
         <th scope="col">GnomAD</th>
+        <th scope="col">Tier</th>
       </tr>
     </thead>
     <tbody>
@@ -69,6 +70,15 @@
         <td>{{ v.gene }}</td>
         <td>{{ v.vaf }}%</td>
         <td>{{ v.gnomad }}</td>
+        {% if v.tier == "0" %}
+          <td class="table-active">{{ v.tier }}</td>
+        {% elif v.tier == "1" %}
+          <td class="table-info">{{ v.tier }}</td>
+        {% elif v.tier == "3" %}
+          <td class="table-warning">{{ v.tier }}</td>
+        {% else %}
+          <td class="table-secondary">{{ v.tier }}</td>
+        {% endif %}
       </tr>
       {% endfor %}
     </tbody>
