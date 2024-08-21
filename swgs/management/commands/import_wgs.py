@@ -1,18 +1,13 @@
-import argparse
 import json
 
-from django.core.management.base import BaseCommand, CommandParser
+from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import transaction
 
 from swgs.models import *
 
-test_germline_variant_json = "/home/na282549/code/somatic_db/test_23M19452_germline_variants.json"
-test_qc_json = "/home/na282549/code/somatic_db/Test_overall_qc.json"
-test_somatic_variant_json = "/home/na282549/code/somatic_db/test_23M19453_somatic_variants.json"
-test_patient_json = "/home/na282549/code/somatic_db/example_patient_info.json"
-
 class Command(BaseCommand):
+
 
     def add_arguments(self, parser):
         """
