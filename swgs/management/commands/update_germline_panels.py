@@ -256,7 +256,9 @@ class Command(BaseCommand):
 
                 # Update the panel notes
                 panel_notes = "\n".join(panel_notes)
-                print(panel_notes)
+                panel_obj.panel_notes = "TESTING"
+                panel_obj.panel_notes = panel_notes
+                panel_obj.save()
 
             else:
 
