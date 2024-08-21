@@ -33,8 +33,8 @@ class Transcript(models.Model):
 
 class Patient(models.Model):
     """
-    An individual patient. Primary key is the NHS number.
-    If NHS number is not available, a random string of 10 letters is generated
+    An individual patient.
+    If NHS number is not available, it is replaced with UNKNOWN[id]
     """
     
     id = models.AutoField(primary_key=True)
