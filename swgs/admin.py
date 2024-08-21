@@ -8,9 +8,13 @@ Fields that can be searched by are defined in the search_fields variable
 Fields displayed on the admin page are defined in the list_display variable
 """
 
+class PanelInLine(admin.TabularInline):
+    model = Panel.genes.through
+
 class GeneAdmin(admin.ModelAdmin):
     list_display = ["gene"]
     search_fields = ["gene"]
+    inlines = [PanelInLine]
 
 admin.site.register(Gene, GeneAdmin)
 
@@ -33,6 +37,7 @@ class SampleAdmin(admin.ModelAdmin):
 admin.site.register(Sample, SampleAdmin)
 
 class IndicationAdmin(admin.ModelAdmin):
+    filter_horizontal = ["germline_panels_tier_zero", "germline_panels_tier_one", "germline_panels_tier_three"]
     list_display = ["indication", "indication_pretty_print", "lims_code"]
     search_fields = ["indication", "indication_pretty_print", "lims_code"]
 
@@ -113,6 +118,7 @@ class VariantAdmin(admin.ModelAdmin):
 admin.site.register(Variant, VariantAdmin)
 
 class GermlineVariantInstanceAdmin(admin.ModelAdmin):
+    filter_horizontal = ["vep_annotations"]
     list_display = ["id", "get_variant", "patient_analysis", "af"]
     search_fields = ["id", "variant", "patient_analysis"]
 
@@ -122,6 +128,7 @@ class GermlineVariantInstanceAdmin(admin.ModelAdmin):
 admin.site.register(GermlineVariantInstance, GermlineVariantInstanceAdmin)
 
 class SomaticVariantInstanceAdmin(admin.ModelAdmin):
+    filter_horizontal = ["vep_annotations"]
     list_display = ["variant", "patient_analysis", "ad", "af"]
     search_fields = ["variant", "patient_analysis"]
 
@@ -161,12 +168,14 @@ class VEPAnnotationsClinvarAdmin(admin.ModelAdmin):
 admin.site.register(VEPAnnotationsClinvar, VEPAnnotationsClinvarAdmin)
 
 class GermlineVEPAnnotationsAdmin(admin.ModelAdmin):
+    filter_horizontal = ["pubmed_id", "existing_variation", "consequence"]
     list_display = ["id", "hgvsc", "hgvsp", "exon", "intron"]
     search_fields = ["id", "hgvsc", "hgvsp"]
 
 admin.site.register(GermlineVEPAnnotations, GermlineVEPAnnotationsAdmin)
 
 class SomaticVEPAnnotationsAdmin(admin.ModelAdmin):
+    filter_horizontal = ["pubmed_id", "existing_variation", "consequence"]
     list_display = ["hgvsc", "hgvsp", "exon", "intron"]
     search_fields = ["hgvsc", "hgvsp"]
 
