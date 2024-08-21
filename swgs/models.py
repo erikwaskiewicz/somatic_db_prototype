@@ -289,7 +289,6 @@ class VEPAnnotationsImpact(models.Model):
     The impact levels for the different VEP consequences, described here:
     https://www.ensembl.org/info/genome/variation/prediction/predicted_data.html
     """
-    #TODO make a fixture
     impact = models.CharField(primary_key=True, max_length=20)
 
 class VEPAnnotationsExistingVariation(models.Model):
