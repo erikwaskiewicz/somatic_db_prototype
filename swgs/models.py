@@ -59,6 +59,7 @@ class Indication(models.Model):
     """
     indication = models.CharField(max_length=20, primary_key=True)
     indication_pretty_print = models.CharField(max_length=100, null=True, blank=True)
+    lims_code = models.CharField(max_length=20, null=True, blank=True)
     #panel_phase_zero = models.ForeignKey('Panel', on_delete=models.SET_NULL, null=True, related_name='panel_phase_zero')
     #panel_phase_one = models.ForeignKey('Panel', on_delete=models.CASCADE, related_name='panel_phase_one')
 
@@ -71,12 +72,14 @@ class Panel(models.Model):
     """
     id = models.AutoField(primary_key=True)
     panel_name = models.CharField(max_length=50)
-    panel_version = models.IntegerField()
-    panel_notes = models.TextField()
-    panel_approved = models.BooleanField()
+    panel_version = models.DecimalField(max_digits=4, decimal_places=1)
+    panel_notes = models.TextField(null=True, blank=True)
+    panel_approved = models.BooleanField(default=False)
     genes = models.ManyToManyField('Gene', related_name="panels")
-    lims_code = models.CharField(max_length=20)
     #settings
+
+    class Meta:
+        unique_together = ["panel_name", "panel_version"]
 
     def __repr__(self):
         return f"Panel: {self.panel_name}"

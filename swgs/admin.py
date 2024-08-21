@@ -33,14 +33,14 @@ class SampleAdmin(admin.ModelAdmin):
 admin.site.register(Sample, SampleAdmin)
 
 class IndicationAdmin(admin.ModelAdmin):
-    list_display = ["indication", "indication_pretty_print"]
-    search_fields = ["indication", "indication_pretty_print"]
+    list_display = ["indication", "indication_pretty_print", "lims_code"]
+    search_fields = ["indication", "indication_pretty_print", "lims_code"]
 
 admin.site.register(Indication, IndicationAdmin)
 
 class PanelAdmin(admin.ModelAdmin):
-    list_display = ["panel_name", "panel_version", "panel_approved", "lims_code"]
-    search_fields = ["panel_name", "lims_code"]
+    list_display = ["panel_name", "panel_version", "panel_approved"]
+    search_fields = ["panel_name"]
 
 admin.site.register(Panel, PanelAdmin)
 
