@@ -6,7 +6,7 @@ from django.core.exceptions import MultipleObjectsReturned
 from django.db import transaction
 
 from swgs.models import *
-from swgs.data.panelapp_panels import germline_panels
+from swgs.panels.panelapp_panels import germline_panels
 
 def get_panel_from_api(base_url, panel_id):
         """
