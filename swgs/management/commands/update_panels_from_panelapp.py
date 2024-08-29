@@ -1,7 +1,7 @@
 import datetime
 import requests
 
-from django.core.management.base import BaseCommand, CommandParser
+from django.core.management.base import BaseCommand
 from django.core.exceptions import MultipleObjectsReturned
 from django.db import transaction
 
@@ -86,7 +86,7 @@ def get_previous_panel(panel_name):
     """
     try:
         panels = Panel.objects.filter(panel_name=panel_name).order_by('-panel_version')
-        # highest panel version is the new panel
+        # highest panel version is the new panel, second highest is previous
         previous_panel = panels[1]
     except IndexError:
         # If there's an index error there is no previous panel
@@ -259,7 +259,6 @@ class Command(BaseCommand):
 
                 # Update the panel notes
                 panel_notes = "\n".join(panel_notes)
-                panel_obj.panel_notes = "TESTING"
                 panel_obj.panel_notes = panel_notes
                 panel_obj.save()
 
