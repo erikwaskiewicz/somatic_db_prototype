@@ -25,70 +25,100 @@
   {% crispy form %}
   <br>
   <br>
-  <h5>Somatic SNVs</h5>
+  <h4>Somatic SNVs</h4>
+  <h5>Tier 1</h5>
   <table class="table" id="runs-table">
     <thead>
       <tr>
-        <th scope="col">Variant</th>
-        <th scope="col">HGVSc / HGVSp</th>
-        <th scope="col">Gene</th>
-        <th scope="col">VAF</th>
-        <th scope="col">GnomAD</th>
-        <th scope="col">Tier</th>
+        <th class="col-md-4">Variant</th>
+        <th class="col-md-4">HGVSc / HGVSp</th>
+        <th class="col-md-1">Gene</th>
+        <th class="col-md-1">VAF</th>
+        <th class="col-md-2">GnomAD</th>
       </tr>
     </thead>
     <tbody>
-      {% for v in somatic_snvs %}
+      {% for v in somatic_snvs_tier_one %}
       <tr>
         <td>{{ v.pk }}</br>{{ v.consequence }}</td>
         <td>{{ v.hgvsc }}</br>{{ v.hgvsp }}</td>
         <td>{{ v.gene }}</td>
         <td>{{ v.vaf }}%</td>
         <td>{{ v.gnomad }}</td>
-        {% if v.tier == "0" %}
-          <td class="table-active">{{ v.tier }}</td>
-        {% elif v.tier == "1" %}
-          <td class="table-info">{{ v.tier }}</td>
-        {% elif v.tier == "2" %}
-          <td class="table-warning">{{ v.tier }}</td>
-        {% else %}
-          <td class="table-secondary">{{ v.tier }}</td>
-        {% endif %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <br>
+  <h5>Tier 2</h5>
+  <table class="table" id="runs-table">
+    <thead>
+      <tr>
+        <th class="col-md-4">Variant</th>
+        <th class="col-md-4">HGVSc / HGVSp</th>
+        <th class="col-md-1">Gene</th>
+        <th class="col-md-1">VAF</th>
+        <th class="col-md-2">GnomAD</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in somatic_snvs_tier_two %}
+      <tr>
+        <td>{{ v.pk }}</br>{{ v.consequence }}</td>
+        <td>{{ v.hgvsc }}</br>{{ v.hgvsp }}</td>
+        <td>{{ v.gene }}</td>
+        <td>{{ v.vaf }}%</td>
+        <td>{{ v.gnomad }}</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
   <br>
   <br>
-  <h5>Germline SNVs</h5>
+  <h4>Germline SNVs</h4>
+  <h5>Tier 1</h5>
   <table class="table" id="runs-table">
     <thead>
       <tr>
-        <th scope="col">Variant</th>
-        <th scope="col">HGVSc / HGVSp</th>
-        <th scope="col">Gene</th>
-        <th scope="col">VAF</th>
-        <th scope="col">GnomAD</th>
-        <th scope="col">Tier</th>
+        <th class="col-md-4">Variant</th>
+        <th class="col-md-4">HGVSc / HGVSp</th>
+        <th class="col-md-1">Gene</th>
+        <th class="col-md-1">VAF</th>
+        <th class="col-md-2">GnomAD</th>
       </tr>
     </thead>
     <tbody>
-      {% for v in germline_snvs %}
+      {% for v in germline_snvs_tier_one %}
       <tr>
         <td>{{ v.pk }}</br>{{ v.consequence }}</td>
         <td>{{ v.hgvsc }}</br>{{ v.hgvsp }}</td>
         <td>{{ v.gene }}</td>
         <td>{{ v.vaf }}%</td>
         <td>{{ v.gnomad }}</td>
-        {% if v.tier == "0" %}
-          <td class="table-active">{{ v.tier }}</td>
-        {% elif v.tier == "1" %}
-          <td class="table-info">{{ v.tier }}</td>
-        {% elif v.tier == "3" %}
-          <td class="table-warning">{{ v.tier }}</td>
-        {% else %}
-          <td class="table-secondary">{{ v.tier }}</td>
-        {% endif %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <br>
+  <h5>Tier 3</h5>
+  <table class="table" id="runs-table">
+    <thead>
+      <tr>
+        <th class="col-md-4">Variant</th>
+        <th class="col-md-4">HGVSc / HGVSp</th>
+        <th class="col-md-1">Gene</th>
+        <th class="col-md-1">VAF</th>
+        <th class="col-md-2">GnomAD</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in germline_snvs_tier_three %}
+      <tr>
+        <td>{{ v.pk }}</br>{{ v.consequence }}</td>
+        <td>{{ v.hgvsc }}</br>{{ v.hgvsp }}</td>
+        <td>{{ v.gene }}</td>
+        <td>{{ v.vaf }}%</td>
+        <td>{{ v.gnomad }}</td>
       </tr>
       {% endfor %}
     </tbody>
