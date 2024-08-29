@@ -69,6 +69,15 @@ def view_patient_analysis(request, patient_id):
         consequences = [c.consequence for c in consequences]
         consequences_formatted = [c.replace("_", " ") for c in consequences]
         consequences_formatted = " | ".join(consequences)
+        if v.display_in_tier_zero():
+            tier = "0"
+        elif v.display_in_tier_one():
+            tier = "1"
+        elif v.display_in_tier_two():
+            tier = "2"
+        else:
+            tier = "None"
+
         if float(gnomad) >= 0.05 or (len(impacts) == 1 and impacts[0] == "MODIFIER"):
             pass
         elif float(gnomad) == -1:
@@ -81,7 +90,8 @@ def view_patient_analysis(request, patient_id):
                 "hgvsc": hgvsc,
                 "hgvsp": hgvsp,
                 "gene": gene,
-                "consequence": consequences_formatted
+                "consequence": consequences_formatted,
+                "tier": tier
             }
             somatic_snvs.append(variant_dict)
         else:
@@ -92,7 +102,8 @@ def view_patient_analysis(request, patient_id):
                 "hgvsc": hgvsc,
                 "hgvsp": hgvsp,
                 "gene": gene,
-                "consequence": consequences_formatted
+                "consequence": consequences_formatted,
+                "tier": tier
             }
             somatic_snvs.append(variant_dict)
 
