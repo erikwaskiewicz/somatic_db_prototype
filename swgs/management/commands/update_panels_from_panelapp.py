@@ -166,7 +166,7 @@ class Command(BaseCommand):
         """
         Adds arguments for the command, works like argparse
         """
-        parser.add_argument("--panels", help="Dictionary of panelapp panels in panelapp_id: panel_name key/value pairs. Defaults to the fixture in SVD", default=germline_panels)
+        parser.add_argument("--panels", help="Dictionary of panelapp panels, with id as key, and a dictionary of name and germline_or_somatic as value. Defaults to the fixture in SVD", default=germline_panels)
 
     @transaction.atomic
     def handle(self, *args, **options):
@@ -177,9 +177,12 @@ class Command(BaseCommand):
         # get arguments from options
         panels = options["panels"]
 
-        for panel_id, panel_name in panels.items():
+        for panel_id, panel_info in panels.items():
 
+            panel_name = panel_info["name"]
             print(f"Performing panel update for {panel_name}")
+            
+            germline_or_somatic = panel_info["germline_or_somatic"]
 
             # get the most recent version info about the panel from the API
             panel_api_response = get_panel_from_api(self.base_url, panel_id)
@@ -195,11 +198,13 @@ class Command(BaseCommand):
                 continue
 
             # see if we already have this panel in the database
-            panel_obj, created = get_or_create_panel(panel_name, panel_version)
+            updated_panel_name = panel_name.replace(" ", "_").lower()
+            created_panel_name = f"{germline_or_somatic}_{updated_panel_name}"
+            panel_obj, created = get_or_create_panel(created_panel_name, panel_version)
             
             if created:
                 # Get previous panel to compare and update panel notes
-                previous_panel = get_previous_panel(panel_name)
+                previous_panel = get_previous_panel(created_panel_name)
 
                 panel_notes = []
                 panel_notes.append(f"Panel updated on {today}")

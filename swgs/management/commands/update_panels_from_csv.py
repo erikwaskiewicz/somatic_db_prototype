@@ -47,6 +47,10 @@ class Command(BaseCommand):
                             help="The name(s) of your panel(s) (optional) - script will default the panel name to the prefix of the .csv file",
                             nargs="+",
                             required=False)
+        parser.add_argument("--germline_or_somatic",
+                            help="A list of 'germline' or 'somatic' for each panel. Script will default to somatic unless this is supplied",
+                            nargs="+",
+                            required=False)
         
     @transaction.atomic
     def handle(self, *args, **options):
@@ -60,13 +64,11 @@ class Command(BaseCommand):
         try:
             panel_names = options["panel_names"]
             # if panel names are provided, check they're provided for all the csvs
-            if len(panel_names) > 0:
-
-                if len(panel_names) != len(panel_csvs):
-                    raise Exception("Names not provided for every panel - either provide a panel name for every panel or provide no panel names, script will default to the csv file prefixes")
-                
-                else:
-                    updated_panel_names = panel_names
+            if len(panel_names) != len(panel_csvs):
+                raise Exception("Names not provided for every panel - either provide a panel name for every panel or provide no panel names, script will default to the csv file prefixes")
+            
+            else:
+                updated_panel_names = panel_names
 
         # otherwise get the panel names from the csv names
         except KeyError:
@@ -76,6 +78,20 @@ class Command(BaseCommand):
             for csv in panel_csvs:
                 panel_name = csv.split("/")[-1].split(".")[0]
                 updated_panel_names.append(panel_name)
+
+        try:
+            germline_or_somatic = options["germline_or_somatic"]
+            # if germline_or_somatic is provided, check they're provided for all the panel names
+            print(updated_panel_names, germline_or_somatic)
+            if len(updated_panel_names) != len(germline_or_somatic):
+                raise Exception("Germline or somatic not provided for every panel - either provide this information or script will default to somatic for all panels")
+            else:
+                updated_panel_names = [f"{germline_or_somatic[i]}_{updated_panel_names[i]}" for i in range(len(updated_panel_names))]
+        
+        # otherwise everything is somatic
+        except TypeError:
+
+            updated_panel_names = [f"somatic_{panel_name}" for panel_name in updated_panel_names]
 
         # make a dictionary
         panels = dict(zip(updated_panel_names, panel_csvs))
