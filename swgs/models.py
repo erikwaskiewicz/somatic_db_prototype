@@ -279,6 +279,13 @@ class Variant(models.Model):
 
     def __str__(self):
         return f"{self.variant}"
+    
+    def split_variant(self):
+        chrom = self.variant.split(":")[0]
+        pos = self.variant.split(":")[1]
+        ref = self.variant.split(":")[2].split(">")[0]
+        alt = self.variant.split(":")[2].split(">")[1]
+        return chrom, pos, ref, alt
 
 class VEPAnnotationsConsequence(models.Model):
     """
@@ -388,6 +395,7 @@ class AbstractVariantInstance(models.Model):
     """
     Abstract class for variant instance. Stores the fields common to germline and somatic instances
     """
+    id = models.AutoField(primary_key=True)
     variant = models.ForeignKey("Variant", on_delete=models.CASCADE)
     patient_analysis = models.ForeignKey("PatientAnalysis", on_delete=models.CASCADE)
     ad = models.CharField(max_length=10)
@@ -401,11 +409,33 @@ class AbstractVariantInstance(models.Model):
     class Meta:
         abstract = True
 
+    @staticmethod
+    def get_chrom_and_pos(variant_id):
+        chrom = variant_id.split(":")[0]
+        pos = int(variant_id.split(":")[1])
+        return chrom, pos
+    
+    @staticmethod
+    def get_worst_modifier_from_vep_annotations(vep_annotations):
+        impacts = []
+        for vep_annotation in vep_annotations:
+            consequences = vep_annotation.consequence.all()
+            for consequence in consequences:
+                impacts.append(consequence.impact.impact)
+        impacts = list(set(impacts))
+        if "HIGH" in impacts:
+            return "HIGH"
+        elif "MEDIUM" in impacts:
+            return "MEDIUM"
+        elif "LOW" in impacts:
+            return "LOW"
+        else:
+            return "MODIFIER"
+
 class GermlineVariantInstance(AbstractVariantInstance):
     """
     
     """
-    id = models.AutoField(primary_key=True)
     vep_annotations = models.ManyToManyField("GermlineVEPAnnotations")
 
     def display_in_tier_zero(self):
@@ -421,7 +451,6 @@ class GermlineVariantInstance(AbstractVariantInstance):
         """
         Returns a Boolean for if a panel should be displayed in Tier 1
         """
-        print("In display tier one")
         variant_gene = self.vep_annotations.first().transcript.gene
         associated_panels = variant_gene.panels.all()
         # if any of the associated panels are in a tier 1 panel, display
@@ -438,12 +467,41 @@ class GermlineVariantInstance(AbstractVariantInstance):
             if panel in self.patient_analysis.indication.germline_panels_tier_three.all():
                 return True
         return False
+    
+    def force_display(self):
+        """
+        A potentially informative MNV could be split to multiple SNVs during annotation and we could lose information
+        Function force-includes variants called +-2 bp (potentially same codon) irrespective of other filtering criteria outside of gene
+        """
+        # get the 2 closest variants to this one
+        id_lower_limit = self.id - 1
+        id_upper_limit = self.id + 1
+        close_variants = GermlineVariantInstance.objects.filter(patient_analysis=self.patient_analysis, id__range=[id_lower_limit, id_upper_limit])
+
+        # if we get an empty list there are no other variants, return False (but also this is weird)
+        if len(close_variants) == 0:
+            return False
+        
+        else:
+            # get chrom and pos for this variant
+            chrom, pos = self.get_chrom_and_pos(self.variant.variant)
+
+            for variant in close_variants:
+                close_chrom, close_pos = self.get_chrom_and_pos(variant.variant.variant)
+
+                # if the variant is within 2bp, compare the consequences
+                if chrom == close_chrom and abs(pos - close_pos) in [1, 2]:
+                    if self.get_worst_modifier_from_vep_annotations(self.vep_annotations.all()) != "MODIFIER" or variant.get_worst_modifier_from_vep_annotations(variant.vep_annotations.all()) != "MODIFIER":
+                        return True
+            
+            # otherwise the nearest variants are > 2bp away
+            return False
+        
 
 class SomaticVariantInstance(AbstractVariantInstance):
     """
     
     """
-    id = models.AutoField(primary_key=True)
     vep_annotations = models.ManyToManyField("SomaticVEPAnnotations")
 
     def display_in_tier_zero(self):
@@ -459,7 +517,6 @@ class SomaticVariantInstance(AbstractVariantInstance):
         """
         Returns a Boolean for if a panel should be displayed in Tier 1
         """
-        print("In display tier one")
         variant_gene = self.vep_annotations.first().transcript.gene
         associated_panels = variant_gene.panels.all()
         # if any of the associated panels are in a tier 1 panel, display
@@ -476,3 +533,31 @@ class SomaticVariantInstance(AbstractVariantInstance):
             if panel in self.patient_analysis.indication.somatic_panels_tier_two.all():
                 return True
         return False
+    
+    def force_display(self):
+        """
+        A potentially informative MNV could be split to multiple SNVs during annotation and we could lose information
+        Function force-includes variants called +-2 bp (potentially same codon) irrespective of other filtering criteria outside of gene
+        """
+        # get the 2 closest variants to this one
+        id_lower_limit = self.id - 1
+        id_upper_limit = self.id + 1
+        close_variants = SomaticVariantInstance.objects.filter(patient_analysis=self.patient_analysis, id__range=[id_lower_limit, id_upper_limit])
+
+        # if we get an empty list there are no other variants, return False (but also this is weird)
+        if len(close_variants) == 0:
+            return False
+        
+        else:
+            # get chrom and pos for this variant
+            chrom, pos = self.get_chrom_and_pos(self.variant.variant)
+            for variant in close_variants:
+                close_chrom, close_pos = self.get_chrom_and_pos(variant.variant.variant)
+
+                # if the variant is within 2bp, force display should be true
+                if chrom == close_chrom and abs(pos - close_pos) in [1, 2]:
+                    if self.get_worst_modifier_from_vep_annotations(self.vep_annotations.all()) != "MODIFIER" or variant.get_worst_modifier_from_vep_annotations(variant.vep_annotations.all()) != "MODIFIER":
+                        return True
+            
+            # otherwise the nearest variants are > 2bp away
+            return False

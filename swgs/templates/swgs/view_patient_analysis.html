@@ -19,6 +19,7 @@
   <ul>
     <li>Variants with a VAF of >5% in GnomAD have been removed</li>
     <li>Variants are excluded if their most severe consequence is a MODIFIER strength - see <a href="https://www.ensembl.org/info/genome/variation/prediction/predicted_data.html", target="_blank">VEP Documentation</a></li>
+    <li>Variants flagged as "Possible MNV - Check IGV" have been included irrespective of gnomAD VAF as the MNV may have different consequences than the multiple SNVs</li>
   </ul>
   <br>
   <h5>Download SNVs for this patient in a CSV:</h5>
@@ -40,7 +41,11 @@
     <tbody>
       {% for v in somatic_snvs_tier_one %}
       <tr>
-        <td>{{ v.pk }}</br>{{ v.consequence }}</td>
+        {% if v.force_display %}
+          <td>{{ v.pk }}</br>{{ v.consequence }}</br><span class="badge badge-warning badge-pill">Possible MNV - Check IGV</span></td>
+        {% else %}
+          <td>{{ v.pk }}</br>{{ v.consequence }}</td>
+        {% endif %}
         <td>{{ v.hgvsc }}</br>{{ v.hgvsp }}</td>
         <td>{{ v.gene }}</td>
         <td>{{ v.vaf }}%</td>
@@ -64,7 +69,11 @@
     <tbody>
       {% for v in somatic_snvs_tier_two %}
       <tr>
-        <td>{{ v.pk }}</br>{{ v.consequence }}</td>
+        {% if v.force_display %}
+          <td>{{ v.pk }}</br>{{ v.consequence }}</br><span class="badge badge-warning badge-pill">Possible MNV - Check IGV</span></td>
+        {% else %}
+          <td>{{ v.pk }}</br>{{ v.consequence }}</td>
+        {% endif %}
         <td>{{ v.hgvsc }}</br>{{ v.hgvsp }}</td>
         <td>{{ v.gene }}</td>
         <td>{{ v.vaf }}%</td>
@@ -90,7 +99,11 @@
     <tbody>
       {% for v in germline_snvs_tier_one %}
       <tr>
-        <td>{{ v.pk }}</br>{{ v.consequence }}</td>
+        {% if v.force_display %}
+          <td>{{ v.pk }}</br>{{ v.consequence }}</br><span class="badge badge-warning badge-pill">Possible MNV - Check IGV</span></td>
+        {% else %}
+          <td>{{ v.pk }}</br>{{ v.consequence }}</td>
+        {% endif %}
         <td>{{ v.hgvsc }}</br>{{ v.hgvsp }}</td>
         <td>{{ v.gene }}</td>
         <td>{{ v.vaf }}%</td>
@@ -114,7 +127,11 @@
     <tbody>
       {% for v in germline_snvs_tier_three %}
       <tr>
-        <td>{{ v.pk }}</br>{{ v.consequence }}</td>
+        {% if v.force_display %}
+          <td>{{ v.pk }}</br>{{ v.consequence }}</br><span class="badge badge-warning badge-pill">Possible MNV - Check IGV</span></td>
+        {% else %}
+          <td>{{ v.pk }}</br>{{ v.consequence }}</td>
+        {% endif %}
         <td>{{ v.hgvsc }}</br>{{ v.hgvsp }}</td>
         <td>{{ v.gene }}</td>
         <td>{{ v.vaf }}%</td>

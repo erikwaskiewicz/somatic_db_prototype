@@ -39,6 +39,14 @@ def view_runs(request):
     return render(request, "swgs/view_runs.html", context)
 
 @login_required
+def view_panels(request):
+    """
+    View panels, panel update pages
+    """
+    pass
+
+
+@login_required
 def view_patient_analysis(request, patient_id):
     """
     View variants in a PatientAnalysis
@@ -68,26 +76,30 @@ def view_patient_analysis(request, patient_id):
         consequences = [c.consequence for c in consequences]
         consequences_formatted = [c.replace("_", " ") for c in consequences]
         consequences_formatted = " | ".join(consequences)
+        force_display = v.force_display()
 
-        # lose >5% in gnomad and modifier only variants
-        if float(gnomad) >= 0.05 or (len(impacts) == 1 and impacts[0] == "MODIFIER"):
-            continue
         # handle gnomad
-        elif float(gnomad) == -1:
-            gnomad = "Not in Gnomad"
+        if float(gnomad) == -1:
+            gnomad_formatted = "Not in Gnomad"
         else:
-            gnomad = f"{gnomad:.3f}%"
+            gnomad_formatted = f"{gnomad:.3f}%"
 
         # make variant dict
         variant_dict = {
                 "pk": variant,
-                "gnomad": gnomad,
+                "gnomad": gnomad_formatted,
                 "vaf": f"{vaf:.2f}",
                 "hgvsc": hgvsc,
                 "hgvsp": hgvsp,
                 "gene": gene,
-                "consequence": consequences_formatted
+                "consequence": consequences_formatted,
+                "force_display": force_display
             }
+
+        # lose >5% in gnomad and modifier only variants
+        if float(gnomad) >= 0.05 or (len(impacts) == 1 and impacts[0] == "MODIFIER"):
+            if not force_display:
+                continue
 
         # Put in tier list
         if v.display_in_tier_zero():
@@ -115,26 +127,30 @@ def view_patient_analysis(request, patient_id):
         consequences = [c.consequence for c in consequences]
         consequences_formatted = [c.replace("_", " ") for c in consequences]
         consequences_formatted = " | ".join(consequences)
+        force_display = v.force_display()
 
-        # lose >5% in gnomad and modifier only variants
-        if float(gnomad) >= 0.05 or (len(impacts) == 1 and impacts[0] == "MODIFIER"):
-            continue
         # handle gnomad
-        elif float(gnomad) == -1:
-            gnomad = "Not in Gnomad"
+        if float(gnomad) == -1:
+            gnomad_formatted = "Not in Gnomad"
         else:
-            gnomad = f"{gnomad:.3f}%"
+            gnomad_formatted = f"{gnomad:.3f}%"
 
         # make variant dict
         variant_dict = {
                 "pk": variant,
-                "gnomad": gnomad,
+                "gnomad": gnomad_formatted,
                 "vaf": f"{vaf:.2f}",
                 "hgvsc": hgvsc,
                 "hgvsp": hgvsp,
                 "gene": gene,
-                "consequence": consequences_formatted
+                "consequence": consequences_formatted,
+                "force_display": force_display
             }
+
+        # lose >5% in gnomad and modifier only variants
+        if float(gnomad) >= 0.05 or (len(impacts) == 1 and impacts[0] == "MODIFIER"):
+            if not force_display:
+                continue
 
         # Put in tier list
         if v.display_in_tier_zero():
