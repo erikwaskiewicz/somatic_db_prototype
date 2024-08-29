@@ -229,8 +229,9 @@ class Command(BaseCommand):
                         panel_notes.append(f"Genes removed: {', '.join(genes_removed)}")
 
                 else:
-
+                    
                     print(f"No genes on {panel_name}")
+                    panel_notes.append("No genes to add")
                 
                 #TODO handle regions in panels
                 if query_regions:
@@ -240,8 +241,9 @@ class Command(BaseCommand):
                     regions_content = get_panel_contents_from_api(self.base_url, panel_id, "regions")
 
                 else:
-
+                    
                     print(f"No regions on {panel_name}")
+                    panel_notes.append("No regions to add")
 
                 #TODO handle STRs in panels
                 if query_strs:
@@ -253,6 +255,7 @@ class Command(BaseCommand):
                 else:
 
                     print(f"No STRs on {panel_name}")
+                    panel_notes.append("No STRs to add")
 
                 # Update the panel notes
                 panel_notes = "\n".join(panel_notes)
