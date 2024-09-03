@@ -179,7 +179,28 @@
         </button>
       </div>
       <div class="modal-body">
-        {% lorem 20 p random %}
+        <div class="row">
+        <div class="col-3">
+          <div id="list-example" class="list-group sticky-top">
+            <a class="list-group-item list-group-item-action" href="#guidence-o1">O1</a>
+            <a class="list-group-item list-group-item-action" href="#guidence-o2">O2</a>
+            <a class="list-group-item list-group-item-action" href="#guidence-b1">B1</a>
+            <a class="list-group-item list-group-item-action" href="#guidence-b2">B2</a>
+          </div>
+        </div>
+        <div class="col-9">
+          <div data-spy="scroll" data-target="#list-example" data-offset="0" class="scrollspy-example">
+            <h4 id="guidence-o1">O1</h4>
+            <p>{% lorem 20 p random %}</p>
+            <h4 id="guidence-o2">O2</h4>
+            <p>{% lorem 20 p random %}</p>
+            <h4 id="guidence-b1">B1</h4>
+            <p>{% lorem 20 p random %}</p>
+            <h4 id="guidence-b2">B2</h4>
+            <p>{% lorem 20 p random %}</p>
+          </div>
+        </div>
+        </div>
 
       </div>
     </div>

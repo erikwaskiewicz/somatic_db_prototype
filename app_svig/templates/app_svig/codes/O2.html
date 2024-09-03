@@ -1,6 +1,11 @@
 <tr>
   <th class="col-1">O2</th>
-  <th class="col-7">Null variant in a tumour surpressor gene</th>
+  <th class="col-7">
+    Null variant in a tumour surpressor gene&nbsp;
+    <a class="badge badge-light badge-pill" data-toggle="modal" href="#guidence-modal" role="button" aria-expanded="false" aria-controls="guidence-modal">
+      More info
+    </a>
+  </th>
   <th class="col-4">
     <select size="1" id="code_o2" name="code_o2" class="btn btn-lg btn-block code-dropdown">
       <option value="O2_PE">Pending</option>
@@ -16,10 +21,6 @@
 <tr>
   <td colspan="2">
     {% include 'app_svig/annotations/mode_action.html' %}
-
-    <a class="btn btn-light" data-toggle="modal" href="#guidence-modal" role="button" aria-expanded="false" aria-controls="guidence-modal">
-      Detailed info O2
-    </a>
   </td>
 
   <td colspan="1">

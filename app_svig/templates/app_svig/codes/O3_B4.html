@@ -1,6 +1,15 @@
 <tr>
   <th class="col-1">O3<br>B4</th>
-  <th class="col-7">Absent or very rare in population database (e.g. gnomAD)<br>Variant is present at a high level in a general population database (e.g. gnomAD)</th>
+  <th class="col-7">
+    Absent or very rare in population database (e.g. gnomAD)&nbsp;
+    <a class="badge badge-light badge-pill" data-toggle="modal" href="#guidence-modal" role="button" aria-expanded="false" aria-controls="guidence-modal">
+      More info
+    </a>
+    <br>Variant is present at a high level in a general population database (e.g. gnomAD)&nbsp;
+    <a class="badge badge-light badge-pill" data-toggle="modal" href="#guidence-modal" role="button" aria-expanded="false" aria-controls="guidence-modal">
+        More info
+    </a>
+  </th>
   <th class="col-4">
     <select size="1" id="code_o3_b4" name="code_o3_b4" class="btn btn-lg btn-block code-dropdown">
       <option value="O3_PE|B4_PE">Pending</option>
@@ -16,13 +25,6 @@
 <tr>
   <td colspan="2">
     {% include 'app_svig/annotations/gnomad.html' %}
-
-    <a class="btn btn-light" data-toggle="modal" href="#guidence-modal" role="button" aria-expanded="false" aria-controls="guidence-modal">
-      Detailed info O3
-    </a>
-    <a class="btn btn-light" data-toggle="modal" href="#guidence-modal" role="button" aria-expanded="false" aria-controls="guidence-modal">
-      Detailed info B4
-    </a>
   </td>
 
   <td colspan="1">
