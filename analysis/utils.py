@@ -6,6 +6,9 @@ from django.db import transaction
 
 import pybedtools
 import re
+import requests
+import csv
+import json
 
 def get_samples(samples):
     """
@@ -1155,3 +1158,81 @@ def lims_initials_check(lims_initials:str):
         return False, f'Initials {lims_initials} already used by another user'
     else:
         return True, ''
+
+def validate_poly(variant_name, genome_build):
+    '''
+    Submits a new poly to Variant Validator to check it is correctly formatted
+    '''
+
+    # Access Variant Validator API
+    try:
+        response = requests.get(f"https://rest.variantvalidator.org/VariantValidator/variantvalidator/{genome_build}/{variant_name}/mane_select")
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+         error = f"HTTP Request failed: {e}"
+         return error
+    vv_json = response.json()
+
+    # Check for warnings where reference base provided is not correct
+    warnings = ""
+    warnings_found = False
+    for transcript in vv_json:
+        if "validation_warning_" in transcript:
+            for warning in vv_json[transcript]["validation_warnings"]:
+                warnings += ("Reference Warning:\n" + warning)
+                warnings_found = True
+    if warnings_found:
+        return warnings
+    
+    # Check for warnings where variant provided is not in any transcript
+    for transcript in vv_json:
+        if "intergenic_variant_" in transcript:
+            for warning in vv_json[transcript]["validation_warnings"]:
+                warnings += ("Intergenic Variant:\n" + warning)
+                warnings_found = True
+    if warnings_found:
+        return warnings
+
+
+    # Create list of prefered transcripts
+    pref_trans_list = []
+    with open("preferred_transcripts.txt") as tsv:
+        reader = csv.DictReader(tsv, delimiter="\t")
+        for row in reader:
+            pref_trans_list.append(row["Transcript"])
+
+    # Check for warnings for variants that have a preferred transcript (not mane select)
+    not_mane = False
+    for transcript in vv_json:
+        for pref_tran in pref_trans_list:
+            if pref_tran in transcript:
+                not_mane = True
+                for warning in vv_json[transcript]["validation_warnings"]:
+                    if warning:
+                        warnings += (transcript + "\t" + warning + "\n")
+    if not_mane:
+        if warnings:
+            return ("Warnings:\n" + warnings.strip())
+        else:
+            return "Hello"
+    
+    # Check warnings for variants where we use the mane select transcript
+    mane_warning = False
+    for transcript in vv_json:
+        if transcript == "flag" or transcript == "metadata":
+            pass
+        else:
+            if vv_json[transcript]["annotations"]["mane_select"] == True:
+                mane_warning = True
+                for warning in vv_json[transcript]["validation_warnings"]:
+                    if warning:
+                        warnings += transcript + "\t" + warning + "\n"
+    if mane_warning:
+        if warnings:
+            return( "Warnings:\n" + warnings.strip())
+        else:
+            return None
+        
+    # If json file had some sort of other structure, return this so we can investigate
+    else:
+        return "Unexpected Error, contact Bioinformatics"

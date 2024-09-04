@@ -14,7 +14,7 @@ from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatien
     ManualVariantCheckForm, ReopenForm, ChangeLimsInitials, EditedPasswordChangeForm, EditedUserCreationForm, NewFusionForm)
 from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
     get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, get_fusion_list, 
-    create_myeloid_coverage_summary, variant_format_check, breakpoint_format_check, lims_initials_check)
+    create_myeloid_coverage_summary, variant_format_check, breakpoint_format_check, lims_initials_check, validate_poly)
 from .models import *
 
 import csv
@@ -967,37 +967,44 @@ def view_polys(request, list_name):
                 variant = add_new_form.cleaned_data['variant']
                 comment = add_new_form.cleaned_data['comment']
             
-                # wrap in try/ except to handle when a variant doesnt match the input
-                try:
-                    # load in variant and variant to list objects
-                    variant_obj = Variant.objects.get(variant=variant, genome_build=genome)
-                    variant_to_variant_list_obj, created = VariantToVariantList.objects.get_or_create(
-                        variant_list = poly_list,
-                        variant = variant_obj,
-                    )
+                # check variant format is correct using validate_poly(variant, build)
+                gb = "GRCh" + str(genome)
+                validation_error = validate_poly(variant, gb)
+                if validation_error:
+                    context['warning'].append(f'{validation_error}')
+                else:
 
-                    # add user info if a new model is created
-                    if created:
-                        variant_to_variant_list_obj.upload_user = request.user
-                        variant_to_variant_list_obj.upload_time = timezone.now()
-                        variant_to_variant_list_obj.upload_comment = comment
-                        variant_to_variant_list_obj.save()
+                    # wrap in try/ except to handle when a variant doesnt match the input
+                    try:
+                        # load in variant and variant to list objects
+                        variant_obj = Variant.objects.get(variant=variant, genome_build=genome)
+                        variant_to_variant_list_obj, created = VariantToVariantList.objects.get_or_create(
+                            variant_list = poly_list,
+                            variant = variant_obj,
+                        )
 
-                        # give success message
-                        context['success'].append(f'Variant {variant} added to poly checking list')
+                        # add user info if a new model is created
+                        if created:
+                            variant_to_variant_list_obj.upload_user = request.user
+                            variant_to_variant_list_obj.upload_time = timezone.now()
+                            variant_to_variant_list_obj.upload_comment = comment
+                            variant_to_variant_list_obj.save()
 
-                    # throw error if already in poly list
-                    else:
-                        context['warning'].append(f'Variant {variant} is already in the poly list')
+                            # give success message
+                            context['success'].append(f'Variant {variant} added to poly checking list')
 
-                    # reload context
-                    confirmed_list, checking_list = get_poly_list(poly_list, request.user)
-                    context['confirmed_list'] = confirmed_list
-                    context['checking_list'] = checking_list
+                        # throw error if already in poly list
+                        else:
+                            context['warning'].append(f'Variant {variant} is already in the poly list')
 
-                # throw error if there isnt a variant matching the input
-                except Variant.DoesNotExist:
-                    context['warning'].append(f'Cannot find variant matching {variant}, have you selected the correct genome build?')
+                        # reload context
+                        confirmed_list, checking_list = get_poly_list(poly_list, request.user)
+                        context['confirmed_list'] = confirmed_list
+                        context['checking_list'] = checking_list
+
+                    # throw error if there isnt a variant matching the input
+                    except Variant.DoesNotExist:
+                        context['warning'].append(f'Cannot find variant matching {variant}, have you selected the correct genome build?')
 
     # render the page
     return render(request, 'analysis/view_polys.html', context)
