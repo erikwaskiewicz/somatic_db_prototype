@@ -1,12 +1,32 @@
-O2:
-  type: oncogenic
-  category: mode_of_action
-O3:
-  type: oncogenic
-  category: population_db
-B1:
-  type: benign
-  category: mode_of_action
-B4:
-  type: benign
-  category: population_db
+codes:
+  O2:
+    type: oncogenic
+    category: mode_of_action
+    options: [SA, VS, ST, MO, SU]
+    description: Null variant in a tumour surpressor gene
+    annotations: []
+  O3:
+    type: oncogenic
+    category: population_db
+    options: [MO]
+    description: Absent or very rare in population database (e.g. gnomAD)
+    annotations: []
+  B1:
+    type: benign
+    category: mode_of_action
+    options: [SA, ST, SU]
+    description: Not consistent with mode of action
+    annotations: []
+  B4:
+    type: benign
+    category: population_db
+    options: [SA, VS, ST, SU]
+    description: Variant is present at a high level in a general population database (e.g. gnomAD)
+    annotations: []
+
+order:
+  Population databases:
+    - O3_B4
+  Mode of acion:
+    - O2
+    - B1

@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.template.defaultfilters import slugify
 
 from somatic_variant_db.settings import BASE_DIR, SVIG_CODE_VERSION
 
@@ -116,6 +117,7 @@ class Classification(models.Model):
             current_score, current_class, class_css = current_check_obj.classify()
             classification_info['all_codes'] = current_check_obj.codes_to_dict()
             classification_info['codes_by_category'] = current_check_obj.codes_by_category()
+            classification_info['codes_ordered'] = current_check_obj.codes_ordered()
             classification_info['all_applied_codes'] = self.get_all_applied_codes()
             classification_info['current_class'] = current_class
             classification_info['current_score'] = current_score
@@ -397,9 +399,87 @@ class Check(models.Model):
                 del all_dict[code2]
                 all_dict[c] = temp_dict
 
+        print(all_dict)
         return all_dict
 
+    def codes_ordered(self):
+        """ ordered list of codes for displaying template """
+        pretty_print_dict = {
+            'SA': 'Stand-alone',
+            'VS': 'Very strong',
+            'ST': 'Strong',
+            'MO': 'Moderate',
+            'SU': 'Supporting',
+            'PE': 'Pending',
+            'NA': 'Not applied',
+        }
+
+        config_file = os.path.join(BASE_DIR, f'app_svig/config/svig_{SVIG_CODE_VERSION}.yaml')
+        with open(config_file) as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+
+        code_info = config["codes"]
+        order_info = config["order"]
+
+        code_objects = self.get_codes()
+        print(code_objects)
+
+        svig_codes = {}
+        for code, values in order_info.items():
+            svig_codes[code] = {'slug': slugify(code), "codes": {}}
+            for v in values:
+                code_list = v.split("_")
+                # list of dictionaries with description etc
+                code_details = []
+                for c in code_list:
+                    code_details.append({c: code_info[c]})
+
+                # dropdown options # TODO add +/- points to dropdown
+                dropdown_options = [
+                    {
+                        "value": "|".join([f"{c}_PE" for c in code_list]),
+                        "text": "Pending"
+                    },
+                    {
+                        "value": "|".join([f"{c}_NA" for c in code_list]),
+                        "text": "Not applied"
+                    },
+                ]
+                if len(code_list) == 1:
+                    for option in code_info[code_list[0]]["options"]:
+                        dropdown_options.append({
+                            "value": f"{code_list[0]}_{option}",
+                            "text": f"{code_list[0]} {pretty_print_dict[option]}",
+                        })
+                    # TODO
+                    code_object = code_objects.get(code=code_list[0])
+                    
+                else:
+                    code_1, code_2 = code_list
+                    for option in code_info[code_1]["options"]:
+                        dropdown_options.append({
+                            "value": f"{code_1}_{option}|{code_2}_NA",
+                            "text": f"{code_1} {pretty_print_dict[option]}",
+                        })
+                    for option in code_info[code_2]["options"]:
+                        dropdown_options.append({
+                            "value": f"{code_2}_{option}|{code_1}_NA",
+                            "text": f"{code_2} {pretty_print_dict[option]}",
+                        })
+
+                # add all to final dict
+                svig_codes[code]["codes"][v] = {
+                    'list': code_list,
+                    'details': code_details,
+                    'dropdown': dropdown_options,
+                    'all_checks': ['O3 Moderate', 'Pending'],
+                }
+
+        print(svig_codes)
+        return svig_codes
+
     def codes_by_category(self):
+        self.codes_ordered()
         results_dict = {}
 
         # get applied codes
@@ -410,7 +490,7 @@ class Check(models.Model):
         with open(config_file) as f:
             svig_codes = yaml.load(f, Loader=yaml.FullLoader)
 
-        for code, values in svig_codes.items():
+        for code, values in svig_codes['codes'].items():
             # add category to the list if it isnt there already
             current_category = values['category']
             if current_category not in results_dict.keys():
@@ -439,6 +519,7 @@ class Check(models.Model):
             except:
                 pass  # TODO this will need removing when done, just to stop error in testing
 
+        #print(results_dict)
         return results_dict
 
     def signoff_check(self, next_step):

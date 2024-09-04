@@ -5,70 +5,26 @@
   <div class="col-9">
     <div data-bs-spy="scroll" data-bs-target="#list-example" data-bs-offset="0" class="scrollspy-example" tabindex="0">
 
-      <!-- population databases section -->
-      <h4 id="list-item-1">Population databases</h4>
-      <table class="table table-bordered">
-        <tbody>
-          {% include 'app_svig/codes/O3_B4.html' %}
-        </tbody>
-      </table>
-      <br>
-
-      <!-- mode of action section -->
-      <h4 id="list-item-2">Mode of action</h4>
-      <table class="table table-bordered">
-        <tbody>
-          {% include 'app_svig/codes/O2.html' %}
-          {% include 'app_svig/codes/B1.html' %}
-        </tbody>
-      </table>
-      <br>
-
-      <!-- database section --
-      <h4 id="list-item-3">Cancer databases</h4>
-      <table class="table table-bordered">
-        <tbody>
-          {% include 'app_svig/codes/example.html' %}
-          {% include 'app_svig/codes/example.html' %}
-        </tbody>
-      </table>
-      <br>
-
-      <!-- protein effect section --
-      <h4 id="list-item-4">Effect on protein</h4>
-      <table class="table table-bordered">
-        <tbody>
-          {% include 'app_svig/codes/example.html' %}
-          {% include 'app_svig/codes/example.html' %}
-        </tbody>
-      </table>
-      <br>
-
-      <!-- computational tool section --
-      <h4 id="list-item-5">Computational tools</h4>
-      <table class="table table-bordered">
-        <tbody>
-          {% include 'app_svig/codes/example.html' %}
-          {% include 'app_svig/codes/example.html' %}
-        </tbody>
-      </table>
-      <br>
-
-      <!-- functional study section--
-      <h4 id="list-item-6">Functional studies</h4>
-      <table class="table table-bordered">
-        <tbody>
-          {% include 'app_svig/codes/example.html' %}
-          {% include 'app_svig/codes/example.html' %}
-        </tbody>
-      </table>
-      <br>-->
+      <!-- generic template -->
+      {% for k, v in classification_info.codes_ordered.items %}
+        <h4 id={{ v.slug }}-section>{{ k }}</h4>
+        <table class="table table-bordered">
+          <tbody>
+            {% for code, code_details in v.codes.items %}
+                {{code}}
+                {% include 'app_svig/codes/generic.html' %}
+            {% endfor %}
+          </tbody>
+        </table>
+        <br>
+      {% endfor %}
 
     </div>
   </div>
 
 
   <!-- side bar -------------------------------------------------------------------->
+   <!-- TODO this wont work with generic setup -->
   <div class="col-3">
     <div id="list-example" class="list-group sticky-top">
 
