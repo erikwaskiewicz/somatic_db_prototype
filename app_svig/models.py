@@ -111,9 +111,7 @@ class Classification(models.Model):
         }
         if current_check_obj.full_classification:
             current_score, current_class = current_check_obj.classify()
-            classification_info['all_codes'] = current_check_obj.codes_to_dict()
             classification_info['codes_by_category'] = current_check_obj.codes_by_category()
-            classification_info['all_applied_codes'] = self.get_all_applied_codes()
             classification_info['current_class'] = current_class
             classification_info['current_score'] = current_score
         return classification_info
@@ -145,9 +143,6 @@ class Classification(models.Model):
         else:
             num_checks = self.get_all_checks().count()
             return f'S-VIG check {num_checks}'
-
-    def get_all_applied_codes(self):
-        return list(reversed([c.codes_to_dict() for c in self.get_all_checks()]))
 
     def get_previous_classification_choices(self):
         canonical_variant = self.variant.get_canonical_exact_match()
@@ -302,81 +297,6 @@ class Check(models.Model):
 
         return score_counter, classification
 
-    def codes_to_dict(self):
-        """
-        This might not be needed/ will need changing
-        """
-        # TODO get all codes in format on views page
-        # hard coded list of combined codes
-        # make combined entry and remove the respective single ones
-        codes = self.get_codes()
-        all_dict = {}
-
-        pretty_print_dict = {
-            'SA': 'Stand-alone',
-            'VS': 'Very strong',
-            'ST': 'Strong',
-            'MO': 'Moderate',
-            'SU': 'Supporting',
-            'PE': 'Pending',
-            'NA': 'Not applied',
-        }
-
-        for c in codes:
-            if c.pending:
-                css_class = 'warning'
-                strength = 'PE'
-            elif c.applied:
-                if c.code_type() == 'Benign':
-                    css_class = 'info'
-                elif c.code_type() == 'Oncogenic':
-                    css_class = 'danger'
-                strength = c.applied_strength
-            else:
-                css_class = 'secondary'
-                strength = 'NA'
-            all_dict[c.code] = {
-                'code': f'code_{c.code.lower()}',
-                'value': f'{c.code}_{strength}',
-                'applied': c.applied,
-                'css_class': css_class,
-                'pretty_print': f'{c.code} {pretty_print_dict[strength]}',
-            }
-
-
-        combinations = ['O3_B4']
-        for c in combinations:
-            code1, code2 = c.split('_')
-
-            if (code1 in all_dict.keys()) and (code2 in all_dict.keys()):
-
-                temp_dict = {
-                    'code': f'code_{c.lower()}',
-                }
-                if all_dict[code1]['applied']:
-                    temp_dict['value'] = f'{all_dict[code1]["value"]}|{all_dict[code2]["value"]}'
-                    temp_dict['css_class'] = all_dict[code1]['css_class']
-                    temp_dict['pretty_print'] = all_dict[code1]["pretty_print"]
-
-                elif all_dict[code2]['applied']:
-                    temp_dict['value'] = f'{all_dict[code1]["value"]}|{all_dict[code2]["value"]}'
-                    temp_dict['css_class'] = all_dict[code2]['css_class']
-                    temp_dict['pretty_print'] = all_dict[code2]["pretty_print"]
-
-                else:
-                    temp_dict['value'] = f'{all_dict[code1]["value"]}|{all_dict[code2]["value"]}'
-                    temp_dict['pretty_print'] = all_dict[code1]['pretty_print']
-                    if 'PE' in all_dict[code1]["value"]:
-                        temp_dict['css_class'] = 'warning'
-                    elif 'NA' in all_dict[code1]["value"]:
-                        temp_dict['css_class'] = 'secondary'
-
-                del all_dict[code1]
-                del all_dict[code2]
-                all_dict[c] = temp_dict
-
-        return all_dict
-
     def codes_by_category(self):
         """ ordered list of codes for displaying template """
         pretty_print_dict = {
@@ -441,9 +361,10 @@ class Check(models.Model):
                             "text": f"{code_list[0]} {pretty_print_dict[option]}",
                         })
 
-                    # all checks
+                    # all checks and current value for dropdown
                     for c in all_check_objects:
-                        all_checks.append(c.get_codes(code_list[0]).display())
+                        all_checks.append(c.get_codes(code_list[0]).display_string())
+                        value = c.get_codes(code_list[0]).display_code()
 
                 else:
                     code_1, code_2 = code_list
@@ -459,22 +380,30 @@ class Check(models.Model):
                         })
                     # all checks
                     for c in all_check_objects:
-                        code_1_display = c.get_codes(code_1).display()
-                        code_2_display = c.get_codes(code_2).display()
+                        code_1_display = c.get_codes(code_1).display_string()
+                        code_2_display = c.get_codes(code_2).display_string()
 
                         if code_1_display == code_2_display:
                             all_checks.append(code_1_display)
                         else:
                             if code_1_display == "Not applied":
                                 all_checks.append(code_2_display)
+
                             elif code_2_display == "Not applied":
                                 all_checks.append(code_1_display)
+
+                        # get current value for dropdown
+                        value = "|".join([
+                            c.get_codes(code_1).display_code(),
+                            c.get_codes(code_2).display_code()
+                        ])
 
                 # add all to final dict
                 svig_codes[code]["codes"][v] = {
                     'list': code_list,
                     'details': code_details,
                     'dropdown': dropdown_options,
+                    'value': value,
                     'all_checks': all_checks,
                 }
 
@@ -507,7 +436,7 @@ class CodeAnswer(models.Model):
         elif self.code[0] == 'O':
             return 'Oncogenic'
 
-    def display(self):
+    def display_string(self):
         pretty_print_dict = {
             'SA': 'Stand-alone',
             'VS': 'Very strong',
@@ -523,6 +452,14 @@ class CodeAnswer(models.Model):
             return f"{self.code} {pretty_print_dict[self.applied_strength]}"
         else:
             return "Not applied"
+
+    def display_code(self):
+        if self.pending:
+            return f"{self.code}_PE"
+        elif self.applied:
+            return f"{self.code}_{self.applied_strength}"
+        else:
+            return f"{self.code}_NA"
 
 
 class CanonicalList(models.Model):

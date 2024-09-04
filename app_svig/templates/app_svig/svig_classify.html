@@ -121,9 +121,8 @@
 
 
 
-<!-- gets the all_codes variable and wraps in a script tag that can be fetched further down -->
-{{ classification_info.all_codes|json_script:"all_codes" }}
-
+<!-- gets the codes_by_category variable and wraps in a script tag that can be fetched further down -->
+{{ classification_info.codes_by_category|json_script:"codes_by_category" }}
 
 <script>
   // function to update the css on a code based on whether a oncogenic/benign code is applied
@@ -163,16 +162,18 @@
   }
 
   // preset each dropdown
-  // get the all codes variable from all_codes variable called in main html
-  const initial_codes = JSON.parse(document.getElementById('all_codes').textContent);
+  // get the all codes variable from variable called in main html
+  const initial_codes1 = JSON.parse(document.getElementById('codes_by_category').textContent);
 
   // loop through each code, get the dropdown element, preselect and add css classes
-  for (const [key, c] of Object.entries(initial_codes)) {
-    drop_down = document.getElementById(c.code);
-    drop_down.value = c.value;
-    update_css(drop_down, c.css_class);
+  for (const [key, c] of Object.entries(initial_codes1)) {
+    for (const [key1, c1] of Object.entries(c.codes)) {
+      drop_down = document.getElementById("code_" + key1);
+      drop_down.value = c1.value;
+      new_css = get_new_css(c1.value)
+      update_css(drop_down, new_css);
+    };
   };
-
 
   $(".calculate-class").click(function(){
     // pull out all html objects starting with code_*, these are the dropdowns
@@ -203,7 +204,6 @@
           contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
           processData: false, // NEEDED, DON'T OMIT THIS
           success: function(data) {
-            console.log(data)
               $("#class-box").html(data.class_box);
 
               $("#codes-summary-population-databases").html(data.codes_summary_population_databases);

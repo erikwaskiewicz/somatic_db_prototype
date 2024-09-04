@@ -16,7 +16,7 @@
     {% endfor %}
   </th>
   <th class="col-4">
-    <select size="1" id="code_{{ code|lower }}" name="code_{{ code|lower }}" class="btn btn-lg btn-block code-dropdown">
+    <select size="1" id="code_{{ code }}" name="code_{{ code }}" class="btn btn-lg btn-block code-dropdown">
       {% for c in code_details.dropdown %}
       <option value="{{ c.value }}">{{ c.text }}</option>
       {% endfor %}
