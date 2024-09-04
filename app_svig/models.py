@@ -193,12 +193,14 @@ class Check(models.Model):
                 check_object = self
             )
 
-    def get_codes(self):
+    def get_codes(self, code=None):
         """
         Get all classification codes for the current check
         """
-        codes = CodeAnswer.objects.filter(check_object=self)
-        return codes
+        code_objects = CodeAnswer.objects.filter(check_object=self)
+        if code:
+            code_objects = code_objects.get(code=code)
+        return code_objects
 
     def remove_codes(self):
         """
@@ -421,6 +423,8 @@ class Check(models.Model):
 
         code_objects = self.get_codes()
 
+        all_check_objects = self.classification.get_all_checks()
+
         svig_codes = {}
         for code, values in order_info.items():
             svig_codes[code] = {
@@ -454,14 +458,18 @@ class Check(models.Model):
                         "text": "Not applied"
                     },
                 ]
+                all_checks = []
                 if len(code_list) == 1:
                     for option in code_info[code_list[0]]["options"]:
                         dropdown_options.append({
                             "value": f"{code_list[0]}_{option}",
                             "text": f"{code_list[0]} {pretty_print_dict[option]}",
                         })
-                    
-                # TODO all checks and applied codes for combined codes
+
+                    # all checks
+                    for c in all_check_objects:
+                        all_checks.append(c.get_codes(code_list[0]).display())
+
                 else:
                     code_1, code_2 = code_list
                     for option in code_info[code_1]["options"]:
@@ -474,13 +482,26 @@ class Check(models.Model):
                             "value": f"{code_1}_NA|{code_2}_{option}",
                             "text": f"{code_2} {pretty_print_dict[option]}",
                         })
+                    # all checks
+                    for c in all_check_objects:
+                        code_1_display = c.get_codes(code_1).display()
+                        code_2_display = c.get_codes(code_2).display()
+
+                        if code_1_display == code_2_display:
+                            all_checks.append(code_1_display)
+                        else:
+                            if code_1_display == "Not applied":
+                                all_checks.append(code_2_display)
+                            elif code_2_display == "Not applied":
+                                all_checks.append(code_1_display)
+
 
                 # add all to final dict
                 svig_codes[code]["codes"][v] = {
                     'list': code_list,
                     'details': code_details,
                     'dropdown': dropdown_options,
-                    'all_checks': ['O3 Moderate', 'Pending'],
+                    'all_checks': all_checks,
                 }
 
         return svig_codes
@@ -511,6 +532,23 @@ class CodeAnswer(models.Model):
             return 'Benign'
         elif self.code[0] == 'O':
             return 'Oncogenic'
+
+    def display(self):
+        pretty_print_dict = {
+            'SA': 'Stand-alone',
+            'VS': 'Very strong',
+            'ST': 'Strong',
+            'MO': 'Moderate',
+            'SU': 'Supporting',
+            'PE': 'Pending',
+            'NA': 'Not applied',
+        }
+        if self.pending:
+            return "Pending"
+        elif self.applied:
+            return f"{self.code} {pretty_print_dict[self.applied_strength]}"
+        else:
+            return "Not applied"
 
 
 class CanonicalList(models.Model):
