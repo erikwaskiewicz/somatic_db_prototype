@@ -4,12 +4,10 @@
 {% if classification_info.current_check.info_check %}
 <div class="alert alert-success">
   <h5>Section complete!</h5>
-  <p>You have confirmed that the information on this page is accurate</p>
-</div>
-<div class="alert alert-danger">
-  <h5>Reopen?</h5>
-  <p><b>Warning!</b> This will reset any work you've done on the Previous classifications and S-VIG tabs</p>
-  {% crispy forms.reopen_check_info_form %}
+  <p>
+    You have confirmed that the information on this page is accurate.
+    <a href="" data-toggle="modal" data-target="#reopen_info_modal">Click here to reopen</a>
+  </p>
 </div>
 {% endif %}
 
@@ -104,3 +102,24 @@
 </div>
 
 {% endif %}
+
+
+<!-- Reopen modal -->
+<div class="modal fade" id="reopen_info_modal" tabindex="-1" aria-labelledby="reopen_info_modal_label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reopen_info_modal_label">Reopen?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger">
+          <p><b>Warning!</b> This will reset any work you've done on the Previous classifications and S-VIG tabs</p>
+          {% crispy forms.reopen_check_info_form %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

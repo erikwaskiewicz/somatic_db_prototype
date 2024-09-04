@@ -80,7 +80,6 @@ def classify(request, classification):
         'comment_form': CommentForm(),
         'finalise_form': FinaliseCheckForm(),
     }
-    # TODO check if refreshes needed after form submit + hide reopen form in a modal
     # TODO visualise different forms depending on check etc
     # TODO comments modal
     # TODO when checks disagree
@@ -92,12 +91,13 @@ def classify(request, classification):
     # when buttons are pressed
     if request.method == 'POST':
 
-        # button to confirm smaple/variant tab has been checked
+        # button to confirm sample/variant tab has been checked
         if 'check_info_form' in request.POST:
             check_info_form = CheckInfoForm(request.POST)
             if check_info_form.is_valid():
                 current_check_obj.info_check = True
                 current_check_obj.save()
+                return redirect('svig-analysis', classification)
 
         # button to reset sample/patient info tab
         if 'reset_info_check' in request.POST:
@@ -108,6 +108,7 @@ def classify(request, classification):
                 current_check_obj.full_classification = False
                 current_check_obj.save()
                 current_check_obj.remove_codes()
+                return redirect('svig-analysis', classification)
 
         # button to select to use a previous classification or start a new one
         if 'use_previous_class' in request.POST:
@@ -138,6 +139,7 @@ def classify(request, classification):
                 current_check_obj.full_classification = False
                 current_check_obj.save()
                 current_check_obj.remove_codes()
+                return redirect('svig-analysis', classification)
 
         if 'finalise_check' in request.POST:
             finalise_form = FinaliseCheckForm(request.POST)

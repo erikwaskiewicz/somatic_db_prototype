@@ -12,12 +12,10 @@
   {% if classification_info.current_check.full_classification %}
   <div class="alert alert-success">
     <h5>Section complete!</h5>
-    <p>You have selected to perform a full S-VIG classification</p>
-  </div>
-  <div class="alert alert-danger">
-    <h5>Reopen?</h5>
-    <p><b>Warning!</b> This will remove any S-VIG work you've done</p>
-    {% crispy forms.reopen_previous_class_form %}
+    <p>
+      You have selected to perform a full S-VIG classification.
+      <a href="" data-toggle="modal" data-target="#reopen_previous_modal">Click here to reopen</a>
+    </p>
   </div>
   {% endif %}
 
@@ -139,3 +137,24 @@
     </div>
   </div>
 </div>
+
+
+<!-- Reopen modal -->
+<div class="modal fade" id="reopen_previous_modal" tabindex="-1" aria-labelledby="reopen_previous_modal_label" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="reopen_previous_modal_label">Reopen?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger">
+            <p><b>Warning!</b> This will remove any S-VIG work you've done</p>
+            {% crispy forms.reopen_previous_class_form %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
