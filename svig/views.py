@@ -5,8 +5,8 @@ from django.contrib.auth.decorators import login_required
 
 from somatic_variant_db.settings import SVIG_CODE_VERSION
 
-from app_svig.models import *
-from app_svig.forms import *
+from svig.models import *
+from svig.forms import *
 
 from analysis.models import VariantPanelAnalysis
 
@@ -55,7 +55,7 @@ def view_classifications(request):
             context['classifications'] = Classification.objects.all()
 
 
-    return render(request, 'app_svig/all_classifications.html', context)
+    return render(request, 'svig/all_classifications.html', context)
 
 
 @login_required
@@ -149,7 +149,7 @@ def classify(request, classification):
                 return redirect('view-all-svig')
 
 
-    return render(request, 'app_svig/svig_base.html', context)
+    return render(request, 'svig/svig_base.html', context)
 
 
 def ajax_svig(request):
@@ -175,18 +175,18 @@ def ajax_svig(request):
             'current_score': score,
             'current_class': final_class,
         }
-        class_box_html = render_to_string('app_svig/ajax/classification.html', class_box_context)
+        class_box_html = render_to_string('svig/ajax/classification.html', class_box_context)
         data['class_box'] = class_box_html
 
         # make the code summary and complete true/false segments for each category of code and add to results dict
         for category, value in codes_by_category.items():
 
             # summary of codes applied
-            html = render_to_string('app_svig/ajax/category_summary.html', {'applied_codes': value['applied_codes']})
+            html = render_to_string('svig/ajax/category_summary.html', {'applied_codes': value['applied_codes']})
             data[f'codes_summary_{value["slug"].replace("-", "_")}'] = html
 
             # complete yes/no
-            html = render_to_string('app_svig/ajax/category_complete.html', {'complete': value['complete']})
+            html = render_to_string('svig/ajax/category_complete.html', {'complete': value['complete']})
             data[f'complete_{value["slug"].replace("-", "_")}'] = html
 
         return JsonResponse(data)

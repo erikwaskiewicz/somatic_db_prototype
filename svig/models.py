@@ -216,7 +216,7 @@ class Check(models.Model):
         }
         score_dict = {'SA': 100, 'VS': 8, 'ST': 4, 'MO': 2, 'SU': 1}
 
-        config_file = os.path.join(BASE_DIR, f'app_svig/config/svig_{SVIG_CODE_VERSION}.yaml')
+        config_file = os.path.join(BASE_DIR, f'svig/config/svig_{SVIG_CODE_VERSION}.yaml')
         with open(config_file) as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
 
@@ -341,7 +341,7 @@ class Check(models.Model):
         make a set of code answers against the current check
         """
         # load in list of S-VIG codes from yaml
-        config_file = os.path.join(BASE_DIR, f'app_svig/config/svig_{SVIG_CODE_VERSION}.yaml')
+        config_file = os.path.join(BASE_DIR, f'svig/config/svig_{SVIG_CODE_VERSION}.yaml')
         with open(config_file) as f:
             svig_codes = yaml.load(f, Loader=yaml.FullLoader)
 

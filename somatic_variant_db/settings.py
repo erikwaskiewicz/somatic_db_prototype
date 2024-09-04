@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'analysis',
-    'app_svig',
+    'svig',
     'crispy_forms',
     'auditlog',
 ]
