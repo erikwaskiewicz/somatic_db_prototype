@@ -1,3 +1,5 @@
+{% load svig_tags %}
+
 {% for c in applied_codes %}
-<span class="badge badge-pill badge-{{ c.css_class }}">{{ c.code }}</span>
+<span class="badge badge-pill badge-{{ c|colour_by_class }}">{{ c }}</span>
 {% endfor %}

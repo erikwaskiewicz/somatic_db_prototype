@@ -117,7 +117,6 @@ class Classification(models.Model):
             current_score, current_class, class_css = current_check_obj.classify()
             classification_info['all_codes'] = current_check_obj.codes_to_dict()
             classification_info['codes_by_category'] = current_check_obj.codes_by_category()
-            classification_info['codes_ordered'] = current_check_obj.codes_ordered()
             classification_info['all_applied_codes'] = self.get_all_applied_codes()
             classification_info['current_class'] = current_class
             classification_info['current_score'] = current_score
@@ -399,10 +398,9 @@ class Check(models.Model):
                 del all_dict[code2]
                 all_dict[c] = temp_dict
 
-        print(all_dict)
         return all_dict
 
-    def codes_ordered(self):
+    def codes_by_category(self):
         """ ordered list of codes for displaying template """
         pretty_print_dict = {
             'SA': 'Stand-alone',
@@ -422,17 +420,28 @@ class Check(models.Model):
         order_info = config["order"]
 
         code_objects = self.get_codes()
-        print(code_objects)
 
         svig_codes = {}
         for code, values in order_info.items():
-            svig_codes[code] = {'slug': slugify(code), "codes": {}}
+            svig_codes[code] = {
+                'slug': slugify(code),
+                "codes": {},
+                "applied_codes": [],
+                "complete": True,
+                }
             for v in values:
                 code_list = v.split("_")
                 # list of dictionaries with description etc
                 code_details = []
                 for c in code_list:
                     code_details.append({c: code_info[c]})
+
+                    # get applied codes
+                    code_object = code_objects.get(code=c)
+                    if code_object.applied:
+                        svig_codes[code]["applied_codes"].append(f"{c}_{code_object.applied_strength}")
+                    if code_object.pending:
+                        svig_codes[code]["complete"] = False
 
                 # dropdown options # TODO add +/- points to dropdown
                 dropdown_options = [
@@ -451,9 +460,8 @@ class Check(models.Model):
                             "value": f"{code_list[0]}_{option}",
                             "text": f"{code_list[0]} {pretty_print_dict[option]}",
                         })
-                    # TODO
-                    code_object = code_objects.get(code=code_list[0])
                     
+                # TODO all checks and applied codes for combined codes
                 else:
                     code_1, code_2 = code_list
                     for option in code_info[code_1]["options"]:
@@ -463,7 +471,7 @@ class Check(models.Model):
                         })
                     for option in code_info[code_2]["options"]:
                         dropdown_options.append({
-                            "value": f"{code_2}_{option}|{code_1}_NA",
+                            "value": f"{code_1}_NA|{code_2}_{option}",
                             "text": f"{code_2} {pretty_print_dict[option]}",
                         })
 
@@ -475,52 +483,7 @@ class Check(models.Model):
                     'all_checks': ['O3 Moderate', 'Pending'],
                 }
 
-        print(svig_codes)
         return svig_codes
-
-    def codes_by_category(self):
-        self.codes_ordered()
-        results_dict = {}
-
-        # get applied codes
-        applied_codes = self.get_codes()
-
-        # load in list of S-VIG codes from yaml
-        config_file = os.path.join(BASE_DIR, f'app_svig/config/svig_{SVIG_CODE_VERSION}.yaml')
-        with open(config_file) as f:
-            svig_codes = yaml.load(f, Loader=yaml.FullLoader)
-
-        for code, values in svig_codes['codes'].items():
-            # add category to the list if it isnt there already
-            current_category = values['category']
-            if current_category not in results_dict.keys():
-                results_dict[current_category] = {
-                    'applied_codes': [],
-                    'complete': True
-                }
-                #TODO complete variable is hard coded at the mo, need to add pending option first
-
-            # check if the code is applied and add to list if it is
-            try:
-                current_code = applied_codes.get(code=code)
-                if values['type'] == 'benign':
-                    css_class = 'info'
-                elif values['type'] == 'oncogenic':
-                    css_class = 'danger'
-                if current_code.pending:
-                    results_dict[current_category]['complete'] = False
-                if current_code.applied:
-                    temp_dict = {
-                        'code': f'{current_code.code}_{current_code.applied_strength}',
-                        'css_class': css_class,
-                    }
-                
-                    results_dict[current_category]['applied_codes'].append(temp_dict)
-            except:
-                pass  # TODO this will need removing when done, just to stop error in testing
-
-        #print(results_dict)
-        return results_dict
 
     def signoff_check(self, next_step):
         self.check_complete = True

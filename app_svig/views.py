@@ -184,10 +184,10 @@ def ajax_svig(request):
 
             # summary of codes applied
             html = render_to_string('app_svig/ajax/category_summary.html', {'applied_codes': value['applied_codes']})
-            data[f'codes_summary_{category}'] = html
+            data[f'codes_summary_{value["slug"].replace("-", "_")}'] = html
 
             # complete yes/no
             html = render_to_string('app_svig/ajax/category_complete.html', {'complete': value['complete']})
-            data[f'complete_{category}'] = html
+            data[f'complete_{value["slug"].replace("-", "_")}'] = html
 
         return JsonResponse(data)

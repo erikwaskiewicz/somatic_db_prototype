@@ -1,17 +1,18 @@
+{% load svig_tags %}
+
 {% if classification_info.current_check.full_classification %}
 <div class="row">
 
   <!-- Main area ------------------------------------------------------------------------------->
   <div class="col-9">
-    <div data-bs-spy="scroll" data-bs-target="#list-example" data-bs-offset="0" class="scrollspy-example" tabindex="0">
+    <div data-bs-spy="scroll" data-bs-target="#classification-summary-box" data-bs-offset="0" class="scrollspy-example" tabindex="0">
 
       <!-- generic template -->
-      {% for k, v in classification_info.codes_ordered.items %}
+      {% for k, v in classification_info.codes_by_category.items %}
         <h4 id={{ v.slug }}-section>{{ k }}</h4>
         <table class="table table-bordered">
           <tbody>
             {% for code, code_details in v.codes.items %}
-                {{code}}
                 {% include 'app_svig/codes/generic.html' %}
             {% endfor %}
           </tbody>
@@ -24,9 +25,8 @@
 
 
   <!-- side bar -------------------------------------------------------------------->
-   <!-- TODO this wont work with generic setup -->
   <div class="col-3">
-    <div id="list-example" class="list-group sticky-top">
+    <div id="classification-summary-box" class="list-group sticky-top">
 
       <div id="class-box" >
         <button class="btn btn-block btn-lg btn-disabled btn-{{ classification_info.class_css }}" type="button">
@@ -38,75 +38,31 @@
       <p></p>
       <p></p>
 
-      <a class="list-group-item list-group-item-action" href="#list-item-1">
-        <div class="row">
-          <div class="col-10">
-            Population databases
-            <br>
-            <div id="codes-summary-population_db">
-            {% for c in classification_info.codes_by_category.population_db.applied_codes %}
-            <span class="badge badge-pill badge-{{ c.css_class }}">{{ c.code }}</span>
-            {% endfor %}
-            </div>
-          </div>
-          <div class="col-2">
-            <div id="complete-population_db">
-            {% if classification_info.codes_by_category.population_db.complete %}
-            <span class="fa fa-check" style="color:#1ab81a"></span>
-            {% else %}
-            <span class="fa fa-stopwatch"></span>
-            {% endif %}
-            </div>
-          </div>
-        </div>
-      </a>
-      <a class="list-group-item list-group-item-action" href="#list-item-2">
-        <div class="row">
-          <div class="col-10">
-            Mode of action
-            <br>
-            <div id="codes-summary-mode_of_action">
-            {% for c in classification_info.codes_by_category.mode_of_action.applied_codes %}
-            <span class="badge badge-pill badge-{{ c.css_class }}">{{ c.code }}</span>
-            {% endfor %}
-          </div>
-          </div>
-          <div class="col-2">
-            <div id="complete-mode_of_action">
-            {% if classification_info.codes_by_category.mode_of_action.complete %}
-            <span class="fa fa-check" style="color:#1ab81a"></span>
-            {% else %}
-            <span class="fa fa-stopwatch"></span>
-            {% endif %}
-            </div>
-          </div>
-        </div>
-      </a><!-- TODO loops for all options -->
-      <a class="list-group-item list-group-item-action" href="#list-item-3">
-        <div class="row">
-          <div class="col-10">Cancer databases</div>
-          <div class="col-2"><span class="fa fa-stopwatch"></span></div>
-        </div>
-      </a>
-      <a class="list-group-item list-group-item-action" href="#list-item-4">
-        <div class="row">
-          <div class="col-10">Effect on protein</div>
-          <div class="col-2"><span class="fa fa-stopwatch"></span></div>
-        </div>
-      </a>
-      <a class="list-group-item list-group-item-action" href="#list-item-5">
-        <div class="row">
-          <div class="col-10">Computational tools</div>
-          <div class="col-2"><span class="fa fa-stopwatch"></span></div>
-        </div>
-      </a>
-      <a class="list-group-item list-group-item-action" href="#list-item-6">
-        <div class="row">
-          <div class="col-10">Functional studies</div>
-          <div class="col-2"><span class="fa fa-stopwatch"></span></div>
-        </div>
-      </a>
 
+      {% for k, v in classification_info.codes_by_category.items %}
+      <a class="list-group-item list-group-item-action" href="#{{ v.slug }}-section">
+        <div class="row">
+          <div class="col-10">
+            {{ k }}
+            <br>
+            <div id="codes-summary-{{ v.slug }}">
+            {% for c in v.applied_codes %}
+            <span class="badge badge-pill badge-{{ c|colour_by_class }}">{{ c }}</span>
+            {% endfor %}
+            </div>
+          </div>
+          <div class="col-2">
+            <div id="complete-{{ v.slug }}">
+            {% if v.complete %}
+            <span class="fa fa-check" style="color:#1ab81a"></span>
+            {% else %}
+            <span class="fa fa-stopwatch"></span>
+            {% endif %}
+            </div>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
       <p></p>
       <p></p>
       <div class="alert alert-success">Once you're finished, go to the Finalise tab to complete your classification</div>
@@ -247,14 +203,15 @@
           contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
           processData: false, // NEEDED, DON'T OMIT THIS
           success: function(data) {
+            console.log(data)
               $("#class-box").html(data.class_box);
 
-              $("#codes-summary-population_db").html(data.codes_summary_population_db);
-              $("#codes-summary-mode_of_action").html(data.codes_summary_mode_of_action);
+              $("#codes-summary-population-databases").html(data.codes_summary_population_databases);
+              $("#codes-summary-mode-of-action").html(data.codes_summary_mode_of_action);
 
-              $("#complete-population_db").html(data.complete_population_db);
-              $("#complete-mode_of_action").html(data.complete_mode_of_action);
-              //TODO add the other categories
+              $("#complete-population-databases").html(data.complete_population_databases);
+              $("#complete-mode-of-action").html(data.complete_mode_of_action);
+              //TODO add the other categories, remove hardcoding
           },
           failure: function(data) {
               alert('Got an error');
