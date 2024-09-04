@@ -187,7 +187,7 @@ class Check(models.Model):
             svig_codes = yaml.load(f, Loader=yaml.FullLoader)
 
         # loop through the codes and make code answer objects
-        for code in svig_codes:
+        for code in svig_codes["codes"]:
             CodeAnswer.objects.create(
                 code = code,
                 check_object = self
