@@ -216,12 +216,22 @@
 <script>
   // function to update the css on a code based on whether a oncogenic/benign code is applied
   function update_css(target, css_class) {
-    target.classList.remove('btn-info', 'btn-secondary', 'btn-danger', 'btn-warning')
+    target.classList.remove('btn-info', 'btn-secondary', 'btn-danger', 'btn-warning');
     target.classList.add("btn-" + css_class);
+    target_text = target.options[target.selectedIndex].text;
 
-    row_element = target.parentElement.parentElement;
-    row_element.classList.remove('table-info', 'table-secondary', 'table-danger', 'table-warning')
+    var row_element = target.parentElement.parentElement;
+    row_element.classList.remove('table-info', 'table-secondary', 'table-danger', 'table-warning');
     row_element.classList.add("table-" + css_class);
+
+    // change current scheck button CSS here
+    var next_row = row_element.parentNode.rows[ row_element.rowIndex + 1 ].children[1].children[1].children[0];
+    var class_box = next_row.children[next_row.childElementCount - 1].children[1].children[0];
+    class_box.classList.remove('badge-info', 'badge-secondary', 'badge-danger', 'badge-warning');
+    class_box.classList.add("badge-" + css_class);
+    class_box.textContent = target_text;
+
+    // TODO - can this be done better? this function will error if the HTML format changes
   };
 
   // function to extract the new css class when a dropdown is changed
