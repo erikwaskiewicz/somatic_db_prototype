@@ -423,7 +423,7 @@ class Check(models.Model):
 
         code_objects = self.get_codes()
 
-        all_check_objects = self.classification.get_all_checks()
+        all_check_objects = self.classification.get_all_checks().order_by("pk")
 
         svig_codes = {}
         for code, values in order_info.items():
@@ -494,7 +494,6 @@ class Check(models.Model):
                                 all_checks.append(code_2_display)
                             elif code_2_display == "Not applied":
                                 all_checks.append(code_1_display)
-
 
                 # add all to final dict
                 svig_codes[code]["codes"][v] = {
