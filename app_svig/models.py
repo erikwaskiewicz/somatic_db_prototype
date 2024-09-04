@@ -197,14 +197,11 @@ class Check(models.Model):
 
         return score_counter, classification
 
-    def get_codes(self, code=None):
+    def get_codes(self):
         """
         Get all classification codes for the current check
         """
-        code_objects = CodeAnswer.objects.filter(check_object=self)
-        if code:
-            code_objects = code_objects.get(code=code)
-        return code_objects
+        return CodeAnswer.objects.filter(check_object=self)
 
     def get_codes_by_category(self):
         """ ordered list of codes for displaying template """
@@ -217,6 +214,7 @@ class Check(models.Model):
             'PE': 'Pending',
             'NA': 'Not applied',
         }
+        score_dict = {'SA': 100, 'VS': 8, 'ST': 4, 'MO': 2, 'SU': 1}
 
         config_file = os.path.join(BASE_DIR, f'app_svig/config/svig_{SVIG_CODE_VERSION}.yaml')
         with open(config_file) as f:
@@ -240,18 +238,23 @@ class Check(models.Model):
             for v in values:
                 code_list = v.split("_")
                 # list of dictionaries with description etc
+
+                # loop through each code and extract info
                 code_details = []
                 for c in code_list:
-                    code_details.append({c: code_info[c]})
-
                     # get applied codes
                     code_object = code_objects.get(code=c)
+
+                    # add detailed code description to dict
+                    code_details.append({c: code_info[c]})
+
+                    # get info on what codes have been applied
                     if code_object.applied:
                         svig_codes[code]["applied_codes"].append(f"{c}_{code_object.applied_strength}")
                     if code_object.pending:
                         svig_codes[code]["complete"] = False
 
-                # dropdown options # TODO add +/- points to dropdown
+                # dropdown options
                 dropdown_options = [
                     {
                         "value": "|".join([f"{c}_PE" for c in code_list]),
@@ -265,9 +268,14 @@ class Check(models.Model):
                 all_checks = []
                 if len(code_list) == 1:
                     for option in code_info[code_list[0]]["options"]:
+                        text = f"{code_list[0]} {pretty_print_dict[option]}"
+                        if code_list[0][0] == "B":
+                            text += f" (-{score_dict[option]})"
+                        elif code_list[0][0] == "O":
+                            text += f" (+{score_dict[option]})"
                         dropdown_options.append({
                             "value": f"{code_list[0]}_{option}",
-                            "text": f"{code_list[0]} {pretty_print_dict[option]}",
+                            "text": text,
                         })
 
                     # all checks and current value for dropdown
@@ -278,14 +286,24 @@ class Check(models.Model):
                 else:
                     code_1, code_2 = code_list
                     for option in code_info[code_1]["options"]:
+                        text = f"{code_1} {pretty_print_dict[option]}"
+                        if code_1[0] == "B":
+                            text += f" (-{score_dict[option]})"
+                        elif code_1[0] == "O":
+                            text += f" (+{score_dict[option]})"
                         dropdown_options.append({
                             "value": f"{code_1}_{option}|{code_2}_NA",
-                            "text": f"{code_1} {pretty_print_dict[option]}",
+                            "text": text,
                         })
                     for option in code_info[code_2]["options"]:
+                        text = f"{code_2} {pretty_print_dict[option]}"
+                        if code_2[0] == "B":
+                            text += f" (-{score_dict[option]})"
+                        elif code_2[0] == "O":
+                            text += f" (+{score_dict[option]})"
                         dropdown_options.append({
                             "value": f"{code_1}_NA|{code_2}_{option}",
-                            "text": f"{code_2} {pretty_print_dict[option]}",
+                            "text": text,
                         })
                     # all checks
                     for c in all_check_objects:
@@ -454,10 +472,16 @@ class CodeAnswer(models.Model):
             'PE': 'Pending',
             'NA': 'Not applied',
         }
+        score_dict = {'SA': 100, 'VS': 8, 'ST': 4, 'MO': 2, 'SU': 1}
         if self.pending:
             return "Pending"
         elif self.applied:
-            return f"{self.code} {pretty_print_dict[self.applied_strength]}"
+            if self.get_code_type() == "Benign":
+                score = f"-{score_dict[self.applied_strength]}"
+            elif self.get_code_type() == "Oncogenic":
+                score = f"+{score_dict[self.applied_strength]}"
+            out_string = f"{self.code} {pretty_print_dict[self.applied_strength]} ({score})"
+            return out_string
         else:
             return "Not applied"
 
