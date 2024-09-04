@@ -111,7 +111,7 @@ class Classification(models.Model):
         }
         if current_check_obj.full_classification:
             current_score, current_class = current_check_obj.classify()
-            classification_info['codes_by_category'] = current_check_obj.codes_by_category()
+            classification_info['codes_by_category'] = current_check_obj.get_codes_by_category()
             classification_info['current_class'] = current_class
             classification_info['current_score'] = current_score
         return classification_info
@@ -124,9 +124,6 @@ class Classification(models.Model):
             'previous_classifications': self.variant.get_previous_classifications(),
         }
         return context
-
-    def make_new_check(self):
-        new_check = Check.objects.create(classification=self)
 
     def get_all_checks(self):
         return Check.objects.filter(classification=self).order_by('-pk')
@@ -154,6 +151,9 @@ class Classification(models.Model):
         else:
             return (('new', 'Perform full classification'),)
 
+    def make_new_check(self):
+        new_check = Check.objects.create(classification=self)
+
 
 class Check(models.Model):
     """
@@ -167,39 +167,6 @@ class Check(models.Model):
     signoff_time = models.DateTimeField(blank=True, null=True)
     # TODO assign user
 
-    def make_new_codes(self):
-        """
-        make a set of code answers against the current check
-        """
-        # load in list of S-VIG codes from yaml
-        config_file = os.path.join(BASE_DIR, f'app_svig/config/svig_{SVIG_CODE_VERSION}.yaml')
-        with open(config_file) as f:
-            svig_codes = yaml.load(f, Loader=yaml.FullLoader)
-
-        # loop through the codes and make code answer objects
-        for code in svig_codes["codes"]:
-            CodeAnswer.objects.create(
-                code = code,
-                check_object = self
-            )
-
-    def get_codes(self, code=None):
-        """
-        Get all classification codes for the current check
-        """
-        code_objects = CodeAnswer.objects.filter(check_object=self)
-        if code:
-            code_objects = code_objects.get(code=code)
-        return code_objects
-
-    def remove_codes(self):
-        """
-        remove the set of code answers for the current check
-        """
-        codes = self.get_codes()
-        for c in codes:
-            c.delete()
-
     def classify(self):
         # dict of how many points per code strength, this could be in settings/svig config
         score_dict = {'SA': 100, 'VS': 8, 'ST': 4, 'MO': 2, 'SU': 1}
@@ -208,10 +175,10 @@ class Check(models.Model):
         codes = self.get_codes()
         for c in codes:
             if c.applied:
-                code_type = c.code[0]
-                if code_type == 'B':
+                code_type = c.get_code_type()
+                if code_type == 'Benign':
                     score_counter -= score_dict[c.applied_strength]
-                elif code_type == 'O':
+                elif code_type == 'Oncogenic':
                     score_counter += score_dict[c.applied_strength]
 
         # work out class from score counter
@@ -229,6 +196,143 @@ class Check(models.Model):
                 classification = c
 
         return score_counter, classification
+
+    def get_codes(self, code=None):
+        """
+        Get all classification codes for the current check
+        """
+        code_objects = CodeAnswer.objects.filter(check_object=self)
+        if code:
+            code_objects = code_objects.get(code=code)
+        return code_objects
+
+    def get_codes_by_category(self):
+        """ ordered list of codes for displaying template """
+        pretty_print_dict = {
+            'SA': 'Stand-alone',
+            'VS': 'Very strong',
+            'ST': 'Strong',
+            'MO': 'Moderate',
+            'SU': 'Supporting',
+            'PE': 'Pending',
+            'NA': 'Not applied',
+        }
+
+        config_file = os.path.join(BASE_DIR, f'app_svig/config/svig_{SVIG_CODE_VERSION}.yaml')
+        with open(config_file) as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+
+        code_info = config["codes"]
+        order_info = config["order"]
+
+        code_objects = self.get_codes()
+
+        all_check_objects = self.classification.get_all_checks().order_by("pk")
+
+        svig_codes = {}
+        for code, values in order_info.items():
+            svig_codes[code] = {
+                'slug': slugify(code),
+                "codes": {},
+                "applied_codes": [],
+                "complete": True,
+                }
+            for v in values:
+                code_list = v.split("_")
+                # list of dictionaries with description etc
+                code_details = []
+                for c in code_list:
+                    code_details.append({c: code_info[c]})
+
+                    # get applied codes
+                    code_object = code_objects.get(code=c)
+                    if code_object.applied:
+                        svig_codes[code]["applied_codes"].append(f"{c}_{code_object.applied_strength}")
+                    if code_object.pending:
+                        svig_codes[code]["complete"] = False
+
+                # dropdown options # TODO add +/- points to dropdown
+                dropdown_options = [
+                    {
+                        "value": "|".join([f"{c}_PE" for c in code_list]),
+                        "text": "Pending"
+                    },
+                    {
+                        "value": "|".join([f"{c}_NA" for c in code_list]),
+                        "text": "Not applied"
+                    },
+                ]
+                all_checks = []
+                if len(code_list) == 1:
+                    for option in code_info[code_list[0]]["options"]:
+                        dropdown_options.append({
+                            "value": f"{code_list[0]}_{option}",
+                            "text": f"{code_list[0]} {pretty_print_dict[option]}",
+                        })
+
+                    # all checks and current value for dropdown
+                    for c in all_check_objects:
+                        all_checks.append(code_objects.get(code=code_list[0]).get_string())
+                        value = code_objects.get(code=code_list[0]).get_code()
+
+                else:
+                    code_1, code_2 = code_list
+                    for option in code_info[code_1]["options"]:
+                        dropdown_options.append({
+                            "value": f"{code_1}_{option}|{code_2}_NA",
+                            "text": f"{code_1} {pretty_print_dict[option]}",
+                        })
+                    for option in code_info[code_2]["options"]:
+                        dropdown_options.append({
+                            "value": f"{code_1}_NA|{code_2}_{option}",
+                            "text": f"{code_2} {pretty_print_dict[option]}",
+                        })
+                    # all checks
+                    for c in all_check_objects:
+                        code_1_display = code_objects.get(code=code_1).get_string()
+                        code_2_display = code_objects.get(code=code_2).get_string()
+
+                        if code_1_display == code_2_display:
+                            all_checks.append(code_1_display)
+                        else:
+                            if code_1_display == "Not applied":
+                                all_checks.append(code_2_display)
+
+                            elif code_2_display == "Not applied":
+                                all_checks.append(code_1_display)
+
+                        # get current value for dropdown
+                        value = "|".join([
+                            code_objects.get(code=code_1).get_code(),
+                            code_objects.get(code=code_2).get_code()
+                        ])
+
+                # add all to final dict
+                svig_codes[code]["codes"][v] = {
+                    'list': code_list,
+                    'details': code_details,
+                    'dropdown': dropdown_options,
+                    'value': value,
+                    'all_checks': all_checks,
+                }
+
+        return svig_codes
+
+    def make_new_codes(self):
+        """
+        make a set of code answers against the current check
+        """
+        # load in list of S-VIG codes from yaml
+        config_file = os.path.join(BASE_DIR, f'app_svig/config/svig_{SVIG_CODE_VERSION}.yaml')
+        with open(config_file) as f:
+            svig_codes = yaml.load(f, Loader=yaml.FullLoader)
+
+        # loop through the codes and make code answer objects
+        for code in svig_codes["codes"]:
+            CodeAnswer.objects.create(
+                code = code,
+                check_object = self
+            )
 
     def update_codes(self, selections):
         #TODO split into smaller functions
@@ -297,117 +401,13 @@ class Check(models.Model):
 
         return score_counter, classification
 
-    def codes_by_category(self):
-        """ ordered list of codes for displaying template """
-        pretty_print_dict = {
-            'SA': 'Stand-alone',
-            'VS': 'Very strong',
-            'ST': 'Strong',
-            'MO': 'Moderate',
-            'SU': 'Supporting',
-            'PE': 'Pending',
-            'NA': 'Not applied',
-        }
-
-        config_file = os.path.join(BASE_DIR, f'app_svig/config/svig_{SVIG_CODE_VERSION}.yaml')
-        with open(config_file) as f:
-            config = yaml.load(f, Loader=yaml.FullLoader)
-
-        code_info = config["codes"]
-        order_info = config["order"]
-
-        code_objects = self.get_codes()
-
-        all_check_objects = self.classification.get_all_checks().order_by("pk")
-
-        svig_codes = {}
-        for code, values in order_info.items():
-            svig_codes[code] = {
-                'slug': slugify(code),
-                "codes": {},
-                "applied_codes": [],
-                "complete": True,
-                }
-            for v in values:
-                code_list = v.split("_")
-                # list of dictionaries with description etc
-                code_details = []
-                for c in code_list:
-                    code_details.append({c: code_info[c]})
-
-                    # get applied codes
-                    code_object = code_objects.get(code=c)
-                    if code_object.applied:
-                        svig_codes[code]["applied_codes"].append(f"{c}_{code_object.applied_strength}")
-                    if code_object.pending:
-                        svig_codes[code]["complete"] = False
-
-                # dropdown options # TODO add +/- points to dropdown
-                dropdown_options = [
-                    {
-                        "value": "|".join([f"{c}_PE" for c in code_list]),
-                        "text": "Pending"
-                    },
-                    {
-                        "value": "|".join([f"{c}_NA" for c in code_list]),
-                        "text": "Not applied"
-                    },
-                ]
-                all_checks = []
-                if len(code_list) == 1:
-                    for option in code_info[code_list[0]]["options"]:
-                        dropdown_options.append({
-                            "value": f"{code_list[0]}_{option}",
-                            "text": f"{code_list[0]} {pretty_print_dict[option]}",
-                        })
-
-                    # all checks and current value for dropdown
-                    for c in all_check_objects:
-                        all_checks.append(c.get_codes(code_list[0]).display_string())
-                        value = c.get_codes(code_list[0]).display_code()
-
-                else:
-                    code_1, code_2 = code_list
-                    for option in code_info[code_1]["options"]:
-                        dropdown_options.append({
-                            "value": f"{code_1}_{option}|{code_2}_NA",
-                            "text": f"{code_1} {pretty_print_dict[option]}",
-                        })
-                    for option in code_info[code_2]["options"]:
-                        dropdown_options.append({
-                            "value": f"{code_1}_NA|{code_2}_{option}",
-                            "text": f"{code_2} {pretty_print_dict[option]}",
-                        })
-                    # all checks
-                    for c in all_check_objects:
-                        code_1_display = c.get_codes(code_1).display_string()
-                        code_2_display = c.get_codes(code_2).display_string()
-
-                        if code_1_display == code_2_display:
-                            all_checks.append(code_1_display)
-                        else:
-                            if code_1_display == "Not applied":
-                                all_checks.append(code_2_display)
-
-                            elif code_2_display == "Not applied":
-                                all_checks.append(code_1_display)
-
-                        # get current value for dropdown
-                        value = "|".join([
-                            c.get_codes(code_1).display_code(),
-                            c.get_codes(code_2).display_code()
-                        ])
-
-                # add all to final dict
-                svig_codes[code]["codes"][v] = {
-                    'list': code_list,
-                    'details': code_details,
-                    'dropdown': dropdown_options,
-                    'value': value,
-                    'all_checks': all_checks,
-                }
-
-        return svig_codes
+    def remove_codes(self):
+        """
+        remove the set of code answers for the current check
+        """
+        codes = self.get_codes()
+        for c in codes:
+            c.delete()
 
     def signoff_check(self, next_step):
         self.check_complete = True
@@ -430,13 +430,21 @@ class CodeAnswer(models.Model):
     applied = models.BooleanField(default=False)
     applied_strength = models.CharField(max_length=20, blank=True, null=True)
 
-    def code_type(self):
+    def get_code(self):
+        if self.pending:
+            return f"{self.code}_PE"
+        elif self.applied:
+            return f"{self.code}_{self.applied_strength}"
+        else:
+            return f"{self.code}_NA"
+
+    def get_code_type(self):
         if self.code[0] == 'B':
             return 'Benign'
         elif self.code[0] == 'O':
             return 'Oncogenic'
 
-    def display_string(self):
+    def get_string(self):
         pretty_print_dict = {
             'SA': 'Stand-alone',
             'VS': 'Very strong',
@@ -452,14 +460,6 @@ class CodeAnswer(models.Model):
             return f"{self.code} {pretty_print_dict[self.applied_strength]}"
         else:
             return "Not applied"
-
-    def display_code(self):
-        if self.pending:
-            return f"{self.code}_PE"
-        elif self.applied:
-            return f"{self.code}_{self.applied_strength}"
-        else:
-            return f"{self.code}_NA"
 
 
 class CanonicalList(models.Model):
