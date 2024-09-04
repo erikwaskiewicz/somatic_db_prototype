@@ -2,7 +2,7 @@
   <th class="col-1">B1</th>
   <th class="col-7">
     Not consistent with mode of action&nbsp;
-    <a class="badge badge-light badge-pill" data-toggle="modal" href="#guidence-modal" role="button" aria-expanded="false" aria-controls="guidence-modal">
+    <a class="badge badge-light" data-toggle="modal" href="#guidence-modal" role="button" aria-expanded="false" aria-controls="guidence-modal">
       More info
     </a>
   </th>
@@ -27,14 +27,15 @@
     <tbody>
     {% for c in classification_info.all_applied_codes %}
       <tr>
-        <td>#{{ forloop.counter }}{% if forloop.last %} (Current){% endif %}</td>
-        <td><span class="badge badge-{{ c.B1.css_class }} w-100">{{ c.B1.pretty_print }}</span></td>
+        <td class="col-6">#{{ forloop.counter }}{% if forloop.last %} (Current){% endif %}</td>
+        <td class="col-6"><span class="badge badge-{{ c.B1.css_class }} w-100">{{ c.B1.pretty_print }}</span></td>
       </tr>
      {% endfor %}
     </tbody>
   </table>
 
-  <p><b>Comments</b></p>
+  <a class="btn btn-light w-100">Comments&nbsp;<span class="badge badge-secondary">0</span></a>
+
 </td>
 </tr>
   
