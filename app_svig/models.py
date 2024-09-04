@@ -30,13 +30,9 @@ class Variant(models.Model):
     def get_variant_info(self):
         # get variant specific variables
         build = self.svd_variant.variant_instance.variant.genome_build
-        build_css_dict = {37: 'info', 38: 'success'} # TODO add to global settings file? probably used a few times
-        build_css_tag = build_css_dict[build]
-
         variant_info = {
             'genomic': self.svd_variant.variant_instance.variant.variant,
             'build': build,
-            'build_css_tag': build_css_tag,
             'hgvs_c': self.svd_variant.variant_instance.hgvs_c,
             'hgvs_p': self.svd_variant.variant_instance.hgvs_p,
             'gene': self.svd_variant.variant_instance.gene,
@@ -114,13 +110,12 @@ class Classification(models.Model):
             'all_checks': self.get_all_checks(),
         }
         if current_check_obj.full_classification:
-            current_score, current_class, class_css = current_check_obj.classify()
+            current_score, current_class = current_check_obj.classify()
             classification_info['all_codes'] = current_check_obj.codes_to_dict()
             classification_info['codes_by_category'] = current_check_obj.codes_by_category()
             classification_info['all_applied_codes'] = self.get_all_applied_codes()
             classification_info['current_class'] = current_class
             classification_info['current_score'] = current_score
-            classification_info['class_css'] = class_css
         return classification_info
 
     def get_context(self):
@@ -238,17 +233,7 @@ class Check(models.Model):
             if score_counter >= score:
                 classification = c
 
-        # for colouring the classification display
-        class_css_list = {
-            'Benign': 'info',
-            'Likely benign': 'info',
-            'VUS': 'warning',
-            'Likely oncogenic': 'danger',
-            'Oncogenic': 'danger',
-        }
-        css_class = class_css_list[classification]
-
-        return score_counter, classification, css_class
+        return score_counter, classification
 
     def update_codes(self, selections):
         #TODO split into smaller functions
@@ -306,16 +291,6 @@ class Check(models.Model):
             if score_counter >= score:
                 classification = c
 
-        # for colouring the classification display
-        class_css_list = {
-            'Benign': 'info',
-            'Likely benign': 'info',
-            'VUS': 'warning',
-            'Likely oncogenic': 'danger',
-            'Oncogenic': 'danger',
-        }
-        css_class = class_css_list[classification]
-
         # save results to db
         codes = self.get_codes()
         for c in codes:
@@ -325,7 +300,7 @@ class Check(models.Model):
             c.applied_strength = selections_dict[c.code]['strength']
             c.save()
 
-        return score_counter, classification, css_class
+        return score_counter, classification
 
     def codes_to_dict(self):
         """

@@ -164,7 +164,7 @@ def ajax_svig(request):
 
         # load variables needed for new display
         current_check_obj = Check.objects.get(id=check_pk)
-        score, final_class, css_class = current_check_obj.update_codes(selections)
+        score, final_class = current_check_obj.update_codes(selections)
         codes_by_category = current_check_obj.codes_by_category()
 
         # empty dict for new html
@@ -174,7 +174,6 @@ def ajax_svig(request):
         class_box_context = {
             'current_score': score,
             'current_class': final_class,
-            'class_css': css_class,
         }
         class_box_html = render_to_string('app_svig/ajax/classification.html', class_box_context)
         data['class_box'] = class_box_html

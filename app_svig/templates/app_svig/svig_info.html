@@ -1,4 +1,5 @@
 {% load crispy_forms_tags %}
+{% load svig_tags %}
 
 <!-- forms when check is complete-->
 {% if classification_info.current_check.info_check %}
@@ -45,7 +46,7 @@
   <tbody>
     <tr>
       <th class="col-4">Genomic co-ords</th>
-      <td class="col-4">{{ variant_info.genomic }} <span class="badge badge-{{ variant_info.build_css_tag }} badge-pill">GRCh{{ variant_info.build }}</span></td>
+      <td class="col-4">{{ variant_info.genomic }} <span class="badge badge-{{ variant_info.build|colour_by_build }} badge-pill">GRCh{{ variant_info.build }}</span></td>
       <td class="col-4"></td>
     </tr>
     <tr>

@@ -29,7 +29,7 @@
     <div id="classification-summary-box" class="list-group sticky-top">
 
       <div id="class-box" >
-        <button class="btn btn-block btn-lg btn-disabled btn-{{ classification_info.class_css }}" type="button">
+        <button class="btn btn-block btn-lg btn-disabled btn-{{ classification_info.current_class|colour_by_class }}" type="button">
           Current class:<br><b>{{ classification_info.current_class }} </b><span class="badge badge-light">{{ classification_info.current_score }}</span>
         </button>
       </div>

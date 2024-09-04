@@ -7,17 +7,33 @@ register = template.Library()
 @register.filter
 @stringfilter
 def colour_by_class(value):
+    """
+    colour anywhere the current classification is displayed
+    e.g. smmary buttons, dropdowns, table rows
+    """
     value = value.lower()
-    if value == "pending":
+    if value == "pending" or value == "vus":
         css_class = 'warning'
 
-    elif value.startswith("b"):
+    elif value.startswith("b") or "benign" in value:
         css_class = 'info'
 
-    elif value.startswith("o"):
+    elif value.startswith("o") or "oncogenic" in value:
         css_class = 'danger'
 
     else:
         css_class = 'secondary'
 
     return css_class
+
+
+@register.filter
+@stringfilter
+def colour_by_build(value):
+    """
+    Colour anywhere the genome build is displayed
+    """
+    if value == "38":
+        return "success"
+    else:
+        return "info"
