@@ -27,14 +27,6 @@ codes:
 order:
   Population databases:
     - O3_B4
-  Mode of acion:
+  Mode of action:
     - O2
     - B1
-  Cancer databases:
-    - TODO
-  Effect on protein:
-    - TODO
-  Computational tools:
-    - TODO
-  Functional studies:
-    - TODO
