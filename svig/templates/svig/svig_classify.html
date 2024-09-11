@@ -1,4 +1,5 @@
 {% load svig_tags %}
+{% load crispy_forms_tags %}
 
 {% if classification_info.current_check.full_classification %}
 <div class="row">
@@ -120,8 +121,24 @@
       {% endfor %}
       <p></p>
       <p></p>
-      <div class="alert alert-success">Once you're finished, go to the Finalise tab to complete your classification</div>
       
+      {% if not classification_info.current_check.svig_check %}
+      <div class="alert alert-primary">
+        <p><b>Complete?</b></p>
+        {% crispy forms.complete_svig_form %}
+      </div>
+      {% else %}
+      <div class="alert alert-success">
+        <h5>Section complete!</h5>
+        <p>
+            You have completed S-VIG classification.<br>
+            <a href="" data-toggle="modal" data-target="#">Click here to reopen</a>
+            <P>TODO disable forms</P>
+        </p>
+      </div>
+
+        {% endif %}
+      </div>
     </div>
   </div>
 </div>

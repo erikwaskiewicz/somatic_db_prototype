@@ -341,6 +341,7 @@ class Check(models.Model):
     classification = models.ForeignKey('Classification', on_delete=models.CASCADE)
     info_check = models.BooleanField(default=False)
     previous_classifications_check = models.BooleanField(default=False)
+    svig_check = models.BooleanField(default=False)
     full_classification = models.BooleanField(default=False)
     check_complete = models.BooleanField(default=False)
     signoff_time = models.DateTimeField(blank=True, null=True)

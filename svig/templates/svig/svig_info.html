@@ -96,7 +96,7 @@
 
 <!-- forms to complete check-->
 {% if not classification_info.current_check.info_check %}
-<div class="alert alert-warning">
+<div class="alert alert-primary">
   <h5>Please confirm that this page has been checked</h5>
   <br>
   {% crispy forms.check_info_form %}

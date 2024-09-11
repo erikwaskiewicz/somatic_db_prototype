@@ -30,7 +30,7 @@ class CheckInfoForm(forms.Form):
         self.helper = FormHelper()
         self.helper.form_method = 'POST'
         self.helper.add_input(
-            Submit('submit', 'Confirm', css_class='btn btn-warning w-100')
+            Submit('submit', 'Confirm', css_class='btn btn-primary w-100')
         )
 
 
@@ -66,7 +66,7 @@ class PreviousClassificationForm(forms.Form):
         self.helper.form_method = 'POST'
         self.fields['use_previous_class'].choices = self.previous_class_choices
         self.helper.add_input(
-            Submit('submit', "Submit", css_class='btn btn-warning w-100')
+            Submit('submit', "Submit", css_class='btn btn-primary w-100')
         )
 
 
@@ -83,6 +83,31 @@ class ResetPreviousClassificationsForm(forms.Form):
         self.helper.form_method = 'POST'
         self.helper.add_input(
             Submit('submit', 'Reopen', css_class='btn btn-danger w-100')
+        )
+
+
+class CompleteSvigForm(forms.Form):
+    """
+    Form to complete the SVIG tab
+
+    """
+    CLASS_CHOICES = (
+        ('No', 'No override'),
+        ('B', 'Benign'),
+        ('LB', 'Likely benign'),
+        ('V', 'VUS'),
+        ('LO', 'Likely oncogenic'),
+        ('O', 'Oncogenic'),
+    )
+    override = forms.ChoiceField(choices=CLASS_CHOICES)
+    complete_svig = forms.BooleanField(required=True, label="Confirm analysis is complete")
+
+    def __init__(self, *args, **kwargs):
+        super(CompleteSvigForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Complete', css_class='btn btn-primary w-100')
         )
 
 

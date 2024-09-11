@@ -76,6 +76,7 @@ def classify(request, classification):
         'check_info_form': CheckInfoForm(),
         'reopen_check_info_form': ResetCheckInfoForm(),
         'previous_class_form': PreviousClassificationForm(previous_class_choices=previous_class_choices),
+        'complete_svig_form': CompleteSvigForm(),
         'reopen_previous_class_form': ResetPreviousClassificationsForm(),
         'comment_form': ClinicalClassForm(),
         'finalise_form': FinaliseCheckForm(),
@@ -105,6 +106,7 @@ def classify(request, classification):
                 current_check_obj.info_check = False
                 current_check_obj.previous_classifications_check = False
                 current_check_obj.full_classification = False
+                current_check_obj.svig_check = False
                 current_check_obj.save()
                 current_check_obj.remove_codes()
                 return redirect('svig-analysis', classification)
@@ -136,10 +138,35 @@ def classify(request, classification):
             reopen_previous_class_form = ResetPreviousClassificationsForm(request.POST)
             if reopen_previous_class_form.is_valid():
                 current_check_obj.full_classification = False
+                current_check_obj.svig_check = False
                 current_check_obj.save()
                 current_check_obj.remove_codes()
                 return redirect('svig-analysis', classification)
 
+        # button to complete SVIG classification
+        if 'complete_svig' in request.POST:
+            complete_svig_form = CompleteSvigForm(request.POST)
+            if complete_svig_form.is_valid():
+                override = complete_svig_form.cleaned_data['override']
+                if override == "No":
+                    class_dict = {
+                        'Benign': 'B',
+                        'Likely benign': 'LB',
+                        'VUS': 'V',
+                        'Likely oncogenic': 'LO',
+                        'Oncogenic': 'O',
+                    }
+                    final_class = current_check_obj.classify()
+                    current_check_obj.final_class = class_dict[final_class[1]]
+                else:
+                    current_check_obj.final_class = override
+                current_check_obj.svig_check = True
+                current_check_obj.save()
+                return redirect('svig-analysis', classification)
+
+        # TODO button to reopen SVIG classification
+
+        # button to finish check
         if 'finalise_check' in request.POST:
             finalise_form = FinaliseCheckForm(request.POST)
             if finalise_form.is_valid():
