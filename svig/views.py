@@ -77,13 +77,12 @@ def classify(request, classification):
         'reopen_check_info_form': ResetCheckInfoForm(),
         'previous_class_form': PreviousClassificationForm(previous_class_choices=previous_class_choices),
         'reopen_previous_class_form': ResetPreviousClassificationsForm(),
-        'comment_form': CommentForm(),
+        'comment_form': ClinicalClassForm(),
         'finalise_form': FinaliseCheckForm(),
     }
     # TODO visualise different forms depending on check etc
     # TODO comments modal
     # TODO when checks disagree
-    # TODO generic template for all codes
     # TODO papers model with pubmed api
     # TODO finish previous classifications page
 

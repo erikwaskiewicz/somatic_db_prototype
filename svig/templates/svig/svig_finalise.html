@@ -1,22 +1,25 @@
 {% load crispy_forms_tags %}
 
-<h5>Summary</h5>
+<h5>Biological classification</h5>
 
 <button class="btn btn-block btn-lg btn-disabled btn-warning" type="button">
-  Current class: <b>VUS </b><span class="badge badge-light">2</span>
+  Current class: <b>VUS</b>&nbsp;<span class="badge badge-light">2</span>
 </button>
+<p>Override biological classification?</p>
 <br>
 
 <div class="alert alert-warning" role="alert">
-  Not all codes have been completed, are you sure you want to continue? Go to the previous tab to complete them
+  Not all codes have been completed, are you sure you want to continue? Go to the previous tab to complete them<br>
+  TODO hide overthing until S-VIG tab done, move overirde to there
 </div>
 <br>
-
-
-<h5>Reporting comment</h5>
-{% crispy forms.comment_form %}
 <br>
 
+
+<h5>Clinical classification</h5>
+{% crispy forms.comment_form %}
+<br>
+<br>
 
 <h5>Checks summary</h5>
 <table class="table table-sm table-hover">
@@ -35,6 +38,7 @@
   {% endfor %}
   </tbody>
 </table>
+<br>
 <br>
 
 <div class="card-body bg-light">

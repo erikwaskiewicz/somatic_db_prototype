@@ -107,19 +107,26 @@ class FinaliseCheckForm(forms.Form):
         )
 
 
-class CommentForm(forms.Form):
+class ClinicalClassForm(forms.Form):
     """
     Add a sample wide comment
 
     """
+    CLINICAL_CLASS_CHOICES = (
+        ('1A', 'Tier 1A'),
+        ('2B', 'Tier 2B'),
+        ('3C', 'Tier 3C'),
+        ('4D', 'Tier 4D'),
+    )
+    clinical_class = forms.ChoiceField(choices=CLINICAL_CLASS_CHOICES)
     comment = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 4}),
         required=False,
-        label='Comments:'
+        label='Reporting comments:'
     )
 
     def __init__(self, *args, **kwargs):
-        super(CommentForm, self).__init__(*args, **kwargs)
+        super(ClinicalClassForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = 'POST'
         self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-warning'))
