@@ -165,7 +165,7 @@ def ajax_svig(request):
         # load variables needed for new display
         current_check_obj = Check.objects.get(id=check_pk)
         score, final_class = current_check_obj.update_codes(selections)
-        codes_by_category = current_check_obj.get_codes_by_category()
+        codes_by_category = current_check_obj.classification.get_codes_by_category()
 
         # empty dict for new html
         data = {}

@@ -262,10 +262,20 @@
 
               $("#codes-summary-population-databases").html(data.codes_summary_population_databases);
               $("#codes-summary-mode-of-action").html(data.codes_summary_mode_of_action);
+              $("#codes-summary-cancer-databases").html(data.codes_summary_cancer_databases);
+              $("#codes-summary-effect-on-protein").html(data.codes_summary_effect_on_protein);
+              $("#codes-summary-computational-tools").html(data.codes_summary_computational_tools);
+              $("#codes-summary-functional-studies").html(data.codes_summary_functional_studies);
+              $("#codes-summary-other").html(data.codes_summary_other);
 
               $("#complete-population-databases").html(data.complete_population_databases);
               $("#complete-mode-of-action").html(data.complete_mode_of_action);
-              //TODO add the other categories, remove hardcoding
+              $("#complete-cancer-databases").html(data.complete_cancer_databases);
+              $("#complete-effect-on-protein").html(data.complete_effect_on_protein);
+              $("#complete-computational-tools").html(data.complete_computational_tools);
+              $("#complete-functional-studies").html(data.complete_functional_studies);
+              $("#complete-other").html(data.complete_other);
+              //TODO remove hardcoding?
           },
           failure: function(data) {
               alert('Got an error');
