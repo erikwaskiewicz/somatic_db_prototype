@@ -103,12 +103,7 @@ def classify(request, classification):
         if 'reset_info_check' in request.POST:
             reopen_check_info_form = ResetCheckInfoForm(request.POST)
             if reopen_check_info_form.is_valid():
-                current_check_obj.info_check = False
-                current_check_obj.previous_classifications_check = False
-                current_check_obj.full_classification = False
-                current_check_obj.svig_check = False
-                current_check_obj.save()
-                current_check_obj.remove_codes()
+                current_check_obj.reopen_info_tab()
                 return redirect('svig-analysis', classification)
 
         # button to select to use a previous classification or start a new one
@@ -137,10 +132,7 @@ def classify(request, classification):
         if 'reset_previous_class_check' in request.POST:
             reopen_previous_class_form = ResetPreviousClassificationsForm(request.POST)
             if reopen_previous_class_form.is_valid():
-                current_check_obj.full_classification = False
-                current_check_obj.svig_check = False
-                current_check_obj.save()
-                current_check_obj.remove_codes()
+                current_check_obj.reopen_previous_class_tab()
                 return redirect('svig-analysis', classification)
 
         # button to complete SVIG classification

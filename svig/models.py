@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 from django.utils import timezone
 from django.template.defaultfilters import slugify
 
@@ -386,6 +386,7 @@ class Check(models.Model):
         """
         return CodeAnswer.objects.filter(check_object=self)
 
+    @transaction.atomic
     def make_new_codes(self):
         """
         make a set of code answers against the current check
@@ -402,6 +403,7 @@ class Check(models.Model):
                 check_object = self
             )
 
+    @transaction.atomic
     def update_codes(self, selections):
         #TODO split into smaller functions
 
@@ -469,6 +471,30 @@ class Check(models.Model):
 
         return score_counter, classification
 
+    @transaction.atomic
+    def reopen_info_tab(self):
+        """ reset variant tab, calls other reset functions to reset other two tabs """
+        self.info_check = False
+        self.reopen_previous_class_tab()
+
+    @transaction.atomic
+    def reopen_previous_class_tab(self):
+        """ reset previous classifications tab, calls svig function to reset svig tab """
+        self.previous_classifications_check = False
+        self.full_classification = False
+        self.reopen_svig_tab()
+        self.remove_codes()
+
+    @transaction.atomic
+    def reopen_svig_tab(self):
+        """ reset the svig tab """
+        self.svig_check = False
+        self.final_biological_class = None
+        self.final_biological_score = None
+        self.final_clinical_class = None
+        self.save()
+
+    @transaction.atomic
     def remove_codes(self):
         """
         remove the set of code answers for the current check
@@ -477,6 +503,7 @@ class Check(models.Model):
         for c in codes:
             c.delete()
 
+    @transaction.atomic
     def signoff_check(self, next_step):
         self.check_complete = True
         self.signoff_time = timezone.now()
