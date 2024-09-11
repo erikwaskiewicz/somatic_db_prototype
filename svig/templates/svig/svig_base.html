@@ -2,13 +2,15 @@
 {% load crispy_forms_tags %}
 
 {% block breadcrumbs %}
-<nav class="breadcrumb flex-nowrap" aria-label="breadcrumb">
+<div class="container-fluid breadcrumbs-custom">
   <div class="container">
-    <a class="breadcrumb-item active" href="{% url 'home' %}" aria-current="page"><span class="fa fa-home"></span></a>
-    <a class="breadcrumb-item active" href="{% url 'view-all-svig' %}" aria-current="page">S-VIG</a>
-    <a class="breadcrumb-item active" aria-current="page">{{ classification_info.classification_obj }} (#{{ classification_info.classification_obj.id }})</a>
+    <ol class="breadcrumb" style="background-color: transparent;">
+      <li class="breadcrumb-item active"><a href="{% url 'home' %}"><span class="fa fa-home"></span></a></li>
+      <li class="breadcrumb-item"><a href="{% url 'view-all-svig' %}">S-VIG</a></li>
+      <li class="breadcrumb-item active">{{ classification_info.classification_obj }}</li>
+    </ol>
   </div>
-</nav>
+</div>
 {% endblock %}
 
 {% block content %}
