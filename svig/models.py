@@ -166,12 +166,15 @@ class Classification(models.Model):
 
                 # loop through each code and extract info
                 code_details = []
+                annotations = []
+
                 for c in code_list:
                     # get applied codes
                     code_object = latest_code_objects.get(code=c)
 
                     # add detailed code description to dict
                     code_details.append({c: code_info[c]})
+                    annotations += code_info[c]["annotations"]
 
                     # get info on what codes have been applied
                     if code_object.applied:
@@ -252,16 +255,21 @@ class Classification(models.Model):
                             latest_code_objects.get(code=code_2).get_code()
                         ])
 
+                # remove duplicates (template doesnt like sets so convert back to list)
+                annotations = list(set(annotations))
+
                 # add all to final dict
                 svig_codes[code]["codes"][v] = {
                     'list': code_list,
                     'details': code_details,
                     'dropdown': dropdown_options,
                     'value': value,
+                    'annotations': annotations,
                     'all_checks': all_checks,
                 }
 
         return svig_codes
+
     def get_previous_checks(self):
         return self.get_all_checks()[1:]
 

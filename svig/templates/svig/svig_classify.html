@@ -19,6 +19,7 @@
               <th class="col-1">
                 {{ code_details.list|join:"<br>" }}
               </th>
+
               <th class="col-7">
                 {% for c in code_details.details %}
                   {% for k, v in c.items %}
@@ -38,10 +39,14 @@
                 </select>
               </th>
             </tr>
+            <!-- TODO make this hideable? -->
             <tr>
               <td colspan="2">
-                <!-- TODO - not plumbed in -->
-                {% include 'svig/annotations/gnomad.html' %}
+                {% if "gnomad" in code_details.annotations %}
+                  {% include 'svig/annotations/gnomad.html' %}
+                {% else %}
+                  <p>TODO - add annotations here</p>
+                {% endif %}
               </td>
               <td colspan="1">
                 <p><b>Checks</b></p>
@@ -59,12 +64,13 @@
                 <!-- TODO - not plumbed in -->
                 <a class="btn btn-light w-100">Comments&nbsp;<span class="badge badge-secondary">0</span></a>
 
-                </td>
-                </tr>
+              </td>
+            </tr>
 
             {% endfor %}
           </tbody>
         </table>
+        <br>
         <br>
       {% endfor %}
 

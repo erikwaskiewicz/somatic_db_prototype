@@ -10,7 +10,7 @@ codes:
     category: population_db
     options: [MO]
     description: Absent or very rare in population database (e.g. gnomAD)
-    annotations: []
+    annotations: [gnomad]
   O4:
     type: oncogenic
     category: population_db
@@ -58,7 +58,7 @@ codes:
     category: population_db
     options: [SA, VS, ST, SU]
     description: Variant is present at a high level in a general population database (e.g. gnomAD)
-    annotations: []
+    annotations: [gnomad]
   B2:
     type: benign
     category: population_db
