@@ -76,8 +76,9 @@ def classify(request, classification):
         'check_info_form': CheckInfoForm(),
         'reopen_check_info_form': ResetCheckInfoForm(),
         'previous_class_form': PreviousClassificationForm(previous_class_choices=previous_class_choices),
-        'complete_svig_form': CompleteSvigForm(),
         'reopen_previous_class_form': ResetPreviousClassificationsForm(),
+        'complete_svig_form': CompleteSvigForm(),
+        'reopen_svig': ResetSvigForm(),
         'comment_form': ClinicalClassForm(),
         'finalise_form': FinaliseCheckForm(),
     }
@@ -157,7 +158,12 @@ def classify(request, classification):
                 current_check_obj.save()
                 return redirect('svig-analysis', classification)
 
-        # TODO button to reopen SVIG classification
+        # button to reopen SVIG classification
+        if 'reset_svig_check' in request.POST:
+            reopen_svig_form = ResetSvigForm(request.POST)
+            if reopen_svig_form.is_valid():
+                current_check_obj.reopen_svig_tab()
+                return redirect('svig-analysis', classification)
 
         # button to finish check
         if 'finalise_check' in request.POST:

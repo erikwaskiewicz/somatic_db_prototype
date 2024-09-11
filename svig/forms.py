@@ -111,6 +111,22 @@ class CompleteSvigForm(forms.Form):
         )
 
 
+class ResetSvigForm(forms.Form):
+    """
+    Form to reopen the previous classifications form
+
+    """
+    reset_svig_check = forms.BooleanField(required=True, label="Confirm that you want to reopen")
+
+    def __init__(self, *args, **kwargs):
+        super(ResetSvigForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Reopen', css_class='btn btn-danger w-100')
+        )
+
+
 class FinaliseCheckForm(forms.Form):
     """
     Form to close a checkand specify the next action
