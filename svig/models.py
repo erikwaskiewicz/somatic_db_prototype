@@ -111,7 +111,7 @@ class Classification(models.Model):
         }
         if current_check_obj.full_classification:
             current_score, current_class = current_check_obj.classify()
-            classification_info['codes_by_category'] = current_check_obj.get_codes_by_category()
+            classification_info['codes_by_category'] = self.get_codes_by_category()
             classification_info['current_class'] = current_class
             classification_info['current_score'] = current_score
         return classification_info
@@ -128,6 +128,140 @@ class Classification(models.Model):
     def get_all_checks(self):
         return Check.objects.filter(classification=self).order_by('-pk')
 
+    def get_codes_by_category(self):
+        """ ordered list of codes for displaying template """
+        pretty_print_dict = {
+            'SA': 'Stand-alone',
+            'VS': 'Very strong',
+            'ST': 'Strong',
+            'MO': 'Moderate',
+            'SU': 'Supporting',
+            'PE': 'Pending',
+            'NA': 'Not applied',
+        }
+        score_dict = {'SA': 100, 'VS': 8, 'ST': 4, 'MO': 2, 'SU': 1}
+
+        config_file = os.path.join(BASE_DIR, f'svig/config/svig_{SVIG_CODE_VERSION}.yaml')
+        with open(config_file) as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+
+        code_info = config["codes"]
+        order_info = config["order"]
+
+        latest_code_objects = self.get_latest_check().get_codes()
+
+        all_check_objects = self.get_all_checks().order_by("pk")
+
+        svig_codes = {}
+        for code, values in order_info.items():
+            svig_codes[code] = {
+                'slug': slugify(code),
+                "codes": {},
+                "applied_codes": [],
+                "complete": True,
+                }
+            for v in values:
+                code_list = v.split("_")
+                # list of dictionaries with description etc
+
+                # loop through each code and extract info
+                code_details = []
+                for c in code_list:
+                    # get applied codes
+                    code_object = latest_code_objects.get(code=c)
+
+                    # add detailed code description to dict
+                    code_details.append({c: code_info[c]})
+
+                    # get info on what codes have been applied
+                    if code_object.applied:
+                        svig_codes[code]["applied_codes"].append(f"{c}_{code_object.applied_strength}")
+                    if code_object.pending:
+                        svig_codes[code]["complete"] = False
+
+                # dropdown options
+                dropdown_options = [
+                    {
+                        "value": "|".join([f"{c}_PE" for c in code_list]),
+                        "text": "Pending"
+                    },
+                    {
+                        "value": "|".join([f"{c}_NA" for c in code_list]),
+                        "text": "Not applied"
+                    },
+                ]
+                all_checks = []
+                if len(code_list) == 1:
+                    for option in code_info[code_list[0]]["options"]:
+                        text = f"{code_list[0]} {pretty_print_dict[option]}"
+                        if code_list[0][0] == "B":
+                            text += f" (-{score_dict[option]})"
+                        elif code_list[0][0] == "O":
+                            text += f" (+{score_dict[option]})"
+                        dropdown_options.append({
+                            "value": f"{code_list[0]}_{option}",
+                            "text": text,
+                        })
+
+                    # all checks and current value for dropdown
+                    for c in all_check_objects:
+                        check_code_objects = c.get_codes()
+                        all_checks.append(check_code_objects.get(code=code_list[0]).get_string())
+                        value = latest_code_objects.get(code=code_list[0]).get_code()
+
+                else:
+                    code_1, code_2 = code_list
+                    for option in code_info[code_1]["options"]:
+                        text = f"{code_1} {pretty_print_dict[option]}"
+                        if code_1[0] == "B":
+                            text += f" (-{score_dict[option]})"
+                        elif code_1[0] == "O":
+                            text += f" (+{score_dict[option]})"
+                        dropdown_options.append({
+                            "value": f"{code_1}_{option}|{code_2}_NA",
+                            "text": text,
+                        })
+                    for option in code_info[code_2]["options"]:
+                        text = f"{code_2} {pretty_print_dict[option]}"
+                        if code_2[0] == "B":
+                            text += f" (-{score_dict[option]})"
+                        elif code_2[0] == "O":
+                            text += f" (+{score_dict[option]})"
+                        dropdown_options.append({
+                            "value": f"{code_1}_NA|{code_2}_{option}",
+                            "text": text,
+                        })
+                    # all checks
+                    for c in all_check_objects:
+                        check_code_objects = c.get_codes()
+                        code_1_display = check_code_objects.get(code=code_1).get_string()
+                        code_2_display = check_code_objects.get(code=code_2).get_string()
+
+                        if code_1_display == code_2_display:
+                            all_checks.append(code_1_display)
+                        else:
+                            if code_1_display == "Not applied":
+                                all_checks.append(code_2_display)
+
+                            elif code_2_display == "Not applied":
+                                all_checks.append(code_1_display)
+
+                        # get current value for dropdown
+                        value = "|".join([
+                            latest_code_objects.get(code=code_1).get_code(),
+                            latest_code_objects.get(code=code_2).get_code()
+                        ])
+
+                # add all to final dict
+                svig_codes[code]["codes"][v] = {
+                    'list': code_list,
+                    'details': code_details,
+                    'dropdown': dropdown_options,
+                    'value': value,
+                    'all_checks': all_checks,
+                }
+
+        return svig_codes
     def get_previous_checks(self):
         return self.get_all_checks()[1:]
 
@@ -202,139 +336,6 @@ class Check(models.Model):
         Get all classification codes for the current check
         """
         return CodeAnswer.objects.filter(check_object=self)
-
-    def get_codes_by_category(self):
-        """ ordered list of codes for displaying template """
-        pretty_print_dict = {
-            'SA': 'Stand-alone',
-            'VS': 'Very strong',
-            'ST': 'Strong',
-            'MO': 'Moderate',
-            'SU': 'Supporting',
-            'PE': 'Pending',
-            'NA': 'Not applied',
-        }
-        score_dict = {'SA': 100, 'VS': 8, 'ST': 4, 'MO': 2, 'SU': 1}
-
-        config_file = os.path.join(BASE_DIR, f'svig/config/svig_{SVIG_CODE_VERSION}.yaml')
-        with open(config_file) as f:
-            config = yaml.load(f, Loader=yaml.FullLoader)
-
-        code_info = config["codes"]
-        order_info = config["order"]
-
-        code_objects = self.get_codes()
-
-        all_check_objects = self.classification.get_all_checks().order_by("pk")
-
-        svig_codes = {}
-        for code, values in order_info.items():
-            svig_codes[code] = {
-                'slug': slugify(code),
-                "codes": {},
-                "applied_codes": [],
-                "complete": True,
-                }
-            for v in values:
-                code_list = v.split("_")
-                # list of dictionaries with description etc
-
-                # loop through each code and extract info
-                code_details = []
-                for c in code_list:
-                    # get applied codes
-                    code_object = code_objects.get(code=c)
-
-                    # add detailed code description to dict
-                    code_details.append({c: code_info[c]})
-
-                    # get info on what codes have been applied
-                    if code_object.applied:
-                        svig_codes[code]["applied_codes"].append(f"{c}_{code_object.applied_strength}")
-                    if code_object.pending:
-                        svig_codes[code]["complete"] = False
-
-                # dropdown options
-                dropdown_options = [
-                    {
-                        "value": "|".join([f"{c}_PE" for c in code_list]),
-                        "text": "Pending"
-                    },
-                    {
-                        "value": "|".join([f"{c}_NA" for c in code_list]),
-                        "text": "Not applied"
-                    },
-                ]
-                all_checks = []
-                if len(code_list) == 1:
-                    for option in code_info[code_list[0]]["options"]:
-                        text = f"{code_list[0]} {pretty_print_dict[option]}"
-                        if code_list[0][0] == "B":
-                            text += f" (-{score_dict[option]})"
-                        elif code_list[0][0] == "O":
-                            text += f" (+{score_dict[option]})"
-                        dropdown_options.append({
-                            "value": f"{code_list[0]}_{option}",
-                            "text": text,
-                        })
-
-                    # all checks and current value for dropdown
-                    for c in all_check_objects:
-                        all_checks.append(code_objects.get(code=code_list[0]).get_string())
-                        value = code_objects.get(code=code_list[0]).get_code()
-
-                else:
-                    code_1, code_2 = code_list
-                    for option in code_info[code_1]["options"]:
-                        text = f"{code_1} {pretty_print_dict[option]}"
-                        if code_1[0] == "B":
-                            text += f" (-{score_dict[option]})"
-                        elif code_1[0] == "O":
-                            text += f" (+{score_dict[option]})"
-                        dropdown_options.append({
-                            "value": f"{code_1}_{option}|{code_2}_NA",
-                            "text": text,
-                        })
-                    for option in code_info[code_2]["options"]:
-                        text = f"{code_2} {pretty_print_dict[option]}"
-                        if code_2[0] == "B":
-                            text += f" (-{score_dict[option]})"
-                        elif code_2[0] == "O":
-                            text += f" (+{score_dict[option]})"
-                        dropdown_options.append({
-                            "value": f"{code_1}_NA|{code_2}_{option}",
-                            "text": text,
-                        })
-                    # all checks
-                    for c in all_check_objects:
-                        code_1_display = code_objects.get(code=code_1).get_string()
-                        code_2_display = code_objects.get(code=code_2).get_string()
-
-                        if code_1_display == code_2_display:
-                            all_checks.append(code_1_display)
-                        else:
-                            if code_1_display == "Not applied":
-                                all_checks.append(code_2_display)
-
-                            elif code_2_display == "Not applied":
-                                all_checks.append(code_1_display)
-
-                        # get current value for dropdown
-                        value = "|".join([
-                            code_objects.get(code=code_1).get_code(),
-                            code_objects.get(code=code_2).get_code()
-                        ])
-
-                # add all to final dict
-                svig_codes[code]["codes"][v] = {
-                    'list': code_list,
-                    'details': code_details,
-                    'dropdown': dropdown_options,
-                    'value': value,
-                    'all_checks': all_checks,
-                }
-
-        return svig_codes
 
     def make_new_codes(self):
         """
