@@ -1,49 +1,57 @@
+{% load svig_tags %}
 {% load crispy_forms_tags %}
-
-<h5>Biological classification</h5>
-
-<button class="btn btn-block btn-lg btn-disabled btn-warning" type="button">
-  Current class: <b>VUS</b>&nbsp;<span class="badge badge-light">2</span>
-</button>
-<p>Override biological classification?</p>
-<br>
-
-<div class="alert alert-warning" role="alert">
-  Not all codes have been completed, are you sure you want to continue? Go to the previous tab to complete them<br>
-  TODO hide overthing until S-VIG tab done, move overirde to there
-</div>
-<br>
-<br>
-
-
-<h5>Clinical classification</h5>
-{% crispy forms.comment_form %}
-<br>
-<br>
 
 <h5>Checks summary</h5>
 <table class="table table-sm table-hover">
-  <thead>
-    <tr>
-      <th>Check</th>
-      <th>Add check info here</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for c in classification_info.all_checks %}
-    <tr>
-      <td>{{ forloop.counter }}</td>
-      <td>{{ c }}</td>
-    </tr>
-  {% endfor %}
-  </tbody>
+    <thead>
+        <tr>
+            <th>Check</th>
+            <th>User</th>
+            <th>Biological class</th>
+            <th>Clinical class</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for c in classification_info.all_checks %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ c.user }}</td>
+            <td>{{ c.get_final_biological_class_display }}</td>
+            <td>{{ c.get_final_clinical_class_display }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
 </table>
 <br>
 <br>
 
-<div class="card-body bg-light">
-  <h5>Finalise check</h5>
-  {% crispy forms.finalise_form %}
-
-  <p>TODO options to send to next checker or send back</p>
+<!-- if previous section not completed yet, show warning-->
+<!-- TODO also handle when previous classification used -->
+{% if not classification_info.current_check.svig_check %}
+<div class="alert alert-warning">
+    Please complete the S-VIG tab first
 </div>
+
+{% else %}
+
+    <h5>Biological classification</h5>
+    <button class="btn btn-block btn-lg btn-disabled btn-{{ classification_info.current_check.get_final_biological_class_display|colour_by_class }}" type="button">
+        <b>{{ classification_info.current_check.get_final_biological_class_display }}</b>
+        &nbsp;<span class="badge badge-light">{{ classification_info.current_check.final_biological_score }}</span>
+    </button>
+    <br>
+    <br>
+
+    <h5>Clinical classification</h5>
+    {% crispy forms.comment_form %}
+    <br>
+    <br>
+
+    <div class="card-body bg-light">
+    <h5>Finalise check</h5>
+    {% crispy forms.finalise_form %}
+
+    <p>TODO options to send to next checker or send back</p>
+    </div>
+
+{% endif %}

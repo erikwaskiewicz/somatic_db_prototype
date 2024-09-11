@@ -121,8 +121,8 @@ class Classification(models.Model):
     variant = models.ForeignKey('Variant', on_delete=models.CASCADE)
     full_classification = models.BooleanField(default=False)
     previous_classification = models.ForeignKey('Variant', on_delete=models.CASCADE, blank=True, null=True, related_name="previous_classification_used")
-    final_class = models.CharField(max_length=2, choices=CLASS_CHOICES, blank=True, null=True)
-    final_score = models.IntegerField(blank=True, null=True)
+    final_biological_class = models.CharField(max_length=2, choices=CLASS_CHOICES, blank=True, null=True)
+    final_biological_score = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return f'#{self.pk} - {self.variant}'
@@ -346,7 +346,9 @@ class Check(models.Model):
     check_complete = models.BooleanField(default=False)
     signoff_time = models.DateTimeField(blank=True, null=True)
     user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True, related_name="svig_checker")
-    final_class = models.CharField(max_length=2, choices=CLASS_CHOICES, blank=True, null=True)
+    final_biological_class = models.CharField(max_length=2, choices=CLASS_CHOICES, blank=True, null=True)
+    final_biological_score = models.IntegerField(blank=True, null=True)
+    final_clinical_class = models.CharField(max_length=2, blank=True, null=True)
 
     def classify(self):
         # dict of how many points per code strength, this could be in settings/svig config

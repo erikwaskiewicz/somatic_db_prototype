@@ -123,7 +123,7 @@
       <p></p>
       
       {% if not classification_info.current_check.svig_check %}
-      <div class="alert alert-primary">
+      <div class="alert alert-info">
         <p><b>Complete?</b></p>
         {% crispy forms.complete_svig_form %}
       </div>
@@ -134,6 +134,7 @@
             You have completed S-VIG classification.<br>
             <a href="" data-toggle="modal" data-target="#">Click here to reopen</a>
             <P>TODO disable forms</P>
+            <P>TODO reopen modal</P>
         </p>
       </div>
 
@@ -249,7 +250,7 @@
         } else if (new_code[1].match('PE')){
           new_css = 'warning';
         } else if (new_code[0][0].match('B')){
-          new_css = 'info';
+          new_css = 'primary';
         } else {
           new_css = 'danger';
         }

@@ -147,6 +147,7 @@ def classify(request, classification):
         if 'complete_svig' in request.POST:
             complete_svig_form = CompleteSvigForm(request.POST)
             if complete_svig_form.is_valid():
+                final_biological_score, final_biological_class = current_check_obj.classify()
                 override = complete_svig_form.cleaned_data['override']
                 if override == "No":
                     class_dict = {
@@ -156,11 +157,11 @@ def classify(request, classification):
                         'Likely oncogenic': 'LO',
                         'Oncogenic': 'O',
                     }
-                    final_class = current_check_obj.classify()
-                    current_check_obj.final_class = class_dict[final_class[1]]
+                    current_check_obj.final_biological_class = class_dict[final_biological_class]
                 else:
-                    current_check_obj.final_class = override
+                    current_check_obj.final_biological_class = override
                 current_check_obj.svig_check = True
+                current_check_obj.final_biological_score = final_biological_score
                 current_check_obj.save()
                 return redirect('svig-analysis', classification)
 

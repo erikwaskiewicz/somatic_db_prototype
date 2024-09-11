@@ -16,7 +16,7 @@ def colour_by_class(value):
         css_class = 'warning'
 
     elif value.startswith("b") or "benign" in value:
-        css_class = 'info'
+        css_class = 'primary'
 
     elif value.startswith("o") or "oncogenic" in value:
         css_class = 'danger'

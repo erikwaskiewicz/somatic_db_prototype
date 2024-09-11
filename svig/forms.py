@@ -30,7 +30,7 @@ class CheckInfoForm(forms.Form):
         self.helper = FormHelper()
         self.helper.form_method = 'POST'
         self.helper.add_input(
-            Submit('submit', 'Confirm', css_class='btn btn-primary w-100')
+            Submit('submit', 'Confirm', css_class='btn btn-info w-100')
         )
 
 
@@ -66,7 +66,7 @@ class PreviousClassificationForm(forms.Form):
         self.helper.form_method = 'POST'
         self.fields['use_previous_class'].choices = self.previous_class_choices
         self.helper.add_input(
-            Submit('submit', "Submit", css_class='btn btn-primary w-100')
+            Submit('submit', "Submit", css_class='btn btn-info w-100')
         )
 
 
@@ -107,7 +107,7 @@ class CompleteSvigForm(forms.Form):
         self.helper = FormHelper()
         self.helper.form_method = 'POST'
         self.helper.add_input(
-            Submit('submit', 'Complete', css_class='btn btn-primary w-100')
+            Submit('submit', 'Complete', css_class='btn btn-info w-100')
         )
 
 
