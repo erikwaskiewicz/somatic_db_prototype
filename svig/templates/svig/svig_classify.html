@@ -133,7 +133,7 @@
         <p>
             You have completed S-VIG classification.<br>
             <a href="" data-toggle="modal" data-target="#reopen_svig_modal">Click here to reopen</a>
-            <P>TODO disable forms</P>
+            <P>TODO disable dropdowns</P>
         </p>
       </div>
 
@@ -228,9 +228,10 @@
         </div>
         <div class="modal-body">
           <div class="alert alert-danger">
-            <p><b>Warning!</b> This will reopem the S-VIG tab</p>
-            {% crispy forms.reopen_svig %}
+            <p><b>Warning!</b> This will reopen the S-VIG tab</p>
           </div>
+          {% crispy forms.reopen_svig_form %}
+
         </div>
       </div>
     </div>

@@ -34,7 +34,7 @@ class CheckInfoForm(forms.Form):
         )
 
 
-class ResetCheckInfoForm(forms.Form):
+class ReopenCheckInfoForm(forms.Form):
     """
     Form to reset the check info form
 
@@ -42,7 +42,7 @@ class ResetCheckInfoForm(forms.Form):
     reset_info_check = forms.BooleanField(required=True, label="Confirm that you want to reopen and that any analysis you've done so far will be wiped")
 
     def __init__(self, *args, **kwargs):
-        super(ResetCheckInfoForm, self).__init__(*args, **kwargs)
+        super(ReopenCheckInfoForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = 'POST'
         self.helper.add_input(
@@ -70,7 +70,7 @@ class PreviousClassificationForm(forms.Form):
         )
 
 
-class ResetPreviousClassificationsForm(forms.Form):
+class ReopenPreviousClassificationsForm(forms.Form):
     """
     Form to reopen the previous classifications form
 
@@ -78,7 +78,7 @@ class ResetPreviousClassificationsForm(forms.Form):
     reset_previous_class_check = forms.BooleanField(required=True, label="Confirm that you want to reopen and that any S-VIG analysis you've done so far will be wiped")
 
     def __init__(self, *args, **kwargs):
-        super(ResetPreviousClassificationsForm, self).__init__(*args, **kwargs)
+        super(ReopenPreviousClassificationsForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = 'POST'
         self.helper.add_input(
@@ -111,7 +111,7 @@ class CompleteSvigForm(forms.Form):
         )
 
 
-class ResetSvigForm(forms.Form):
+class ReopenSvigForm(forms.Form):
     """
     Form to reopen the previous classifications form
 
@@ -119,7 +119,7 @@ class ResetSvigForm(forms.Form):
     reset_svig_check = forms.BooleanField(required=True, label="Confirm that you want to reopen")
 
     def __init__(self, *args, **kwargs):
-        super(ResetSvigForm, self).__init__(*args, **kwargs)
+        super(ReopenSvigForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = 'POST'
         self.helper.add_input(

@@ -74,11 +74,11 @@ def classify(request, classification):
     previous_class_choices = classification_obj.get_previous_classification_choices()
     context['forms'] = {
         'check_info_form': CheckInfoForm(),
-        'reopen_check_info_form': ResetCheckInfoForm(),
+        'reopen_check_info_form': ReopenCheckInfoForm(),
         'previous_class_form': PreviousClassificationForm(previous_class_choices=previous_class_choices),
-        'reopen_previous_class_form': ResetPreviousClassificationsForm(),
+        'reopen_previous_class_form': ReopenPreviousClassificationsForm(),
         'complete_svig_form': CompleteSvigForm(),
-        'reopen_svig': ResetSvigForm(),
+        'reopen_svig_form': ReopenSvigForm(),
         'comment_form': ClinicalClassForm(),
         'finalise_form': FinaliseCheckForm(),
     }
@@ -102,7 +102,7 @@ def classify(request, classification):
 
         # button to reset sample/patient info tab
         if 'reset_info_check' in request.POST:
-            reopen_check_info_form = ResetCheckInfoForm(request.POST)
+            reopen_check_info_form = ReopenCheckInfoForm(request.POST)
             if reopen_check_info_form.is_valid():
                 current_check_obj.reopen_info_tab()
                 return redirect('svig-analysis', classification)
@@ -131,7 +131,7 @@ def classify(request, classification):
 
         # button to revert previous/new classification form
         if 'reset_previous_class_check' in request.POST:
-            reopen_previous_class_form = ResetPreviousClassificationsForm(request.POST)
+            reopen_previous_class_form = ReopenPreviousClassificationsForm(request.POST)
             if reopen_previous_class_form.is_valid():
                 current_check_obj.reopen_previous_class_tab()
                 return redirect('svig-analysis', classification)
@@ -160,7 +160,7 @@ def classify(request, classification):
 
         # button to reopen SVIG classification
         if 'reset_svig_check' in request.POST:
-            reopen_svig_form = ResetSvigForm(request.POST)
+            reopen_svig_form = ReopenSvigForm(request.POST)
             if reopen_svig_form.is_valid():
                 current_check_obj.reopen_svig_tab()
                 return redirect('svig-analysis', classification)
