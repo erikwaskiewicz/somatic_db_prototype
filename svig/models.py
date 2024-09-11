@@ -9,6 +9,8 @@ import os
 from collections import OrderedDict
 
 
+## TODO Variant models - these need overhaul
+
 class AnnotationVersions(models.Model):
     version = models.IntegerField(primary_key=True)
     vep_version = models.IntegerField()
@@ -85,14 +87,42 @@ class Variant(models.Model):
         # check all others
 
 
+class CanonicalList(models.Model):
+    """ TODO this will need redoing """
+    gene = models.CharField(max_length=20, null=True, blank=True)
+    tumour_type = models.CharField(max_length=20, null=True, blank=True)
+    hgvs_c = models.CharField(max_length=50, null=True, blank=True)
+    hgvs_p = models.CharField(max_length=50, null=True, blank=True)
+    variants = models.ManyToManyField('Variant', blank=True, related_name='canonical_list')  # TODO this is actually more like a variant instance, should be specific variant
+
+    def contains_variant(self, variant):
+        return self.objects.filter(variants__id=variant)
+
+
+# manual variant
+# training variant lists
+
+
+## Classification models
+
 class Classification(models.Model):
     """
-    An individual classification of a single variant
+    A classification of a single variant
 
     """
+    CLASS_CHOICES = (
+        ('B', 'Benign'),
+        ('LB', 'Likely benign'),
+        ('V', 'VUS'),
+        ('LO', 'Likely oncogenic'),
+        ('O', 'Oncogenic'),
+    )
+    svig_version = models.CharField(max_length=20)
     variant = models.ForeignKey('Variant', on_delete=models.CASCADE)
     full_classification = models.BooleanField(default=False)
-    svig_version = models.CharField(max_length=20)
+    previous_classification = models.ForeignKey('Variant', on_delete=models.CASCADE, blank=True, null=True, related_name="previous_classification_used")
+    final_class = models.CharField(max_length=2, choices=CLASS_CHOICES, blank=True, null=True)
+    final_score = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return f'#{self.pk} - {self.variant}'
@@ -301,13 +331,21 @@ class Check(models.Model):
     """
     A check of a classification
     """
+    CLASS_CHOICES = (
+        ('B', 'Benign'),
+        ('LB', 'Likely benign'),
+        ('V', 'VUS'),
+        ('LO', 'Likely oncogenic'),
+        ('O', 'Oncogenic'),
+    )
     classification = models.ForeignKey('Classification', on_delete=models.CASCADE)
     info_check = models.BooleanField(default=False)
     previous_classifications_check = models.BooleanField(default=False)
     full_classification = models.BooleanField(default=False)
     check_complete = models.BooleanField(default=False)
     signoff_time = models.DateTimeField(blank=True, null=True)
-    # TODO assign user
+    user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True, related_name="svig_checker")
+    final_class = models.CharField(max_length=2, choices=CLASS_CHOICES, blank=True, null=True)
 
     def classify(self):
         # dict of how many points per code strength, this could be in settings/svig config
@@ -495,12 +533,24 @@ class CodeAnswer(models.Model):
             return "Not applied"
 
 
-class CanonicalList(models.Model):
-    gene = models.CharField(max_length=20, null=True, blank=True)
-    tumour_type = models.CharField(max_length=20, null=True, blank=True)
-    hgvs_c = models.CharField(max_length=50, null=True, blank=True)
-    hgvs_p = models.CharField(max_length=50, null=True, blank=True)
-    variants = models.ManyToManyField('Variant', blank=True, related_name='canonical_list')  # TODO this is actually more like a variant instance, should be specific variant
+class AbstractComment(models.Model):
+    """ general comment model """
+    classification = models.ForeignKey('Classification', on_delete=models.CASCADE)
+    time = models.DateTimeField()
+    comment = models.CharField(max_length=500)
 
-    def contains_variant(self, variant):
-        return self.objects.filter(variants__id=variant)
+
+class CodeComment(AbstractComment):
+    """ comment on a specifc code """
+    check_obj = models.ForeignKey('Check', on_delete=models.CASCADE, related_name="code_comments")
+    code = models.ForeignKey('CodeAnswer', on_delete=models.CASCADE)
+
+
+class GeneralComment(AbstractComment):
+    """ general comment on a check """
+    check_obj = models.ForeignKey('Check', on_delete=models.CASCADE, related_name="general_comments")
+
+
+class SystemComment(AbstractComment):
+    """ system comment for audit trail """
+    details = models.CharField(max_length=500)
