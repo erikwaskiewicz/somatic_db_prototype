@@ -140,7 +140,7 @@ class Classification(models.Model):
             'all_checks': self.get_all_checks(),
         }
         if current_check_obj.full_classification:
-            current_score, current_class = current_check_obj.classify()
+            current_score, current_class = current_check_obj.update_classification()
             classification_info['codes_by_category'] = self.get_codes_by_category()
             classification_info['current_class'] = current_class
             classification_info['current_score'] = current_score
@@ -350,7 +350,12 @@ class Check(models.Model):
     final_biological_score = models.IntegerField(blank=True, null=True)
     final_clinical_class = models.CharField(max_length=2, blank=True, null=True)
 
-    def classify(self):
+    def get_codes(self):
+        """ get all classification codes for the current check """
+        return CodeAnswer.objects.filter(check_object=self)
+
+    def update_classification(self):
+        """ calculate the current score and biological classification """
         # dict of how many points per code strength, this could be in settings/svig config
         score_dict = {'SA': 100, 'VS': 8, 'ST': 4, 'MO': 2, 'SU': 1}
         score_counter = 0
@@ -380,96 +385,44 @@ class Check(models.Model):
 
         return score_counter, classification
 
-    def get_codes(self):
-        """
-        Get all classification codes for the current check
-        """
-        return CodeAnswer.objects.filter(check_object=self)
-
-    @transaction.atomic
-    def make_new_codes(self):
-        """
-        make a set of code answers against the current check
-        """
-        # load in list of S-VIG codes from yaml
-        config_file = os.path.join(BASE_DIR, f'svig/config/svig_{SVIG_CODE_VERSION}.yaml')
-        with open(config_file) as f:
-            svig_codes = yaml.load(f, Loader=yaml.FullLoader)
-
-        # loop through the codes and make code answer objects
-        for code in svig_codes["codes"]:
-            CodeAnswer.objects.create(
-                code = code,
-                check_object = self
-            )
-
     @transaction.atomic
     def update_codes(self, selections):
-        #TODO split into smaller functions
+        """ update each code answer and then work out overall score/ class """
 
-        # empty variables to store output
-        selections_dict = {}
-        score_counter = 0
-
-        # dict of how many points per code strength, this could be in settings/svig config
-        score_dict = {'SA': 100, 'VS': 8, 'ST': 4, 'MO': 2, 'SU': 1}
-
-        # loop through selections and tidy up into dict
+        # load all code answer objects & loop through each selection
+        code_objects = self.get_codes()
         for s in selections:
-            c, v = s.split('_')
 
-            code_type = c[0]
+            # get specific code & type
+            c, value = s.split('_')
+            code_obj = code_objects.get(code=c)
+            code_type = code_obj.get_code_type()
 
-            if v == 'PE':
+            # if check pending, set pending to true
+            if value == 'PE':
                 pending = True
                 applied = False
                 strength = None
 
-            elif v == 'NA':
+            # if code not applied, set pending & applied to false
+            elif value == 'NA':
                 pending = False
                 applied = False
                 strength = None
 
+            # if code applied, save to models
             else:
                 pending = False
                 applied = True
-                strength = v
+                strength = value
 
-                if code_type == 'B':
-                    score_counter -= score_dict[strength]
-                elif code_type == 'O':
-                    score_counter += score_dict[strength]
+            # save values to database
+            code_obj.pending = pending
+            code_obj.applied = applied
+            code_obj.applied_strength = strength
+            code_obj.save()
 
-            selections_dict[c] = {
-                'pending': pending,
-                'applied': applied,
-                'strength': strength,
-            }
-
-        # work out class from score counter
-        class_list = OrderedDict({
-            'Likely benign': -6,
-            'VUS': 0,
-            'Likely oncogenic': 6,
-            'Oncogenic': 10,
-        })
-
-        # loop through in order until the score no longer meets the threshold
-        classification = 'Benign'
-        for c, score in class_list.items():
-            if score_counter >= score:
-                classification = c
-
-        # save results to db
-        codes = self.get_codes()
-        for c in codes:
-            #TODO might need to only save if model updates if hit on db is too high
-            c.pending = selections_dict[c.code]['pending']
-            c.applied = selections_dict[c.code]['applied']
-            c.applied_strength = selections_dict[c.code]['strength']
-            c.save()
-
-        return score_counter, classification
+        return True
 
     @transaction.atomic
     def reopen_info_tab(self):
@@ -483,7 +436,7 @@ class Check(models.Model):
         self.previous_classifications_check = False
         self.full_classification = False
         self.reopen_svig_tab()
-        self.remove_codes()
+        self.delete_code_answers()
 
     @transaction.atomic
     def reopen_svig_tab(self):
@@ -495,16 +448,30 @@ class Check(models.Model):
         self.save()
 
     @transaction.atomic
-    def remove_codes(self):
-        """
-        remove the set of code answers for the current check
-        """
+    def create_code_answers(self):
+        """ make a set of code answers against the current check """
+        # load in list of S-VIG codes from yaml
+        config_file = os.path.join(BASE_DIR, f'svig/config/svig_{SVIG_CODE_VERSION}.yaml')
+        with open(config_file) as f:
+            svig_codes = yaml.load(f, Loader=yaml.FullLoader)
+
+        # loop through the codes and make code answer objects
+        for code in svig_codes["codes"]:
+            CodeAnswer.objects.create(
+                code = code,
+                check_object = self
+            )
+
+    @transaction.atomic
+    def delete_code_answers(self):
+        """ remove the set of code answers for the current check """
         codes = self.get_codes()
         for c in codes:
             c.delete()
 
     @transaction.atomic
     def signoff_check(self, next_step):
+        """ complete a whole check """
         self.check_complete = True
         self.signoff_time = timezone.now()
         self.save()
@@ -524,6 +491,9 @@ class CodeAnswer(models.Model):
     pending = models.BooleanField(default=True)
     applied = models.BooleanField(default=False)
     applied_strength = models.CharField(max_length=20, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.get_code()}"
 
     def get_code(self):
         if self.pending:

@@ -123,7 +123,7 @@ def classify(request, classification):
                     # change setting in classification obj and load up codes linked to check
                     current_check_obj.full_classification = True
                     current_check_obj.save()
-                    current_check_obj.make_new_codes()
+                    current_check_obj.create_code_answers()
 
                     # redirect so that form isnt resubmitted on refresh
                     return redirect('svig-analysis', classification_obj.pk)
@@ -139,7 +139,7 @@ def classify(request, classification):
         if 'complete_svig' in request.POST:
             complete_svig_form = CompleteSvigForm(request.POST)
             if complete_svig_form.is_valid():
-                final_biological_score, final_biological_class = current_check_obj.classify()
+                final_biological_score, final_biological_class = current_check_obj.update_classification()
                 override = complete_svig_form.cleaned_data['override']
                 if override == "No":
                     class_dict = {
@@ -183,7 +183,8 @@ def ajax_svig(request):
 
         # load variables needed for new display
         current_check_obj = Check.objects.get(id=check_pk)
-        score, final_class = current_check_obj.update_codes(selections)
+        current_check_obj.update_codes(selections)
+        score, final_class = current_check_obj.update_classification()
         codes_by_category = current_check_obj.classification.get_codes_by_category()
 
         # empty dict for new html
