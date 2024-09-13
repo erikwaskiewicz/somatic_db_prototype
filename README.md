@@ -10,3 +10,4 @@ A database for analysing cancer NGS data within AWMGS
 - [Troubleshooting](https://awgl.github.io/somatic_db/developer_guide/common_errors/)
 - [Unit testing](https://awgl.github.io/somatic_db/developer_guide/unit_tests/)
 - [Full documentation (user & developer guide)](https://awgl.github.io/somatic_db/)
+- [SWGS module setup](https://awgl.github.io/somatic_db/developer_guide/swgs_quickstart/)
