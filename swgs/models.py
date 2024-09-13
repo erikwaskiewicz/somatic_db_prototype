@@ -441,7 +441,7 @@ class GermlineVariantInstance(AbstractVariantInstance):
     def display_in_tier_zero(self):
         variant_gene = self.vep_annotations.first().transcript.gene
         associated_panels = variant_gene.panels.all()
-        # if any of the associated panels are in a tier 1 panel, display
+        # if any of the associated panels are in a tier 0 panel, display
         for panel in associated_panels:
             if panel in self.patient_analysis.indication.germline_panels_tier_zero.all():
                 return True
@@ -462,7 +462,7 @@ class GermlineVariantInstance(AbstractVariantInstance):
     def display_in_tier_three(self):
         variant_gene = self.vep_annotations.first().transcript.gene
         associated_panels = variant_gene.panels.all()
-        # if any of the associated panels are in a tier 1 panel, display
+        # if any of the associated panels are in a tier 3 panel, display
         for panel in associated_panels:
             if panel in self.patient_analysis.indication.germline_panels_tier_three.all():
                 return True
@@ -507,7 +507,7 @@ class SomaticVariantInstance(AbstractVariantInstance):
     def display_in_tier_zero(self):
         variant_gene = self.vep_annotations.first().transcript.gene
         associated_panels = variant_gene.panels.all()
-        # if any of the associated panels are in a tier 1 panel, display
+        # if any of the associated panels are in a tier 0 panel, display
         for panel in associated_panels:
             if panel in self.patient_analysis.indication.somatic_panels_tier_zero.all():
                 return True
@@ -528,7 +528,7 @@ class SomaticVariantInstance(AbstractVariantInstance):
     def display_in_tier_two(self):
         variant_gene = self.vep_annotations.first().transcript.gene
         associated_panels = variant_gene.panels.all()
-        # if any of the associated panels are in a tier 1 panel, display
+        # if any of the associated panels are in a tier 2 panel, display
         for panel in associated_panels:
             if panel in self.patient_analysis.indication.somatic_panels_tier_two.all():
                 return True
