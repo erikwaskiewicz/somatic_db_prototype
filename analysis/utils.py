@@ -1214,7 +1214,8 @@ def validate_poly(variant_name, genome_build):
         if warnings:
             return ("Warnings:\n" + warnings.strip())
         else:
-            return "Hello"
+            return None
+    
     
     # Check warnings for variants where we use the mane select transcript
     mane_warning = False
