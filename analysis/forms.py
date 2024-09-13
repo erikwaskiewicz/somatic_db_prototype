@@ -333,7 +333,6 @@ class AddNewPolyForm(forms.Form):
     Add a variant to the poly list
 
     """
-    variant = forms.CharField()
     chrm = forms.CharField(label='Chromosome')
     position = forms.IntegerField(label='Genomic coordinates')
     ref = forms.CharField(label='Reference nucleotide')
@@ -346,7 +345,6 @@ class AddNewPolyForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(AddNewPolyForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.fields['variant'].widget.attrs['placeholder'] = 'Must be in genomic format e.g. 7:140453136A>T'
         self.fields['chrm'].widget.attrs['placeholder'] = 'e.g. 7'
         self.fields['position'].widget.attrs['placeholder'] = 'e.g. 140453136'
         self.fields['ref'].widget.attrs['placeholder'] = 'e.g. A'
