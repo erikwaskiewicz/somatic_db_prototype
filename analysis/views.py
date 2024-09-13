@@ -979,7 +979,7 @@ def view_polys(request, list_name):
                 else:
 
                     # load in variant and variant to list objects
-                    variant_obj = Variant.objects.get(variant=variant, genome_build=genome) # get or create
+                    variant_obj, _ = Variant.objects.get_or_create(variant=variant, genome_build=genome)
                     variant_to_variant_list_obj, created = VariantToVariantList.objects.get_or_create(
                         variant_list = poly_list,
                         variant = variant_obj,
