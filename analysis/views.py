@@ -964,47 +964,45 @@ def view_polys(request, list_name):
             if add_new_form.is_valid():
 
                 # get form data
-                variant = add_new_form.cleaned_data['variant']
                 comment = add_new_form.cleaned_data['comment']
+                chrm = add_new_form.cleaned_data['chrm']
+                position = add_new_form.cleaned_data['position']
+                ref = add_new_form.cleaned_data['ref']
+                alt = add_new_form.cleaned_data['alt']
             
                 # check variant format is correct using validate_poly(variant, build)
                 gb = "GRCh" + str(genome)
+                variant = chrm + ':' + str(position) + ref + '>' + alt
                 validation_error = validate_poly(variant, gb)
                 if validation_error:
                     context['warning'].append(f'{validation_error}')
                 else:
 
-                    # wrap in try/ except to handle when a variant doesnt match the input
-                    try:
-                        # load in variant and variant to list objects
-                        variant_obj = Variant.objects.get(variant=variant, genome_build=genome)
-                        variant_to_variant_list_obj, created = VariantToVariantList.objects.get_or_create(
-                            variant_list = poly_list,
-                            variant = variant_obj,
-                        )
+                    # load in variant and variant to list objects
+                    variant_obj, _ = Variant.objects.get_or_create(variant=variant, genome_build=genome) # get or create
+                    variant_to_variant_list_obj, created = VariantToVariantList.objects.get_or_create(
+                        variant_list = poly_list,
+                        variant = variant_obj,
+                    )
 
-                        # add user info if a new model is created
-                        if created:
-                            variant_to_variant_list_obj.upload_user = request.user
-                            variant_to_variant_list_obj.upload_time = timezone.now()
-                            variant_to_variant_list_obj.upload_comment = comment
-                            variant_to_variant_list_obj.save()
+                    # add user info if a new model is created
+                    if created:
+                        variant_to_variant_list_obj.upload_user = request.user
+                        variant_to_variant_list_obj.upload_time = timezone.now()
+                        variant_to_variant_list_obj.upload_comment = comment
+                        variant_to_variant_list_obj.save()
 
-                            # give success message
-                            context['success'].append(f'Variant {variant} added to poly checking list')
+                        # give success message
+                        context['success'].append(f'Variant {variant} added to poly checking list')
 
-                        # throw error if already in poly list
-                        else:
-                            context['warning'].append(f'Variant {variant} is already in the poly list')
+                    # throw error if already in poly list
+                    else:
+                        context['warning'].append(f'Variant {variant} is already in the poly list')
 
-                        # reload context
-                        confirmed_list, checking_list = get_poly_list(poly_list, request.user)
-                        context['confirmed_list'] = confirmed_list
-                        context['checking_list'] = checking_list
-
-                    # throw error if there isnt a variant matching the input
-                    except Variant.DoesNotExist:
-                        context['warning'].append(f'Cannot find variant matching {variant}, have you selected the correct genome build?')
+                    # reload context
+                    confirmed_list, checking_list = get_poly_list(poly_list, request.user)
+                    context['confirmed_list'] = confirmed_list
+                    context['checking_list'] = checking_list
 
     # render the page
     return render(request, 'analysis/view_polys.html', context)
