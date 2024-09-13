@@ -958,7 +958,7 @@ def view_polys(request, list_name):
                 context['success'].append(f'Variant {variant} added to poly list')
 
         # if add new poly button is pressed
-        if 'variant' in request.POST:
+        if 'chrm' in request.POST:
             add_new_form = AddNewPolyForm(request.POST)
 
             if add_new_form.is_valid():
@@ -979,7 +979,7 @@ def view_polys(request, list_name):
                 else:
 
                     # load in variant and variant to list objects
-                    variant_obj, _ = Variant.objects.get_or_create(variant=variant, genome_build=genome) # get or create
+                    variant_obj = Variant.objects.get(variant=variant, genome_build=genome) # get or create
                     variant_to_variant_list_obj, created = VariantToVariantList.objects.get_or_create(
                         variant_list = poly_list,
                         variant = variant_obj,
@@ -1003,6 +1003,8 @@ def view_polys(request, list_name):
                     confirmed_list, checking_list = get_poly_list(poly_list, request.user)
                     context['confirmed_list'] = confirmed_list
                     context['checking_list'] = checking_list
+            else:
+                context['warning'].append("Form not valid")
 
     # render the page
     return render(request, 'analysis/view_polys.html', context)
