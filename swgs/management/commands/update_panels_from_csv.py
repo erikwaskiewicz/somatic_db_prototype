@@ -17,6 +17,7 @@ def get_previous_panel(panel_name):
     """
     Gets the previous version of the panel
     """
+    # try/except because an IndexError will be thrown for panels not already in the database
     try:
         panels = Panel.objects.filter(panel_name=panel_name).order_by('-panel_version')
         # highest panel version is the previous panel
@@ -110,7 +111,7 @@ class Command(BaseCommand):
                 old_panel_genes = []
 
             else:
-                panel_version = previous_panel.panel_version
+                panel_version = previous_panel.panel_version + 1
                 old_panel_genes = [gene.gene for gene in previous_panel.genes]
 
             # create a new panel
