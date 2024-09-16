@@ -964,16 +964,16 @@ def view_polys(request, list_name):
             if add_new_form.is_valid():
 
                 # get form data
-                comment = add_new_form.cleaned_data['comment']
                 chrm = add_new_form.cleaned_data['chrm']
                 position = add_new_form.cleaned_data['position']
                 ref = add_new_form.cleaned_data['ref']
                 alt = add_new_form.cleaned_data['alt']
+                comment = add_new_form.cleaned_data['comment']
             
-                # check variant format is correct using validate_poly(variant, build)
-                gb = "GRCh" + str(genome)
+                # check variant format is correct using variant validator
+                build = "GRCh" + str(genome)
                 variant = chrm + ':' + str(position) + ref + '>' + alt
-                validation_error = validate_variant(variant, gb)
+                validation_error = validate_variant(variant, build)
                 if validation_error:
                     context['warning'].append(f'{validation_error}')
                 else:
@@ -1003,8 +1003,6 @@ def view_polys(request, list_name):
                     confirmed_list, checking_list = get_poly_list(poly_list, request.user)
                     context['confirmed_list'] = confirmed_list
                     context['checking_list'] = checking_list
-            else:
-                context['warning'].append("Form not valid")
 
     # render the page
     return render(request, 'analysis/view_polys.html', context)
@@ -1074,24 +1072,34 @@ def view_artefacts(request, list_name):
                 context['success'].append(f'Variant {variant} added to artefact list')
 
         # if add new artefact button is pressed
-        if 'variant' in request.POST:
+        if 'chrm' in request.POST:
             add_new_form = AddNewArtefactForm(request.POST)
 
             if add_new_form.is_valid():
 
                 # get form data
-                variant = add_new_form.cleaned_data['variant']
-                comment = add_new_form.cleaned_data['comment']
+                chrm = add_new_form.cleaned_data['chrm']
+                position = add_new_form.cleaned_data['position']
+                ref = add_new_form.cleaned_data['ref']
+                alt = add_new_form.cleaned_data['alt']
                 vaf_cutoff = add_new_form.cleaned_data['vaf_cutoff']
+                comment = add_new_form.cleaned_data['comment']
 
-                # wrap in try/ except to handle when a variant doesnt match the input
-                try:
+                # Check variant format is correct using variant validator
+                build = "GRCh" + str(genome)
+                variant = chrm + ":" + str(position) + ref + '>' + alt
+                validation_error = validate_variant(variant, build)
+                if validation_error:
+                    context['warning'].append(f'{validation_error}')
+                else:
+
+
                     # load in variant and variant to list objects
-                    variant_obj = Variant.objects.get(variant=variant, genome_build=genome)
+                    variant_obj, _ = Variant.objects.get_or_create(variant=variant, genome_build=genome)
                     variant_to_variant_list_obj, created = VariantToVariantList.objects.get_or_create(
                         variant_list = artefact_list,
                         variant = variant_obj,
-                    )
+                        )
 
                     # add user info if a new model is created
                     if created:
@@ -1101,7 +1109,7 @@ def view_artefacts(request, list_name):
                         variant_to_variant_list_obj.vaf_cutoff = vaf_cutoff
                         variant_to_variant_list_obj.save()
 
-                        # give success message
+                       # give success message
                         context['success'].append(f'Variant {variant} added to artefact checking list')
 
                     # throw error if already in poly list
@@ -1112,10 +1120,6 @@ def view_artefacts(request, list_name):
                     confirmed_list, checking_list = get_poly_list(artefact_list, request.user)
                     context['confirmed_list'] = confirmed_list
                     context['checking_list'] = checking_list
-
-                # throw error if there isnt a variant matching the input
-                except Variant.DoesNotExist:
-                    context['warning'].append(f'Cannot find variant matching {variant}, have you selected the correct genome build?')
 
     # render the page
     return render(request, 'analysis/view_artefacts.html', context)
