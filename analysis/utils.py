@@ -1159,9 +1159,9 @@ def lims_initials_check(lims_initials:str):
     else:
         return True, ''
 
-def validate_poly(variant_name, genome_build):
+def validate_variant(variant_name, genome_build):
     '''
-    Submits a new poly to Variant Validator to check it is correctly formatted
+    Submits a new poly/artefact to Variant Validator to check it is correctly formatted
     '''
 
     # Access Variant Validator API

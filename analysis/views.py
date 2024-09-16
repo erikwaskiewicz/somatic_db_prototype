@@ -14,7 +14,7 @@ from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatien
     ManualVariantCheckForm, ReopenForm, ChangeLimsInitials, EditedPasswordChangeForm, EditedUserCreationForm, NewFusionForm)
 from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
     get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, get_fusion_list, 
-    create_myeloid_coverage_summary, variant_format_check, breakpoint_format_check, lims_initials_check, validate_poly)
+    create_myeloid_coverage_summary, variant_format_check, breakpoint_format_check, lims_initials_check, validate_variant)
 from .models import *
 
 import csv
@@ -973,7 +973,7 @@ def view_polys(request, list_name):
                 # check variant format is correct using validate_poly(variant, build)
                 gb = "GRCh" + str(genome)
                 variant = chrm + ':' + str(position) + ref + '>' + alt
-                validation_error = validate_poly(variant, gb)
+                validation_error = validate_variant(variant, gb)
                 if validation_error:
                     context['warning'].append(f'{validation_error}')
                 else:
