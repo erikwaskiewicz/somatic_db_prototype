@@ -1175,25 +1175,40 @@ def validate_poly(variant_name, genome_build):
 
     # Check for warnings where reference base provided is not correct
     warnings = ""
-    warnings_found = False
     for transcript in vv_json:
         if "validation_warning_" in transcript:
             for warning in vv_json[transcript]["validation_warnings"]:
-                warnings += ("Reference Warning:\n" + warning)
-                warnings_found = True
-    if warnings_found:
+                warnings += ("Variant Validator Warnings: " + warning)
+    if warnings:
         return warnings
     
     # Check for warnings where variant provided is not in any transcript
     for transcript in vv_json:
         if "intergenic_variant_" in transcript:
             for warning in vv_json[transcript]["validation_warnings"]:
-                warnings += ("Intergenic Variant:\n" + warning)
-                warnings_found = True
-    if warnings_found:
+                warnings += ("Variant Validator Warnings: " + warning)
+    if warnings:
         return warnings
 
+    # Set up which warnings need reporting
+    # Actual WARNINGS.
+    warning_patterns = [r".*Variant reference.*does not agree with reference.*",
+                        r".*lies outside the reference sequence.*",
+                        r".*outside the boundaries.*",
+                        r".*Uncertain positions.*",
+                        r".*expected the character.*",
+                        r".*No transcripts found that fully overlap.*"]
 
+    # Warnings that are just provided as guidance
+    guidance_patterns = [r".*A more recent version of the selected reference.*is available",
+                         r".*No transcript definition.*",
+                         r".*The current status of LRG.*",
+                         r".*spans at least one intron*",
+                         r".*RefSeqGene record not available.*",
+                         r".*Removing redundant reference bases.*",
+                         r".*N[MC].+automapped to.*",
+                         r".*LRG.*automapped.*"]
+    
     # Create list of prefered transcripts
     pref_trans_list = []
     with open("preferred_transcripts.txt") as tsv:
@@ -1208,11 +1223,12 @@ def validate_poly(variant_name, genome_build):
             if pref_tran in transcript:
                 not_mane = True
                 for warning in vv_json[transcript]["validation_warnings"]:
-                    if warning:
-                        warnings += (transcript + "\t" + warning + "\n")
+                    for pattern in warning_patterns:
+                        if re.search(pattern, warning):
+                            warnings += (transcript + ": " + warning + "\n")
     if not_mane:
         if warnings:
-            return ("Warnings:\n" + warnings.strip())
+            return ("Variant Validator Warnings: " + warnings.strip())
         else:
             return None
     
@@ -1226,11 +1242,12 @@ def validate_poly(variant_name, genome_build):
             if vv_json[transcript]["annotations"]["mane_select"] == True:
                 mane_warning = True
                 for warning in vv_json[transcript]["validation_warnings"]:
-                    if warning:
-                        warnings += transcript + "\t" + warning + "\n"
+                    for pattern in warning_patterns:
+                        if re.search(pattern, warning):
+                            warnings += transcript + ": " + warning + "\n"
     if mane_warning:
         if warnings:
-            return( "Warnings:\n" + warnings.strip())
+            return("Variant Validator Warnings: " + warnings.strip())
         else:
             return None
         
