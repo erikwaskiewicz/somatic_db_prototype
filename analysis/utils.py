@@ -1169,7 +1169,7 @@ def validate_variant(variant_name, genome_build):
         response = requests.get(f"https://rest.variantvalidator.org/VariantValidator/variantvalidator/{genome_build}/{variant_name}/mane_select")
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
-         error = f"HTTP Request failed: {e}"
+         error = f"HTTP Request failed: {e} Please reattempt submission."
          return error
     vv_json = response.json()
 
@@ -1199,16 +1199,6 @@ def validate_variant(variant_name, genome_build):
                         r".*expected the character.*",
                         r".*No transcripts found that fully overlap.*"]
 
-    # Warnings that are just provided as guidance
-    guidance_patterns = [r".*A more recent version of the selected reference.*is available",
-                         r".*No transcript definition.*",
-                         r".*The current status of LRG.*",
-                         r".*spans at least one intron*",
-                         r".*RefSeqGene record not available.*",
-                         r".*Removing redundant reference bases.*",
-                         r".*N[MC].+automapped to.*",
-                         r".*LRG.*automapped.*"]
-    
     # Create list of prefered transcripts
     pref_trans_list = []
     with open("preferred_transcripts.txt") as tsv:
