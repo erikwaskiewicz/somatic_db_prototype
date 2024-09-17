@@ -373,13 +373,13 @@ class AddNewArtefactForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(AddNewArtefactForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.fields['chrm'].help_text = 'e.g. 7'
-        self.fields['position'].help_text = 'e.g. 140453136'
-        self.fields['ref'].help_text = 'e.g. A'
-        self.fields['alt'].help_text = 'e.g. T'
+        self.fields['chrm'].widget.attrs['placeholder'] = 'e.g. 7'
+        self.fields['position'].widget.attrs['placeholder'] = 'e.g. 140453136'
+        self.fields['ref'].widget.attrs['placeholder'] = 'e.g. A'
+        self.fields['alt'].widget.attrs['placeholder'] = 'e.g. T'
         self.fields['vaf_cutoff'].initial = 0.0
-        self.fields['vaf_cutoff'].help_text = 'Only variants below this value will be filtered as artefacts. If no cutoff is required then leave as 0.'
-        self.fields['comment'].help_text = 'Add comments or evidence to support this variant being an artefact\ne.g. filepaths to documented evidence, sample IDs to check...'
+        self.fields['vaf_cutoff'].widget.attrs['placeholder'] = 'Only variants below this value will be filtered as artefacts. If no cutoff is required then leave as 0.'
+        self.fields['comment'].widget.attrs['placeholder'] = 'Add comments or evidence to support this variant being an artefact\ne.g. filepaths to documented evidence, sample IDs to check...'
         self.helper.form_method = 'POST'
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-25')
