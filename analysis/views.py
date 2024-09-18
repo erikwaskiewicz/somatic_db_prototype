@@ -971,7 +971,7 @@ def view_polys(request, list_name):
                 comment = add_new_form.cleaned_data['comment']
             
                 # check variant format is correct using variant validator
-                build = "GRCh" + str(genome)
+                build = 'GRCh' + str(genome)
                 validation_error = validate_variant(chrm, position, ref, alt, build)
                 if validation_error:
                     context['warning'].append(f'{validation_error}')
@@ -1085,7 +1085,7 @@ def view_artefacts(request, list_name):
                 comment = add_new_form.cleaned_data['comment']
 
                 # Check variant format is correct using variant validator
-                build = "GRCh" + str(genome)
+                build = 'GRCh' + str(genome)
                 validation_error = validate_variant(chrm, position, ref, alt, build)
                 if validation_error:
                     context['warning'].append(f'{validation_error}')

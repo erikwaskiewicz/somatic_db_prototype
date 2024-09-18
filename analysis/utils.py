@@ -1182,49 +1182,49 @@ def validate_variant(chrm, position, ref, alt, build):
 
     # Access Variant Validator API
     try:
-        response = requests.get(f"https://rest.variantvalidator.org/VariantValidator/variantvalidator/{build}/{variant}/mane_select")
+        response = requests.get(f'https://rest.variantvalidator.org/VariantValidator/variantvalidator/{build}/{variant}/mane_select')
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
-         error = f"HTTP Request failed: {e} Please reattempt submission."
+         error = f'HTTP Request failed: {e} Please reattempt submission.'
          return error
     vv_json = response.json()
 
     # Set up which warnings need reporting.
-    warning_patterns = [r".*Variant reference.*does not agree with reference.*",
-                        r".*lies outside the reference sequence.*",
-                        r".*outside the boundaries.*",
-                        r".*Uncertain positions.*",
-                        r".*expected the character.*",
-                        r".*No transcripts found that fully overlap.*",
-                        r".*None of the specified transcripts.*fully overlap.*"]
+    warning_patterns = [r'.*Variant reference.*does not agree with reference.*',
+                        r'.*lies outside the reference sequence.*',
+                        r'.*outside the boundaries.*',
+                        r'.*Uncertain positions.*',
+                        r'.*expected the character.*',
+                        r'.*No transcripts found that fully overlap.*',
+                        r'.*None of the specified transcripts.*fully overlap.*']
 
     # Check for warnings where reference base provided is not correct
-    warnings = ""
+    warnings = ''
     for transcript in vv_json:
-        if "validation_warning_" in transcript:
-            for warning in vv_json[transcript]["validation_warnings"]:
+        if 'validation_warning_' in transcript:
+            for warning in vv_json[transcript]['validation_warnings']:
                 for pattern in warning_patterns:
                     if re.search(pattern, warning):
-                        warnings += (warning + "; ")
+                        warnings += (warning + '; ')
             if warnings:
-                return ("Variant Validator Warnings: " + warnings)
+                return ('Variant Validator Warnings: ' + warnings)
     
     # Check for warnings where variant provided is not in any transcript, e.g. intergenic
     for transcript in vv_json:
-        if "intergenic_variant_" in transcript:
-            for warning in vv_json[transcript]["validation_warnings"]:
+        if 'intergenic_variant_' in transcript:
+            for warning in vv_json[transcript]['validation_warnings']:
                 for pattern in warning_patterns:
                     if re.search(pattern, warning):
-                        warnings += (warning + "; ")
+                        warnings += (warning + '; ')
             if warnings:
-                return ("Variant Validator Warnings: " + warnings)
+                return ('Variant Validator Warnings: ' + warnings)
 
     # Create list of preferred transcripts
     preferred_transcript_list = []
-    with open("preferred_transcripts.txt") as tsv:
-        reader = csv.DictReader(tsv, delimiter="\t")
+    with open('preferred_transcripts.txt') as tsv:
+        reader = csv.DictReader(tsv, delimiter='\t')
         for row in reader:
-            preferred_transcript_list.append(row["Transcript"])
+            preferred_transcript_list.append(row['Transcript'])
 
     # Check for warnings for variants that have a preferred transcript (not mane select)
     not_mane = False
@@ -1232,13 +1232,13 @@ def validate_variant(chrm, position, ref, alt, build):
         for pref_transcript in preferred_transcript_list:
             if pref_transcript in transcript:
                 not_mane = True
-                for warning in vv_json[transcript]["validation_warnings"]:
+                for warning in vv_json[transcript]['validation_warnings']:
                     for pattern in warning_patterns:
                         if re.search(pattern, warning):
-                            warnings += (transcript + ": " + warning + "; ")
+                            warnings += (transcript + ': ' + warning + '; ')
     if not_mane:
         if warnings:
-            return ("Variant Validator Warnings: " + warnings)
+            return ('Variant Validator Warnings: ' + warnings)
         else:
             return None
     
@@ -1246,21 +1246,21 @@ def validate_variant(chrm, position, ref, alt, build):
     # Check warnings for variants where we use the mane select transcript
     mane_warning = False
     for transcript in vv_json:
-        if transcript == "flag" or transcript == "metadata":
+        if transcript == 'flag' or transcript == 'metadata':
             pass
         else:
-            if vv_json[transcript]["annotations"]["mane_select"] == True:
+            if vv_json[transcript]['annotations']['mane_select'] == True:
                 mane_warning = True
-                for warning in vv_json[transcript]["validation_warnings"]:
+                for warning in vv_json[transcript]['validation_warnings']:
                     for pattern in warning_patterns:
                         if re.search(pattern, warning):
-                            warnings += transcript + ": " + warning + "\n"
+                            warnings += transcript + ': ' + warning + '\n'
     if mane_warning:
         if warnings:
-            return("Variant Validator Warnings: " + warnings)
+            return('Variant Validator Warnings: ' + warnings)
         else:
             return None
         
     # If json file had some sort of unexpected structure, return this so we can investigate
     else:
-        return "Unexpected Error, contact Bioinformatics"
+        return 'Unexpected Error, contact Bioinformatics'
