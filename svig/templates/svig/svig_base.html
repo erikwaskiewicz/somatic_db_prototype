@@ -3,68 +3,71 @@
 
 {% block breadcrumbs %}
 <div class="container-fluid breadcrumbs-custom">
-  <div class="container">
-    <ol class="breadcrumb" style="background-color: transparent;">
-      <li class="breadcrumb-item active"><a href="{% url 'home' %}"><span class="fa fa-home"></span></a></li>
-      <li class="breadcrumb-item"><a href="{% url 'view-all-svig' %}">S-VIG</a></li>
-      <li class="breadcrumb-item active">{{ classification_info.classification_obj }}</li>
-    </ol>
-  </div>
+    <div class="container">
+        <ol class="breadcrumb" style="background-color: transparent;">
+            <li class="breadcrumb-item active"><a href="{% url 'home' %}"><span class="fa fa-home"></span></a></li>
+            <li class="breadcrumb-item"><a href="{% url 'view-all-svig' %}">S-VIG</a></li>
+            <li class="breadcrumb-item active">{{ classification_info.classification_obj }}</li>
+        </ol>
+    </div>
 </div>
 {% endblock %}
 
 {% block content %}
 <div class="container">
 
-  <table class="table table-bordered">
-    <thead>
-      <tr>
-        <th scope="col" class="col-4">Variant</th>
-        <th scope="col" class="col-2">Sample</th>
-        <th scope="col" class="col-2">Referral</th>
-        <th scope="col" class="col-2">Status</th>
-        <th scope="col" class="col-2">Comments</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>{{ variant_info.gene }}<br>{{ variant_info.hgvs_c }}<br>{{ variant_info.hgvs_p }}</td>
-        <td>{{ sample_info.sample_id }}<br>{{ sample_info.worksheet_id }}</td>
-        <td>{{ sample_info.svd_panel }}<br>{{ sample_info.specific_tumour_type }}</td>
-        <td>{{ classification_info.classification_obj.get_status }}</td>
-        <td>
-          <a class="btn btn-light" data-toggle="modal" href="#comments-modal" role="button" aria-expanded="false" aria-controls="comments-modal">
-            View all comments
-          </a>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th scope="col" class="col-4">Variant</th>
+                <th scope="col" class="col-2">Sample</th>
+                <th scope="col" class="col-2">Referral</th>
+                <th scope="col" class="col-2">Status</th>
+                <th scope="col" class="col-2">Comments</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ variant_info.gene }}<br>{{ variant_info.hgvs_c }}<br>{{ variant_info.hgvs_p }}</td>
+                <td>{{ sample_info.sample_id }}<br>{{ sample_info.worksheet_id }}</td>
+                <td>{{ sample_info.svd_panel }}<br>{{ sample_info.specific_tumour_type }}</td>
+                <td>{{ classification_info.classification_obj.get_status }}</td>
+                <td>
+                    <a class="btn btn-light" data-toggle="modal" href="#comments-modal" role="button" aria-expanded="false" aria-controls="comments-modal">
+                        View all comments
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
 <br>
 
 <div class="container-fluid">
-  <ul class="nav nav-tabs nav-justified">
+    <ul class="nav nav-tabs nav-justified">
 
-    <li class="nav-item">
-      <a class="nav-link section-button active" href="#details" data-target="details">Variant details</a>
-    </li>
+        <li class="nav-item">
+            <a class="nav-link section-button active" href="#details" data-target="details">Variant details</a>
+        </li>
 
-    <li class="nav-item">
-      <a class="nav-link section-button" href="#previous" data-target="previous">Previous classifications</a>
-    </li>
+        <li class="nav-item">
+            <a class="nav-link section-button" href="#previous" data-target="previous">Previous classifications</a>
+        </li>
 
-    <li class="nav-item">
-      <a class="nav-link section-button" href="#svig" data-target="svig">Biological classification</a>
-    </li>
+        <li class="nav-item">
+            <a class="nav-link section-button" href="#svig" data-target="svig">Biological classification</a>
+        </li>
 
-    <li class="nav-item">
-      <a class="nav-link section-button" href="#finalise" data-target="finalise">Finalise</a>
-    </li>
+        <li class="nav-item">
+            <a class="nav-link section-button" href="#clinical" data-target="clinical">Clinical classification</a>
+        </li>
 
+        <li class="nav-item">
+            <a class="nav-link section-button" href="#finalise" data-target="finalise">Finalise</a>
+        </li>
 
-  </ul>
+    </ul>
 </div>
 <br>
 
@@ -73,55 +76,56 @@
 <div class="container" id="details">{% include 'svig/svig_info.html' %}</div>
 <div class="container" id="previous">{% include 'svig/svig_previous.html' %}</div>
 <div class="container-fluid" id="svig">{% include 'svig/svig_classify.html' %}</div>
+<div class="container" id="clinical">{% include 'svig/svig_clinical.html' %}</div>
 <div class="container" id="finalise">{% include 'svig/svig_finalise.html' %}</div>
 
 
 <!-- comments modal -->
 <div class="modal fade" id="comments-modal" tabindex="-1" role="dialog" aria-labelledby="comments-modal-label" aria-hidden="true">
-  <div class="modal-dialog" style="min-width:90%;" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="comments-modal-label">Comments</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>TODO form to add new comment</p>
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th scope="col">Time</th>
-              <th scope="col">User</th>
-              <th scope="col">Object</th>
-              <th scope="col">Comment</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>TODO</td>
-              <td>TODO</td>
-              <td>TODO</td>
-              <td>TODO</td>
-            </tr>
-            <tr>
-              <td>TODO</td>
-              <td>TODO</td>
-              <td>TODO</td>
-              <td>TODO</td>
-            </tr>
-            <tr>
-              <td>TODO</td>
-              <td>TODO</td>
-              <td>TODO</td>
-              <td>TODO</td>
-            </tr>
-          </tbody>
-        </table>
+    <div class="modal-dialog" style="min-width:90%;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="comments-modal-label">Comments</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>TODO form to add new comment</p>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Time</th>
+                            <th scope="col">User</th>
+                            <th scope="col">Object</th>
+                            <th scope="col">Comment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>TODO</td>
+                            <td>TODO</td>
+                            <td>TODO</td>
+                            <td>TODO</td>
+                        </tr>
+                        <tr>
+                            <td>TODO</td>
+                            <td>TODO</td>
+                            <td>TODO</td>
+                            <td>TODO</td>
+                        </tr>
+                        <tr>
+                            <td>TODO</td>
+                            <td>TODO</td>
+                            <td>TODO</td>
+                            <td>TODO</td>
+                        </tr>
+                    </tbody>
+                </table>
 
-      </div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <!--------------------------------------------------------------------------------------- 
