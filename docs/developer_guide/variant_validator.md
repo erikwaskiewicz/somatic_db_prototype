@@ -3,6 +3,7 @@
 ## Adding new polys and artefacts
 
 When submitting new polys or artefacts to the lists in SVD, the submission will be sent to the Variant Validator API - https://rest.variantvalidator.org/
+
 Given the initial validation of data inputted into the form, e.g. ref and alt only consisting of A, C, T and G, the frequency of warnings will be reduced.
 
 If Variant Validator identifies any issues with the submitted variant, it will return a warning.
@@ -30,3 +31,4 @@ Below are the following warning messages you might expect to see that SVD treats
 Other messages one might anticipate include a HTTP request error if the API request times out, or that the variant already appears in the poly or artefact list. 
 
 Lots of the warnings outputted by variant validator are only relevant when submitted in other formats like HGVS. Because the 'add new poly' and 'add new artefact' forms only submit the variant in one format, these warnings should not matter and so are not built into our filtering of warnings.
+More examples of warnings can be found here: https://github.com/openvar/VV_databases/blob/master/markdown/instructions.md
