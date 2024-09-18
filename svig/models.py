@@ -451,6 +451,9 @@ class Check(models.Model):
     @transaction.atomic
     def signoff_check(self, next_step):
         """ complete a whole check """
+        if next_step == 'B':
+            pass
+            # TODO check for previosu and send back
         self.check_complete = True
         self.signoff_time = timezone.now()
         self.save()
@@ -488,16 +491,20 @@ class CodeAnswer(models.Model):
         elif self.code[0] == 'O':
             return 'Oncogenic'
 
+    def pretty_print_code(self):
+        return CODE_PRETTY_PRINT[self.applied_strength]
+
+    def get_score(self):
+        if self.get_code_type() == "Benign":
+            score = f"-{CODE_SCORES[self.applied_strength]}"
+        elif self.get_code_type() == "Oncogenic":
+            score = f"+{CODE_SCORES[self.applied_strength]}"
+
     def get_string(self):
         if self.pending:
             return "Pending"
         elif self.applied:
-            if self.get_code_type() == "Benign":
-                score = f"-{CODE_SCORES[self.applied_strength]}"
-            elif self.get_code_type() == "Oncogenic":
-                score = f"+{CODE_SCORES[self.applied_strength]}"
-            out_string = f"{self.code} {CODE_PRETTY_PRINT[self.applied_strength]} ({score})"
-            return out_string
+            return f"{self.code} {self.pretty_print_code()} ({self.get_score()})"
         else:
             return "Not applied"
 

@@ -155,8 +155,9 @@ class FinaliseCheckForm(forms.Form):
 
     """
     NEXT_STEP_CHOICES = (
-        ('C', 'Sample passed check'),
-        ('E', 'Sample passed check, send for an extra check'),
+        ('E', 'Send for another check'),
+        ('C', 'Analysis complete'),
+        ('B', 'Send back to previous checker')
     )
     next_step = forms.ChoiceField(choices=NEXT_STEP_CHOICES)
     finalise_check = forms.BooleanField(required=True, label="Confirm that analysis is complete")
