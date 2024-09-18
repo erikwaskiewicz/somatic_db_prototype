@@ -21,6 +21,14 @@ def colour_by_class(value):
     elif value.startswith("o") or "oncogenic" in value:
         css_class = 'danger'
 
+    elif value.startswith("tier"):
+        if value == "tier iii":
+            css_class = 'warning'
+        elif value == "tier iv":
+            css_class = "primary"
+        else:
+            css_class = "danger"
+
     else:
         css_class = 'secondary'
 

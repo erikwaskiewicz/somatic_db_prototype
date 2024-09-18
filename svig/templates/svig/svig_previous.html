@@ -9,6 +9,7 @@
 {% else %}
 
   <!-- alert if step is complete -->
+  {% if classification_info.classification_obj.get_status != "Complete" %}
   {% if classification_info.current_check.full_classification %}
   <div class="alert alert-success">
     <h5>Section complete!</h5>
@@ -17,6 +18,7 @@
       <a href="" data-toggle="modal" data-target="#reopen_previous_modal">Click here to reopen</a>
     </p>
   </div>
+  {% endif %}
   {% endif %}
 
   <!-- main section -->
@@ -87,6 +89,7 @@
 
 
   <!-- form to complete section-->
+  {% if classification_info.classification_obj.get_status != "Complete" %}
   {% if not classification_info.current_check.full_classification %}
   <div class="alert alert-info">
     <h5>Pick next step</h5>
@@ -104,7 +107,7 @@
     {% crispy forms.previous_class_form %}
   </div>
   {% endif %}
-
+  {% endif %}
 
 {% endif %}
 

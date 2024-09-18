@@ -313,6 +313,20 @@ class Classification(models.Model):
     def make_new_check(self):
         new_check = Check.objects.create(classification=self)
 
+    @transaction.atomic
+    def signoff_check(self, current_check, next_step):
+        """ complete a whole check """
+        if next_step == 'B':
+            pass
+            # TODO check for previosu and send back
+        current_check.check_complete = True
+        current_check.signoff_time = timezone.now()
+        current_check.save()
+
+        if next_step == 'E':
+             self.make_new_check()
+        # TODO save results to classification obj if final check
+
 
 class Check(models.Model):
     """
@@ -447,20 +461,6 @@ class Check(models.Model):
         codes = self.get_codes()
         for c in codes:
             c.delete()
-
-    @transaction.atomic
-    def signoff_check(self, next_step):
-        """ complete a whole check """
-        if next_step == 'B':
-            pass
-            # TODO check for previosu and send back
-        self.check_complete = True
-        self.signoff_time = timezone.now()
-        self.save()
-
-        if next_step == 'E':
-             self.classification.make_new_check()
-        # TODO save results to classification obj if final check
 
 
 class CodeAnswer(models.Model):

@@ -2,6 +2,7 @@
 {% load svig_tags %}
 
 <!-- forms when check is complete-->
+{% if classification_info.classification_obj.get_status != "Complete" %}
 {% if classification_info.current_check.info_check %}
 <div class="alert alert-success">
   <h5>Section complete!</h5>
@@ -10,6 +11,7 @@
     <a href="" data-toggle="modal" data-target="#reopen_info_modal">Click here to reopen</a>
   </p>
 </div>
+{% endif %}
 {% endif %}
 
 
@@ -95,6 +97,7 @@
 
 
 <!-- forms to complete check-->
+{% if classification_info.classification_obj.get_status != "Complete" %}
 {% if not classification_info.current_check.info_check %}
 <div class="alert alert-info">
   <h5>Please confirm that this page has been checked</h5>
@@ -102,6 +105,7 @@
   {% crispy forms.check_info_form %}
 </div>
 
+{% endif %}
 {% endif %}
 
 

@@ -184,7 +184,7 @@ def classify(request, classification):
             finalise_form = FinaliseCheckForm(request.POST)
             if finalise_form.is_valid():
                 next_step = finalise_form.cleaned_data['next_step']
-                current_check_obj.signoff_check(next_step)
+                classification_obj.signoff_check(current_check_obj, next_step)
                 return redirect('view-all-svig')
 
 

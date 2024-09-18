@@ -33,7 +33,11 @@
                 {% endfor %}
               </th>
               <th class="col-4">
-                <select size="1" id="code_{{ code }}" name="code_{{ code }}" class="btn btn-lg btn-block code-dropdown">
+                <select 
+                 {% if classification_info.current_check.svig_check %}disabled{% endif %}
+                 size="1" id="code_{{ code }}"
+                 name="code_{{ code }}"
+                 class="btn btn-lg btn-block code-dropdown">
                   {% for c in code_details.dropdown %}
                     <option value="{{ c.value }}">{{ c.text }}</option>
                   {% endfor %}
@@ -62,7 +66,6 @@
                   </tbody>
                 </table>
 
-                <!-- TODO - not plumbed in -->
                 <a class="btn btn-light w-100" data-toggle="modal" href="#code-comment-{{ code }}-modal" role="button" aria-expanded="false" aria-controls="code-comment-{{ code }}-modal">
                     Comments&nbsp;<span class="badge badge-secondary">0</span>
                 </a>
@@ -90,9 +93,11 @@
         </button>
       </div>
       <p></p>
+      {% if not classification_info.current_check.svig_check %}
       <button class="btn btn-block btn-lg btn-outline-dark calculate-class" type="button">Recalculate classification</button>
       <p></p>
       <p></p>
+      {% endif %}
 
       <!-- loop through each header -->
       {% for k, v in classification_info.codes_by_category.items %}
@@ -121,7 +126,7 @@
       {% endfor %}
       <p></p>
       <p></p>
-      
+      {% if classification_info.classification_obj.get_status != "Complete" %}
       {% if not classification_info.current_check.svig_check %}
       <div class="alert alert-info">
         <p><b>Complete?</b></p>
@@ -133,11 +138,11 @@
         <p>
             You have completed S-VIG classification.<br>
             <a href="" data-toggle="modal" data-target="#reopen_svig_modal">Click here to reopen</a>
-            <P>TODO disable dropdowns</P>
         </p>
       </div>
 
-        {% endif %}
+      {% endif %}
+      {% endif %}
       </div>
     </div>
   </div>
