@@ -44,7 +44,7 @@ class Variant(models.Model):
         return f"{gene} {hgvs_c}"
 
     def get_variant_info(self):
-        # get variant specific variables
+        """get variant specific variables"""
         build = self.svd_variant.variant_instance.variant.genome_build
         variant_info = {
             "genomic": self.svd_variant.variant_instance.variant.variant,
