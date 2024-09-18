@@ -972,8 +972,7 @@ def view_polys(request, list_name):
             
                 # check variant format is correct using variant validator
                 build = "GRCh" + str(genome)
-                variant = chrm + ':' + str(position) + ref + '>' + alt
-                validation_error = validate_variant(variant, build)
+                validation_error = validate_variant(chrm, position, ref, alt, build)
                 if validation_error:
                     context['warning'].append(f'{validation_error}')
                 else:
@@ -1087,8 +1086,7 @@ def view_artefacts(request, list_name):
 
                 # Check variant format is correct using variant validator
                 build = "GRCh" + str(genome)
-                variant = chrm + ":" + str(position) + ref + '>' + alt
-                validation_error = validate_variant(variant, build)
+                validation_error = validate_variant(chrm, position, ref, alt, build)
                 if validation_error:
                     context['warning'].append(f'{validation_error}')
                 else:

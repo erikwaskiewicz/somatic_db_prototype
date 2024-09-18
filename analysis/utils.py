@@ -1159,14 +1159,31 @@ def lims_initials_check(lims_initials:str):
     else:
         return True, ''
 
-def validate_variant(variant_name, genome_build):
+def validate_variant(chrm, position, ref, alt, build):
     '''
     Submits a new poly/artefact to Variant Validator to check it is correctly formatted
     '''
+    # Check chromosome
+    chrm_check = if_chrom(chrm)
+    if not chrm_check:
+        return f'{chrm} is not a chromosome - please correct. Do not include "chr" in this box.'
+
+    # Check ref
+    check_ref = if_nucleotide(ref)
+    if not check_ref:
+        return f'Ref must consist only of A, T, C, and G - please correct ref: {ref}'
+    
+    # Check alt
+    check_alt = if_nucleotide(alt)
+    if not check_alt:
+        return f'Alt must consist only of A, T, C, and G - please correct alt: {alt}'
+
+    # Concatenate variant name
+    variant = chrm + ':' + str(position) + ref + '>' + alt
 
     # Access Variant Validator API
     try:
-        response = requests.get(f"https://rest.variantvalidator.org/VariantValidator/variantvalidator/{genome_build}/{variant_name}/mane_select")
+        response = requests.get(f"https://rest.variantvalidator.org/VariantValidator/variantvalidator/{build}/{variant}/mane_select")
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
          error = f"HTTP Request failed: {e} Please reattempt submission."
@@ -1178,7 +1195,10 @@ def validate_variant(variant_name, genome_build):
     for transcript in vv_json:
         if "validation_warning_" in transcript:
             for warning in vv_json[transcript]["validation_warnings"]:
-                warnings += ("Variant Validator Warnings: " + warning)
+                if warnings:
+                    warnings += (";\t" + warning)
+                else:
+                    warnings = ("Variant Validator Warnings: " + warning)
     if warnings:
         return warnings
     
@@ -1190,8 +1210,7 @@ def validate_variant(variant_name, genome_build):
     if warnings:
         return warnings
 
-    # Set up which warnings need reporting
-    # Actual WARNINGS.
+    # Set up which warnings need reporting.
     warning_patterns = [r".*Variant reference.*does not agree with reference.*",
                         r".*lies outside the reference sequence.*",
                         r".*outside the boundaries.*",
