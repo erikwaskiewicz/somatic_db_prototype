@@ -2,7 +2,7 @@ from django.db import models, transaction
 from django.utils import timezone
 from django.template.defaultfilters import slugify
 
-from somatic_variant_db.settings import BASE_DIR, SVIG_CODE_VERSION
+from somatic_variant_db.settings import BASE_DIR, SVIG_CODE_VERSION, BIOLOGICAL_CLASS_CHOICES, CLINICAL_CLASS_CHOICES, CODE_PRETTY_PRINT, CODE_SCORES
 
 import yaml
 import os
@@ -110,18 +110,11 @@ class Classification(models.Model):
     A classification of a single variant
 
     """
-    CLASS_CHOICES = (
-        ('B', 'Benign'),
-        ('LB', 'Likely benign'),
-        ('V', 'VUS'),
-        ('LO', 'Likely oncogenic'),
-        ('O', 'Oncogenic'),
-    )
     svig_version = models.CharField(max_length=20)
     variant = models.ForeignKey('Variant', on_delete=models.CASCADE)
     full_classification = models.BooleanField(default=False)
     previous_classification = models.ForeignKey('Variant', on_delete=models.CASCADE, blank=True, null=True, related_name="previous_classification_used")
-    final_biological_class = models.CharField(max_length=2, choices=CLASS_CHOICES, blank=True, null=True)
+    final_biological_class = models.CharField(max_length=2, choices=BIOLOGICAL_CLASS_CHOICES, blank=True, null=True)
     final_biological_score = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
@@ -151,16 +144,6 @@ class Classification(models.Model):
 
     def get_dropdown_options(self, code_list):
         """ get all dropdown options for a list of codes TODO can simplify """
-        pretty_print_dict = {
-            'SA': 'Stand-alone',
-            'VS': 'Very strong',
-            'ST': 'Strong',
-            'MO': 'Moderate',
-            'SU': 'Supporting',
-            'PE': 'Pending',
-            'NA': 'Not applied',
-        }
-        score_dict = {'SA': 100, 'VS': 8, 'ST': 4, 'MO': 2, 'SU': 1}
         config_file = os.path.join(BASE_DIR, f'svig/config/svig_{SVIG_CODE_VERSION}.yaml')
         with open(config_file) as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
@@ -182,11 +165,11 @@ class Classification(models.Model):
 
         elif len(code_list) == 1:
             for option in code_info[code_list[0]]["options"]:
-                text = f"{code_list[0]} {pretty_print_dict[option]}"
+                text = f"{code_list[0]} {CODE_PRETTY_PRINT[option]}"
                 if code_list[0][0] == "B":
-                    text += f" (-{score_dict[option]})"
+                    text += f" (-{CODE_SCORES[option]})"
                 elif code_list[0][0] == "O":
-                    text += f" (+{score_dict[option]})"
+                    text += f" (+{CODE_SCORES[option]})"
                 dropdown_options.append({
                     "value": f"{code_list[0]}_{option}",
                     "text": text,
@@ -194,21 +177,21 @@ class Classification(models.Model):
         else:
             code_1, code_2 = code_list
             for option in code_info[code_1]["options"]:
-                text = f"{code_1} {pretty_print_dict[option]}"
+                text = f"{code_1} {CODE_PRETTY_PRINT[option]}"
                 if code_1[0] == "B":
-                    text += f" (-{score_dict[option]})"
+                    text += f" (-{CODE_SCORES[option]})"
                 elif code_1[0] == "O":
-                    text += f" (+{score_dict[option]})"
+                    text += f" (+{CODE_SCORES[option]})"
                 dropdown_options.append({
                     "value": f"{code_1}_{option}|{code_2}_NA",
                     "text": text,
                 })
             for option in code_info[code_2]["options"]:
-                text = f"{code_2} {pretty_print_dict[option]}"
+                text = f"{code_2} {CODE_PRETTY_PRINT[option]}"
                 if code_2[0] == "B":
-                    text += f" (-{score_dict[option]})"
+                    text += f" (-{CODE_SCORES[option]})"
                 elif code_2[0] == "O":
-                    text += f" (+{score_dict[option]})"
+                    text += f" (+{CODE_SCORES[option]})"
                 dropdown_options.append({
                     "value": f"{code_1}_NA|{code_2}_{option}",
                     "text": text,
@@ -335,21 +318,6 @@ class Check(models.Model):
     """
     A check of a classification
     """
-    BIOLOGICAL_CLASS_CHOICES = (
-        ('B', 'Benign'),
-        ('LB', 'Likely benign'),
-        ('V', 'VUS'),
-        ('LO', 'Likely oncogenic'),
-        ('O', 'Oncogenic'),
-    )
-    CLINICAL_CLASS_CHOICES = (
-        ('1A', 'Tier IA'),
-        ('1B', 'Tier IB'),
-        ('2C', 'Tier IIC'),
-        ('2D', 'Tier IID'),
-        ('3', 'Tier III'),
-        ('4', 'Tier IV'),
-    )
     classification = models.ForeignKey('Classification', on_delete=models.CASCADE)
     info_check = models.BooleanField(default=False)
     previous_classifications_check = models.BooleanField(default=False)
@@ -369,8 +337,6 @@ class Check(models.Model):
 
     def update_classification(self):
         """ calculate the current score and biological classification """
-        # dict of how many points per code strength, this could be in settings/svig config
-        score_dict = {'SA': 100, 'VS': 8, 'ST': 4, 'MO': 2, 'SU': 1}
         score_counter = 0
 
         codes = self.get_codes()
@@ -378,9 +344,9 @@ class Check(models.Model):
             if c.applied:
                 code_type = c.get_code_type()
                 if code_type == 'Benign':
-                    score_counter -= score_dict[c.applied_strength]
+                    score_counter -= CODE_SCORES[c.applied_strength]
                 elif code_type == 'Oncogenic':
-                    score_counter += score_dict[c.applied_strength]
+                    score_counter += CODE_SCORES[c.applied_strength]
 
         # work out class from score counter
         class_list = OrderedDict({
@@ -523,24 +489,14 @@ class CodeAnswer(models.Model):
             return 'Oncogenic'
 
     def get_string(self):
-        pretty_print_dict = {
-            'SA': 'Stand-alone',
-            'VS': 'Very strong',
-            'ST': 'Strong',
-            'MO': 'Moderate',
-            'SU': 'Supporting',
-            'PE': 'Pending',
-            'NA': 'Not applied',
-        }
-        score_dict = {'SA': 100, 'VS': 8, 'ST': 4, 'MO': 2, 'SU': 1}
         if self.pending:
             return "Pending"
         elif self.applied:
             if self.get_code_type() == "Benign":
-                score = f"-{score_dict[self.applied_strength]}"
+                score = f"-{CODE_SCORES[self.applied_strength]}"
             elif self.get_code_type() == "Oncogenic":
-                score = f"+{score_dict[self.applied_strength]}"
-            out_string = f"{self.code} {pretty_print_dict[self.applied_strength]} ({score})"
+                score = f"+{CODE_SCORES[self.applied_strength]}"
+            out_string = f"{self.code} {CODE_PRETTY_PRINT[self.applied_strength]} ({score})"
             return out_string
         else:
             return "Not applied"

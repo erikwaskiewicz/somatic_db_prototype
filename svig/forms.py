@@ -2,6 +2,8 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
+from somatic_variant_db.settings import BIOLOGICAL_CLASS_CHOICES, CLINICAL_CLASS_CHOICES
+
 
 class NewClassification(forms.Form):
     """
@@ -93,12 +95,8 @@ class CompleteSvigForm(forms.Form):
     """
     CLASS_CHOICES = (
         ('No', 'No override'),
-        ('B', 'Benign'),
-        ('LB', 'Likely benign'),
-        ('V', 'VUS'),
-        ('LO', 'Likely oncogenic'),
-        ('O', 'Oncogenic'),
-    )
+    ) + BIOLOGICAL_CLASS_CHOICES
+
     override = forms.ChoiceField(choices=CLASS_CHOICES)
     complete_svig = forms.BooleanField(required=True, label="Confirm analysis is complete")
 
@@ -132,14 +130,6 @@ class ClinicalClassForm(forms.Form):
     Add a sample wide comment
 
     """
-    CLINICAL_CLASS_CHOICES = (
-        ('1A', 'Tier IA'),
-        ('1B', 'Tier IB'),
-        ('2C', 'Tier IIC'),
-        ('2D', 'Tier IID'),
-        ('3', 'Tier III'),
-        ('4', 'Tier IV'),
-    )
     clinical_class = forms.ChoiceField(choices=CLINICAL_CLASS_CHOICES)
     reporting_comment = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 4}),
