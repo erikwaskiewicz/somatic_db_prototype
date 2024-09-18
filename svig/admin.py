@@ -3,19 +3,24 @@ from .models import *
 
 
 class AnnotationVersionsAdmin(admin.ModelAdmin):
-    search_fields = ['version']
+    search_fields = ["version"]
+
 
 class VariantAdmin(admin.ModelAdmin):
-    search_fields = ['svd_variant']
+    search_fields = ["svd_variant"]
+
 
 class ClassificationAdmin(admin.ModelAdmin):
-    search_fields = ['variant']
+    search_fields = ["variant"]
+
 
 class CheckAdmin(admin.ModelAdmin):
-    search_fields = ['classification']
+    search_fields = ["classification"]
+
 
 class CodeAnswerAdmin(admin.ModelAdmin):
-    search_fields = ['code', 'check_object']
+    search_fields = ["code", "check_object"]
+
 
 admin.site.register(AnnotationVersions, AnnotationVersionsAdmin)
 admin.site.register(Variant, VariantAdmin)

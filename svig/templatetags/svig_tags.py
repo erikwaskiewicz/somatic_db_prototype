@@ -13,24 +13,24 @@ def colour_by_class(value):
     """
     value = value.lower()
     if value == "pending" or value == "vus":
-        css_class = 'warning'
+        css_class = "warning"
 
     elif value.startswith("b") or "benign" in value:
-        css_class = 'primary'
+        css_class = "primary"
 
     elif value.startswith("o") or "oncogenic" in value:
-        css_class = 'danger'
+        css_class = "danger"
 
     elif value.startswith("tier"):
         if value == "tier iii":
-            css_class = 'warning'
+            css_class = "warning"
         elif value == "tier iv":
             css_class = "primary"
         else:
             css_class = "danger"
 
     else:
-        css_class = 'secondary'
+        css_class = "secondary"
 
     return css_class
 
