@@ -1190,35 +1190,37 @@ def validate_variant(chrm, position, ref, alt, build):
          return error
     vv_json = response.json()
 
-    # Check for warnings where reference base provided is not correct
-    warnings = ""
-    for transcript in vv_json:
-        if "validation_warning_" in transcript:
-            for warning in vv_json[transcript]["validation_warnings"]:
-                if warnings:
-                    warnings += (";\t" + warning)
-                else:
-                    warnings = ("Variant Validator Warnings: " + warning)
-    if warnings:
-        return warnings
-    
-    # Check for warnings where variant provided is not in any transcript
-    for transcript in vv_json:
-        if "intergenic_variant_" in transcript:
-            for warning in vv_json[transcript]["validation_warnings"]:
-                warnings += ("Variant Validator Warnings: " + warning)
-    if warnings:
-        return warnings
-
     # Set up which warnings need reporting.
     warning_patterns = [r".*Variant reference.*does not agree with reference.*",
                         r".*lies outside the reference sequence.*",
                         r".*outside the boundaries.*",
                         r".*Uncertain positions.*",
                         r".*expected the character.*",
-                        r".*No transcripts found that fully overlap.*"]
+                        r".*No transcripts found that fully overlap.*",
+                        r".*None of the specified transcripts.*fully overlap.*"]
 
-    # Create list of prefered transcripts
+    # Check for warnings where reference base provided is not correct
+    warnings = ""
+    for transcript in vv_json:
+        if "validation_warning_" in transcript:
+            for warning in vv_json[transcript]["validation_warnings"]:
+                for pattern in warning_patterns:
+                    if re.search(pattern, warning):
+                        warnings += (warning + "; ")
+            if warnings:
+                return ("Variant Validator Warnings: " + warnings)
+    
+    # Check for warnings where variant provided is not in any transcript, e.g. intergenic
+    for transcript in vv_json:
+        if "intergenic_variant_" in transcript:
+            for warning in vv_json[transcript]["validation_warnings"]:
+                for pattern in warning_patterns:
+                    if re.search(pattern, warning):
+                        warnings += (warning + "; ")
+            if warnings:
+                return ("Variant Validator Warnings: " + warnings)
+
+    # Create list of preferred transcripts
     pref_trans_list = []
     with open("preferred_transcripts.txt") as tsv:
         reader = csv.DictReader(tsv, delimiter="\t")
@@ -1234,10 +1236,10 @@ def validate_variant(chrm, position, ref, alt, build):
                 for warning in vv_json[transcript]["validation_warnings"]:
                     for pattern in warning_patterns:
                         if re.search(pattern, warning):
-                            warnings += (transcript + ": " + warning + "\n")
+                            warnings += (transcript + ": " + warning + "; ")
     if not_mane:
         if warnings:
-            return ("Variant Validator Warnings: " + warnings.strip())
+            return ("Variant Validator Warnings: " + warnings)
         else:
             return None
     
@@ -1256,7 +1258,7 @@ def validate_variant(chrm, position, ref, alt, build):
                             warnings += transcript + ": " + warning + "\n"
     if mane_warning:
         if warnings:
-            return("Variant Validator Warnings: " + warnings.strip())
+            return("Variant Validator Warnings: " + warnings)
         else:
             return None
         
