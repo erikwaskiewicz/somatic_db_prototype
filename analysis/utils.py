@@ -1241,6 +1241,6 @@ def validate_variant(variant_name, genome_build):
         else:
             return None
         
-    # If json file had some sort of other structure, return this so we can investigate
+    # If json file had some sort of unexpected structure, return this so we can investigate
     else:
         return "Unexpected Error, contact Bioinformatics"
