@@ -146,17 +146,8 @@ class Classification(models.Model):
             classification_info['current_score'] = current_score
         return classification_info
 
-    def get_context(self):
-        context = {
-            'sample_info': self.get_sample_info(),
-            'variant_info': self.variant.get_variant_info(),
-            'classification_info': self.get_classification_info(),
-            'previous_classifications': self.variant.get_previous_classifications(),
-        }
-        return context
-
     def get_all_checks(self):
-        return Check.objects.filter(classification=self).order_by('-pk')
+        return Check.objects.filter(classification=self).order_by('pk')
 
     def get_dropdown_options(self, code_list):
         """ get all dropdown options for a list of codes TODO can simplify """
@@ -243,7 +234,7 @@ class Classification(models.Model):
 
         latest_code_objects = self.get_latest_check().get_codes()
 
-        all_check_objects = self.get_all_checks().order_by("pk")
+        all_check_objects = self.get_all_checks()
 
         svig_codes = {}
         for section, codes in order_info.items():
@@ -314,10 +305,10 @@ class Classification(models.Model):
         return svig_codes
 
     def get_previous_checks(self):
-        return self.get_all_checks()[1:]
+        return self.get_all_checks().order_by('-pk')[1:]
 
     def get_latest_check(self):
-        return self.get_all_checks()[0]
+        return self.get_all_checks().order_by('-pk')[0]
 
     def get_status(self):
         if self.get_latest_check().check_complete:
@@ -344,12 +335,20 @@ class Check(models.Model):
     """
     A check of a classification
     """
-    CLASS_CHOICES = (
+    BIOLOGICAL_CLASS_CHOICES = (
         ('B', 'Benign'),
         ('LB', 'Likely benign'),
         ('V', 'VUS'),
         ('LO', 'Likely oncogenic'),
         ('O', 'Oncogenic'),
+    )
+    CLINICAL_CLASS_CHOICES = (
+        ('1A', 'Tier IA'),
+        ('1B', 'Tier IB'),
+        ('2C', 'Tier IIC'),
+        ('2D', 'Tier IID'),
+        ('3', 'Tier III'),
+        ('4', 'Tier IV'),
     )
     classification = models.ForeignKey('Classification', on_delete=models.CASCADE)
     info_check = models.BooleanField(default=False)
@@ -359,9 +358,10 @@ class Check(models.Model):
     check_complete = models.BooleanField(default=False)
     signoff_time = models.DateTimeField(blank=True, null=True)
     user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True, related_name="svig_checker")
-    final_biological_class = models.CharField(max_length=2, choices=CLASS_CHOICES, blank=True, null=True)
+    final_biological_class = models.CharField(max_length=2, choices=BIOLOGICAL_CLASS_CHOICES, blank=True, null=True)
     final_biological_score = models.IntegerField(blank=True, null=True)
-    final_clinical_class = models.CharField(max_length=2, blank=True, null=True)
+    final_clinical_class = models.CharField(max_length=2, choices=CLINICAL_CLASS_CHOICES, blank=True, null=True)
+    reporting_comment = models.CharField(max_length=500, blank=True, null=True)
 
     def get_codes(self):
         """ get all classification codes for the current check """

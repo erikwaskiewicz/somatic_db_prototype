@@ -68,7 +68,12 @@ def classify(request, classification):
     current_check_obj = classification_obj.get_latest_check()
 
     # load context from classification obj
-    context = classification_obj.get_context()
+    context = {
+        'sample_info': classification_obj.get_sample_info(),
+        'variant_info': classification_obj.variant.get_variant_info(),
+        'classification_info': classification_obj.get_classification_info(),
+        'previous_classifications': classification_obj.variant.get_previous_classifications(),
+    }
 
     # load in forms and add to context
     previous_class_choices = classification_obj.get_previous_classification_choices()
@@ -79,7 +84,7 @@ def classify(request, classification):
         'reopen_previous_class_form': ReopenPreviousClassificationsForm(),
         'complete_svig_form': CompleteSvigForm(),
         'reopen_svig_form': ReopenSvigForm(),
-        'comment_form': ClinicalClassForm(),
+        'clinical_class_form': ClinicalClassForm(check=current_check_obj),
         'finalise_form': FinaliseCheckForm(),
     }
     # TODO visualise different forms depending on check etc
@@ -163,6 +168,15 @@ def classify(request, classification):
             reopen_svig_form = ReopenSvigForm(request.POST)
             if reopen_svig_form.is_valid():
                 current_check_obj.reopen_svig_tab()
+                return redirect('svig-analysis', classification)
+
+        # button to assign clinical class
+        if "clinical_class" in request.POST:
+            clinical_class_form = ClinicalClassForm(request.POST, check=current_check_obj)
+            if clinical_class_form.is_valid():
+                current_check_obj.final_clinical_class = clinical_class_form.cleaned_data['clinical_class']
+                current_check_obj.reporting_comment = clinical_class_form.cleaned_data['reporting_comment']
+                current_check_obj.save()
                 return redirect('svig-analysis', classification)
 
         # button to finish check

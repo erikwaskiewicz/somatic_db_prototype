@@ -127,6 +127,38 @@ class ReopenSvigForm(forms.Form):
         )
 
 
+class ClinicalClassForm(forms.Form):
+    """
+    Add a sample wide comment
+
+    """
+    CLINICAL_CLASS_CHOICES = (
+        ('1A', 'Tier IA'),
+        ('1B', 'Tier IB'),
+        ('2C', 'Tier IIC'),
+        ('2D', 'Tier IID'),
+        ('3', 'Tier III'),
+        ('4', 'Tier IV'),
+    )
+    clinical_class = forms.ChoiceField(choices=CLINICAL_CLASS_CHOICES)
+    reporting_comment = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 4}),
+        required=False,
+        label='Reporting comments:'
+    )
+
+    def __init__(self, *args, **kwargs):
+
+        self.check = kwargs.pop('check')
+
+        super(ClinicalClassForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.fields['clinical_class'].initial = self.check.final_clinical_class
+        self.fields['reporting_comment'].initial = self.check.reporting_comment
+        self.helper.form_method = 'POST'
+        self.helper.add_input(Submit('submit', 'Update clinical classification', css_class='btn btn-info'))
+
+
 class FinaliseCheckForm(forms.Form):
     """
     Form to close a checkand specify the next action
@@ -146,28 +178,3 @@ class FinaliseCheckForm(forms.Form):
         self.helper.add_input(
             Submit('submit', 'Complete check', css_class='btn btn-danger w-100')
         )
-
-
-class ClinicalClassForm(forms.Form):
-    """
-    Add a sample wide comment
-
-    """
-    CLINICAL_CLASS_CHOICES = (
-        ('1A', 'Tier 1A'),
-        ('2B', 'Tier 2B'),
-        ('3C', 'Tier 3C'),
-        ('4D', 'Tier 4D'),
-    )
-    clinical_class = forms.ChoiceField(choices=CLINICAL_CLASS_CHOICES)
-    comment = forms.CharField(
-        widget=forms.Textarea(attrs={'rows': 4}),
-        required=False,
-        label='Reporting comments:'
-    )
-
-    def __init__(self, *args, **kwargs):
-        super(ClinicalClassForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_method = 'POST'
-        self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-warning'))

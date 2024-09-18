@@ -5,10 +5,11 @@
 <table class="table table-sm table-hover">
     <thead>
         <tr>
-            <th>Check</th>
-            <th>User</th>
-            <th>Biological class</th>
-            <th>Clinical class</th>
+            <th class="col-1">Check</th>
+            <th class="col-3">User</th>
+            <th class="col-2">Reuse previous?</th>
+            <th class="col-3">Biological class</th>
+            <th class="col-3">Clinical class</th>
         </tr>
     </thead>
     <tbody>
@@ -16,7 +17,8 @@
         <tr>
             <td>{{ forloop.counter }}</td>
             <td>{{ c.user }}</td>
-            <td>{{ c.get_final_biological_class_display }}</td>
+            <td>TODO</td>
+            <td>{{ c.get_final_biological_class_display }} ({{ c.final_biological_score }})</td>
             <td>{{ c.get_final_clinical_class_display }}</td>
         </tr>
     {% endfor %}
@@ -43,15 +45,22 @@
     <br>
 
     <h5>Clinical classification</h5>
-    {% crispy forms.comment_form %}
+    {% crispy forms.clinical_class_form %}
     <br>
     <br>
 
+    {% if not classification_info.current_check.final_clinical_class %}
+    <div class="alert alert-warning">
+        Please complete the clinical classification before submitting
+    </div>
+
+    {% else %}
     <div class="card-body bg-light">
     <h5>Finalise check</h5>
     {% crispy forms.finalise_form %}
 
     <p>TODO options to send to next checker or send back</p>
     </div>
+    {% endif %}
 
 {% endif %}
