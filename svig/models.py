@@ -316,16 +316,31 @@ class Classification(models.Model):
     @transaction.atomic
     def signoff_check(self, current_check, next_step):
         """ complete a whole check """
-        if next_step == 'B':
-            pass
-            # TODO check for previosu and send back
-        current_check.check_complete = True
-        current_check.signoff_time = timezone.now()
-        current_check.save()
+        if next_step == "C":
+            previous_checks = self.get_previous_checks()
+            if not previous_checks.exists():
+                return False, "Cannot complete analysis, two checks required"
 
-        if next_step == 'E':
-             self.make_new_check()
-        # TODO save results to classification obj if final check
+        elif next_step == "B":
+            previous_checks = self.get_previous_checks()
+            if previous_checks.exists():
+                previous_check = previous_checks[0]
+                previous_check.reopen_check()
+                current_check.delete()
+                return True, previous_check
+            else:
+                return False, "Cannot send back, this is the first check"
+
+        else:
+            current_check.check_complete = True
+            current_check.signoff_time = timezone.now()
+            current_check.save()
+
+            if next_step == 'E':
+                self.make_new_check()
+            # TODO save results to classification obj if final check
+
+            return True, None
 
 
 class Check(models.Model):
@@ -416,6 +431,13 @@ class Check(models.Model):
             code_obj.save()
 
         return True
+
+    @transaction.atomic
+    def reopen_check(self):
+        """ reopen a completed check """
+        self.check_complete = False
+        self.signoff_time = None
+        self.save()
 
     @transaction.atomic
     def reopen_info_tab(self):

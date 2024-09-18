@@ -77,7 +77,7 @@ class ReopenPreviousClassificationsForm(forms.Form):
     Form to reopen the previous classifications form
 
     """
-    reset_previous_class_check = forms.BooleanField(required=True, label="Confirm that you want to reopen and that any S-VIG analysis you've done so far will be wiped")
+    reset_previous_class_check = forms.BooleanField(required=True, label="Confirm that you want to reopen and that any interpretation you've done so far will be wiped")
 
     def __init__(self, *args, **kwargs):
         super(ReopenPreviousClassificationsForm, self).__init__(*args, **kwargs)

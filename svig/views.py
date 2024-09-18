@@ -67,6 +67,15 @@ def classify(request, classification):
     classification_obj = Classification.objects.get(id = classification)
     current_check_obj = classification_obj.get_latest_check()
 
+    # assign user
+    if classification_obj.get_status() != "Complete":
+        if current_check_obj.user == None:
+            current_check_obj.user = request.user
+            current_check_obj.save()
+
+        if current_check_obj.user != request.user:
+            raise PermissionDenied()
+
     # load context from classification obj
     context = {
         'sample_info': classification_obj.get_sample_info(),
@@ -87,11 +96,11 @@ def classify(request, classification):
         'clinical_class_form': ClinicalClassForm(check=current_check_obj),
         'finalise_form': FinaliseCheckForm(),
     }
-    # TODO visualise different forms depending on check etc
     # TODO comments modal
     # TODO when checks disagree
     # TODO papers model with pubmed api
     # TODO finish previous classifications page
+    # TODO send back option should be available all the time
 
     # ------------------------------------------------------------------------
     # when buttons are pressed
@@ -184,9 +193,11 @@ def classify(request, classification):
             finalise_form = FinaliseCheckForm(request.POST)
             if finalise_form.is_valid():
                 next_step = finalise_form.cleaned_data['next_step']
-                classification_obj.signoff_check(current_check_obj, next_step)
-                return redirect('view-all-svig')
-
+                updated, err = classification_obj.signoff_check(current_check_obj, next_step)
+                if updated:
+                    return redirect('view-all-svig')
+                else:
+                    context["warning"] = [err]
 
     return render(request, 'svig/svig_base.html', context)
 
