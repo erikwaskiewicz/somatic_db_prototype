@@ -8,7 +8,6 @@ import pybedtools
 import re
 import requests
 import csv
-import json
 
 def get_samples(samples):
     """
