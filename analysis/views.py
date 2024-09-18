@@ -976,6 +976,7 @@ def view_polys(request, list_name):
                 if validation_error:
                     context['warning'].append(f'{validation_error}')
                 else:
+                    variant = chrm + ':' + str(position) + ref + '>' + alt
 
                     # load in variant and variant to list objects
                     variant_obj, _ = Variant.objects.get_or_create(variant=variant, genome_build=genome)
