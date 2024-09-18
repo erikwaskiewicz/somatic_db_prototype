@@ -1221,17 +1221,17 @@ def validate_variant(chrm, position, ref, alt, build):
                 return ("Variant Validator Warnings: " + warnings)
 
     # Create list of preferred transcripts
-    pref_trans_list = []
+    preferred_transcript_list = []
     with open("preferred_transcripts.txt") as tsv:
         reader = csv.DictReader(tsv, delimiter="\t")
         for row in reader:
-            pref_trans_list.append(row["Transcript"])
+            preferred_transcript_list.append(row["Transcript"])
 
     # Check for warnings for variants that have a preferred transcript (not mane select)
     not_mane = False
     for transcript in vv_json:
-        for pref_tran in pref_trans_list:
-            if pref_tran in transcript:
+        for pref_transcript in preferred_transcript_list:
+            if pref_transcript in transcript:
                 not_mane = True
                 for warning in vv_json[transcript]["validation_warnings"]:
                     for pattern in warning_patterns:
