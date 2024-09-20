@@ -67,7 +67,7 @@ class Panel(models.Model):
     A virtual panel of genes
     """
     id = models.AutoField(primary_key=True)
-    panel_name = models.CharField(max_length=50)
+    panel_name = models.CharField(max_length=100)
     panel_version = models.DecimalField(max_digits=4, decimal_places=1)
     panel_notes = models.TextField(null=True, blank=True)
     panel_approved = models.BooleanField(default=False)
