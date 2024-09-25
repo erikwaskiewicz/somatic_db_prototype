@@ -1158,6 +1158,7 @@ def lims_initials_check(lims_initials:str):
     else:
         return True, ''
 
+
 def validate_variant(chrm, position, ref, alt, build):
     '''
     Submits a new poly/artefact to Variant Validator to check it is correctly formatted
@@ -1221,7 +1222,7 @@ def validate_variant(chrm, position, ref, alt, build):
 
     # Create list of preferred transcripts
     preferred_transcript_list = []
-    with open('preferred_transcripts.txt') as tsv:
+    with open('roi/preferred_transcripts.txt') as tsv:
         reader = csv.DictReader(tsv, delimiter='\t')
         for row in reader:
             preferred_transcript_list.append(row['Transcript'])
