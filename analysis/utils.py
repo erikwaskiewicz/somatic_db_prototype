@@ -1207,7 +1207,7 @@ def validate_variant(chrm, position, ref, alt, build):
                     if re.search(pattern, warning):
                         warnings += (warning + '; ')
             if warnings:
-                return ('Variant Validator Warnings: ' + warnings)
+                return ('Variant Validator Warnings: ' + warnings.strip())
     
     # Check for warnings where variant provided is not in any transcript, e.g. intergenic
     for transcript in vv_json:
@@ -1217,7 +1217,7 @@ def validate_variant(chrm, position, ref, alt, build):
                     if re.search(pattern, warning):
                         warnings += (warning + '; ')
             if warnings:
-                return ('Variant Validator Warnings: ' + warnings)
+                return ('Variant Validator Warnings: ' + warnings.strip())
 
     # Create list of preferred transcripts
     preferred_transcript_list = []
@@ -1238,7 +1238,7 @@ def validate_variant(chrm, position, ref, alt, build):
                             warnings += (transcript + ': ' + warning + '; ')
     if not_mane:
         if warnings:
-            return ('Variant Validator Warnings: ' + warnings)
+            return ('Variant Validator Warnings: ' + warnings.strip())
         else:
             return None
     
@@ -1257,7 +1257,7 @@ def validate_variant(chrm, position, ref, alt, build):
                             warnings += transcript + ': ' + warning + '\n'
     if mane_warning:
         if warnings:
-            return('Variant Validator Warnings: ' + warnings)
+            return('Variant Validator Warnings: ' + warnings.strip())
         else:
             return None
         
