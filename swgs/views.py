@@ -39,6 +39,14 @@ def view_runs(request):
     return render(request, "swgs/view_runs.html", context)
 
 @login_required
+def view_panels(request):
+    """
+    View panels, panel update pages
+    """
+    pass
+
+
+@login_required
 def view_patient_analysis(request, patient_id):
     """
     View variants in a PatientAnalysis
@@ -50,11 +58,10 @@ def view_patient_analysis(request, patient_id):
 
     germline_snvs_query = GermlineVariantInstance.objects.filter(patient_analysis=patient_analysis)
     somatic_snvs_query = SomaticVariantInstance.objects.filter(patient_analysis=patient_analysis)
-    germline_snvs = []
-    somatic_snvs = []
-
-    disallowed_consequences_query = VEPAnnotationsConsequence.objects.filter(impact__impact="MODIFIER")
-    disallowed_consequences = [c.consequence for c in disallowed_consequences_query]
+    germline_snvs_tier_one = []
+    germline_snvs_tier_three = []
+    somatic_snvs_tier_one = []
+    somatic_snvs_tier_two = []
 
     for v in somatic_snvs_query:
         variant = v.variant.variant
@@ -69,32 +76,43 @@ def view_patient_analysis(request, patient_id):
         consequences = [c.consequence for c in consequences]
         consequences_formatted = [c.replace("_", " ") for c in consequences]
         consequences_formatted = " | ".join(consequences)
-        if float(gnomad) >= 0.05 or (len(impacts) == 1 and impacts[0] == "MODIFIER"):
-            pass
-        elif float(gnomad) == -1:
-            
-            gnomad = "Not in Gnomad"
-            variant_dict = {
-                "pk": variant,
-                "gnomad": gnomad,
-                "vaf": f"{vaf:.2f}",
-                "hgvsc": hgvsc,
-                "hgvsp": hgvsp,
-                "gene": gene,
-                "consequence": consequences_formatted
-            }
-            somatic_snvs.append(variant_dict)
+        force_display = v.force_display()
+
+        # handle gnomad
+        if float(gnomad) == -1:
+            gnomad_formatted = "Not in Gnomad"
         else:
-            variant_dict = {
+            gnomad_formatted = f"{gnomad:.3f}%"
+
+        # make variant dict
+        variant_dict = {
                 "pk": variant,
-                "gnomad": f"{gnomad:.3f}%",
+                "gnomad": gnomad_formatted,
                 "vaf": f"{vaf:.2f}",
                 "hgvsc": hgvsc,
                 "hgvsp": hgvsp,
                 "gene": gene,
-                "consequence": consequences_formatted
+                "consequence": consequences_formatted,
+                "force_display": force_display
             }
-            somatic_snvs.append(variant_dict)
+
+        # lose >5% in gnomad and modifier only variants
+        if float(gnomad) >= 0.05 or (len(impacts) == 1 and impacts[0] == "MODIFIER"):
+            if not force_display:
+                continue
+
+        # Put in tier list
+        if v.display_in_tier_zero():
+            variant_dict["tier"] = "0"
+            somatic_snvs_tier_one.append(variant_dict)
+        elif v.display_in_tier_one():
+            variant_dict["tier"] = "1"
+            somatic_snvs_tier_one.append(variant_dict)
+        elif v.display_in_tier_two():
+            variant_dict["tier"] = "2"
+            somatic_snvs_tier_two.append(variant_dict)
+        else:
+            pass
 
     for v in germline_snvs_query:
         variant = v.variant.variant
@@ -109,38 +127,51 @@ def view_patient_analysis(request, patient_id):
         consequences = [c.consequence for c in consequences]
         consequences_formatted = [c.replace("_", " ") for c in consequences]
         consequences_formatted = " | ".join(consequences)
-        if float(gnomad) >= 0.05 or (len(impacts) == 1 and impacts[0] == "MODIFIER"):
-            pass
-        elif float(gnomad) == -1:
-            
-            gnomad = "Not in Gnomad"
-            variant_dict = {
-                "pk": variant,
-                "gnomad": gnomad,
-                "vaf": f"{vaf:.2f}",
-                "hgvsc": hgvsc,
-                "hgvsp": hgvsp,
-                "gene": gene,
-                "consequence": consequences_formatted
-            }
-            germline_snvs.append(variant_dict)
+        force_display = v.force_display()
+
+        # handle gnomad
+        if float(gnomad) == -1:
+            gnomad_formatted = "Not in Gnomad"
         else:
-            variant_dict = {
+            gnomad_formatted = f"{gnomad:.3f}%"
+
+        # make variant dict
+        variant_dict = {
                 "pk": variant,
-                "gnomad": f"{gnomad:.3f}%",
+                "gnomad": gnomad_formatted,
                 "vaf": f"{vaf:.2f}",
                 "hgvsc": hgvsc,
                 "hgvsp": hgvsp,
                 "gene": gene,
-                "consequence": consequences_formatted
+                "consequence": consequences_formatted,
+                "force_display": force_display
             }
-            germline_snvs.append(variant_dict)
+
+        # lose >5% in gnomad and modifier only variants
+        if float(gnomad) >= 0.05 or (len(impacts) == 1 and impacts[0] == "MODIFIER"):
+            if not force_display:
+                continue
+
+        # Put in tier list
+        if v.display_in_tier_zero():
+            variant_dict["tier"] = "0"
+            germline_snvs_tier_one.append(variant_dict)
+        elif v.display_in_tier_one():
+            variant_dict["tier"] = "1"
+            germline_snvs_tier_one.append(variant_dict)
+        elif v.display_in_tier_three():
+            variant_dict["tier"] = "3"
+            germline_snvs_tier_three.append(variant_dict)
+        else:
+            pass
     
     context = {
         "form": download_csv_form,
         "patient_analysis": patient_analysis,
-        "somatic_snvs": somatic_snvs,
-        "germline_snvs": germline_snvs
+        "somatic_snvs_tier_one": somatic_snvs_tier_one,
+        "somatic_snvs_tier_two": somatic_snvs_tier_two,
+        "germline_snvs_tier_one": germline_snvs_tier_one,
+        "germline_snvs_tier_three": germline_snvs_tier_three
     }
 
     # Download a csv
@@ -151,13 +182,18 @@ def view_patient_analysis(request, patient_id):
         response = HttpResponse(content_type = "text/csv")
         response["Content-Disposition"] = f"attachement; filename={filename}"
         
+        somatic_snvs = somatic_snvs_tier_one + somatic_snvs_tier_two
+        germline_snvs = germline_snvs_tier_one + germline_snvs_tier_three
+
         csv_writer = csv.writer(response)
-        header_line = ["Germline_or_Somatic", "Variant", "Gene", "Consequence", "HGVSC", "HGVSP", "VAF", "GnomAD"]
+        header_line = ["Germline_or_Somatic", "Variant", "Gene", "Tier", "Consequence", "HGVSC", "HGVSP", "VAF", "GnomAD"]
         csv_writer.writerow(header_line)
         for variant in somatic_snvs:
-            csv_writer.writerow(["somatic", variant["pk"], variant["gene"], variant["consequence"], variant["hgvsc"], variant["hgvsp"], f"{variant['vaf']}%", variant["gnomad"]])
+            if variant["tier"] != "None":
+                csv_writer.writerow(["somatic", variant["pk"], variant["gene"], variant["tier"], variant["consequence"], variant["hgvsc"], variant["hgvsp"], f"{variant['vaf']}%", variant["gnomad"]])
         for variant in germline_snvs:
-            csv_writer.writerow(["germline", variant["pk"], variant["gene"], variant["consequence"], variant["hgvsc"], variant["hgvsp"], f"{variant['vaf']}%", variant["gnomad"]])
+            if variant["tier"] != "None":
+                csv_writer.writerow(["germline", variant["pk"], variant["gene"], variant["tier"], variant["consequence"], variant["hgvsc"], variant["hgvsp"], f"{variant['vaf']}%", variant["gnomad"]])
 
         return response
 
