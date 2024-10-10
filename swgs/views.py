@@ -43,7 +43,39 @@ def view_panels(request):
     """
     View panels, panel update pages
     """
-    pass
+    
+    # get all the panels
+    panels = Panel.objects.all().order_by("panel_name")
+    germline_panel_list = []
+    somatic_panel_list = []
+    other_panel_list = []
+    for panel in panels:
+        panel_dict = {
+            "panel_id": panel.id,
+            "panel_name": panel.display_panel_name(),
+            "is_active": panel.panel_approved
+        }
+        if panel.panel_name.startswith("germline"):
+            germline_panel_list.append(panel_dict)
+        elif panel.panel_name.startswith("somatic"):
+            somatic_panel_list.append(panel_dict)
+        else:
+            other_panel_list.append(panel_dict)
+
+    context = {
+        "germline_panels": germline_panel_list,
+        "somatic_panels": somatic_panel_list,
+        "other_panels": other_panel_list
+    }
+
+    return render(request, "swgs/view_panels.html", context)
+
+
+@login_required
+def view_panel(request, panel_id):
+    """
+    Display the genes in a panel, 
+    """
 
 
 @login_required

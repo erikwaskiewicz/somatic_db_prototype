@@ -1,0 +1,70 @@
+{% extends 'analysis/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block breadcrumbs %}
+<div class="container-fluid breadcrumbs-custom">
+  <div class="container">
+    <ol class="breadcrumb" style="background-color: transparent;">
+      <li class="breadcrumb-item"><a href="{% url 'home' %}"><span class="fa fa-home"></span></a></li>
+      <li class="breadcrumb-item active"> Panels</li>
+    </ol>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid">
+  
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container">
+        <h1 class="display-4"> Panels</h1>
+        <!-- Somatic Panels -->
+        <br>
+        <br>
+        <h3 class="display-4"> Somatic Panels</h3>
+        {% for panel in somatic_panels %}
+        {% if panel.is_active %}
+        <a class="btn btn-warning" href="{% url 'view_panel'  panel.panel_id %}" role="button">
+            {{ panel.panel_name }}
+        </a>
+        {% else %}
+        <a class="btn btn-secondary" href="{% url 'view_panel'  panel.panel_id %}" role="button">
+            {{ panel.panel_name }}
+        </a>
+        {% endif %}
+        {% endfor %}
+        <!-- Germline Panels -->
+        <br>
+        <br>
+        <h3 class="display-4"> Germline Panels</h3>
+        {% for panel in germline_panels %}
+        {% if panel.is_active %}
+        <a class="btn btn-warning" href="{% url 'view_panel'  panel.panel_id %}" role="button">
+            {{ panel.panel_name }}
+        </a>
+        {% else %}
+        <a class="btn btn-secondary" href="{% url 'view_panel'  panel.panel_id %}" role="button">
+            {{ panel.panel_name }}
+        </a>
+        {% endif %}
+        {% endfor %}
+        <!-- Other Panels -->
+        <br>
+        <br>
+        <h3 class="display-4"> Other Panels</h3>
+        {% for panel in other_panels %}
+        {% if panel.is_active %}
+        <a class="btn btn-warning" href="{% url 'view_panel'  panel.panel_id %}" role="button">
+            {{ panel.panel_name }}
+        </a>
+        {% else %}
+        <a class="btn btn-secondary" href="{% url 'view_panel'  panel.panel_id %}" role="button">
+            {{ panel.panel_name }}
+        </a>
+        {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

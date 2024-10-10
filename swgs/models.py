@@ -82,6 +82,26 @@ class Panel(models.Model):
     
     def __str__(self):
         return f"{self.panel_name}_{str(self.panel_version)}"
+    
+    def display_panel_name(self):
+
+        # split on _
+        split_panel_name = self.panel_name.split("_")
+
+        # remove germline/somatic if relevant and join with spaces
+        if split_panel_name[0] == "germline" or split_panel_name[0] == "somatic":
+            joined_panel_name = " ".join(split_panel_name[1:])
+        else:
+            joined_panel_name = " ".join(split_panel_name)
+
+        # change to title case
+        joined_panel_name = joined_panel_name.title()
+
+        # add version
+        display_panel_name = f"{joined_panel_name} {self.panel_version}"
+
+        return display_panel_name
+        
 
 class Indication(models.Model):
     """
