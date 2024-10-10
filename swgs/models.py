@@ -101,6 +101,26 @@ class Panel(models.Model):
         display_panel_name = f"{joined_panel_name} {self.panel_version}"
 
         return display_panel_name
+    
+    def display_somatic_or_germline(self):
+
+        somatic_or_germline = self.panel_name.split("_")[0]
+
+        if somatic_or_germline == "somatic":
+            return "Somatic"
+        elif somatic_or_germline == "germline":
+            return "Germline"
+        else:
+            return "Unknown"
+
+    def get_gene_names(self):
+
+        gene_names = []
+
+        for gene in self.genes.all():
+            gene_names.append(gene.gene)
+        
+        return gene_names
         
 
 class Indication(models.Model):

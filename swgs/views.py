@@ -77,6 +77,21 @@ def view_panel(request, panel_id):
     Display the genes in a panel, 
     """
 
+    panel = Panel.objects.get(id=panel_id)
+
+    panel_dict = {
+        "panel_name": panel.display_panel_name(),
+        "panel_notes": panel.panel_notes,
+        "genes": panel.get_gene_names(),
+        "somatic_or_germline": panel.display_somatic_or_germline()
+    }
+
+    context = {
+        "panel_dict": panel_dict
+    }
+
+    return render(request, "swgs/view_panel.html", context)
+
 
 @login_required
 def view_patient_analysis(request, patient_id):
