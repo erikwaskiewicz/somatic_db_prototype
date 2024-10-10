@@ -20,14 +20,16 @@
       <div class="container">
         <h1 class="display-4"> {{ panel_dict.panel_name }} <a class="badge badge-success badge-pill">{{ panel_dict.somatic_or_germline}}</a></h1>
         <br>
-        <h3>Panel Notes: </h3>
-        <p>{{ panel_dict.panel_notes }}</p>
         <h3>Genes in Panel: </h3>
         {% for gene in panel_dict.genes %}
         <a class="badge badge-info">
             {{ gene }}
         </a>
         {% endfor %}
+        <br>
+        <br>
+        {% crispy update_panel_notes_form %}
+        <br>
       </div>
     </div>
   </div>

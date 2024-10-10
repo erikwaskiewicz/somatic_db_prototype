@@ -87,8 +87,22 @@ def view_panel(request, panel_id):
     }
 
     context = {
-        "panel_dict": panel_dict
+        "panel_dict": panel_dict,
+        "update_panel_notes_form": UpdatePanelNotesForm(
+            panel_notes=panel.panel_notes
+        )
     }
+    
+    if "panel_notes" in request.POST:
+        update_panel_notes_form = UpdatePanelNotesForm(request.POST, panel_notes=panel_dict["panel_notes"])
+
+        if update_panel_notes_form.is_valid():
+            updated_notes = update_panel_notes_form.cleaned_data["panel_notes"]
+            Panel.objects.filter(id=panel_id).update(panel_notes=updated_notes)
+            panel = Panel.objects.get(id=panel_id)
+            context["update_panel_notes_form"] = UpdatePanelNotesForm(
+                panel_notes = panel.panel_notes
+            )
 
     return render(request, "swgs/view_panel.html", context)
 
