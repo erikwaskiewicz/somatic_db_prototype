@@ -62,10 +62,21 @@ def view_panels(request):
         else:
             other_panel_list.append(panel_dict)
 
+    # get all the indications
+    indications = Indication.objects.all().order_by("indication")
+    indications_list = []
+    for indication in indications:
+        indication_dict = {
+            "indication_id": indication.id,
+            "indication": indication.indication
+        }
+        indications_list.append(indication_dict)
+
     context = {
         "germline_panels": germline_panel_list,
         "somatic_panels": somatic_panel_list,
-        "other_panels": other_panel_list
+        "other_panels": other_panel_list,
+        "indications": indications_list
     }
 
     return render(request, "swgs/view_panels.html", context)
@@ -105,6 +116,24 @@ def view_panel(request, panel_id):
             )
 
     return render(request, "swgs/view_panel.html", context)
+
+
+@login_required
+def view_indication(request, indication_id):
+    """
+    display information about an indication
+    """
+    indication = Indication.objects.get(id=indication_id)
+    
+    indication_dict = {
+        "indication_name": indication.indication
+    }
+
+    context = {
+        "indication_dict": indication_dict
+    }
+
+    return render(request, "swgs/view_indication.html", context)
 
 
 @login_required

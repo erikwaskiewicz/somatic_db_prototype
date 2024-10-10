@@ -7,7 +7,7 @@
     <ol class="breadcrumb" style="background-color: transparent;">
       <li class="breadcrumb-item"><a href="{% url 'home_swgs' %}"><span class="fa fa-home"></span></a></li>
       <li class="breadcrumb-item"><a href="{% url 'view_panels' %}">Panels and Indications</a></li>
-      <li class="breadcrumb-item active"> {{ panel_dict.panel_name }}</li>
+      <li class="breadcrumb-item active"> {{ indication_dict.indication_name }}</li>
     </ol>
   </div>
 </div>
@@ -18,18 +18,7 @@
   
     <div class="jumbotron jumbotron-fluid">
       <div class="container">
-        <h1 class="display-4"> {{ panel_dict.panel_name }} <a class="badge badge-success badge-pill">{{ panel_dict.somatic_or_germline}}</a></h1>
-        <br>
-        <h3>Genes in Panel: </h3>
-        {% for gene in panel_dict.genes %}
-        <a class="badge badge-info">
-            {{ gene }}
-        </a>
-        {% endfor %}
-        <br>
-        <br>
-        {% crispy update_panel_notes_form %}
-        <br>
+        <h1> hello!</h1>
       </div>
     </div>
   </div>

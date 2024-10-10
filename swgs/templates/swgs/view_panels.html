@@ -6,7 +6,7 @@
   <div class="container">
     <ol class="breadcrumb" style="background-color: transparent;">
       <li class="breadcrumb-item"><a href="{% url 'home' %}"><span class="fa fa-home"></span></a></li>
-      <li class="breadcrumb-item active"> Panels</li>
+      <li class="breadcrumb-item active"> Panels and Indications</li>
     </ol>
   </div>
 </div>
@@ -18,8 +18,19 @@
     <div class="jumbotron jumbotron-fluid">
       <div class="container">
         <h1 class="display-4"> Panels</h1>
-        <!-- Somatic Panels -->
+        <p>This page shows you the indications and panels currently in use for SWGS. Indications are made up of one or more panels 
+            and set in tiers. Panels are lists of genes which may be curated or taken from PanelApp. The latest, active panel versions
+            are in <a class="badge badge-warning">Yellow</a> and older or pending panels in <a class="badge badge-secondary">Grey</a>.
+        </p>
+        <!-- Inidications -->
         <br>
+        <h3 class="display-4"> Indications</h3>
+        {% for indication in indications %}
+        <a class="btn btn-info" href="{% url 'view_indication'  indication.indication_id %}" role="button">
+            {{ indication.indication }}
+        </a>
+        {% endfor %}
+        <!-- Somatic Panels -->
         <br>
         <h3 class="display-4"> Somatic Panels</h3>
         {% for panel in somatic_panels %}
