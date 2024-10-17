@@ -247,7 +247,9 @@ class PatientAnalysis(models.Model):
             "run": self.run.run,
             "worksheet": self.run.worksheet,
             "tumour_sample": self.tumour_sample.sample_id,
-            "germline_sample": self.germline_sample.sample_id
+            "germline_sample": self.germline_sample.sample_id,
+            "indication": self.indication.indication,
+            "indication_id": self.indication.id
         }
 
         return patient_analysis_info_dict

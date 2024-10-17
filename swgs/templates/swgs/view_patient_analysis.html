@@ -5,7 +5,7 @@
 <div class="container-fluid breadcrumbs-custom">
   <div class="container">
     <ol class="breadcrumb" style="background-color: transparent;">
-      <li class="breadcrumb-item"><a href="{% url 'home' %}"><span class="fa fa-home"></span></a></li>
+      <li class="breadcrumb-item"><a href="{% url 'home_swgs' %}"><span class="fa fa-home"></span></a></li>
       <li class="breadcrumb-item"><a href="{% url 'view_patient_analysis'}"></a> Patient Analysis</li>
       <li class="breadcrumb-item"> !REPLACE with Patient Identifier </li>
     </ol>
@@ -119,6 +119,11 @@
       var target = '#' + $(this).data('target');
       show_section(target, sections_list);
   });
+
+  // allow tooltips
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
 
 </script>
 
