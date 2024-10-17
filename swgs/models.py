@@ -149,77 +149,53 @@ class Indication(models.Model):
     def __str__(self):
         return f"{self.indication}"
     
-    def get_germline_genes_and_panels_tier_zero(self):
-        
+    @staticmethod
+    def get_genes_and_panels(panel_query):
+
         genes = []
         panels = []
 
-        for panel in self.germline_panels_tier_zero.all():
+        for panel in panel_query:
             gene_names = panel.get_gene_names()
             genes += gene_names
-            panels.append(panel.display_panel_name())
+            panel_name_and_id = {
+                "panel_name": panel.display_panel_name(),
+                "panel_id": panel.id
+            }
+            panels.append(panel_name_and_id)
         
-        return genes, panels
+        return {"genes": list(set(genes)), "panels": panels}
+    
+    def get_all_genes_and_panels(self):
 
-    def get_germline_genes_tier_one(self):
-        
-        genes = []
-        panels = []
+        genes_and_panels_dict = {
+            "somatic_tier_zero": self.get_genes_and_panels(self.somatic_panels_tier_zero.all()),
+            "somatic_tier_one": self.get_genes_and_panels(self.somatic_panels_tier_one.all()),
+            "somatic_tier_two": self.get_genes_and_panels(self.somatic_panels_tier_two.all()),
+            "germline_tier_zero": self.get_genes_and_panels(self.germline_panels_tier_zero.all()),
+            "germline_tier_one": self.get_genes_and_panels(self.germline_panels_tier_one.all()),
+            "germline_tier_three": self.get_genes_and_panels(self.germline_panels_tier_three.all())
+        }
 
-        for panel in self.germline_panels_tier_one.all():
-            gene_names = panel.get_gene_names()
-            genes += gene_names
-            panels.append(panel.display_panel_name())
-        
-        return genes, panels
+        return genes_and_panels_dict
+    
+    @staticmethod
+    def display_genes(genes_and_panels_dict):
+        somatic_tier_two = [
+            gene for gene in genes_and_panels_dict["somatic_tier_two"]["genes"] if gene not in genes_and_panels_dict["somatic_tier_one"]["genes"]
+        ]
+        germline_tier_three = [
+            gene for gene in genes_and_panels_dict["germline_tier_three"]["genes"] if gene not in genes_and_panels_dict["germline_tier_one"]["genes"]
+        ]
+        display_genes_dict = {
+            "somatic_tier_one": sorted(genes_and_panels_dict["somatic_tier_one"]["genes"]),
+            "somatic_tier_two": sorted(somatic_tier_two),
+            "germline_tier_one": sorted(genes_and_panels_dict["germline_tier_one"]["genes"]),
+            "germline_tier_three": sorted(germline_tier_three)
+        }
 
-    def get_germline_genes_tier_three(self):
-        
-        genes = []
-        panels = []
-
-        for panel in self.germline_panels_tier_three.all():
-            gene_names = panel.get_gene_names()
-            genes += gene_names
-            panels.append(panel.display_panel_name())
-        
-        return genes, panels
-
-    def get_somatic_genes_tier_zero(self):
-        
-        genes = []
-        panels = []
-
-        for panel in self.somatic_panels_tier_zero.all():
-            gene_names = panel.get_gene_names()
-            genes += gene_names
-            panels.append(panel.display_panel_name())
-        
-        return genes, panels
-
-    def get_somatic_genes_tier_one(self):
-        
-        genes = []
-        panels = []
-
-        for panel in self.somatic_panels_tier_one.all():
-            gene_names = panel.get_gene_names()
-            genes += gene_names
-            panels.append(panel.display_panel_name())
-        
-        return genes, panels
-
-    def get_somatic_genes_tier_two(self):
-        
-        genes = []
-        panels = []
-
-        for panel in self.somatic_panels_tier_two.all():
-            gene_names = panel.get_gene_names()
-            genes += gene_names
-            panels.append(panel.display_panel_name())
-        
-        return genes, panels
+        return display_genes_dict
+    
 
 class Run(models.Model):
     """

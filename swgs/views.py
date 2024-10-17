@@ -125,8 +125,12 @@ def view_indication(request, indication_id):
     """
     indication = Indication.objects.get(id=indication_id)
     
+    genes_and_panels = indication.get_all_genes_and_panels()
+
     indication_dict = {
-        "indication_name": indication.indication
+        "indication_name": indication.indication,
+        "genes_and_panels": genes_and_panels,
+        "display_genes": indication.display_genes(genes_and_panels)
     }
 
     context = {
