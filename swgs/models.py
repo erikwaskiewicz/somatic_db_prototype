@@ -235,9 +235,71 @@ class PatientAnalysis(models.Model):
     tumour_ntc_contamination = models.ForeignKey('QCNTCContamination', on_delete=models.CASCADE, related_name='tumour_ntc_contamination')
     germline_ntc_contamination = models.ForeignKey('QCNTCContamination', on_delete=models.CASCADE, related_name='germline_ntc_contamination')
     relatedness = models.ForeignKey('QCRelatedness', on_delete=models.CASCADE)
-    
+    #TODO add a QC metric on tumour purity
+
     def __str__(self):
         return f"{self.run}_{self.tumour_sample}_{self.germline_sample}"
+    
+    def create_patient_analysis_info_dict(self):
+
+        patient_analysis_info_dict = {
+            "patient_identifier": self.patient.nhs_number,
+            "run": self.run.run,
+            "worksheet": self.run.worksheet,
+            "tumour_sample": self.tumour_sample.sample_id,
+            "germline_sample": self.germline_sample.sample_id
+        }
+
+        return patient_analysis_info_dict
+    
+    def create_qc_dict(self):
+
+        patient_analysis_qc_dict = {
+            "somatic_vaf_distribution": {
+                "display_name": "Somatic VAF Distribution",
+                "status": self.somatic_vaf_distribution.status,
+                "message": self.somatic_vaf_distribution.message,
+                "tooltip": "A high proportion of low frequency variants can indicate poor tumour quality"
+            },
+            "tumour_in_normal_contamination": {
+                "display_name": "Tumour In Normal Contamination (TINC)",
+                "status": self.tumour_in_normal_contamination.status,
+                "message": self.tumour_in_normal_contamination.message,
+                "tooltip": "Tumour in normal contamination impacts sensitivity - contact bioinformatics for WARN or FAIL"
+            },
+            "germline_cnv_quality": {
+                "display_name": "Germline CNV Quality",
+                "status": self.germline_cnv_quality.status,
+                "message": self.germline_cnv_quality.message,
+                "tooltip": "If germline CNVs are low quality, this may impact sensitivity of germline CNV calling, and precision of somatic CNV calling (potential for more false positives)"
+            },
+            "low_quality_tumour_sample_qc": {
+                "display_name": "Tumour Sample Quality",
+                "status": self.low_quality_tumour_sample.status,
+                "message": self.low_quality_tumour_sample.message,
+                "tooltip": "This considers several metrics which GEL have found are indicative of poor quality samples in their SWGS service"
+            },
+            "tumour_ntc_contamination": {
+                "display_name": "Tumour Sample NTC Contamination",
+                "status": self.tumour_ntc_contamination.status,
+                "message": self.tumour_ntc_contamination.message,
+                "tooltip": "High NTC contamination indicates either DNA in the NTC or low reads in the tumour sample"
+            },
+            "germline_ntc_contamination": {
+                "display_name": "Germline Sample NTC Contamination",
+                "status": self.germline_ntc_contamination.status,
+                "message": self.germline_ntc_contamination.message,
+                "tooltip": "High NTC contamination indicates either DNA in the NTC or low reads in the germline sample"
+            },
+            "relatedness": {
+                "display_name": "Matched Sample ID Check",
+                "status": self.relatedness.status,
+                "message": self.relatedness.message,
+                "tooltip": "This metric checks the germline and somatic samples are from the same individual. If this metric has failed DO NOT PROCEED with analysis"
+            }
+        }
+
+        return patient_analysis_qc_dict
 
 class MDTNotes(models.Model):
     """

@@ -141,15 +141,23 @@ def view_indication(request, indication_id):
 
 
 @login_required
-def view_patient_analysis(request, patient_id):
+def view_patient_analysis(request, patient_analysis_id):
     """
     View variants in a PatientAnalysis
     """
 
+    # Set up forms
     download_csv_form = DownloadCsvForm()
 
-    patient_analysis = PatientAnalysis.objects.get(id=patient_id)
+    # Get patient analysis by ID
+    patient_analysis = PatientAnalysis.objects.get(id=patient_analysis_id)
+    
+    # Get information for details and QC page
+    patient_analysis_info_dict = patient_analysis.create_patient_analysis_info_dict()
+    patient_analysis_qc_dict = patient_analysis.create_qc_dict()
 
+
+    #TODO most of this can be moved to the models
     germline_snvs_query = GermlineVariantInstance.objects.filter(patient_analysis=patient_analysis)
     somatic_snvs_query = SomaticVariantInstance.objects.filter(patient_analysis=patient_analysis)
     germline_snvs_tier_one = []
@@ -262,6 +270,8 @@ def view_patient_analysis(request, patient_id):
     context = {
         "form": download_csv_form,
         "patient_analysis": patient_analysis,
+        "patient_analysis_info_dict": patient_analysis_info_dict,
+        "patient_analysis_qc_dict": patient_analysis_qc_dict,
         "somatic_snvs_tier_one": somatic_snvs_tier_one,
         "somatic_snvs_tier_two": somatic_snvs_tier_two,
         "germline_snvs_tier_one": germline_snvs_tier_one,
