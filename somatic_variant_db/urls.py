@@ -15,9 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
 
 urlpatterns = [
-    path('svd/admin/', admin.site.urls),
-    path('svd/', include('analysis.urls')),
-    path('svd/swgs/', include('swgs.urls'))
+    path(f'{settings.URL_PREFIX}admin/', admin.site.urls),
+    path(f'{settings.URL_PREFIX}', include('analysis.urls')),
+    path(f'{settings.URL_PREFIX}swgs/', include('swgs.urls'))
 ]

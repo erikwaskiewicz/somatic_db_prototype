@@ -83,8 +83,10 @@ WSGI_APPLICATION = 'somatic_variant_db.wsgi.application'
 
 DB_INSTANCE = 'local'
 if DB_INSTANCE == 'local':
+     
+    URL_PREFIX = ""
 
-	DATABASES = {
+    DATABASES = {
 		'default': {
 		'ENGINE': 'django.db.backends.sqlite3',
 		'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
@@ -95,6 +97,8 @@ else:
     DB_PASSWORD_FILE = 'password.txt'
     with open(DB_PASSWORD_FILE) as f:
         db_password = f.readline().strip()
+    
+    URL_PREFIX = "svd/"
 
     DATABASES = {
         'default': {
@@ -154,4 +158,4 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
-LOGIN_URL = '/svd/login/'
+LOGIN_URL = f'{URL_PREFIX}login/'
