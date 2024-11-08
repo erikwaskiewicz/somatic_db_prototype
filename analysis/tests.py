@@ -2332,12 +2332,12 @@ class TestGnomad(TestCase):
     def test_gnomad_link_37(self):
         ''' link if build 37 '''
         self.variant_obj.genome_build=37
-        self.assertEqual(self.variant_instance_obj.gnomad_link(), 'https://gnomad.broadinstitute.org/variant/1:2345C>G?dataset=gnomad_r2_1')
+        self.assertEqual(self.variant_instance_obj.gnomad_link(), 'https://gnomad.broadinstitute.org/variant/1-2345-C-G?dataset=gnomad_r2_1')
 
     def test_gnomad_link_38(self):
         ''' link if build 38 '''
         self.variant_obj.genome_build=38
-        self.assertEqual(self.variant_instance_obj.gnomad_link(), 'https://gnomad.broadinstitute.org/variant/1:2345C>G?dataset=gnomad_r3')
+        self.assertEqual(self.variant_instance_obj.gnomad_link(), 'https://gnomad.broadinstitute.org/variant/1-2345-C-G?dataset=gnomad_r3')
 
     def test_gnomad_link_invalid_build(self):
         ''' value error should be thrown if not build 37 or 38 '''
