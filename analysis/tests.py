@@ -2388,36 +2388,53 @@ class TestPolyArtefactValidation(TestCase):
         for input_args, expected_warning in test_cases:
             with self.subTest(input_args=input_args):
                 result = validate_variant(*input_args)
-                self.assertEqual(result, expected_warning)
+                if result.startswith("HTTP Request failed"):
+                    self.skipTest("Error contacting external API")
+                else:
+                    self.assertEqual(result, expected_warning)
     
     def test_no_warning(self):
         # Test for a valid poly/artefact
         result = validate_variant('7', 140453136, 'A', 'T', 'GRCh37')
         expected_warning = None
-        self.assertEqual(result, expected_warning)
+        if result is not None and result.startswith("HTTP Request failed"):
+            self.skipTest("Error contacting external API")
+        else:
+            self.assertEqual(result, expected_warning)
 
     def test_wrong_reference(self):
         # Test for reference base provided not matching the reference genome
         result = validate_variant('7', 140453136, 'T', 'A', 'GRCh37')
         expected_warning = 'Variant Validator Warnings: NC_000007.13:g.140453136T>A: Variant reference (T) does not agree with reference sequence (A);'
-        self.assertEqual(result, expected_warning)
-        
+        if result.startswith("HTTP Request failed"):
+            self.skipTest("Error contacting external API")
+        else:
+            self.assertEqual(result, expected_warning)
         
     def test_outside_boundaries(self):
         # Test for variants outside border of chromosome
         result = validate_variant('1', 999999999, 'A', 'T', 'GRCh37')
         expected_warning = 'Variant Validator Warnings: The specified coordinate is outside the boundaries of reference sequence NC_000001.10;'
-        self.assertEqual(result, expected_warning)
+        if result.startswith("HTTP Request failed"):
+            self.skipTest("Error contacting external API")
+        else:
+            self.assertEqual(result, expected_warning)
     
     def test_no_transcripts_overlap(self):
         # Test for intergenic variants
         result = validate_variant('4', 12345678, 'G', 'C', 'GRCh37')
         expected_warning = 'Variant Validator Warnings: None of the specified transcripts ([\"mane_select\"]) fully overlap the described variation in the genomic sequence. Try selecting one of the default options;'
-        self.assertEqual(result, expected_warning)
+        if result.startswith("HTTP Request failed"):
+            self.skipTest("Error contacting external API")
+        else:
+            self.assertEqual(result, expected_warning)
         
     def test_unexpected_error(self):
         # Test for unexpected json structure from unanticipated genomic features.
         # This variant is in a pseudogene, hence the unexpected error.
         result = validate_variant('1', 23456, 'G', 'A', 'GRCh37')
         expected_warning = 'Unexpected Error, contact Bioinformatics'
-        self.assertEqual(result, expected_warning)
+        if result.startswith("HTTP Request failed"):
+            self.skipTest("Error contacting external API")
+        else:
+            self.assertEqual(result, expected_warning)
