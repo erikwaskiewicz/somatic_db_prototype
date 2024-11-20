@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 from auditlog.registry import auditlog
 import decimal
+import re
 
 
 class UserSettings(models.Model):
@@ -306,7 +307,16 @@ class VariantInstance(models.Model):
     def gnomad_link(self):
         """ link to the Gnomad webpage """
         genome_build = self.variant.genome_build
+
+        # gnomad variant format has changed
+        # stored as chrom:posref>alt
+        # needs to be chrom-pos-ref-alt
         var = self.variant.variant
+        var = var.replace(":", "-")
+        var = var.replace(">", "-")
+        var = re.split('(\d+)',var)
+        var.insert(-1, "-")
+        var = "".join(var)
 
         # format link specific to genome build
         if genome_build == 37:

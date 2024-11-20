@@ -3,6 +3,18 @@ This format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [v1.6.0] - 2024-11-20
+
+### Added
+- variant validator checks to poly and artefact lists
+
+### Changed
+- Update config for deploy on Wren webserver Wren Webserver deploy
+
+## Fixed
+- gnomad links as the format has changed Gnomad link
+- errors in poly list command and links in documentation
+
 ## [v1.5.0] - 2024-08-21
 
 ### Added
