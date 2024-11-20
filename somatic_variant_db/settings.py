@@ -26,7 +26,7 @@ SECRET_KEY = 'm#4qhi$dr8)i$ed1)yfuc68ebtuwfo+5mlyy7rtbf7%l-a%kq)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '10.59.210.247', '.pythonanywhere.com']
+ALLOWED_HOSTS = ['127.0.0.1', '10.59.210.247', '10.69.115.27']
 
 
 # Application definition
@@ -81,20 +81,14 @@ WSGI_APPLICATION = 'somatic_variant_db.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 
-DB_INSTANCE = 'cluster'
-if DB_INSTANCE == 'local':
+DB_INSTANCE = 'webserver'
 
-	DATABASES = {
-		'default': {
-		'ENGINE': 'django.db.backends.sqlite3',
-		'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
- 		}
-	}
-
-else:
+if DB_INSTANCE == 'webserver':
     DB_PASSWORD_FILE = 'password.txt'
     with open(DB_PASSWORD_FILE) as f:
         db_password = f.readline().strip()
+
+    URL_PREFIX = "svd/"
 
     DATABASES = {
         'default': {
@@ -104,6 +98,16 @@ else:
             'PASSWORD': db_password,
             'HOST': 'localhost',
             'PORT': '',
+        }
+    }
+
+else:
+    URL_PREFIX = ""
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
 
@@ -144,13 +148,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/static/svd/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "somatic_variant_db","static"),
 ]
+STATIC_ROOT="/var/www/static/svd"
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
-LOGIN_URL = '/login/'
+LOGIN_URL = f'/{URL_PREFIX}login/'

@@ -2,10 +2,14 @@
 <head>
   <!-- this will only work if the CSS is defined within the template -->
   <style>
+    body {
+      font-size: 12px;
+    }
     table {
       word-wrap: break-word;
       width: 100%;
       border-spacing: 0;
+      font-size: 12px;
     }
     thead {
       display: table-row-group;
@@ -449,7 +453,7 @@
   {% endif %}
 
   <!-- audit trail -->
-  <p>View report in somatic variant database: <a href="http://10.59.210.247:8000/analysis/{{ sample_data.sample_pk }}#report" target="_blank">http://10.59.210.247:8000/analysis/{{ sample_data.sample_pk }}#report</a></p>
+  <p>View report in somatic variant database: <a href="http://10.69.115.27/svd/analysis/{{ sample_data.sample_pk }}#report" target="_blank">http://10.69.115.27/svd/analysis/{{ sample_data.sample_pk }}#report</a></p>
   <p>PDF report generated {% now "jS F Y H:i" %}</p>
 
 </body>
