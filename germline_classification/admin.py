@@ -21,8 +21,18 @@ class ClassificationCriteriaCodeAdmin(admin.ModelAdmin):
 admin.site.register(ClassificationCriteriaCode, ClassificationCriteriaCodeAdmin)
 
 class ClassificationCriteriaAdmin(admin.ModelAdmin):
-    list_display = ["strength", "code"]
-    search_fields = ["strength__strength", "code__code"]
+    list_display = ["get_code", "get_strength"]
+    search_fields = ["code__code", "strength__strength"]
+
+    def get_strength(self, obj):
+        return f"{obj.strength.strength}:{str(obj.strength.evidence_points)}"
+    get_strength.short_description = "Strength"
+    get_strength.admin_order_field = "strength__strength"
+    
+    def get_code(self, obj):
+        return obj.code.code
+    get_code.short_description = "Code"
+    get_code.admin_order_field = "code__code"
 
 admin.site.register(ClassificationCriteria, ClassificationCriteriaAdmin)
 
