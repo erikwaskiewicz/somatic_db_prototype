@@ -100,6 +100,12 @@ class QCGermlineCNVQualityAdmin(admin.ModelAdmin):
 
 admin.site.register(QCGermlineCNVQuality, QCGermlineCNVQualityAdmin)
 
+class QCTumourPurityAdmin(admin.ModelAdmin):
+    list_display = ["id", "status", "tumour_purity"]
+    search_fields = ["status"]
+
+admin.site.register(QCTumourPurity, QCTumourPurityAdmin)
+
 class QCNTCContaminationAdmin(admin.ModelAdmin):
     list_display = ["id", "status", "ntc_contamination"]
     search_fields = ["status"]

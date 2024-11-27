@@ -235,6 +235,7 @@ class PatientAnalysis(models.Model):
     tumour_ntc_contamination = models.ForeignKey('QCNTCContamination', on_delete=models.CASCADE, related_name='tumour_ntc_contamination')
     germline_ntc_contamination = models.ForeignKey('QCNTCContamination', on_delete=models.CASCADE, related_name='germline_ntc_contamination')
     relatedness = models.ForeignKey('QCRelatedness', on_delete=models.CASCADE)
+    tumour_purity = models.ForeignKey('QCTumourPurity', on_delete=models.CASCADE)
     #TODO add a QC metric on tumour purity
 
     def __str__(self):
@@ -390,6 +391,12 @@ class QCRelatedness(AbstractQCCheck):
 
     class Meta:
         unique_together = ["status", "message", "relatedness"]
+
+class QCTumourPurity(AbstractQCCheck):
+    tumour_purity = models.DecimalField(max_digits=3, decimal_places=2)
+
+    class Meta:
+        unique_together = ["status", "message", "tumour_purity"]
 
 ################
 ### Coverage ###
