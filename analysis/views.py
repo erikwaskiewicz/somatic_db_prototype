@@ -81,6 +81,13 @@ def home(request):
     """
     return render(request, 'analysis/home.html', {})
 
+@login_required
+def self_audit(request):
+    """
+    Page where staff can view checks they have previously performed between specified dates with a variety of filters.
+    """
+    return render(request, 'analysis/self_audit.html', {})
+
 
 def ajax_num_assigned_user(request, user_pk):
     """
