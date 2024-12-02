@@ -62,6 +62,8 @@ class Sample(models.Model):
     sample_id = models.CharField(max_length=50, primary_key=True)
     sample_name = models.CharField(max_length=200, blank=True, null=True)
     sample_name_check = models.BooleanField(default=False)
+    tumour_content = models.IntegerField(null=True, blank=True)
+    tumour_content_check = models.BooleanField(default=False)
 
     def get_worksheets(self):
         # get all worksheets that the sample appears on

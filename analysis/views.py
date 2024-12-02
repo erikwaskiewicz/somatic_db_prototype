@@ -8,7 +8,7 @@ from django.template.loader import get_template
 from django.template import Context
 from django.shortcuts import get_object_or_404
 
-from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, 
+from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, UpdateTumourContent,
     CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, 
     ConfirmPolyForm, ConfirmArtefactForm, AddNewPolyForm, AddNewArtefactForm, AddNewFusionArtefactForm, 
     ManualVariantCheckForm, ReopenForm, ChangeLimsInitials, EditedPasswordChangeForm, EditedUserCreationForm, NewFusionForm)
@@ -462,6 +462,7 @@ def analysis_sheet(request, sample_id):
         'manual_check_form': ManualVariantCheckForm(regions=sample_data['panel_manual_regions']),
         'submit_form': SubmitForm(),
         'update_name_form': UpdatePatientName(),
+        'update_tumour_content_form': UpdateTumourContent(),
         'sample_comment_form': SampleCommentForm(
             comment=current_step_obj.overall_comment,
             info_check=current_step_obj.patient_info_check,
@@ -550,6 +551,16 @@ def analysis_sheet(request, sample_id):
             if update_name_form.is_valid():
                 new_name = update_name_form.cleaned_data['name']
                 Sample.objects.filter(pk=sample_obj.sample.pk).update(sample_name=new_name)
+                sample_obj = SampleAnalysis.objects.get(pk = sample_id)
+                context['sample_data'] = get_sample_info(sample_obj)
+
+        # tumour content input form
+        if 'tumour_content' in request.POST:
+            tumour_content_form = UpdateTumourContent(request.POST)
+
+            if tumour_content_form.is_valid():
+                new_tumour_content = tumour_content_form.cleaned_data['tumour_content']
+                Sample.objects.filter(pk=sample_obj.sample.pk).update(tumour_content=new_tumour_content)
                 sample_obj = SampleAnalysis.objects.get(pk = sample_id)
                 context['sample_data'] = get_sample_info(sample_obj)
 
@@ -861,7 +872,7 @@ def analysis_sheet(request, sample_id):
                             signoff_check(request.user, current_step_obj, sample_obj, status='F')
                             return redirect('view_ws_samples', sample_data['worksheet_id'])
 
-
+    print(context["sample_data"])
     # render the pages
     return render(request, 'analysis/analysis_sheet.html', context)
 
