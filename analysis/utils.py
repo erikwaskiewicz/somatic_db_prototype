@@ -339,9 +339,11 @@ def get_variant_info(sample_data, sample_obj):
     poly_count = 0
     artefact_count = 0
 
-
     # loop through each sample variant
     for sample_variant in sample_variants:
+
+        # get the assay for any additional assay-specific filtering
+        assay = sample_variant.sample_analysis.panel.assay
 
         # load instance of variant
         variant_obj = sample_variant.variant_instance.variant
@@ -395,6 +397,16 @@ def get_variant_info(sample_data, sample_obj):
                             filter_reason = f'Artefact at <{vaf_cutoff_rounded}% VAF'
                         else:
                             filter_reason = 'Artefact'
+
+        # BRCA-specific filtering
+        if assay == '5':
+            is_brca = True
+            brca_sufficient_supporting_reads = sample_variant.variant_instance.brca_sufficient_supporting_reads_count()
+            brca_above_tumour_content_threshold = sample_variant.variant_instance.brca_above_tumour_content_threshold()
+        else:
+            is_brca = False
+            brca_sufficient_supporting_reads = None
+            brca_above_tumour_content_threshold = None
 
         # remove Not analysed from checks list
         variant_checks_analysed = []
@@ -471,6 +483,11 @@ def get_variant_info(sample_data, sample_obj):
                 'vaf_rounded': vaf_rounded,
                 'total_count': sample_variant.variant_instance.total_count,
                 'alt_count': sample_variant.variant_instance.alt_count,
+            },
+            'brca_filtering': {
+                'is_brca': is_brca,
+                'brca_sufficient_supporting_reads': brca_sufficient_supporting_reads,
+                'brca_above_tumour_content_threshold': brca_above_tumour_content_threshold
             },
             'checks': variant_checks_list,
             'latest_check': latest_check,

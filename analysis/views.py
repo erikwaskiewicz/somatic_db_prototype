@@ -563,6 +563,8 @@ def analysis_sheet(request, sample_id):
                 Sample.objects.filter(pk=sample_obj.sample.pk).update(tumour_content=new_tumour_content)
                 sample_obj = SampleAnalysis.objects.get(pk = sample_id)
                 context['sample_data'] = get_sample_info(sample_obj)
+                # also reload the variant data to get new tags
+                context['variant_data'] = get_variant_info(sample_data, sample_obj)
 
         # comments submit button
         if 'variant_comment' in request.POST:
@@ -789,6 +791,9 @@ def analysis_sheet(request, sample_id):
                 
                 if sample_data['sample_name'] == None:
                     context['warning'].append('Did not finalise check - input patient name before continuing')
+
+                if sample_data['tumour_content'] is None and sample_data['assay'] == 5:
+                    context['warning'].append('Did not finalise check - input tumour content before continuing')
 
                 if (sample_data['panel_obj'].show_snvs == True) and (current_step_obj.coverage_ntc_check == False) and (next_step != "Fail sample"):
                     context['warning'].append('Did not finalise check - check NTC before continuing')

@@ -327,7 +327,35 @@ class VariantInstance(models.Model):
             return f'https://gnomad.broadinstitute.org/variant/{var}?dataset=gnomad_r3'
         else:
             raise ValueError('Genome build should be either 37 or 38')
+        
+    def brca_sufficient_supporting_reads_count(self):
+        """
+        Flags variants with fewer than 23 supporting reads 
+        BRCA team will not analyse these
+        """
+        if self.alt_count >= 23:
+            return True
+        else:
+            return False
+        
+    def brca_above_tumour_content_threshold(self):
+        """
+        Flags if the VAF is more than 10% of the tumour content
+        For germline samples, flags if a variant is above 10%
+        """
+        tumour_content = self.sample.tumour_content
+        try:
+            tumour_content_threshold = tumour_content / 10
+        except TypeError:
+            # tumour content not set - don't flag anything
+            return 1
+        
+        vaf = self.vaf()
 
+        if vaf > tumour_content_threshold:
+            return True
+        else:
+            return False
 
 class VariantPanelAnalysis(models.Model):
     """
