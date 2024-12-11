@@ -877,7 +877,6 @@ def analysis_sheet(request, sample_id):
                             signoff_check(request.user, current_step_obj, sample_obj, status='F')
                             return redirect('view_ws_samples', sample_data['worksheet_id'])
 
-    print(context["sample_data"])
     # render the pages
     return render(request, 'analysis/analysis_sheet.html', context)
 
