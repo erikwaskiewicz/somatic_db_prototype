@@ -338,6 +338,7 @@ def get_variant_info(sample_data, sample_obj):
     other_calls_list = []
     poly_count = 0
     artefact_count = 0
+    brca_filtered_count = 0
 
     # loop through each sample variant
     for sample_variant in sample_variants:
@@ -355,7 +356,7 @@ def get_variant_info(sample_data, sample_obj):
 
         # marker to tell whether a variant should be filtered downstream
         filter_call = False
-        filter_reason = ''
+        filter_reason = []
 
         # get VAF and round to nearest whole number - used in artefact list so must be on top
         vaf = sample_variant.variant_instance.vaf()
@@ -377,7 +378,7 @@ def get_variant_info(sample_data, sample_obj):
                     # set variables and update variant check
                     poly_count += 1
                     filter_call = True
-                    filter_reason = 'Poly'
+                    filter_reason.append('Poly')
                     latest_check.decision = 'P'
                     latest_check.save()
 
@@ -394,15 +395,27 @@ def get_variant_info(sample_data, sample_obj):
                         # add VAF cutoff to reason for filtering
                         if vaf < l.vaf_cutoff:
                             vaf_cutoff_rounded = l.vaf_cutoff.quantize(decimal.Decimal('1'), rounding=decimal.ROUND_HALF_UP)
-                            filter_reason = f'Artefact at <{vaf_cutoff_rounded}% VAF'
+                            filter_reason.append(f'Artefact at <{vaf_cutoff_rounded}% VAF')
                         else:
-                            filter_reason = 'Artefact'
+                            filter_reason.append('Artefact')
 
         # BRCA-specific filtering
         if assay == '5':
             is_brca = True
             brca_sufficient_supporting_reads = sample_variant.variant_instance.brca_sufficient_supporting_reads_count()
             brca_above_tumour_content_threshold = sample_variant.variant_instance.brca_above_tumour_content_threshold()
+            if not all([brca_sufficient_supporting_reads, brca_above_tumour_content_threshold]):
+                brca_filtered_count += 1
+                filter_call = True
+                #TODO do we want to set these calls as Not Analysed or as Artefacts? I'd lean towards artefacts, then when
+                # we implement an auto add to list the scientists can review them?
+                latest_check.decision = 'A'
+                latest_check.save()
+                if not brca_sufficient_supporting_reads:
+                    filter_reason.append('BRCA: fewer than 23 reads')
+                if not brca_above_tumour_content_threshold:
+                    filter_reason.append('BRCA: VAF below 10% of tumour content')
+
         else:
             is_brca = False
             brca_sufficient_supporting_reads = None
@@ -516,12 +529,13 @@ def get_variant_info(sample_data, sample_obj):
     else:
         other_calls_text = ', '.join(other_calls_list)
 
-    # return as variantr data dictionary
+    # return as variant data dictionary
     variant_data = {
         'variant_calls': variant_calls, 
         'filtered_calls': filtered_list,
         'poly_count': poly_count,
         'artefact_count': artefact_count,
+        'brca_filtered_count': brca_filtered_count,
         'no_calls': no_calls,
         'other_calls_text': other_calls_text,
         'check_options': VariantCheck.DECISION_CHOICES,

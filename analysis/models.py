@@ -333,6 +333,7 @@ class VariantInstance(models.Model):
         Flags variants with fewer than 23 supporting reads 
         BRCA team will not analyse these
         """
+        #TODO change the supporting reads threshold to a config thing
         if self.alt_count >= 23:
             return True
         else:
