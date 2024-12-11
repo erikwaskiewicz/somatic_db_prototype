@@ -345,7 +345,11 @@ class VariantInstance(models.Model):
         """
         tumour_content = self.sample.tumour_content
         try:
-            tumour_content_threshold = tumour_content / 10
+            if tumour_content == 0:
+                # for germline samples we're setting this threshold at 10%
+                tumour_content_threshold = 10
+            else:
+                tumour_content_threshold = tumour_content / 10
         except TypeError:
             # tumour content not set - don't flag anything
             return 1
