@@ -399,13 +399,25 @@ def get_variant_info(sample_data, sample_obj):
                         else:
                             filter_reason.append('Artefact')
 
-        # BRCA-specific filtering
-        if assay == '5':
-            is_brca = True
+        # BRCA-specific filtering, ignore any variants already covered on artefact or poly list
+        if assay == '5' and not filter_call:
+
+            # handle BRCA polys
+            # BRCA guidelines classify anything >0.1% in gnomAD as a poly
+            if sample_variant.variant_instance.is_brca_poly():
+                poly_count += 1
+                filter_call = True
+                latest_check.decision = 'P'
+                latest_check.save()
+                filter_reason.append(f'Poly in BRCA: {sample_variant.variant_instance.gnomad_display()} in gnomAD')
+
+            # handle artefact calls
             brca_sufficient_supporting_reads = sample_variant.variant_instance.brca_sufficient_supporting_reads_count()
             brca_above_tumour_content_threshold = sample_variant.variant_instance.brca_above_tumour_content_threshold()
             if not all([brca_sufficient_supporting_reads, brca_above_tumour_content_threshold]):
-                brca_filtered_count += 1
+                if not filter_call:
+                    # add to brca filter count unless it's already marked as a poly
+                    brca_filtered_count += 1
                 filter_call = True
                 #TODO do we want to set these calls as Not Analysed or as Artefacts? I'd lean towards artefacts, then when
                 # we implement an auto add to list the scientists can review them?
@@ -415,11 +427,6 @@ def get_variant_info(sample_data, sample_obj):
                     filter_reason.append('BRCA: not enough supporting reads')
                 if not brca_above_tumour_content_threshold:
                     filter_reason.append('BRCA: VAF below 10% of tumour content')
-
-        else:
-            is_brca = False
-            brca_sufficient_supporting_reads = None
-            brca_above_tumour_content_threshold = None
 
         # remove Not analysed from checks list
         variant_checks_analysed = []
@@ -496,11 +503,6 @@ def get_variant_info(sample_data, sample_obj):
                 'vaf_rounded': vaf_rounded,
                 'total_count': sample_variant.variant_instance.total_count,
                 'alt_count': sample_variant.variant_instance.alt_count,
-            },
-            'brca_filtering': {
-                'is_brca': is_brca,
-                'brca_sufficient_supporting_reads': brca_sufficient_supporting_reads,
-                'brca_above_tumour_content_threshold': brca_above_tumour_content_threshold
             },
             'checks': variant_checks_list,
             'latest_check': latest_check,

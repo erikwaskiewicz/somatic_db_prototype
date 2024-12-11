@@ -365,6 +365,23 @@ class VariantInstance(models.Model):
             return True
         else:
             return False
+        
+    def is_brca_poly(self):
+        """
+        The BRCA guidelines state BA1 is applied at >0.1% in gnomad
+        These can't be classed as polys in all assays because most other assays use 1%
+        """
+        # gnomad score missing in older runs, so we can't exclude
+        if self.gnomad_popmax == None:
+            return False
+        # -1 means that the variant is missing from gnomad
+        elif self.gnomad_popmax == -1.00000:
+            return False
+        elif self.gnomad_popmax < 0.001:
+            return False
+        else:
+            # otherwise, >0.1% in gnomAD
+            return True
 
 class VariantPanelAnalysis(models.Model):
     """

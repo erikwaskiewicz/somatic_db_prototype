@@ -52,12 +52,6 @@
         {% if v.manual_upload %}
         <span class="badge badge-warning badge-pill">Manual</span>
         {% endif %}
-        {% if v.brca_filtering.is_brca and not v.brca_filtering.brca_sufficient_supporting_reads %}
-        <span class="badge badge-warning badge-pill">Less than 23 reads</span>
-        {% endif %}
-        {% if v.brca_filtering.is_brca and not v.brca_filtering.brca_above_tumour_content_threshold %}
-        <span class="badge badge-warning badge-pill">VAF less than 10% tumour content</span>
-        {% endif %}
         <p style="display:none" id="igv-{{ v.pk }}">{{ v.igv_coords }}</p>
         <button class="btn btn-sm btn-secondary" onclick="copyToClipboard('#igv-{{ v.pk }}')"><span class="fa fa-copy"></span></button>
 
@@ -211,6 +205,8 @@
                 {% endif %}
                 {% for reason in filter_reasons %}
                   {% if reason == 'Poly' %}
+                  <span class="badge badge-primary badge-pill">{{ reason }}</span>
+                  {% elif 'Poly in BRCA' in reason %}
                   <span class="badge badge-primary badge-pill">{{ reason }}</span>
                   {% elif 'BRCA' in reason %}
                   <span class="badge badge-success badge-pill">{{ reason }}</span>
