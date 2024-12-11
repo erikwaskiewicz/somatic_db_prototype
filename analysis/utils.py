@@ -412,7 +412,7 @@ def get_variant_info(sample_data, sample_obj):
                 latest_check.decision = 'A'
                 latest_check.save()
                 if not brca_sufficient_supporting_reads:
-                    filter_reason.append('BRCA: fewer than 23 reads')
+                    filter_reason.append('BRCA: not enough supporting reads')
                 if not brca_above_tumour_content_threshold:
                     filter_reason.append('BRCA: VAF below 10% of tumour content')
 

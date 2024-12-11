@@ -114,6 +114,7 @@ class Panel(models.Model):
     show_myeloid_gaps_summary = models.BooleanField(default=False)
     depth_cutoffs = models.CharField(max_length=50, blank=True, null=True) # either 135,270, 500 or 1000, comma seperated, no spaces
     vaf_cutoff = models.DecimalField(decimal_places=5, max_digits=10, blank=True, null=True) # formatted as e.g. 1.4%, not 0.014
+    minimum_supporting_reads = models.IntegerField(default=1, blank=True, null=True) # minimum number of reads required to call a variant genuine (GeneRead)
     manual_review_required = models.BooleanField(default=False)
     manual_review_desc = models.CharField(max_length=200, blank=True, null=True) # pipe seperated, no spaces
     bed_file = models.FileField(upload_to=make_bedfile_path, blank=True, null=True)
@@ -330,11 +331,14 @@ class VariantInstance(models.Model):
         
     def brca_sufficient_supporting_reads_count(self):
         """
-        Flags variants with fewer than 23 supporting reads 
+        Flags variants with fewer than the minimum supporting reads 
         BRCA team will not analyse these
         """
-        #TODO change the supporting reads threshold to a config thing
-        if self.alt_count >= 23:
+        # get variant panel analysis
+        variant_panel_analysis_obj = VariantPanelAnalysis.objects.get(variant_instance = self)
+        # get minimum supporting reads
+        minimum_supporting_reads = variant_panel_analysis_obj.sample_analysis.panel.minimum_supporting_reads
+        if self.alt_count >= minimum_supporting_reads:
             return True
         else:
             return False
