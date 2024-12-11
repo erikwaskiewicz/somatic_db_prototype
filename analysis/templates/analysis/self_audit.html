@@ -30,7 +30,7 @@
           {% endif %}
         </div>
         <div class="col-4">
-          <a class="btn btn-warning w-100" href="{% url 'view_worksheets' 'all' %}" role="button">View all</a>
+          <a class="btn btn-warning w-100" href="{% url 'self_audit' 'all' %}" role="button">View all</a>
         </div>
       </div>
     </div>
@@ -43,22 +43,25 @@
         <th scope="col">WS ID</th>
         <th scope="col">Assay</th>
         <th scope="col">Date Completed</th>
-        <th scope="col">First Checker</th>
-        <th scope="col">Second Checker</th>
+        <th scope="col">Checker</th>
         <th scope="col">Sample ID</th>
+        <th scope="col">Comments</th>
         <th scope="col"></th>
         <th scope="col"></th>
       </tr>
     </thead>
     <tbody>
+      <!-- {%if user_checks == True
+        for ws in worksheets %}??? This kind of thing? -->
       {% for ws in worksheets %}
+      {% if user == 'user' and status = 'C'}
       <tr>
         <td>{{ ws.worksheet_id }}</td>
         <td>{{ ws.assay }}</td>
-        <td>{{ ws.check_time }}</td>
-        <td>{{ ws. }}</td>
-        <td>{{ ws. }}</td>
-        <td>{{ ws. }}</td>
+        <td>{{ check.signoff_time}}</td>
+        <td>{{ c.user }}</td> 
+        <td>{{ ws.sample_id }}</td>
+        <td>{{ Check.overall_comment}}</td>
         <td style="text-align:right">
           <a class="btn btn-secondary" href="{% url 'view_ws_samples' ws.worksheet_id %}" role="button">
               View samples
@@ -81,6 +84,7 @@
         $('#worksheets-table').DataTable({
             paging: true,
             columns: [
+                {orderable: true},
                 {orderable: true},
                 {orderable: true},
                 {orderable: true},

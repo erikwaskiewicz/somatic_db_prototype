@@ -21,6 +21,8 @@ import csv
 import json
 import os
 import pdfkit
+import datetime
+
 
 def signup(request):
     """
@@ -86,7 +88,44 @@ def self_audit(request):
     """
     Page where staff can view checks they have previously performed between specified dates with a variety of filters.
     """
-    return render(request, 'analysis/self_audit.html', {})
+    
+    # identify and store current user as a variable
+    username = request.user
+    # filter to show only checks performed by current user
+    checks = Check.objects.filter(user__username = username)
+    for c in checks:
+
+     # placeholder for dropdowns & include marker
+        dropdown_1 = datetime.date(2021, 1, 1)
+        dropdown_2 = datetime.date(2024, 12, 25)
+        include = True
+        # see if within date specified with drop down menus
+        within_date = c.signoff_time
+        if within_date == None:
+            include = False
+        else:
+            within_date = dropdown_1 <= within_date.date() <= dropdown_2
+            
+        # remove incomplete checks
+        status = c.status
+        if status == 'Pending':
+            include = False
+
+    # output correct data (are these the wrong way around?)
+        if include == True:
+            link = f'http://10.59.210.247:8000/analysis/{SampleAnalysis.id}#report'
+            get_check_info = {
+            'ws_id': Worksheet.ws_id,
+            'ws_assay': Worksheet.assay,
+            'check_date': within_date,
+            'checker': username,
+            'sample_id': Sample.sample_id,
+            'link': link,
+            'overall_comment': Check.overall_comment,
+
+            }
+
+            return render(request, 'analysis/self_audit.html', {})
 
 
 def ajax_num_assigned_user(request, user_pk):
