@@ -90,7 +90,13 @@ def self_audit(request):
     """
     
     # identify and store current user as a variable
-    username = request.user
+    username = request.user.username
+
+    #empty context dict
+    context = {
+        'check_data': []
+    }
+
     # filter to show only checks performed by current user
     checks = Check.objects.filter(user__username = username)
     for c in checks:
@@ -105,28 +111,66 @@ def self_audit(request):
             include = False
         else:
             within_date = dropdown_1 <= within_date.date() <= dropdown_2
-            
+            if within_date:
+                include = True
+    
         # remove incomplete checks
         status = c.status
-        if status == 'Pending':
+        if status == 'P':
             include = False
 
-    # output correct data (are these the wrong way around?)
-        if include == True:
-            link = f'http://10.59.210.247:8000/analysis/{SampleAnalysis.id}#report'
-            get_check_info = {
-            'ws_id': Worksheet.ws_id,
-            'ws_assay': Worksheet.assay,
-            'check_date': within_date,
-            'checker': username,
-            'sample_id': Sample.sample_id,
-            'link': link,
-            'overall_comment': Check.overall_comment,
-
+        # want to get check data here
+        if include:
+            check_data = {
+                'Worksheet': c.analysis.worksheet.ws_id,
+                'Assay': c.analysis.worksheet.assay,
+                'Date_Checked': c.signoff_time.strftime('%d-%b-%Y'),
+                'Checker': username,
+                'Sample': c.analysis.sample.sample_id,
+                'Overall_Comments': c.overall_comment,
+                'SVD_Link': f'http://127.0.0.1:8000/analysis/{c.analysis.id}#report'
             }
 
-            return render(request, 'analysis/self_audit.html', {})
+            context['check_data'].append(check_data)
+            
+            
 
+    if request.method == "GET":
+            if "check_download" in request.GET:
+
+                response = HttpResponse(content_type="text/csv")
+                response[
+                        "Content-Disposition"
+                ] = f'attachment; filename="{username}_{dropdown_1}-{dropdown_2}_checks.csv"'
+
+                fieldnames = [
+                    'Worksheet',                            
+                    'Assay',
+                    'Date_Checked',
+                    'Checker',
+                    'Sample',
+                    'Overall_Comments',
+                    'SVD_Link',
+                ]
+
+                writer = csv.DictWriter(response, fieldnames=fieldnames)
+                writer.writeheader()
+                print(context['check_data'])
+                for checks in context['check_data']:
+
+                    writer.writerow(checks)
+                        
+                return response
+
+
+
+    #with open(f'{username}_{dropdown_1}={dropdown_2}_checks', 'w', newline='') as csvfile:
+        #fieldnames = ['ws_id', 'ws_assay', 'check_date', 'checker', 'sample_id', 'overall_comment', 'link']
+        #writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        #writer.writeheader()
+        #writer.writerows(check_data)
+
+    return render(request, 'analysis/self_audit.html', context)
 
 def ajax_num_assigned_user(request, user_pk):
     """
@@ -410,7 +454,7 @@ def view_samples(request, worksheet_id=None, user_pk=None):
                             panel_out = ''
 
                         # write to file
-                        writer.writerow([
+                        coverawriter.writerow([
                             sample_id_out,
                             panel_out,
                             gene,
