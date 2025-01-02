@@ -476,7 +476,7 @@ def view_samples(request, worksheet_id=None, user_pk=None):
                             panel_out = ''
 
                         # write to file
-                        coverawriter.writerow([
+                        writer.writerow([
                             sample_id_out,
                             panel_out,
                             gene,
