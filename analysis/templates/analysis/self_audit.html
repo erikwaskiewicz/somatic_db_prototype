@@ -16,6 +16,17 @@
 <div class="container">
     <h5>Checks Performed</h5>
     <br>
+    <table class="table" id="tally-table">
+        <thead>
+          <tr>
+            <th scope="col">Number of selected Checks:</th>
+          </tr>
+        <tbody>
+            <tr>
+            <td>{{ no_checks }}</td>    
+            </tr>
+        </tbody>  
+    <br>
     <table class="table" id="self-audit-table">
         <thead>
           <tr>
@@ -57,7 +68,7 @@
           <td class="col-4">
             <form method="GET">
                 <button type="submit" name="check_download" id="check_download" class="btn btn-primary">Download this selection</button>
-            </form>
+            </form></td>
         </tr>
       </table>
     </div>

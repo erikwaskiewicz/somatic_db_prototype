@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404
 from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, 
     CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, 
     ConfirmPolyForm, ConfirmArtefactForm, AddNewPolyForm, AddNewArtefactForm, AddNewFusionArtefactForm, 
-    ManualVariantCheckForm, ReopenForm, ChangeLimsInitials, EditedPasswordChangeForm, EditedUserCreationForm, NewFusionForm)
+    ManualVariantCheckForm, ReopenForm, ChangeLimsInitials, EditedPasswordChangeForm, EditedUserCreationForm, NewFusionForm,SelfAuditSubmission)
 from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
     get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, get_fusion_list, 
     create_myeloid_coverage_summary, variant_format_check, breakpoint_format_check, lims_initials_check, validate_variant)
@@ -84,6 +84,17 @@ def home(request):
     return render(request, 'analysis/home.html', {})
 
 @login_required
+def self_audit_submission(request):
+    """
+    Page for defining filters for checks completed.
+    """
+    context = {
+        'self_audit_form': SelfAuditSubmission(),
+        }
+                                    
+    return render(request, 'analysis/self_audit_submission.html', context)
+
+@login_required
 def self_audit(request):
     """
     Page where staff can view checks they have previously performed between specified dates with a variety of filters.
@@ -91,49 +102,67 @@ def self_audit(request):
     
     # identify and store current user as a variable
     username = request.user.username
-
+    
     #empty context dict
     context = {
-        'check_data': []
-    }
-
-    # filter to show only checks performed by current user
-    checks = Check.objects.filter(user__username = username)
-    for c in checks:
-
-     # placeholder for dropdowns & include marker
-        dropdown_1 = datetime.date(2021, 1, 1)
-        dropdown_2 = datetime.date(2024, 12, 25)
-        include = True
-        # see if within date specified with drop down menus
-        within_date = c.signoff_time
-        if within_date == None:
-            include = False
-        else:
-            within_date = dropdown_1 <= within_date.date() <= dropdown_2
-            if within_date:
-                include = True
-    
-        # remove incomplete checks
-        status = c.status
-        if status == 'P':
-            include = False
-
-        # want to get check data here
-        if include:
-            check_data = {
-                'Worksheet': c.analysis.worksheet.ws_id,
-                'Assay': c.analysis.worksheet.assay,
-                'Date_Checked': c.signoff_time.strftime('%d-%b-%Y'),
-                'Checker': username,
-                'Sample': c.analysis.sample.sample_id,
-                'Overall_Comments': c.overall_comment,
-                'SVD_Link': f'http://127.0.0.1:8000/analysis/{c.analysis.id}#report'
+                'check_data': [],
             }
+    no_checks = 0
 
-            context['check_data'].append(check_data)
+
+    #  when button is pressed
+    if request.method == 'POST':
+    
+        if 'self_audit_form' in request.POST:
+            self_audit_form = SelfAuditSubmission(request.POST)
+            if self_audit_form.is_valid():
+                start_date = self_audit_form.cleaned_data['start_date']
+                end_date = self_audit_form.cleaned_data['end_date']
+                #which_assays = self_audit_form.cleaned_data['which_assays']
+
+        # filter to show only checks performed by current user
+        checks = Check.objects.filter(user__username = username)
+        for c in checks:
+
+            # include marker
+            include = True
+
+            # see if within date specified with drop down menus
+            within_date = c.signoff_time
+            if within_date == None:
+                include = False
+            else:
+                within_date = start_date <= within_date.date() <= end_date
+                if within_date:
+                    include = True
+        
+            # check that the correct assays are displayed
+            #assay_type = c.analysis.worksheet.assay
+            #if assay_type == which_assays:
+                #include = True
+            #else:
+                #include = False
             
-            
+            # remove incomplete checks
+            status = c.status
+            if status == 'P':
+                include = False
+
+            # want to get check data here
+            if include:
+                no_checks += 1
+                check_data = {
+                    'Worksheet': c.analysis.worksheet.ws_id,
+                    'Assay': c.analysis.worksheet.assay,
+                    'Date_Checked': c.signoff_time.strftime('%d-%b-%Y'),
+                    'Checker': username,
+                    'Sample': c.analysis.sample.sample_id,
+                    'Overall_Comments': c.overall_comment,
+                    'SVD_Link': f'http://127.0.0.1:8000/analysis/{c.analysis.id}#report'
+                }
+
+                context['check_data'].append(check_data)
+    context['no_checks'] = no_checks
 
     if request.method == "GET":
             if "check_download" in request.GET:
@@ -162,13 +191,6 @@ def self_audit(request):
                         
                 return response
 
-
-
-    #with open(f'{username}_{dropdown_1}={dropdown_2}_checks', 'w', newline='') as csvfile:
-        #fieldnames = ['ws_id', 'ws_assay', 'check_date', 'checker', 'sample_id', 'overall_comment', 'link']
-        #writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        #writer.writeheader()
-        #writer.writerows(check_data)
 
     return render(request, 'analysis/self_audit.html', context)
 
@@ -1342,6 +1364,7 @@ def user_settings(request):
     """
     context = {
         'lims_form': ChangeLimsInitials(),
+        'self_audit_form': SelfAuditSubmission(),
         'warning': []
     }
 
