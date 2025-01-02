@@ -368,7 +368,7 @@ class VariantInstance(models.Model):
         
     def is_brca_poly(self):
         """
-        The BRCA guidelines state BA1 is applied at >0.1% in gnomad
+        The BRCA guidelines state BA1 is applied at >0.1% in gnomad, but we don't want to filter on this
         These can't be classed as polys in all assays because most other assays use 1%
         """
         # gnomad score missing in older runs, so we can't exclude
@@ -377,11 +377,37 @@ class VariantInstance(models.Model):
         # -1 means that the variant is missing from gnomad
         elif self.gnomad_popmax == -1.00000:
             return False
-        elif self.gnomad_popmax < 0.001:
+        elif self.gnomad_popmax < 0.01:
             return False
         else:
-            # otherwise, >0.1% in gnomAD
+            # otherwise, >1% in gnomAD
             return True
+    
+    def is_brca_deep_intronic(self):
+        """
+        We're not interested in any variants more than 20bp in to the introns with the exception of
+        a single known pathogenic variant
+        """
+        #TODO coordinates for known pathogenic variant
+        known_pathogenics = ["known_variant_here"]
+        if self.hgvs_c in known_pathogenics:
+            return False
+        intronics = re.findall("[-+]\d+", self.hgvs_c)
+        if len(intronics) > 1:
+            # this shouldn't happen, don't flag to be safe
+            return False
+        elif len(intronics) == 0:
+            return False
+        else:
+            distance = abs(int(intronics[0]))
+            if distance > 20: 
+                return True
+            else:
+                return False
+
+
+
+
 
 class VariantPanelAnalysis(models.Model):
     """

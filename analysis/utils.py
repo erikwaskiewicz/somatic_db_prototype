@@ -427,6 +427,15 @@ def get_variant_info(sample_data, sample_obj):
                     filter_reason.append('BRCA: not enough supporting reads')
                 if not brca_above_tumour_content_threshold:
                     filter_reason.append('BRCA: VAF below 10% of tumour content')
+            
+            # handle intronic varaints
+            brca_intronic_variant = sample_variant.variant_instance.is_brca_deep_intronic()
+            if brca_intronic_variant:
+                brca_filtered_count += 1
+                filter_call = True
+                latest_check.decision = 'N'
+                latest_check.save()
+                filter_reason.append(f'Intronic variant > 20bp from exon')
 
         # remove Not analysed from checks list
         variant_checks_analysed = []
