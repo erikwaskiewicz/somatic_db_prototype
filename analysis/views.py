@@ -40,9 +40,9 @@ def signup(request):
         if signup_form.is_valid():
 
             # get data from form
-            username = signup_form.cleaned_data.get('username')
-            raw_password = signup_form.cleaned_data.get('password1')
-            lims_initials = signup_form.cleaned_data.get('lims_initials')
+            username = signup_form.cleaned_data('username')
+            raw_password = signup_form.cleaned_data('password1')
+            lims_initials = signup_form.cleaned_data('lims_initials')
 
             # check if LIMS initials already exists
             initials_check, warning_message = lims_initials_check(lims_initials)
@@ -83,16 +83,6 @@ def home(request):
     """
     return render(request, 'analysis/home.html', {})
 
-@login_required
-def self_audit_submission(request):
-    """
-    Page for defining filters for checks completed.
-    """
-    context = {
-        'self_audit_form': SelfAuditSubmission(),
-        }
-                                    
-    return render(request, 'analysis/self_audit_submission.html', context)
 
 @login_required
 def self_audit(request):
@@ -105,6 +95,7 @@ def self_audit(request):
     
     #empty context dict
     context = {
+                'self_audit_form': SelfAuditSubmission(),
                 'check_data': [],
             }
     no_checks = 0
@@ -112,57 +103,57 @@ def self_audit(request):
 
     #  when button is pressed
     if request.method == 'POST':
-    
-        if 'self_audit_form' in request.POST:
+        
+        if 'which_assays' in request.POST:
+
             self_audit_form = SelfAuditSubmission(request.POST)
             if self_audit_form.is_valid():
+
                 start_date = self_audit_form.cleaned_data['start_date']
                 end_date = self_audit_form.cleaned_data['end_date']
-                #which_assays = self_audit_form.cleaned_data['which_assays']
+                which_assays = self_audit_form.cleaned_data['which_assays']
 
-        # filter to show only checks performed by current user
-        checks = Check.objects.filter(user__username = username)
-        for c in checks:
+                # filter to show only checks performed by current user
+                checks = Check.objects.filter(user__username = username, status__in = ["C", "F"])
+                for c in checks:
 
-            # include marker
-            include = True
-
-            # see if within date specified with drop down menus
-            within_date = c.signoff_time
-            if within_date == None:
-                include = False
-            else:
-                within_date = start_date <= within_date.date() <= end_date
-                if within_date:
+                # include marker
                     include = True
-        
-            # check that the correct assays are displayed
-            #assay_type = c.analysis.worksheet.assay
-            #if assay_type == which_assays:
-                #include = True
-            #else:
-                #include = False
+                    
+                   # see if within date specified with drop down menus
+                    within_date = c.signoff_time
+                    within_date = within_date.date()
+
+                    if within_date == None:
+                        include = False
+                    else:
+                        within_date = start_date <= within_date <= end_date
+                        if within_date:
+                            include = True
             
-            # remove incomplete checks
-            status = c.status
-            if status == 'P':
-                include = False
+                    # check that the correct assays are displayed
+                    assay_type = c.analysis.panel.assay
+                    if assay_type in which_assays:
+                        include = True
+                    else:
+                        include = False
+                
 
-            # want to get check data here
-            if include:
-                no_checks += 1
-                check_data = {
-                    'Worksheet': c.analysis.worksheet.ws_id,
-                    'Assay': c.analysis.worksheet.assay,
-                    'Date_Checked': c.signoff_time.strftime('%d-%b-%Y'),
-                    'Checker': username,
-                    'Sample': c.analysis.sample.sample_id,
-                    'Overall_Comments': c.overall_comment,
-                    'SVD_Link': f'http://127.0.0.1:8000/analysis/{c.analysis.id}#report'
-                }
+                    # want to get check data here
+                    if include:
+                        no_checks += 1
+                        check_data = {
+                            'Worksheet': c.analysis.worksheet.ws_id,
+                            'Assay': c.analysis.worksheet.assay,
+                            'Date_Checked': c.signoff_time.strftime('%d-%b-%Y'),
+                            'Checker': username,
+                            'Sample': c.analysis.sample.sample_id,
+                            'Overall_Comments': c.overall_comment,
+                            'SVD_Link': f'http://127.0.0.1:8000/analysis/{c.analysis.id}#report'
+                        }
 
-                context['check_data'].append(check_data)
-    context['no_checks'] = no_checks
+                        context['check_data'].append(check_data)
+            context['no_checks'] = no_checks
 
     if request.method == "GET":
             if "check_download" in request.GET:
@@ -170,7 +161,7 @@ def self_audit(request):
                 response = HttpResponse(content_type="text/csv")
                 response[
                         "Content-Disposition"
-                ] = f'attachment; filename="{username}_{dropdown_1}-{dropdown_2}_checks.csv"'
+                ] = f'attachment; filename="{username}_{start_date}-{end_date}_checks.csv"'
 
                 fieldnames = [
                     'Worksheet',                            

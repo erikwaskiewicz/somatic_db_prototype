@@ -473,8 +473,8 @@ class SelfAuditSubmission(forms.Form):
 
     # Setting range for year choice
     year_choices = range(2019, (current_year + 1))
-    # Default to present day and 1 year ago
     
+    # Default to present day and 1 year ago
     initial_start_date = datetime.datetime(last_year, current_month, current_day)
     initial_end_date = datetime.datetime.now()
     
@@ -508,3 +508,7 @@ class SelfAuditSubmission(forms.Form):
                 css_class='row'
             ),
             InlineCheckboxes('which_assays'))
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('submit', 'Search', css_class='btn btn-info w-100')
+        )
