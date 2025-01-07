@@ -498,11 +498,9 @@ class SelfAuditSubmission(forms.Form):
      required=True,
     )
     
-    # Choices for radio selector and radioselect for confirmation
-    SUBMIT_CHECK = [('1', 'I have selected the dates and assays'),
-    ]
+    # Radioselect for submission
     submit_check = forms.ChoiceField(widget=forms.RadioSelect,
-     choices=SUBMIT_CHECK
+     choices=[('1', 'I have selected the dates and assays')]
      )
     
     def __init__(self, *args, **kwargs):
