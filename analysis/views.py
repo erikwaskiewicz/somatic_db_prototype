@@ -99,91 +99,127 @@ def self_audit(request):
                 'check_data': [],
             }
     no_checks = 0
-
+    all_check_data = []
 
     #  when button is pressed
     if request.method == 'POST':
-        
-        if 'which_assays' in request.POST:
 
-            self_audit_form = SelfAuditSubmission(request.POST)
-            if self_audit_form.is_valid():
+                if 'which_assays' in request.POST:
 
-                start_date = self_audit_form.cleaned_data['start_date']
-                end_date = self_audit_form.cleaned_data['end_date']
-                which_assays = self_audit_form.cleaned_data['which_assays']
-
-                # filter to show only checks performed by current user
-                checks = Check.objects.filter(user__username = username, status__in = ["C", "F"])
-                for c in checks:
-
-                # include marker
-                    include = True
+                    self_audit_form = SelfAuditSubmission(request.POST)
                     
-                   # see if within date specified with drop down menus
-                    within_date = c.signoff_time
-                    within_date = within_date.date()
+                    if self_audit_form.is_valid():
 
-                    if within_date == None:
-                        include = False
-                    else:
-                        within_date = start_date <= within_date <= end_date
-                        if within_date:
+                        start_date = self_audit_form.cleaned_data['start_date']
+                        end_date = self_audit_form.cleaned_data['end_date']
+                        which_assays = self_audit_form.cleaned_data['which_assays']
+
+                        # filter to show only checks performed by current user
+                        checks = Check.objects.filter(user__username = username, status__in = ["C", "F"])
+                        for c in checks:
+
+                            # include marker
                             include = True
-            
-                    # check that the correct assays are displayed
-                    assay_type = c.analysis.panel.assay
-                    if assay_type in which_assays:
-                        include = True
-                    else:
-                        include = False
-                
+                                
+                            # see if within date specified with drop down menus
+                            within_date = c.signoff_time
+                            within_date = within_date.date()
 
-                    # want to get check data here
-                    if include:
-                        no_checks += 1
-                        check_data = {
-                            'Worksheet': c.analysis.worksheet.ws_id,
-                            'Assay': c.analysis.worksheet.assay,
-                            'Date_Checked': c.signoff_time.strftime('%d-%b-%Y'),
-                            'Checker': username,
-                            'Sample': c.analysis.sample.sample_id,
-                            'Overall_Comments': c.overall_comment,
-                            'SVD_Link': f'http://127.0.0.1:8000/analysis/{c.analysis.id}#report'
-                        }
-
-                        context['check_data'].append(check_data)
-            context['no_checks'] = no_checks
-
-    if request.method == "GET":
-            if "check_download" in request.GET:
-
-                response = HttpResponse(content_type="text/csv")
-                response[
-                        "Content-Disposition"
-                ] = f'attachment; filename="{username}_{start_date}-{end_date}_checks.csv"'
-
-                fieldnames = [
-                    'Worksheet',                            
-                    'Assay',
-                    'Date_Checked',
-                    'Checker',
-                    'Sample',
-                    'Overall_Comments',
-                    'SVD_Link',
-                ]
-
-                writer = csv.DictWriter(response, fieldnames=fieldnames)
-                writer.writeheader()
-                print(context['check_data'])
-                for checks in context['check_data']:
-
-                    writer.writerow(checks)
+                            if within_date == None:
+                                include = False
+                            else:
+                                within_date = start_date <= within_date <= end_date
+                                if within_date:
+                                    include = True
                         
-                return response
+                            # check that the correct assays are displayed
+                            assay_type = c.analysis.panel.assay
+                            if assay_type in which_assays:
+                                include = True
+                            else:
+                                include = False
+                            
+                            # want to get check data here
+                            if include:
+                                no_checks += 1
+                                check_data = {
+                                    'Worksheet': c.analysis.worksheet.ws_id,
+                                    'Assay': c.analysis.worksheet.assay,
+                                    'Date_Checked': c.signoff_time.strftime('%d-%b-%Y'),
+                                    'Checker': username,
+                                    'Sample': c.analysis.sample.sample_id,
+                                    'Overall_Comments': c.overall_comment,
+                                    'SVD_Link': f'http://127.0.0.1:8000/analysis/{c.analysis.id}#report'
+                                }
 
+                                all_check_data.append(check_data)
+
+                        context['no_checks'] = no_checks
+                        context['check_data'] = all_check_data
+
+
+                if "download_submit" in request.POST:
+
+                    start_date = self_audit_form.cleaned_data['start_date']
+                    end_date = self_audit_form.cleaned_data['end_date']
+
+                    response = HttpResponse(content_type="text/csv")
+                    response[
+                            "Content-Disposition"
+                    ] = f'attachment; filename={username}_{start_date}-{end_date}_checks.csv'
+
+                    fieldnames = [
+                        'Worksheet',                            
+                        'Assay',
+                        'Date_Checked',
+                        'Checker',
+                        'Sample',
+                        'Overall_Comments',
+                        'SVD_Link',
+                    ]
+
+                    writer = csv.DictWriter(response, fieldnames=fieldnames)
+                    writer.writeheader()
+
+                    for checks in all_check_data:
+
+                        writer.writerow(checks)
+                                
+                    return response
+
+                return render(request, 'analysis/self_audit.html', context)
 
     return render(request, 'analysis/self_audit.html', context)
+
+def download_audit_csv(username, start_date, end_date, all_check_data):
+    """
+    Download a csv of current users checks
+    """
+
+   
+    response = HttpResponse(content_type="text/csv")
+    response[
+        "Content-Disposition"
+    ] = f'attachment; filename={username}_{start_date}-{end_date}_checks.csv'
+
+    fieldnames = [
+        'Worksheet',                            
+        'Assay',
+        'Date_Checked',
+        'Checker',
+        'Sample',
+        'Overall_Comments',
+        'SVD_Link',
+        ]
+
+    writer = csv.DictWriter(response, fieldnames=fieldnames)
+    writer.writeheader()
+
+    for checks in all_check_data:
+
+        writer.writerow(checks)
+                                
+    return response
 
 def ajax_num_assigned_user(request, user_pk):
     """

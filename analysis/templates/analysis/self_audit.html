@@ -8,7 +8,7 @@
   <div class="container">
     <ol class="breadcrumb" style="background-color: transparent;">
       <li class="breadcrumb-item"><a href="{% url 'home' %}"><span class="fa fa-home"></span></a></li>
-      <li class="breadcrumb-item"><a href="{% url 'options_page' %}">Options</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'user_settings' %}">User Settings</a></li>
       <li class="breadcrumb-item active">Self Audit Form</li>
     </ol>
   </div>
@@ -23,8 +23,10 @@
       <div>
       <button type="button" id="select-all" class="btn btn-primary">Select All</button>
       <button type="button" id="deselect-all" class="btn btn-danger">Deselect All</button>
-      </div>
       <br>
+      <br>
+      </div>
+      </div>
     </form>
 </div>
 <!-- Script for the select/deselect all buttons -->
@@ -46,7 +48,6 @@
   });
 </script>
 
-<br>
 <br>
 
 <div class="container">
@@ -93,18 +94,5 @@
           {% endfor %}
         </tbody>
       </table>
-      <br>
-      <br>
-      <table class="table">
-        <tr>
-          <td class="col-1"></td>
-          <td class="col-1"></td>
-          <td class="col-1"></td>
-          <td class="col-4">
-            <form method="GET">
-                <button type="submit" name="check_download" id="check_download" class="btn btn-primary">Download this selection</button>
-            </form></td>
-        </tr>
-      </table>
-    </div>
+      
 {% endblock %}

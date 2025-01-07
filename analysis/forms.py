@@ -497,7 +497,14 @@ class SelfAuditSubmission(forms.Form):
      choices=Panel.ASSAY_CHOICES,
      required=True,
     )
-   
+    
+    # Choices for radio selector and radioselect for confirmation
+    SUBMIT_CHECK = [('1', 'I have selected the dates and assays'),
+    ]
+    submit_check = forms.ChoiceField(widget=forms.RadioSelect,
+     choices=SUBMIT_CHECK
+     )
+    
     def __init__(self, *args, **kwargs):
         super(SelfAuditSubmission, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -507,8 +514,13 @@ class SelfAuditSubmission(forms.Form):
                 Field('end_date', css_class='form-control', wrapper_class='col-md-4'),
                 css_class='row'
             ),
-            InlineCheckboxes('which_assays'))
+            InlineCheckboxes('which_assays'),
+            Field('submit_check')
+            )
         self.helper.form_method = 'POST'
         self.helper.add_input(
-            Submit('submit', 'Search', css_class='btn btn-info w-100')
+            Submit('display_submit', 'Search', css_class='btn btn-info')  
+        )
+        self.helper.add_input(
+            Submit('download_submit', 'Download', css_class='btn btn-success')
         )
