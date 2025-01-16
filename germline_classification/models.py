@@ -287,4 +287,14 @@ class Classification(models.Model):
         else:
             classification = "benign"
         return classification
+    
+    def perform_classification(self):
+        """
+        Performs classification according to the ACGS 2024 guidelines
+        """
+        pathogenic_codes, benign_codes = self.get_codes_strengths_and_scores_applied()
+        total_score = self.get_total_score(pathogenic_codes, benign_codes)
+        classification = self.classify_acgs_2024(total_score)
+        classification = classification.replace("_", " ")
+        return classification.title(), total_score
 

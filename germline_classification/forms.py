@@ -62,6 +62,7 @@ class ClassifyForm(forms.Form):
         label = "Functional Evidence",
         help_text = mark_safe(functional_help),
         choices = functional_choices,
+        required=False,
         widget = forms.CheckboxSelectMultiple
     )
 
@@ -78,8 +79,7 @@ class ClassifyForm(forms.Form):
     segregation_codes = forms.ChoiceField(
         label = "Segregation Evidence",
         help_text = mark_safe(segregation_help),
-        choices = segregation_choices,
-        widget = forms.CheckboxSelectMultiple
+        choices = segregation_choices
     )
 
     # Allelic Evidence
@@ -87,8 +87,7 @@ class ClassifyForm(forms.Form):
     allelic_codes = forms.ChoiceField(
         label = "Allelic Evidence",
         help_text = mark_safe(allelic_help),
-        choices = allelic_choices,
-        widget = forms.CheckboxSelectMultiple
+        choices = allelic_choices
     )
 
     # Phenotype Data
@@ -96,8 +95,7 @@ class ClassifyForm(forms.Form):
     phenotype_codes = forms.ChoiceField(
         label = "Phenotype Evidence",
         help_text = mark_safe(phenotype_help),
-        choices = phenotype_choices,
-        widget = forms.CheckboxSelectMultiple
+        choices = phenotype_choices
     )
 
     def __init__(self, *args, **kwargs):
