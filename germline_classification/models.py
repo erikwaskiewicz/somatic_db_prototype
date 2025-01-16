@@ -1,9 +1,33 @@
 from django.db import models
+from django.contrib.auth.models import User
+from polymorphic.models import PolymorphicModel
+
 from auditlog.registry import auditlog
 
-#todo criteria
-#todo strength-criteria
-#todo classification
+from analysis.models import VariantInstance
+from swgs.models import GermlineVariantInstance
+
+
+class VariantClassification(PolymorphicModel):
+    """
+    We need to be able to link variant instances from the different apps (SWGS/Analysis)
+    Polymorphic model lets us use different models as foreign keys cleanly
+    and retains the information about where they're from
+    """
+    id = models.AutoField(primary_key=True)
+    classification = models.ForeignKey("Classification", on_delete=models.CASCADE)
+
+class AnalysisVariantClassification(VariantClassification):
+    """
+    Variant classifications for samples from the Analysis app
+    """
+    variant_instance = models.ForeignKey(VariantInstance, on_delete=models.CASCADE)
+
+class SWGSVariantClassification(VariantClassification):
+    """
+    Variant classificaitons for samples from the SWGS app
+    """
+    variant_instance = models.ForeignKey(GermlineVariantInstance, on_delete=models.CASCADE)
 
 class ClassificationCriteriaStrength(models.Model):
     """
@@ -45,15 +69,16 @@ class ClassificationCriteria(models.Model):
 
 class Classification(models.Model):
     """
-    A classification of a single variant
+    The classification criteria applied for a single variant
     """
     id = models.AutoField(primary_key=True)
-    #todo variant
     criteria_applied = models.ManyToManyField("ClassificationCriteria", related_name="criteria_applied")
+    user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True)
+    signoff_time = models.DateTimeField(blank=True, null=True)
 
     def get_codes_strengths_and_scores_applied(self):
         """
-        
+        Get lists of pathogenic and benign codes for downstream wrangling
         """
 
         all_criteria_applied = self.criteria_applied.all()
