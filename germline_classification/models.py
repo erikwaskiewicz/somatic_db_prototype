@@ -67,6 +67,9 @@ class ClassificationCriteria(models.Model):
     class Meta:
         unique_together = ["code", "strength"]
 
+    def form_display(self):
+        return f"{self.code.code}_{self.strength.strength}"
+
 class Classification(models.Model):
     """
     The classification criteria applied for a single variant
@@ -129,15 +132,23 @@ class Classification(models.Model):
             if any(["PM5", "PP2"]) in all_codes:
                 warning = """INFO: Do not use the same evidence to code PM1 and PM5 or PP2, but the two codes can be used together if each
                             supported by independent evidence."""
+                warnings.append(warning)
         
         if "PM4" in all_codes:
             if "PVS1" in all_codes:
                 warning = "PM4 should not be applied with PVS1"
+                warnings.append(warning)
         
         if "PM5" in all_codes:
             if "PM1" in all_codes:
                 warning = """Do not use the same evidence to apply PM1 and PM5, but the two codes can be used together if each supported
                             by independent evidence."""
+                warnings.append(warning)
+        
+        if len(warnings) == 0:
+            return False, []
+        else:
+            return True, warnings
 
     
     @staticmethod
