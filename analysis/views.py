@@ -104,90 +104,90 @@ def self_audit(request):
     #  when button is pressed
     if request.method == 'POST':
 
-                if 'which_assays' in request.POST:
+        if 'which_assays' in request.POST:
 
-                    self_audit_form = SelfAuditSubmission(request.POST)
-                    
-                    if self_audit_form.is_valid():
+            self_audit_form = SelfAuditSubmission(request.POST)
+            
+            if self_audit_form.is_valid():
 
-                        start_date = self_audit_form.cleaned_data['start_date']
-                        end_date = self_audit_form.cleaned_data['end_date']
-                        which_assays = self_audit_form.cleaned_data['which_assays']
+                start_date = self_audit_form.cleaned_data['start_date']
+                end_date = self_audit_form.cleaned_data['end_date']
+                which_assays = self_audit_form.cleaned_data['which_assays']
 
-                        # filter to show only checks performed by current user
-                        checks = Check.objects.filter(user__username = username, status__in = ["C", "F"])
-                        for c in checks:
+                # filter to show only checks performed by current user
+                checks = Check.objects.filter(user__username = username, status__in = ["C", "F"])
+                for c in checks:
 
-                            # include marker
-                            include = True
-                                
-                            # see if within date specified with drop down menus
-                            within_date = c.signoff_time
-                            within_date = within_date.date()
-
-                            if within_date == None:
-                                include = False
-                            else:
-                                within_date = start_date <= within_date <= end_date
-                                if within_date:
-                                    include = True
+                    # include marker
+                    include = True
                         
-                            # check that the correct assays are displayed
-                            assay_type = c.analysis.panel.assay
-                            if assay_type in which_assays:
-                                include = True
-                            else:
-                                include = False
-                            
-                            # want to get check data here
-                            if include:
-                                no_checks += 1
-                                check_data = {
-                                    'Worksheet': c.analysis.worksheet.ws_id,
-                                    'Assay': c.analysis.worksheet.assay,
-                                    'Date_Checked': c.signoff_time.strftime('%d-%b-%Y'),
-                                    'Checker': username,
-                                    'Sample': c.analysis.sample.sample_id,
-                                    'Overall_Comments': c.overall_comment,
-                                    'SVD_Link': f'http://127.0.0.1:8000/analysis/{c.analysis.id}#report'
-                                }
+                    # see if within date specified with drop down menus
+                    within_date = c.signoff_time
+                    within_date = within_date.date()
 
-                                all_check_data.append(check_data)
+                    if within_date == None:
+                        include = False
+                    else:
+                        within_date = start_date <= within_date <= end_date
+                        if within_date:
+                            include = True
+                
+                    # check that the correct assays are displayed
+                    assay_type = c.analysis.panel.assay
+                    if assay_type in which_assays:
+                        include = True
+                    else:
+                        include = False
+                    
+                    # want to get check data here
+                    if include:
+                        no_checks += 1
+                        check_data = {
+                            'Worksheet': c.analysis.worksheet.ws_id,
+                            'Assay': c.analysis.worksheet.assay,
+                            'Date_Checked': c.signoff_time.strftime('%d-%b-%Y'),
+                            'Checker': username,
+                            'Sample': c.analysis.sample.sample_id,
+                            'Overall_Comments': c.overall_comment,
+                            'SVD_Link': f'http://127.0.0.1:8000/analysis/{c.analysis.id}#report'
+                        }
 
-                        context['no_checks'] = no_checks
-                        context['check_data'] = all_check_data
+                        all_check_data.append(check_data)
+
+                context['no_checks'] = no_checks
+                context['check_data'] = all_check_data
 
 
-                if "download_submit" in request.POST:
+        if "download_submit" in request.POST:
 
-                    start_date = self_audit_form.cleaned_data['start_date']
-                    end_date = self_audit_form.cleaned_data['end_date']
+            start_date = self_audit_form.cleaned_data['start_date']
+            end_date = self_audit_form.cleaned_data['end_date']
 
-                    response = HttpResponse(content_type="text/csv")
-                    response[
-                            "Content-Disposition"
-                    ] = f'attachment; filename={username}_{start_date}-{end_date}_checks.csv'
+            response = HttpResponse(content_type="text/csv")
+            response[
+                    "Content-Disposition"
+            ] = f'attachment; filename={username}_{start_date}-{end_date}_checks.csv'
 
-                    fieldnames = [
-                        'Worksheet',                            
-                        'Assay',
-                        'Date_Checked',
-                        'Checker',
-                        'Sample',
-                        'Overall_Comments',
-                        'SVD_Link',
-                    ]
+            fieldnames = [
+                'Worksheet',                            
+                'Assay',
+                'Date_Checked',
+                'Checker',
+                'Sample',
+                'Overall_Comments',
+                'SVD_Link',
+            ]
 
-                    writer = csv.DictWriter(response, fieldnames=fieldnames)
-                    writer.writeheader()
+            writer = csv.DictWriter(response, fieldnames=fieldnames)
+            writer.writeheader()
 
-                    for checks in all_check_data:
+            for checks in all_check_data:
 
-                        writer.writerow(checks)
-                                
-                    return response
+                writer.writerow(checks)
+                        
+            return response
 
-                return render(request, 'analysis/self_audit.html', context)
+        return render(request, 'analysis/self_audit.html', context)
 
     return render(request, 'analysis/self_audit.html', context)
 

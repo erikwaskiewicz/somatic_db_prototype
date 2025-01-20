@@ -29,24 +29,6 @@
       </div>
     </form>
 </div>
-<!-- Script for the select/deselect all buttons -->
-<script>
-  document.getElementById('select-all').addEventListener('click', function() {
-      // Select all checkboxes
-      var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-      checkboxes.forEach(function(checkbox) {
-          checkbox.checked = true;
-      });
-  });
-
-  document.getElementById('deselect-all').addEventListener('click', function() {
-      // Deselect all checkboxes
-      var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-      checkboxes.forEach(function(checkbox) {
-          checkbox.checked = false;
-      });
-  });
-</script>
 
 <br>
 
@@ -94,5 +76,24 @@
           {% endfor %}
         </tbody>
       </table>
-      
+
+<!-- Script for the select/deselect all buttons -->
+<script>
+  document.getElementById('select-all').addEventListener('click', function() {
+      // Select all checkboxes
+      var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      checkboxes.forEach(function(checkbox) {
+          checkbox.checked = true;
+      });
+  });
+
+  document.getElementById('deselect-all').addEventListener('click', function() {
+      // Deselect all checkboxes
+      var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      checkboxes.forEach(function(checkbox) {
+          checkbox.checked = false;
+      });
+  });
+</script>      
+
 {% endblock %}
