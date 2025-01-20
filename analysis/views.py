@@ -124,6 +124,7 @@ def self_audit(request):
                     # see if within date specified with drop down menus
                     within_date = c.signoff_time
                     within_date = within_date.date()
+                    assay_type = c.analysis.panel.assay
 
                     if within_date == None:
                         include = False
@@ -131,10 +132,11 @@ def self_audit(request):
                         within_date = start_date <= within_date <= end_date
                         if within_date:
                             include = True
-                
+                        else:
+                            include = False
+
                     # check that the correct assays are displayed
-                    assay_type = c.analysis.panel.assay
-                    if assay_type in which_assays:
+                    if assay_type in which_assays and include == True:
                         include = True
                     else:
                         include = False
@@ -190,36 +192,6 @@ def self_audit(request):
         return render(request, 'analysis/self_audit.html', context)
 
     return render(request, 'analysis/self_audit.html', context)
-
-def download_audit_csv(username, start_date, end_date, all_check_data):
-    """
-    Download a csv of current users checks
-    """
-
-   
-    response = HttpResponse(content_type="text/csv")
-    response[
-        "Content-Disposition"
-    ] = f'attachment; filename={username}_{start_date}-{end_date}_checks.csv'
-
-    fieldnames = [
-        'Worksheet',                            
-        'Assay',
-        'Date_Checked',
-        'Checker',
-        'Sample',
-        'Overall_Comments',
-        'SVD_Link',
-        ]
-
-    writer = csv.DictWriter(response, fieldnames=fieldnames)
-    writer.writeheader()
-
-    for checks in all_check_data:
-
-        writer.writerow(checks)
-                                
-    return response
 
 def ajax_num_assigned_user(request, user_pk):
     """
