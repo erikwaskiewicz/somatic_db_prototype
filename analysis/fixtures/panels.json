@@ -630,7 +630,7 @@
         "panel_name": "lung",
         "pretty_print": "Lung",
         "version": 1,
-        "live": true,
+        "live": false,
         "assay": "3",
         "genome_build": 37,
         "lims_test_code": "TSO500CTDNA",
@@ -1609,6 +1609,32 @@
         "fusion_genes": null,
         "splice_genes": null,
         "show_fusion_vaf": false
+    }
+},
+{
+    "model": "analysis.panel",
+    "pk": 63,
+    "fields": {
+        "panel_name": "lung",
+        "pretty_print": "Lung",
+        "version": 2,
+        "live": true,
+        "assay": "3",
+        "genome_build": 37,
+        "lims_test_code": "TSO500CTDNA",
+        "show_snvs": true,
+        "show_myeloid_gaps_summary": false,
+        "depth_cutoffs": "1000",
+        "vaf_cutoff": "0.00000",
+        "manual_review_required": true,
+        "manual_review_desc": "EGFR codon 747 (position 7:55,242,471)|MET exon 14 splice acceptor (position 7:116,411,887)|MET exon 14 splice donor (position 7:116,412,046)|BRCA1 c.1961delA p.K654fs*47 (position 17:41245587)",
+        "bed_file": "roi/b37/TSO500_ctDNA/lung_variants_b37_v2.bed",
+        "report_snv_vaf": false,
+        "show_fusions": true,
+        "show_fusion_coverage": false,
+        "fusion_genes": "ALK,RET,ROS1,NTRK1,NTRK2,NTRK3",
+        "splice_genes": null,
+        "show_fusion_vaf": true
     }
 }
 ]
