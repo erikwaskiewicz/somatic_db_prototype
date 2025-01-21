@@ -100,16 +100,17 @@ def self_audit(request):
             }
     no_checks = 0
     all_check_data = []
-
+    warnings = []
+    submit_check = "2"
     #  when button is pressed
     if request.method == 'POST':
-
+        
         if 'which_assays' in request.POST:
 
             self_audit_form = SelfAuditSubmission(request.POST)
             
             if self_audit_form.is_valid():
-
+                submit_check = self_audit_form.cleaned_data['submit_check']
                 start_date = self_audit_form.cleaned_data['start_date']
                 end_date = self_audit_form.cleaned_data['end_date']
                 which_assays = self_audit_form.cleaned_data['which_assays']
@@ -161,10 +162,9 @@ def self_audit(request):
 
 
         if "download_submit" in request.POST:
-
             start_date = self_audit_form.cleaned_data['start_date']
             end_date = self_audit_form.cleaned_data['end_date']
-
+            submit_check = self_audit_form.cleaned_data['submit_check']
             response = HttpResponse(content_type="text/csv")
             response[
                     "Content-Disposition"
@@ -186,10 +186,22 @@ def self_audit(request):
             for checks in all_check_data:
 
                 writer.writerow(checks)
-                        
-            return response
 
-        return render(request, 'analysis/self_audit.html', context)
+            if submit_check != "1":
+                warnings.append('Make sure you check the parameters are set and the tickboxes are ticked.')
+
+                return render(request, 'analysis/self_audit.html', {'self_audit_form': self_audit_form, 'warning': warnings})
+            
+            else:
+                return response
+
+        if submit_check != "1":
+            warnings.append('Make sure you check the parameters are set and the tickboxes are ticked.')
+
+            return render(request, 'analysis/self_audit.html', {'self_audit_form': self_audit_form, 'warning': warnings})
+            
+        else:
+            return render(request, 'analysis/self_audit.html', context)
 
     return render(request, 'analysis/self_audit.html', context)
 
