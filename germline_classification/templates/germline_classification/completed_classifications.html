@@ -24,8 +24,8 @@
 <table class="table">
     <thead>
         <tr>
-            <th class="col-md-6">Variant</th>
-            <th class="col-md-6">Previous Classifications</th>
+            <th class="col-md-4">Variant</th>
+            <th class="col-md-8">Previous Classifications</th>
         </tr>
     </thead>
     <tbody>
@@ -44,6 +44,7 @@
             <td>
               <table>
                 <tr>  
+                  <td>Assay</td>
                   <td>User</td>
                   <td>Date Classified</td>
                   <td>Final Classification</td>
@@ -51,6 +52,7 @@
                 </tr>
                 {% for pc in c.previous_classifications %}
                 <tr>
+                  <td>{{ pc.assay }}</td>
                   <td>{{ pc.user }}</td>
                   <td>{{ pc.signoff_time }}</td>
                   <td>{{ pc.final_classification }} </td>
