@@ -70,11 +70,15 @@ def get_all_classifications_for_a_variant(variant):
     """
     For a given variant (format 'chr1:12345:A>T') find all classifications accross all assays
     """
+
+    if variant.startswith("chr"):
+        variant = variant[3:]
+
     # Query over all assays to find the variants queried
     variant_classifications = VariantClassification.objects.filter(
         (
             (Q(analysisvariantclassification__variant_instance__variant_instance__variant__variant=variant) & Q(analysisvariantclassification__classification__complete=True)) |
-            (Q(swgsvariantclassification__variant_instance__variant__variant=variant) & Q(swgsvariantclassification__classification__complete=True))
+            (Q(swgsvariantclassification__variant_instance__variant__variant=f"chr{variant}") & Q(swgsvariantclassification__classification__complete=True))
         )
     )
 
@@ -84,17 +88,15 @@ def get_all_classifications_for_a_variant(variant):
         user = c.classification.user
         signoff_time = c.classification.signoff_time
         final_classification, total_score =  c.classification.perform_classification()
-        print(c.variant_instance)
-        print(c.classification)
+        assay = c.display_assay_and_panel()
         classification_dict = {
+            "assay": assay,
             "user": user,
             "signoff_time": signoff_time.strftime("%d/%m/%Y"),
             "final_classification": final_classification,
             "total_score": total_score
         }
-        print(classification_dict)
         previous_classifications.append(classification_dict)
 
-    print(previous_classifications)
 
     return previous_classifications
