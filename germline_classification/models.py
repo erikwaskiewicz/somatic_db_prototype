@@ -1,5 +1,3 @@
-import datetime
-
 from django.db import models
 from django.contrib.auth.models import User
 from polymorphic.models import PolymorphicModel
@@ -303,11 +301,3 @@ class Classification(models.Model):
         classification = self.classify_acgs_2024(total_score)
         classification = classification.replace("_", " ")
         return classification.title(), total_score
-    
-    def complete_signoff(self):
-        """
-        Completes the classification
-        """
-        now = datetime.datetime.now()
-        self.signoff_time = now
-        self.complete = True

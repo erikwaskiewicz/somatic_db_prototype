@@ -38,7 +38,7 @@
             <td>{{ c.gene }}</td>
             <td>{{ c.hgvsc }}<br>{{ c.hgvsp }}</td>
             <td>{{ c.origin }}</td>
-            <td><a class="btn btn-secondary btn-block" href="">Classify</a></td>
+            <td><a class="btn btn-secondary btn-block" href="{% url 'germline_classification:classify_variant' c.id %}">Classify</a></td>
         </tr>
         {% endfor %}
     </tbody>

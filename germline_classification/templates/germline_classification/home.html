@@ -13,6 +13,7 @@
 {% endblock %}
 
 {% block content %}
+<div class="container">
 <h1>Germline Classification</h1>
 <a class="btn btn-secondary" href="{% url 'germline_classification:pending_classifications' %}" role="button">
     View Pending Classifications
@@ -20,4 +21,5 @@
 <a class="btn btn-secondary" href="{% url 'germline_classification:completed_classifications' %}" role="button">
   View Completed Classifications
 </a>
+</div>
 {% endblock %}

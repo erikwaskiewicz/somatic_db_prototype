@@ -55,10 +55,10 @@ def get_classifications(pending_or_completed):
             classification_info_dict["hgvsc"], classification_info_dict["hgvsp"], classification_info_dict["gene"] = classification.variant_instance.get_default_hgvs_nomenclature()
 
         if classification_complete:
-            outcome, score =  classification.perform_classification()
+            outcome, score =  classification.classification.perform_classification()
             classification_info_dict["outcome"] = outcome
             classification_info_dict["score"] = score
-            
+
         all_classifications.append(classification_info_dict)
 
     print(all_classifications)

@@ -40,7 +40,7 @@ def completed_classifications(request):
 
 
 @login_required
-def classify_variant(request):
+def classify_variant(request, variant_classification_id):
     """
     Classify a single variant
     """
@@ -50,6 +50,10 @@ def classify_variant(request):
     classify_form = ClassifyForm()
     warnings = []
     final_classification = ""
+
+    # get classification object
+    variant_classification_obj = VariantClassification.objects.get(pk=variant_classification_id)
+    classification_obj = variant_classification_obj.classification
 
     if request.method == 'POST':
 
@@ -82,10 +86,10 @@ def classify_variant(request):
                         all_codes.append(int(code))
 
             # create a new classification object
-            classification_obj = Classification.objects.create(
-                user = current_user,
-                signoff_time = now
-            )
+            # update information with user and time
+            classification_obj.user = current_user
+            classification_obj.signoff_time = now
+
             # add codes
             for code in all_codes:
                 code_obj = ClassificationCriteria.objects.get(id=code)
@@ -94,6 +98,10 @@ def classify_variant(request):
             classification, score = classification_obj.perform_classification()
             final_classification = f"{classification} ({score})"
             #context["final_classification"] = final_classification
+
+            # set classification as complete
+            classification_obj.complete = True
+            classification_obj.save()
 
             #return redirect('classify_variant')
 

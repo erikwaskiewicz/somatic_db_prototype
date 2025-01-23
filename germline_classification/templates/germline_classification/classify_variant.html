@@ -3,7 +3,13 @@
 {% load crispy_forms_tags %}
 
 {% block breadcrumbs %}
-<br>
+<div class="container-fluid breadcrumbs-custom">
+  <div class="container">
+    <ol class="breadcrumb" style="background-color: transparent;">
+      <li class="breadcrumb-item"><a href="{% url 'germline_classification:home' %}"><span class="fa fa-home"></span></a></li>
+    </ol>
+  </div>
+</div>
 {% endblock %}
 
 {% block content %}
