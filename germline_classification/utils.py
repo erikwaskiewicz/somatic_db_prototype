@@ -18,14 +18,19 @@ def create_classifications_from_swgs(list_of_variant_ids):
         swgs_variant_classification_obj = SWGSVariantClassification.objects.create(variant_instance=germline_variant_instance_obj, classification=classification_obj)
         swgs_variant_classification_obj.save()
     
-def get_pending_classifications():
+def get_classifications(pending_or_completed):
     """
-    Get all pending classifications over WGS and analysis apps
+    Get all pending or completed classifications over WGS and analysis apps
     """
-    all_pending_classifications = []
+    all_classifications = []
+
+    if pending_or_completed == "pending":
+        classification_complete = False
+    else:
+        classification_complete = True
 
     all_pending_classifications_query = VariantClassification.objects.filter(
-        classification__complete = False
+        classification__complete = classification_complete
     )
 
     # for each classification, create a dictionary of all the required information
@@ -49,7 +54,12 @@ def get_pending_classifications():
             classification_info_dict["genomic_coordinate"] = classification.variant_instance.variant.variant
             classification_info_dict["hgvsc"], classification_info_dict["hgvsp"], classification_info_dict["gene"] = classification.variant_instance.get_default_hgvs_nomenclature()
 
-        all_pending_classifications.append(classification_info_dict)
+        if classification_complete:
+            outcome, score =  classification.perform_classification()
+            classification_info_dict["outcome"] = outcome
+            classification_info_dict["score"] = score
+            
+        all_classifications.append(classification_info_dict)
 
-    print(all_pending_classifications)
-    return all_pending_classifications
+    print(all_classifications)
+    return all_classifications

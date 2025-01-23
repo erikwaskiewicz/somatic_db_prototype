@@ -13,16 +13,30 @@ def home(request):
 @login_required
 def pending_classifications(request):
     """
-    
+    Get and display all pending variant classifications
     """
 
-    all_pending_classifications  = get_pending_classifications()
+    all_pending_classifications  = get_classifications("pending")
 
     context = {
         "classifications": all_pending_classifications
     }
 
     return render(request, "germline_classification/pending_classifications.html", context)
+
+@login_required
+def completed_classifications(request):
+    """
+    Get and display all pending variant classifications
+    """
+
+    all_pending_classifications  = get_classifications("completed")
+
+    context = {
+        "classifications": all_pending_classifications
+    }
+
+    return render(request, "germline_classification/completed_classifications.html", context)
 
 
 @login_required
