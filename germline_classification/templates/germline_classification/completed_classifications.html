@@ -24,21 +24,41 @@
 <table class="table">
     <thead>
         <tr>
-            <th class="col-md-4">Variant</th>
-            <th class="col-md-1">Gene</th>
-            <th class="col-md-4">HGVSc / HGVSp</th>
-            <th class="col-md-1">Origin</th>
-            <th class="col-md-2">Classification</th>
+            <th class="col-md-6">Variant</th>
+            <th class="col-md-6">Previous Classifications</th>
         </tr>
     </thead>
     <tbody>
         {% for c in classifications %}
         <tr>
-            <td>{{ c.genomic_coordinate }}</td>
-            <td>{{ c.gene }}</td>
-            <td>{{ c.hgvsc }}<br>{{ c.hgvsp }}</td>
-            <td>{{ c.origin }}</td>
-            <td>{{ c.outcome }} ({{ c.score }})</td>
+            <td>
+              {{ c.genomic_coordinate }}
+              <br>
+              {{ c.gene }}
+              <br>
+              {{ c.hgvsc }}
+              <br>
+              {{ c.hgvsp }}
+            </td>
+            
+            <td>
+              <table>
+                <tr>  
+                  <td>User</td>
+                  <td>Date Classified</td>
+                  <td>Final Classification</td>
+                  <td>Score</td>
+                </tr>
+                {% for pc in c.previous_classifications %}
+                <tr>
+                  <td>{{ pc.user }}</td>
+                  <td>{{ pc.signoff_time }}</td>
+                  <td>{{ pc.final_classification }} </td>
+                  <td>{{ pc.total_score }}</td>
+                </tr>
+                {% endfor %}
+              </table>
+            </td>
         </tr>
         {% endfor %}
     </tbody>

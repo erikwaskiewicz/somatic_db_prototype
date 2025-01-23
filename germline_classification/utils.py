@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.models import Q
 
 from .models import *
 from swgs.models import GermlineVariantInstance
@@ -49,17 +50,51 @@ def get_classifications(pending_or_completed):
 
         if classification.origin == "WGS":
             classification_info_dict["origin"] = "WGS"
-            classification_info_dict["sample"] = classification.variant_instance.patient_analysis.germline_sample.sample_id
-            classification_info_dict["worksheet"] = classification.variant_instance.patient_analysis.run.worksheet
-            classification_info_dict["genomic_coordinate"] = classification.variant_instance.variant.variant
-            classification_info_dict["hgvsc"], classification_info_dict["hgvsp"], classification_info_dict["gene"] = classification.variant_instance.get_default_hgvs_nomenclature()
+            sample = classification.variant_instance.patient_analysis.germline_sample.sample_id
+            worksheet = classification.variant_instance.patient_analysis.run.worksheet
+            variant = classification.variant_instance.variant.variant
+            hgvsc, hgvsp, gene = classification.variant_instance.get_default_hgvs_nomenclature()
+            classification_info_dict["sample"] = sample
+            classification_info_dict["worksheet"] = worksheet
+            classification_info_dict["genomic_coordinate"] = variant
+            classification_info_dict["hgvsc"], classification_info_dict["hgvsp"], classification_info_dict["gene"] = hgvsc, hgvsp, gene
 
-        if classification_complete:
-            outcome, score =  classification.classification.perform_classification()
-            classification_info_dict["outcome"] = outcome
-            classification_info_dict["score"] = score
-
+        previous_classifications = get_all_classifications_for_a_variant(variant)
+        classification_info_dict["previous_classifications"] = previous_classifications
+        print(classification_info_dict)
         all_classifications.append(classification_info_dict)
 
-    print(all_classifications)
     return all_classifications
+
+def get_all_classifications_for_a_variant(variant):
+    """
+    For a given variant (format 'chr1:12345:A>T') find all classifications accross all assays
+    """
+    # Query over all assays to find the variants queried
+    variant_classifications = VariantClassification.objects.filter(
+        (
+            (Q(analysisvariantclassification__variant_instance__variant_instance__variant__variant=variant) & Q(analysisvariantclassification__classification__complete=True)) |
+            (Q(swgsvariantclassification__variant_instance__variant__variant=variant) & Q(swgsvariantclassification__classification__complete=True))
+        )
+    )
+
+    previous_classifications = []
+
+    for c in variant_classifications:
+        user = c.classification.user
+        signoff_time = c.classification.signoff_time
+        final_classification, total_score =  c.classification.perform_classification()
+        print(c.variant_instance)
+        print(c.classification)
+        classification_dict = {
+            "user": user,
+            "signoff_time": signoff_time.strftime("%d/%m/%Y"),
+            "final_classification": final_classification,
+            "total_score": total_score
+        }
+        print(classification_dict)
+        previous_classifications.append(classification_dict)
+
+    print(previous_classifications)
+
+    return previous_classifications

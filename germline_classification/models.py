@@ -4,7 +4,7 @@ from polymorphic.models import PolymorphicModel
 
 from auditlog.registry import auditlog
 
-from analysis.models import VariantInstance
+from analysis.models import VariantPanelAnalysis
 from swgs.models import GermlineVariantInstance
 
 # Add a higher level model which is for a given variant, all of the classifications
@@ -23,7 +23,22 @@ class AnalysisVariantClassification(VariantClassification):
     Variant classifications for samples from the Analysis app
     """
     origin = "Analysis"
-    variant_instance = models.ForeignKey(VariantInstance, on_delete=models.CASCADE)
+    variant_instance = models.ForeignKey(VariantPanelAnalysis, on_delete=models.CASCADE)
+
+    def display_assay_and_panel(self):
+
+        assay_choices = {
+            '1', 'TSO500 DNA',
+            '2', 'TSO500 RNA',
+            '3', 'TSO500 ctDNA',
+            '4', 'GeneRead CRM',
+            '5', 'GeneRead BRCA'
+        }
+
+        assay = assay_choices[self.variant_instance.sample_analysis.panel.assay]
+        panel = self.variant_instance.sample_analysis.panel.panel_name
+
+        return f"{assay} {panel}"
 
 class SWGSVariantClassification(VariantClassification):
     """
@@ -31,6 +46,13 @@ class SWGSVariantClassification(VariantClassification):
     """
     origin = "WGS"
     variant_instance = models.ForeignKey(GermlineVariantInstance, on_delete=models.CASCADE)
+
+    def display_assay_and_panel(self):
+
+        assay = "WGS"
+        panel = self.variant_instance.patient_analysis.indication.indication
+
+        return f"{assay} {panel}"
 
 class ClassificationCriteriaStrength(models.Model):
     """
