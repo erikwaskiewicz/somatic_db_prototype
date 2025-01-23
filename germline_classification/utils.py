@@ -20,9 +20,36 @@ def create_classifications_from_swgs(list_of_variant_ids):
     
 def get_pending_classifications():
     """
-    
+    Get all pending classifications over WGS and analysis apps
     """
-    all_pending_classifications = VariantClassification.objects.filter(
+    all_pending_classifications = []
+
+    all_pending_classifications_query = VariantClassification.objects.filter(
         classification__complete = False
     )
+
+    # for each classification, create a dictionary of all the required information
+    for classification in all_pending_classifications_query:
+
+        classification_info_dict = {
+            "id": classification.id,
+            "origin": "",
+            "sample": "",
+            "worksheet": "",
+            "genomic_coordinate": "",
+            "hgvsc": "",
+            "hgvsp": "",
+            "gene": ""
+        }
+
+        if classification.origin == "WGS":
+            classification_info_dict["origin"] = "WGS"
+            classification_info_dict["sample"] = classification.variant_instance.patient_analysis.germline_sample.sample_id
+            classification_info_dict["worksheet"] = classification.variant_instance.patient_analysis.run.worksheet
+            classification_info_dict["genomic_coordinate"] = classification.variant_instance.variant.variant
+            classification_info_dict["hgvsc"], classification_info_dict["hgvsp"], classification_info_dict["gene"] = classification.variant_instance.get_default_hgvs_nomenclature()
+
+        all_pending_classifications.append(classification_info_dict)
+
     print(all_pending_classifications)
+    return all_pending_classifications

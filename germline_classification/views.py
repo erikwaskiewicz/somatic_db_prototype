@@ -15,7 +15,14 @@ def pending_classifications(request):
     """
     
     """
-    return render(request, "germline_classification/pending_classifications.html")
+
+    all_pending_classifications  = get_pending_classifications()
+
+    context = {
+        "classifications": all_pending_classifications
+    }
+
+    return render(request, "germline_classification/pending_classifications.html", context)
 
 
 @login_required
@@ -23,6 +30,7 @@ def classify_variant(request):
     """
     Classify a single variant
     """
+    #TODO ADD ID IN TO THIS
 
     # set up forms 
     classify_form = ClassifyForm()

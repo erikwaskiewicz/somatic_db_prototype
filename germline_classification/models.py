@@ -24,12 +24,14 @@ class AnalysisVariantClassification(VariantClassification):
     """
     Variant classifications for samples from the Analysis app
     """
+    origin = "Analysis"
     variant_instance = models.ForeignKey(VariantInstance, on_delete=models.CASCADE)
 
 class SWGSVariantClassification(VariantClassification):
     """
     Variant classificaitons for samples from the SWGS app
     """
+    origin = "WGS"
     variant_instance = models.ForeignKey(GermlineVariantInstance, on_delete=models.CASCADE)
 
 class ClassificationCriteriaStrength(models.Model):

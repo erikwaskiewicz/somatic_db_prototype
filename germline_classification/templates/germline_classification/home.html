@@ -2,6 +2,16 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
+{% block breadcrumbs %}
+<div class="container-fluid breadcrumbs-custom">
+  <div class="container">
+    <ol class="breadcrumb" style="background-color: transparent;">
+      <li class="breadcrumb-item"><a href="{% url 'germline_classification:home' %}"><span class="fa fa-home"></span></a></li>
+    </ol>
+  </div>
+</div>
+{% endblock %}
+
 {% block content %}
 <h1>Germline Classification</h1>
 <a class="btn btn-secondary" href="{% url 'germline_classification:pending_classifications' %}" role="button">

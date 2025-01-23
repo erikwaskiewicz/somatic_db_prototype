@@ -40,3 +40,5 @@ class ClassificationAdmin(admin.ModelAdmin):
     filter_horizontal = ["criteria_applied"]
 
 admin.site.register(Classification, ClassificationAdmin)
+
+#TODO update add other models
