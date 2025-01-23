@@ -41,4 +41,14 @@ class ClassificationAdmin(admin.ModelAdmin):
 
 admin.site.register(Classification, ClassificationAdmin)
 
+class AnalysisVariantClassificationAdmin(admin.ModelAdmin):
+    list_display = ["variant_instance", "classification"]
+
+admin.site.register(AnalysisVariantClassification, AnalysisVariantClassificationAdmin)
+
+class SWGSVariantClassificationAdmin(admin.ModelAdmin):
+    list_display = ["variant_instance", "classification"]
+
+admin.site.register(SWGSVariantClassification, SWGSVariantClassificationAdmin)
+
 #TODO update add other models
