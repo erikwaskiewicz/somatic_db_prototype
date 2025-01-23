@@ -1,0 +1,10 @@
+{% extends 'analysis/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<h1>Germline Classification</h1>
+<a class="btn btn-secondary" href="{% url 'germline_classification:pending_classifications' %}" role="button">
+    View Pending Classifications
+</a>
+{% endblock %}

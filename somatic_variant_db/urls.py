@@ -20,5 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('analysis.urls')),
     path('swgs/', include('swgs.urls')),
-    path('germline_classification/', include('germline_classification.urls'))
+    path('germline_classification/', include('germline_classification.urls', namespace="germline_classification"))
 ]

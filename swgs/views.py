@@ -8,6 +8,8 @@ from django.http import HttpResponse
 from .models import *
 from .forms import *
 
+from germline_classification.utils import create_classifications_from_swgs
+
 @login_required
 def home_swgs(request):
     """
@@ -148,6 +150,7 @@ def view_patient_analysis(request, patient_analysis_id):
 
     # Set up forms
     download_csv_form = DownloadCsvForm()
+    germline_classification_form = GermlineVariantsClassificationForm()
 
     # Get patient analysis by ID
     patient_analysis = PatientAnalysis.objects.get(id=patient_analysis_id)
@@ -164,6 +167,7 @@ def view_patient_analysis(request, patient_analysis_id):
     germline_snvs_tier_three = []
     somatic_snvs_tier_one = []
     somatic_snvs_tier_two = []
+    germline_pks = []
 
     for v in somatic_snvs_query:
         variant = v.variant.variant
@@ -258,48 +262,65 @@ def view_patient_analysis(request, patient_analysis_id):
         if v.display_in_tier_zero():
             variant_dict["tier"] = "0"
             germline_snvs_tier_one.append(variant_dict)
+            germline_pks.append(v.pk)
         elif v.display_in_tier_one():
             variant_dict["tier"] = "1"
             germline_snvs_tier_one.append(variant_dict)
+            germline_pks.append(v.pk)
         elif v.display_in_tier_three():
             variant_dict["tier"] = "3"
             germline_snvs_tier_three.append(variant_dict)
+            germline_pks.append(v.pk)
         else:
             pass
     
     context = {
-        "form": download_csv_form,
+        "download_csv_form": download_csv_form,
+        "germline_classification_form": germline_classification_form,
         "patient_analysis": patient_analysis,
         "patient_analysis_info_dict": patient_analysis_info_dict,
         "patient_analysis_qc_dict": patient_analysis_qc_dict,
         "somatic_snvs_tier_one": somatic_snvs_tier_one,
         "somatic_snvs_tier_two": somatic_snvs_tier_two,
         "germline_snvs_tier_one": germline_snvs_tier_one,
-        "germline_snvs_tier_three": germline_snvs_tier_three
+        "germline_snvs_tier_three": germline_snvs_tier_three,
+        "germline_pks": germline_pks,
+        "success": [],
+        "warning": []
     }
 
     # Download a csv
     if request.POST:
 
-        today = datetime.date.today().strftime("%Y%m%d")
-        filename = f"{patient_analysis.tumour_sample.sample_id}_{patient_analysis.germline_sample.sample_id}_{today}"
-        response = HttpResponse(content_type = "text/csv")
-        response["Content-Disposition"] = f"attachement; filename={filename}"
+        print(request.POST)
+
+        if 'download_csv' in request.POST:
+
+            today = datetime.date.today().strftime("%Y%m%d")
+            filename = f"{patient_analysis.tumour_sample.sample_id}_{patient_analysis.germline_sample.sample_id}_{today}"
+            response = HttpResponse(content_type = "text/csv")
+            response["Content-Disposition"] = f"attachement; filename={filename}"
+            
+            somatic_snvs = somatic_snvs_tier_one + somatic_snvs_tier_two
+            germline_snvs = germline_snvs_tier_one + germline_snvs_tier_three
+
+            csv_writer = csv.writer(response)
+            header_line = ["Germline_or_Somatic", "Variant", "Gene", "Tier", "Consequence", "HGVSC", "HGVSP", "VAF", "GnomAD"]
+            csv_writer.writerow(header_line)
+            for variant in somatic_snvs:
+                if variant["tier"] != "None":
+                    csv_writer.writerow(["somatic", variant["pk"], variant["gene"], variant["tier"], variant["consequence"], variant["hgvsc"], variant["hgvsp"], f"{variant['vaf']}%", variant["gnomad"]])
+            for variant in germline_snvs:
+                if variant["tier"] != "None":
+                    csv_writer.writerow(["germline", variant["pk"], variant["gene"], variant["tier"], variant["consequence"], variant["hgvsc"], variant["hgvsp"], f"{variant['vaf']}%", variant["gnomad"]])
+
+            return response
         
-        somatic_snvs = somatic_snvs_tier_one + somatic_snvs_tier_two
-        germline_snvs = germline_snvs_tier_one + germline_snvs_tier_three
+        if "send_germline_variants_to_classify" in request.POST:
 
-        csv_writer = csv.writer(response)
-        header_line = ["Germline_or_Somatic", "Variant", "Gene", "Tier", "Consequence", "HGVSC", "HGVSP", "VAF", "GnomAD"]
-        csv_writer.writerow(header_line)
-        for variant in somatic_snvs:
-            if variant["tier"] != "None":
-                csv_writer.writerow(["somatic", variant["pk"], variant["gene"], variant["tier"], variant["consequence"], variant["hgvsc"], variant["hgvsp"], f"{variant['vaf']}%", variant["gnomad"]])
-        for variant in germline_snvs:
-            if variant["tier"] != "None":
-                csv_writer.writerow(["germline", variant["pk"], variant["gene"], variant["tier"], variant["consequence"], variant["hgvsc"], variant["hgvsp"], f"{variant['vaf']}%", variant["gnomad"]])
-
-        return response
+            create_classifications_from_swgs(context["germline_pks"])
+            message = "Germline variants sent for classification"
+            context["success"].append(message)
 
     return render(request, "swgs/view_patient_analysis.html", context)
     

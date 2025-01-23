@@ -12,7 +12,10 @@
   </ul>
   <br>
   <h5>Download SNVs for this patient in a CSV:</h5>
-  {% crispy form %}
+  {% crispy download_csv_form %}
+  <br>
+  <h5>Send germline variants for <a href="{% url 'germline_classification:home' %}">classification</a></h5>
+  {% crispy germline_classification_form %}
   <br>
   <br>
   <h4>Somatic SNVs</h4>

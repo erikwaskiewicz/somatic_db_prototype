@@ -4,6 +4,19 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
 from .forms import *
+from .utils import *
+
+@login_required
+def home(request):
+    return render(request, 'germline_classification/home.html')
+
+@login_required
+def pending_classifications(request):
+    """
+    
+    """
+    return render(request, "germline_classification/pending_classifications.html")
+
 
 @login_required
 def classify_variant(request):

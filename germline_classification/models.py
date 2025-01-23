@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.contrib.auth.models import User
 from polymorphic.models import PolymorphicModel
@@ -7,6 +9,7 @@ from auditlog.registry import auditlog
 from analysis.models import VariantInstance
 from swgs.models import GermlineVariantInstance
 
+# Add a higher level model which is for a given variant, all of the classifications
 
 class VariantClassification(PolymorphicModel):
     """
@@ -78,6 +81,7 @@ class Classification(models.Model):
     criteria_applied = models.ManyToManyField("ClassificationCriteria", related_name="criteria_applied")
     user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True)
     signoff_time = models.DateTimeField(blank=True, null=True)
+    complete = models.BooleanField(default=False)
 
     def get_codes_strengths_and_scores_applied(self):
         """
@@ -297,4 +301,11 @@ class Classification(models.Model):
         classification = self.classify_acgs_2024(total_score)
         classification = classification.replace("_", " ")
         return classification.title(), total_score
-
+    
+    def complete_signoff(self):
+        """
+        Completes the classification
+        """
+        now = datetime.datetime.now()
+        self.signoff_time = now
+        self.complete = True

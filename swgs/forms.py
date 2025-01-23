@@ -13,8 +13,20 @@ class DownloadCsvForm(forms.Form):
         self.helper = FormHelper()
         self.helper.form_method = "POST"
         self.helper.add_input(
-            Submit("submit", "Download CSV", css_class="btn btn-info w-100")
+            Submit("download_csv", "Download CSV", css_class="btn btn-info w-100")
             )
+        
+class GermlineVariantsClassificationForm(forms.Form):
+    """
+    Send all the germline variants to the classify module
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(GermlineVariantsClassificationForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "POST"
+        self.helper.add_input(
+            Submit("send_germline_variants_to_classify", "Send Germline Variants to Classify", css_class="btn btn-info w-100")
+        )
 
 class UpdatePanelNotesForm(forms.Form):
     """
