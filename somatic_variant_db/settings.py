@@ -155,4 +155,4 @@ LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = f'/{URL_PREFIX}login/'
 
-AUTOQC_URL = 'http://10.69.115.27/autoqc'
+AUTOQC_URL = 'http://10.69.115.27/autoqc/run_analysis'
