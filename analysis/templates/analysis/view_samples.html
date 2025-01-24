@@ -211,6 +211,15 @@
   <br>
   <br>
 
+  <!-- button to download worksheet coverage data -->
+  {% if template == 'worksheet' %}
+  <form method="GET">
+    <button type="submit" name="download-run-coverage" id="download-run-coverage" class="btn btn-secondary">
+        Download whole worksheet coverage
+    </button>
+  </form>
+  {% endif %}
+
 </div>
 
 

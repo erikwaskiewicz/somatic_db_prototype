@@ -43,8 +43,8 @@ python manage.py loaddata variant_lists.json
 
 Optional - Load in poly lists (`--both_checks` flag will bypass the need for two checks on each poly, for dev work only):
 ```
-python manage.py add_poly_list --list roi/b37_polys.txt --genome 37 --both_checks
-python manage.py add_poly_list --list roi/b38_polys.txt --genome 38 --both_checks
+python manage.py add_poly_list --list build_37_polys --variants roi/b37_polys.txt --both_checks
+python manage.py add_poly_list --list build_38_polys --variants roi/b38_polys.txt --both_checks
 ```
 
 Optional - Load in test cases:
