@@ -636,7 +636,7 @@ def analysis_sheet(request, sample_id):
     Display coverage and variant metrics to allow checking of data 
     in IGV
 
-    # TODO send back for bioinformatics check4
+    # TODO send back option needs to be displayed for bioinformatics check
     # TODO completed or failed samples still show as assigned to the last check user
     # TODO sometimes the wrong sections are rendered in the analysis page, could be simplfied
     # TODO 'not analysed' option for sample/run, would need a generic 'not analysed' panel probably
