@@ -58,7 +58,7 @@ class PaperworkCheckForm(forms.Form):
 
 class RunQCForm(forms.Form):
     """
-    Perform QC on a worksheet
+    Bioinformatics to perform QC on a worksheet
 
     """
     QC_CHOICES = (
@@ -80,7 +80,7 @@ class RunQCForm(forms.Form):
 
 class ReopenRunQCForm(forms.Form):
     """
-    Form that allows user to send a worksheet back to QC
+    Form that allows bioinformatics user to send a worksheet back to QC
 
     """
     reopen_qc = forms.CharField(widget=forms.HiddenInput(), required=False)
@@ -216,7 +216,7 @@ class SendCheckBackForm(forms.Form):
 
 class DetailsCheckForm(forms.Form):
     """
-    Finalise a sample analysis
+    Form for scientists to confirm that they've checked all the patient demographics
 
     """
     patient_demographics = forms.BooleanField(required=True, label='Patient demographics are correct')
@@ -557,7 +557,6 @@ class SelfAuditSubmission(forms.Form):
     Choose Assay and date range for self audit view
 
     """
-
     # Starting parameters for the dropdowns
     current_year = datetime.datetime.now().year
     current_month = datetime.datetime.now().month
@@ -583,7 +582,7 @@ class SelfAuditSubmission(forms.Form):
         widget = forms.SelectDateWidget(years = year_choices,attrs={
             'style': 'width: 150px',
         }
-        )  
+        )
     )
 
     which_assays = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
