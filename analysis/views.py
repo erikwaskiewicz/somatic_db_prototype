@@ -362,10 +362,7 @@ def view_worksheets(request, query):
 
     # all diagnostic worksheets with an IGV check still open
     elif query == 'pending':
-        # TODO this will load in all worksheets first, is there a quicker way?
         all_worksheets = Worksheet.objects.filter(signed_off=True, diagnostic=True).order_by('-run')
-
-        # only include worksheets that have a current IGV check in them
         worksheets = [w for w in all_worksheets if w.get_status() == 'IGV checking']
         filtered = True
 
@@ -606,10 +603,8 @@ def view_samples(request, worksheet_id=None, user_pk=None):
         if 'qc_result' in request.POST:
             qc_form = RunQCForm(request.POST)
             if qc_form.is_valid():
-                cleaned_data = qc_form.cleaned_data
-
                 # update values
-                # TODO set all samples as fail if whole run fail?
+                cleaned_data = qc_form.cleaned_data
                 ws_obj.qc_signoff(True, timezone.now(), request.user, cleaned_data['qc_result'], cleaned_data['auto_qc_pk'])
 
                 # redirect to force refresh
@@ -620,8 +615,7 @@ def view_samples(request, worksheet_id=None, user_pk=None):
             reopen_qc_form = ReopenRunQCForm(request.POST)
             if reopen_qc_form.is_valid():
 
-                # remove QC values
-                # TODO reset all samples too
+                # remove QC values - individual samples aren't reset in case we have to reopen midway through analysis
                 ws_obj.reset_qc_signoff()
 
                 # redirect to force refresh
@@ -635,11 +629,6 @@ def analysis_sheet(request, sample_id):
     """
     Display coverage and variant metrics to allow checking of data 
     in IGV
-
-    # TODO send back option needs to be displayed for bioinformatics check
-    # TODO completed or failed samples still show as assigned to the last check user
-    # TODO sometimes the wrong sections are rendered in the analysis page, could be simplfied
-    # TODO 'not analysed' option for sample/run, would need a generic 'not analysed' panel probably
 
     """
     # load sample object

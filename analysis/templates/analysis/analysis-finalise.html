@@ -41,6 +41,10 @@
   <h5>Sample failed bioinformatics QC?</h5>
   <br>
   {% crispy sample_qc_form %}
+
+  {% if sample_data.checks.previous_check_object %}
+  <button class="btn btn-secondary w-100" type="button" data-toggle="modal" data-target="#send-back-modal">Send check back</button>
+  {% endif %}
 </div>
 
 {% elif 'IGV' in sample_data.status %}
