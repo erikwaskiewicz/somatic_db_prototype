@@ -8,7 +8,7 @@ from django.template import Context
 from django.template.loader import get_template, render_to_string
 from django.utils import timezone
 
-from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, CoverageCheckForm, FusionCommentForm, 
+from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, CoverageCheckForm, FusionCommentForm, 
     SampleCommentForm, UnassignForm, PaperworkCheckForm, ConfirmPolyForm, ConfirmArtefactForm, AddNewPolyForm, AddNewArtefactForm, 
     ManualVariantCheckForm, ReopenSampleAnalysisForm, ChangeLimsInitials, EditedPasswordChangeForm, EditedUserCreationForm, 
     RunQCForm, ReopenRunQCForm, SendCheckBackForm, DetailsCheckForm, AddNewFusionArtefactForm, NewFusionForm, SampleQCForm, 
@@ -661,7 +661,6 @@ def analysis_sheet(request, sample_id):
         'new_fusion_form': NewFusionForm(),
         'manual_check_form': ManualVariantCheckForm(regions=sample_data['panel_manual_regions']),
         'submit_form': SubmitForm(),
-        'update_name_form': UpdatePatientName(),
         'sample_comment_form': SampleCommentForm(
             comment=current_step_obj.overall_comment,
             pk=current_step_obj.pk, 
@@ -745,46 +744,33 @@ def analysis_sheet(request, sample_id):
 
     # submit buttons
     if request.method == 'POST':
-        # patient name input form
-        if 'name' in request.POST:
-            update_name_form = UpdatePatientName(request.POST)
-
-            if update_name_form.is_valid():
-                new_name = update_name_form.cleaned_data['name']
-                Sample.objects.filter(pk=sample_obj.sample.pk).update(sample_name=new_name)
-                sample_obj = SampleAnalysis.objects.get(pk = sample_id)
-                context['sample_data'] = get_sample_info(sample_obj)
 
         # if patient demographiocs check is completed
         if 'patient_demographics' in request.POST:
             demographics_form = DetailsCheckForm(request.POST, info_check=current_step_obj.patient_info_check)
             if demographics_form.is_valid():
-                # raise error if patient name not filled in
-                if context['sample_data']['sample_name'] == None:
-                    context['warning'].append('Cant complete demographics check - patient name has not been inputted')
-
-                else:
-                    # update check
-                    Check.objects.filter(pk=current_step_obj.pk).update(
-                        patient_info_check=demographics_form.cleaned_data['patient_demographics'],
-                    )
-                    # reload sample data
-                    context['sample_data'] = get_sample_info(sample_obj)
-                    current_step_obj = context['sample_data']['checks']['current_check_object']
-                    context['demographics_form'] = DetailsCheckForm(info_check=current_step_obj.patient_info_check)
+                # update check
+                Check.objects.filter(pk=current_step_obj.pk).update(
+                    patient_info_check=demographics_form.cleaned_data['patient_demographics'],
+                )
+                # reload sample data
+                context['sample_data'] = get_sample_info(sample_obj)
+                current_step_obj = context['sample_data']['checks']['current_check_object']
+                context['demographics_form'] = DetailsCheckForm(info_check=current_step_obj.patient_info_check)
 
         # if bioinformatics QC fail form submitted
         if 'fail_reason' in request.POST:
             sample_qc_form = SampleQCForm(request.POST)
             if sample_qc_form.is_valid():
 
+                # work out if this is 1st or 2nd check
                 current_step_obj = context['sample_data']['checks']['current_check_object']
                 if context['sample_data']['checks']['previous_check_object']:
                     next_step = 'finalise'
                 else:
                     next_step = 'extra_check'
 
-                # TODO check that patient name added and set to true
+                # update models
                 current_step_obj.overall_comment = sample_qc_form.cleaned_data['fail_reason']
                 current_step_obj.overall_comment_updated = timezone.now()
                 current_step_obj.save()

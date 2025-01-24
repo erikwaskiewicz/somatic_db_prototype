@@ -92,7 +92,6 @@ class Sample(models.Model):
 
     """
     sample_id = models.CharField(max_length=50, primary_key=True)
-    sample_name = models.CharField(max_length=200, blank=True, null=True)
 
     def get_worksheets(self):
         """ get all worksheets that the sample appears on """
@@ -495,12 +494,8 @@ class Check(models.Model):
 
     def demographics_checks(self):
         """ verify demographics checks have been performed and return object for AJAX """
-
         error_list = []
-
-        # check for errors - patient name filled in, demogrpahics check done, NTC check done
-        if self.analysis.sample.sample_name == None:
-            error_list.append('The patient name for this sample is empty')
+        # check for errors - demogrpahics check done, NTC check done
         if self.patient_info_check == False:
             error_list.append("The patient demographics for this sample haven't been checked")
 

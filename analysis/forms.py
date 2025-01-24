@@ -100,12 +100,12 @@ class SampleQCForm(forms.Form):
     (no pass option as these sample will be left as they are ready for scientist to analyse)
 
     """
-    confirm = forms.BooleanField(required=True, label='Patient name has been checked')
     fail_reason = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 2}),
         required=True,
         label='Reason for QC fail:'
     )
+    confirm = forms.BooleanField(required=True, label="I confirm I want to fail this sample")
 
     def __init__(self, *args, **kwargs):
         super(SampleQCForm, self).__init__(*args, **kwargs)
@@ -304,26 +304,6 @@ class FusionCommentForm(forms.Form):
         self.fields['hgvs'].initial = self.hgvs
         self.fields['pk'].initial = self.pk
         self.helper.add_input(Submit('submit', 'Update', css_class='btn btn-success'))
-
-
-class UpdatePatientName(forms.Form):
-    """
-    Add/ change the patient name
-
-    """
-    name = forms.CharField()
-
-    def __init__(self, *args, **kwargs):
-        super(UpdatePatientName, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.fields['name'].widget.attrs.update({
-            'autocomplete': 'off'
-        })
-        self.helper.form_id = 'update-name-form'
-        self.helper.form_method = 'POST'
-        self.helper.add_input(
-            Submit('submit', 'Submit', css_class='btn btn-info w-25')
-        )
 
 
 class CoverageCheckForm(forms.Form):

@@ -138,7 +138,6 @@ def get_sample_info(sample_obj):
         'sample_pk': sample_obj.pk,
         'assay': sample_obj.panel.assay,
         'sample_id': sample_obj.sample.sample_id,
-        'sample_name': sample_obj.sample.sample_name,
         'worksheet_id': sample_obj.worksheet.ws_id,
         'panel': sample_obj.panel.panel_name,
         'panel_obj': sample_obj.panel,

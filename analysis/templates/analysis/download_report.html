@@ -62,7 +62,7 @@
   <table>
     <thead>
       <tr>
-        <th style="width: 20%">Patient name</th>
+        <th style="width: 20%">Lab number</th>
         <th style="width: 15%">Worksheet</th>
         <th style="width: 15%">Panel</th>
         <th style="width: 30%">Run ID</th>
@@ -71,7 +71,7 @@
     </thead>
     <tbody>
       <tr>
-        <td>{{ sample_data.sample_name }}</td>
+        <td>{{ sample_data.sample_id }}</td>
         <td>{{ sample_data.worksheet_id }}</td>
         <td>{{ sample_data.panel_obj }}</td>
         <td>{{ sample_data.run_id }}</td>
@@ -447,7 +447,7 @@
         </td>
         {% endif %}
         <td>
-          <i>Coverage:</i> {{ c.coverage_comment | wordwrap:50 | linebreaksbr }}<br>
+            {% if sample_data.status != 'Bioinformatics QC fail' %}<i>Coverage:</i> {{ c.coverage_comment | wordwrap:50 | linebreaksbr }}<br>{% endif %}
           <i>Overall:</i> {{ c.overall_comment | wordwrap:50 | linebreaksbr }}</td>
       </tr>
       {% endfor %}
