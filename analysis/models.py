@@ -228,6 +228,7 @@ class SampleAnalysis(models.Model):
         # sample_pass_fail is set when analysis is complete, so use that value if its set
         if self.worksheet.auto_qc_pass_fail == 'F':
             return 'Bioinformatics QC fail'
+        # will display pretty printed version from qc_choices tuples
         elif self.sample_pass_fail != '-':
             return self.get_sample_pass_fail_display()
         # if worksheet pass/fail isnt set then sample is still in bioinformatics QC
@@ -240,10 +241,7 @@ class SampleAnalysis(models.Model):
             return f'IGV check {num_checks}'
 
     def get_checks(self):
-        """
-        Get all associated checks and work out the status
-        TODO - this is getting called twice when samples page is loaded - think its an AJAX issue
-        """
+        """ get all associated checks and work out the status """
         return {
             'assigned_to': self.current_check().user,
             'current_check_object': self.current_check(),
@@ -258,100 +256,82 @@ class SampleAnalysis(models.Model):
     def all_panel_fusions(self):
         return FusionPanelAnalysis.objects.filter(sample_analysis=self)
 
-    def snvs_have_2_checks(self):
+    def has_two_checks(self, variant_type):
+        """ make sure each variant/ fusion has at least 2 checks """
+        # load variant objects
+        if variant_type == "SNV":
+            all_vars = self.all_panel_snvs()
+        elif variant_type == "Fusion":
+            all_vars = self.all_panel_fusions()
+        else:
+            raise ValueError("Variant type should be either SNV or Fusion")
+
+        # loop through each variant and peform checks, add any errors to list to return at the end
         error_list = []
-        for v in self.all_panel_snvs():
+        for v in all_vars:
             all_var_checks = v.get_all_checks()
             all_var_checks_excluding_na = all_var_checks.exclude(decision='N')
 
             # must be at least 2 variant checks
             if all_var_checks.count() < 2:
-                error_list.append(v.variant_instance.variant.variant)
-
-            # if both checks are 'not analysed' then thats fine
-            elif all_var_checks_excluding_na.count() == 0:
-                pass
-
-            # where theres amixture of analysed/not analysed, there must be at least 2 checks after excluding any 'not analysed'
-            elif all_var_checks_excluding_na.count() < 2:
-                error_list.append(v.variant_instance.variant.variant)
-
-        # throw error if any variants fail checks
-        if len(error_list) > 0:
-            pass_fail = False
-            message = 'Not all SNV/ indels have been checked at least twice: ' + ', '.join(error_list)
-
-        else:
-            pass_fail = True
-            message = ''
-
-        return pass_fail, message
-
-    def snv_checks_agree(self):
-        error_list = []
-        for v in self.all_panel_snvs():
-            all_var_checks_excluding_na = v.get_all_checks().exclude(decision='N').order_by('-pk')
-            if all_var_checks_excluding_na.count() >= 2:
-
-                last_two = [c.decision for c in all_var_checks_excluding_na][0:2]
-                if len(set(last_two)) != 1:
+                if variant_type == "SNV":
                     error_list.append(v.variant_instance.variant.variant)
-
-        # throw error if any variants fail checks
-        if len(error_list) > 0:
-            pass_fail = False
-            message = "Last checkers don't agree for SNV/ indels: " + ", ".join(error_list)
-
-        else:
-            pass_fail = True
-            message = ''
-
-        return pass_fail, message
-
-    def fusions_have_2_checks(self):
-        error_list = []
-        for v in self.all_panel_fusions():
-            all_var_checks = v.get_all_checks()
-            all_var_checks_excluding_na = all_var_checks.exclude(decision='N')
-
-            # must be at least 2 variant checks
-            if all_var_checks.count() < 2:
-                error_list.append(v.fusion_instance.fusion_genes.fusion_genes)
-
+                elif variant_type == "Fusion":
+                    error_list.append(v.fusion_instance.fusion_genes.fusion_genes)
             # if both checks are 'not analysed' then thats fine
             elif all_var_checks_excluding_na.count() == 0:
                 pass
 
-            # where theres amixture of analysed/not analysed, there must be at least 2 checks after excluding any 'not analysed'
+            # where theres a mixture of analysed/not analysed, there must be at least 2 checks after excluding any 'not analysed'
             elif all_var_checks_excluding_na.count() < 2:
-                error_list.append(v.fusion_instance.fusion_genes.fusion_genes)
-
-        # throw error if any variants fail checks
-        if len(error_list) > 0:
-            pass_fail = False
-            message = 'Not all fusions have been checked at least twice: ' + ', '.join(error_list)
-
-        else:
-            pass_fail = True
-            message = ''
-
-        return pass_fail, message
-
-    def fusion_checks_agree(self):
-        error_list = []
-        for v in self.all_panel_fusions():
-            all_var_checks_excluding_na = v.get_all_checks().exclude(decision='N').order_by('-pk')
-            if all_var_checks_excluding_na.count() >= 2:
-
-                last_two = [c.decision for c in all_var_checks_excluding_na][0:2]
-                if len(set(last_two)) != 1:
+                if variant_type == "SNV":
+                    error_list.append(v.variant_instance.variant.variant)
+                elif variant_type == "Fusion":
                     error_list.append(v.fusion_instance.fusion_genes.fusion_genes)
 
         # throw error if any variants fail checks
         if len(error_list) > 0:
             pass_fail = False
-            message = "Last checkers don't agree for fusions: " + ", ".join(error_list)
+            if variant_type == "SNV":
+                message = 'Not all SNV/ indels have been checked at least twice: ' + ', '.join(error_list)
+            elif variant_type == "Fusion":
+                message = 'Not all fusions have been checked at least twice: ' + ', '.join(error_list)
+        else:
+            pass_fail = True
+            message = ''
 
+        return pass_fail, message
+
+    def checks_agree(self, variant_type):
+        """ make sure last 2 checks for each variant agree """
+        # load variant objects
+        if variant_type == "SNV":
+            all_vars = self.all_panel_snvs()
+        elif variant_type == "Fusion":
+            all_vars = self.all_panel_fusions()
+        else:
+            raise ValueError("Variant type should be either SNV or Fusion")
+
+        # loop through each variant and peform checks, add any errors to list to return at the end
+        error_list = []
+        for v in all_vars:
+            all_var_checks_excluding_na = v.get_all_checks().exclude(decision='N').order_by('-pk')
+            if all_var_checks_excluding_na.count() >= 2:
+
+                last_two = [c.decision for c in all_var_checks_excluding_na][0:2]
+                if len(set(last_two)) != 1:
+                    if variant_type == "SNV":
+                        error_list.append(v.variant_instance.variant.variant)
+                    elif variant_type == "Fusion":
+                        error_list.append(v.fusion_instance.fusion_genes.fusion_genes)
+
+        # throw error if any variants fail checks
+        if len(error_list) > 0:
+            pass_fail = False
+            if variant_type == "SNV":
+                message = "Last checkers don't agree for SNV/ indels: " + ", ".join(error_list)
+            elif variant_type == "Fusion":
+                message = "Last checkers don't agree for fusions: " + ", ".join(error_list)
         else:
             pass_fail = True
             message = ''
@@ -381,22 +361,22 @@ class SampleAnalysis(models.Model):
             # only run variant checks when analysis is a pass
             if selection == 'next_step_pass':
                 # at least two variant checks for each snv
-                status, err = self.snvs_have_2_checks()
+                status, err = self.has_two_checks("SNV")
                 if status == False:
                     error_list.append(err)
 
                 # lastest two snv checks agree
-                status, err = self.snv_checks_agree()
+                status, err = self.checks_agree("SNV")
                 if status == False:
                     error_list.append(err)
 
                 # at least two checks for each fusion
-                status, err = self.fusions_have_2_checks()
+                status, err = self.has_two_checks("Fusion")
                 if status == False:
                     error_list.append(err)
 
                 # lastest two fusion checks agree
-                status, err = self.fusion_checks_agree()
+                status, err = self.checks_agree("Fusion")
                 if status == False:
                     error_list.append(err)
 
@@ -459,9 +439,9 @@ class SampleAnalysis(models.Model):
 
         # make check objects for all fusions
         if self.panel.show_fusions:
-            for v in self.all_panel_fusions():
+            for f in self.all_panel_fusions():
                 new_variant_check = FusionCheck(
-                    fusion_analysis = v,
+                    fusion_analysis = f,
                     check_object = new_check_obj,
                 )
                 new_variant_check.save()
