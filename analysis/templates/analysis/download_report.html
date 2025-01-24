@@ -43,9 +43,16 @@
   <h1>{{ sample_data.panel_obj.get_assay_display }} report for {{ sample_data.sample_id }}</h1>
 
   <!-- Fail warning box -->
-  {% if sample_data.status  == 'Analysis fail' %}
+  {% if sample_data.status == 'Analysis fail' %}
   <div class="alert">
-    <h2><b>This sample has failed QC</b></h2>
+    <h2><b>This sample has failed analysis</b></h2>
+  </div> 
+  <br>
+  {% endif %}
+
+  {% if sample_data.status == 'Bioinformatics QC fail' %}
+  <div class="alert">
+    <h2><b>This sample has failed bioinformatics QC</b></h2>
   </div> 
   <br>
   {% endif %}
@@ -74,6 +81,8 @@
   </table>
   <br>
   <br>
+
+  {% if sample_data.status != 'Bioinformatics QC fail' %}
 
   <!-- SNV section - variant calls ------------------------------>
   {% if sample_data.panel_obj.show_snvs %}
@@ -404,6 +413,8 @@
 
   {% endif %}
 
+  {% endif %}
+
   <!-- checks section ------------------------------>
   <h2>Checks performed</h2>
 
@@ -413,7 +424,7 @@
         <th style="width: 10%">Check</th>
         <th style="width: 20%">User</th>
         <th style="width: 10%">Pass/fail</th>
-        <th style="width: 15%">Checks</th>
+        {% if sample_data.status != 'Bioinformatics QC fail' %}<th style="width: 15%">Checks</th>{% endif %}
         <th style="width: 45%">Comments</th>
       </tr>
     </thead>
@@ -424,6 +435,7 @@
         <td>{{ forloop.counter }}</td>
         <td>{{ c.user }}<br>{{ c.signoff_time }}</td>
         <td>{% if c.get_status_display == "Complete" %}Pass{% else %}{{ c.get_status_display }}{% endif %}</td>
+        {% if sample_data.status != 'Bioinformatics QC fail' %}
         <td>
           <i>Patient info check:</i> {{ c.patient_info_check }}
         {% if sample_data.panel_obj.show_snvs %}
@@ -433,6 +445,7 @@
           <br><i>Manual variant check:</i> {{ c.manual_review_check }}
         {% endif %}
         </td>
+        {% endif %}
         <td>
           <i>Coverage:</i> {{ c.coverage_comment | wordwrap:50 | linebreaksbr }}<br>
           <i>Overall:</i> {{ c.overall_comment | wordwrap:50 | linebreaksbr }}</td>
@@ -445,7 +458,7 @@
   
   <!-- footer -->
   <!-- list any miscalled or failed variants -->
-  {% if sample_data.panel_obj.show_snvs %}
+  {% if sample_data.panel_obj.show_snvs and sample_data.status != 'Bioinformatics QC fail'%}
   <p class="form-text text-muted">Miscalled or failed SNV/indels, please refer back to the SVD to see more detail: {{ variant_data.other_calls_text }}</p>
   {% endif %}
 

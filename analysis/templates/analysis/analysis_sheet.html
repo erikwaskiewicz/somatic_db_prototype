@@ -75,7 +75,7 @@
 
     {% endif %}
 
-    <!-- show finalise tab if analysis not yet complete # TODO this is clunky-->
+    <!-- show finalise tab if analysis not yet complete -->
     {% if 'IGV' in sample_data.status or sample_data.status == 'Bioinformatics QC 1' or sample_data.status == 'Bioinformatics QC 2' %}
     <li class="nav-item">
       <a class="nav-link section-button" href="#finalise" data-target="finalise">Finalise</a>
@@ -111,7 +111,7 @@
 
 {% endif %}
 
-{% if 'IGV' in sample_data.status or 'Bioinformatics QC' in sample_data.status %}
+{% if 'IGV' in sample_data.status or sample_data.status == 'Bioinformatics QC 1' or sample_data.status == 'Bioinformatics QC 2' %}
 <div class="container" id="finalise">{% include 'analysis/analysis-finalise.html' %}</div>
 
 {% else %}
