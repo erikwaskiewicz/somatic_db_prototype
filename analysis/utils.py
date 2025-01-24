@@ -68,6 +68,7 @@ def unassign_check(sample_analysis_obj):
         sample_analysis_obj.paperwork_check = False
 
     # reset check
+    latest_check.status = '-'
     latest_check.user = None
     latest_check.coverage_ntc_check = False
     latest_check.coverage_comment = ''
@@ -113,7 +114,7 @@ def reopen_check(user, sample_analysis_obj):
     all_checks = sample_analysis_obj.get_checks()
     latest_check = all_checks['current_check_object']
 
-    latest_check.status = 'P'
+    latest_check.status = '-'
     latest_check.user = user
     latest_check.signoff_time = None
     latest_check.save()

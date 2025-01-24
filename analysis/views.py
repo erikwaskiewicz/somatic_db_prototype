@@ -215,7 +215,7 @@ def ajax_num_assigned_user(request, user_pk):
     if request.is_ajax():
         # get user object and work out count of uncompleted checks assigned to user
         user_obj = get_object_or_404(User, pk=user_pk)
-        num_checks = Check.objects.filter(user=user_obj, status='P').count()
+        num_checks = Check.objects.filter(user=user_obj, status='-').count()
 
         # sort out css colouring, green if no checks, yellow if one or more
         if num_checks == 0:
@@ -455,7 +455,7 @@ def view_samples(request, worksheet_id=None, user_pk=None):
 
         # get user object to get list of checks, then get the related samples
         user_obj = get_object_or_404(User, pk=user_pk)
-        user_checks = Check.objects.filter(user=user_obj, status='P')
+        user_checks = Check.objects.filter(user=user_obj, status='-')
         samples = [c.analysis for c in user_checks]
 
         # get template specific variables needed for context
