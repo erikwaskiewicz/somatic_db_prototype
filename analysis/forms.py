@@ -25,6 +25,7 @@ class UnassignForm(forms.Form):
 class ReopenSampleAnalysisForm(forms.Form):
     """
     Form that allows the user who closed the case to reopen the most recent check
+
     """
     reopen_analysis = forms.CharField(widget=forms.HiddenInput(), required=False)
 
@@ -40,6 +41,7 @@ class ReopenSampleAnalysisForm(forms.Form):
 class PaperworkCheckForm(forms.Form):
     """
     Form that users tick after they have checked patient paperwork to confirm referral is correct
+
     """
     paperwork_check = forms.BooleanField(required=True, label='Confirm that paperwork is correct for the sample above')
     igv_check = forms.BooleanField(required=True, label='Confirm that IGV settings are correct for the assay above')
@@ -79,6 +81,7 @@ class RunQCForm(forms.Form):
 class ReopenRunQCForm(forms.Form):
     """
     Form that allows user to send a worksheet back to QC
+
     """
     reopen_qc = forms.CharField(widget=forms.HiddenInput(), required=False)
 
@@ -93,6 +96,9 @@ class ReopenRunQCForm(forms.Form):
 
 class SampleQCForm(forms.Form):
     """
+    Form for bioinformatics team to fail QC on an individual sample
+    (no pass option as these sample will be left as they are ready for scientist to analyse)
+
     """
     confirm = forms.BooleanField(required=True, label='Patient name has been checked')
     fail_reason = forms.CharField(
@@ -113,8 +119,8 @@ class SampleQCForm(forms.Form):
 class NewVariantForm(forms.Form):
     """
     Manually add a SNV. Splitting HGVS into components to stop formatting errors
-    """
 
+    """
     chrm = forms.CharField(label='Chromosome')
     position = forms.IntegerField(label='Genomic coordinates')
     ref = forms.CharField(label='Reference nucleotide')
@@ -148,6 +154,7 @@ class NewVariantForm(forms.Form):
 class NewFusionForm(forms.Form):
     """
     Manually add a fusion
+
     """
     fusion_genes = forms.CharField(label='Fusion')
     hgvs = forms.CharField(label='HGVS', required=False)
@@ -172,7 +179,9 @@ class NewFusionForm(forms.Form):
 
 class SubmitForm(forms.Form):
     """
-    Finalise a sample analysis
+    Form for scientists to finalise a sample analysis.
+    Gives an analysis pass/fail option and the option of whether or not to send for an additional check
+    Options are disabled in the GUI by some AJAX calls based on the status of the sample
 
     """
     PASS_FAIL_CHOICES = (
@@ -190,7 +199,7 @@ class SubmitForm(forms.Form):
 
 class SendCheckBackForm(forms.Form):
     """
-    Finalise a sample analysis
+    Form to send a check back the the previous checker, will delete current check
 
     """
     send_back_check = forms.BooleanField(required=True, label='I understand that my check will be removed')
@@ -442,6 +451,7 @@ class AddNewPolyForm(forms.Form):
 class AddNewArtefactForm(forms.Form):
     """
     Add a variant to the artefact list
+
     """
     chrm = forms.CharField(label='Chromosome')
     position = forms.IntegerField(label='Genomic coordinates')
@@ -472,6 +482,7 @@ class AddNewArtefactForm(forms.Form):
 class AddNewFusionArtefactForm(forms.Form):
     """
     Add a fusion to the artefact list
+
     """
     left_breakpoint = forms.CharField()
     right_breakpoint = forms.CharField()
