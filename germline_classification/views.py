@@ -16,7 +16,7 @@ def pending_classifications(request):
     Get and display all pending variant classifications
     """
 
-    all_pending_classifications  = get_classifications("pending")
+    all_pending_classifications  = get_classifications("pending", False)
 
     context = {
         "classifications": all_pending_classifications
@@ -30,7 +30,7 @@ def completed_classifications(request):
     Get and display all pending variant classifications
     """
 
-    all_pending_classifications  = get_classifications("completed")
+    all_pending_classifications  = get_classifications("completed", True)
 
     context = {
         "classifications": all_pending_classifications
@@ -49,11 +49,18 @@ def classify_variant(request, variant_classification_id):
     # set up forms 
     classify_form = ClassifyForm()
     warnings = []
+    success = []
     final_classification = ""
 
     # get classification object
     variant_classification_obj = VariantClassification.objects.get(pk=variant_classification_id)
     classification_obj = variant_classification_obj.classification
+
+    # get variant info
+    variant_display = variant_classification_obj.display_variant_info()
+
+    # check if user is signed off to perform germline classifications
+    in_germline_classification_user_group = request.user.groups.filter(name="germline_classification").exists()
 
     if request.method == 'POST':
 
@@ -61,8 +68,9 @@ def classify_variant(request, variant_classification_id):
         print(classify_form.is_valid())
         if classify_form.is_valid():
 
-            # get user
+            # get user including competence status
             current_user = request.user
+            in_germline_classification_user_group = current_user.groups.filter(name="germline_classification").exists()
 
             # get time
             now = datetime.datetime.today()
@@ -99,15 +107,30 @@ def classify_variant(request, variant_classification_id):
             final_classification = f"{classification} ({score})"
             #context["final_classification"] = final_classification
 
+            # set classification to diagnostic only if user is signed off for this
+            if in_germline_classification_user_group:
+                classification_obj.diagnostic = True
+
             # set classification as complete
             classification_obj.complete = True
             classification_obj.save()
 
+            # if this was a training case then we still need this variant to be classified
+            if not in_germline_classification_user_group:
+                # reset pk to duplicate object
+                classification_obj.pk = None
+                classification_obj.save()
+                success.append("Classification complete! This was a training case only.")
+            else:
+                success.append("Classification complete!")
+
             #return redirect('classify_variant')
 
     context = {
+        "variant_display": variant_display,
         "classify_form": classify_form,
         "warning": warnings,
+        "success": success,
         "final_classification": final_classification
     }
 

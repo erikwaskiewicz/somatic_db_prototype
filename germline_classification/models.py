@@ -25,6 +25,14 @@ class AnalysisVariantClassification(VariantClassification):
     origin = "Analysis"
     variant_instance = models.ForeignKey(VariantPanelAnalysis, on_delete=models.CASCADE)
 
+    def display_variant_info(self):
+
+        variant = self.variant_instance.variant.variant
+        hgvsc = self.variant_instance.hgvs_c
+        hgvsp = self.variant_instance.hgvs_p
+
+        return f"{variant} | {hgvsc} | {hgvsp}"
+
     def display_assay_and_panel(self):
 
         assay_choices = {
@@ -46,6 +54,13 @@ class SWGSVariantClassification(VariantClassification):
     """
     origin = "WGS"
     variant_instance = models.ForeignKey(GermlineVariantInstance, on_delete=models.CASCADE)
+
+    def display_variant_info(self):
+
+        variant = self.variant_instance.variant.variant
+        hgvsc, hgvsp, gene = self.variant_instance.get_default_hgvs_nomenclature()
+
+        return f"{variant} | {hgvsc} | {hgvsp}"
 
     def display_assay_and_panel(self):
 
@@ -104,6 +119,7 @@ class Classification(models.Model):
     user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True)
     signoff_time = models.DateTimeField(blank=True, null=True)
     complete = models.BooleanField(default=False)
+    diagnostic = models.BooleanField(default=False)
 
     def get_codes_strengths_and_scores_applied(self):
         """

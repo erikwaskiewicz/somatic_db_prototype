@@ -19,8 +19,10 @@ def create_classifications_from_swgs(list_of_variant_ids):
         swgs_variant_classification_obj = SWGSVariantClassification.objects.create(variant_instance=germline_variant_instance_obj, classification=classification_obj)
         swgs_variant_classification_obj.save()
     
-def get_classifications(pending_or_completed):
+def get_classifications(pending_or_completed, is_diagnostic):
     """
+    pending_or_completed: string - 'pending' or 'completed
+    is_diagnostic: boolean True/False
     Get all pending or completed classifications over WGS and analysis apps
     """
     all_classifications = []
@@ -33,6 +35,11 @@ def get_classifications(pending_or_completed):
     all_pending_classifications_query = VariantClassification.objects.filter(
         classification__complete = classification_complete
     )
+
+    if is_diagnostic:
+        all_pending_classifications_query = all_pending_classifications_query.filter(
+            classification__diagnostic = True
+        )
 
     # for each classification, create a dictionary of all the required information
     for classification in all_pending_classifications_query:
@@ -77,8 +84,8 @@ def get_all_classifications_for_a_variant(variant):
     # Query over all assays to find the variants queried
     variant_classifications = VariantClassification.objects.filter(
         (
-            (Q(analysisvariantclassification__variant_instance__variant_instance__variant__variant=variant) & Q(analysisvariantclassification__classification__complete=True)) |
-            (Q(swgsvariantclassification__variant_instance__variant__variant=f"chr{variant}") & Q(swgsvariantclassification__classification__complete=True))
+            (Q(analysisvariantclassification__variant_instance__variant_instance__variant__variant=variant) & Q(analysisvariantclassification__classification__complete=True) & Q(analysisvariantclassification__classification__diagnostic=True)) |
+            (Q(swgsvariantclassification__variant_instance__variant__variant=f"chr{variant}") & Q(swgsvariantclassification__classification__complete=True) & Q(swgsvariantclassification__classification__diagnostic=True))
         )
     )
 
@@ -97,6 +104,5 @@ def get_all_classifications_for_a_variant(variant):
             "total_score": total_score
         }
         previous_classifications.append(classification_dict)
-
 
     return previous_classifications

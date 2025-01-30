@@ -14,3 +14,12 @@ You should then load the initial setup fixtures
 ```
 python manage.py loaddata germline_classification/fixtures/setup_fixtures.json
 ```
+
+## Setting Up User Groups:
+- Within the admin page, click on Authentication and Authorization > Groups
+- Make a new group called germline_classification
+- Germline classifications performed by users from this group are counted as diagnostic - only users competent in this area and one admin account for external classification import should be added to this group
+
+Add users to user group:
+- Within the admin page, click on Authentication and Authorization > Users
+- Under the Groups section, add the germline_classification group for that user and click save

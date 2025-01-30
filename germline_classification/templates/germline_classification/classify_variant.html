@@ -20,6 +20,8 @@
       <h1 class="display-4"><i class="fa fa-dna"></i> Germline Classification</h1>
       <p>Classify variants using the <a href="https://www.acgs.uk.com/media/12533/uk-practice-guidelines-for-variant-classification-v12-2024.pdf">ACGS 2024 Guidelines</a></p>
       </br>
+      <h3>Classifying {{ variant_display }}</h3>
+      </br>
       {% crispy classify_form %}
       </br>
       <h3>This variant is <strong>{{ final_classification }}</strong></h3>
