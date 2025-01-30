@@ -9,6 +9,7 @@
 - Developer guide
   - [Quick install](developer_guide/quick_install.md)
   - [SWGS install](developer_guide/swgs_quickstart.md)
+  - [Germline classification install](developer_guide/germline_classification_quickstart.md)
   - [Deployment](developer_guide/deploy.md)
   - [Unit tests](developer_guide/unit_tests.md)
   - [Database schema](developer_guide/schema.md)
