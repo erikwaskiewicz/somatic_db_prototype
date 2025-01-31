@@ -595,6 +595,25 @@ class AbstractVariantInstance(models.Model):
             return "LOW"
         else:
             return "MODIFIER"
+    
+    def get_default_hgvs_nomenclature(self):
+        #TODO make this better logic once we've sorted the transcript thing
+        annotation = self.vep_annotations.first()
+        hgvsc = annotation.hgvsc
+        hgvsp = annotation.hgvsp
+        gene = annotation.transcript.gene.gene
+        return hgvsc, hgvsp, gene
+    
+    def format_gnomad_link(self):
+        """
+        Formats the gnomAD link
+        Variants need to be in the form chrom-pos-ref-alt
+        """
+        chrom, pos, ref, alt = self.variant.split_variant()
+        # remove chr
+        chrom = chrom[3:]
+        variant = f"{chrom}-{pos}-{ref}-{alt}"
+        return f'https://gnomad.broadinstitute.org/variant/{variant}?dataset=gnomad_r4'
 
 class GermlineVariantInstance(AbstractVariantInstance):
     """
@@ -660,14 +679,6 @@ class GermlineVariantInstance(AbstractVariantInstance):
             
             # otherwise the nearest variants are > 2bp away
             return False
-        
-    def get_default_hgvs_nomenclature(self):
-        #TODO make this better logic once we've sorted the transcript thing
-        annotation = self.vep_annotations.first()
-        hgvsc = annotation.hgvsc
-        hgvsp = annotation.hgvsp
-        gene = annotation.transcript.gene.gene
-        return hgvsc, hgvsp, gene
         
 
 class SomaticVariantInstance(AbstractVariantInstance):

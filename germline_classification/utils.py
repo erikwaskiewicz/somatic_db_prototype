@@ -2,7 +2,7 @@ from django.db import transaction
 from django.db.models import Q
 
 from .models import *
-from swgs.models import GermlineVariantInstance
+from swgs.models import GermlineVariantInstance, Gene
 
 @transaction.atomic
 def create_classifications_from_swgs(list_of_variant_ids):
@@ -13,10 +13,20 @@ def create_classifications_from_swgs(list_of_variant_ids):
     for id in list_of_variant_ids:
         # get the SWGS germline variant instance
         germline_variant_instance_obj = GermlineVariantInstance.objects.get(id=id)
+
+        # get or create the classify Variant instance
+        hgvsc, hgvsp, gene = germline_variant_instance_obj.get_default_hgvs_nomenclature()
+        gene_obj = Gene.objects.get(gene=gene)
+        variant_obj, created = Variant.objects.get_or_create(hgvsc=hgvsc, hgvsp=hgvsp, gene=gene_obj)
+
         # create a new classification object
         classification_obj = Classification.objects.create()
+
         # create a new SWGS variant classification
-        swgs_variant_classification_obj = SWGSVariantClassification.objects.create(variant_instance=germline_variant_instance_obj, classification=classification_obj)
+        swgs_variant_classification_obj = SWGSVariantClassification.objects.create(
+            variant_instance=germline_variant_instance_obj, 
+            classification=classification_obj, 
+            variant=variant_obj)
         swgs_variant_classification_obj.save()
     
 def get_classifications(pending_or_completed, is_diagnostic):

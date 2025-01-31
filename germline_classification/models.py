@@ -5,9 +5,18 @@ from polymorphic.models import PolymorphicModel
 from auditlog.registry import auditlog
 
 from analysis.models import VariantPanelAnalysis
-from swgs.models import GermlineVariantInstance
+from swgs.models import GermlineVariantInstance, Gene
 
-# Add a higher level model which is for a given variant, all of the classifications
+# TODO Add a higher level model which is for a given variant, all of the classifications
+
+class Variant(models.Model):
+    """
+    A given variant for a given transcript - all classifications of this variant link to this
+    """
+    id = models.AutoField(primary_key=True)
+    hgvsc = models.CharField(max_length=200, unique=True)
+    hgvsp = models.CharField(max_length=200, null=True, blank=True)
+    gene = models.ForeignKey(Gene, on_delete=models.CASCADE)
 
 class VariantClassification(PolymorphicModel):
     """
@@ -17,6 +26,7 @@ class VariantClassification(PolymorphicModel):
     """
     id = models.AutoField(primary_key=True)
     classification = models.ForeignKey("Classification", on_delete=models.CASCADE)
+    variant = models.ForeignKey("Variant", on_delete=models.CASCADE, related_name="variant_classifications", null=True, blank=True)
 
 class AnalysisVariantClassification(VariantClassification):
     """
@@ -47,6 +57,11 @@ class AnalysisVariantClassification(VariantClassification):
         panel = self.variant_instance.sample_analysis.panel.panel_name
 
         return f"{assay} {panel}"
+    
+    def format_gnomad_link(self):
+
+        gnomad_link = self.variant_instance.gnomad_link()
+        return gnomad_link
 
 class SWGSVariantClassification(VariantClassification):
     """
@@ -68,6 +83,11 @@ class SWGSVariantClassification(VariantClassification):
         panel = self.variant_instance.patient_analysis.indication.indication
 
         return f"{assay} {panel}"
+    
+    def format_gnomad_link(self):
+
+        gnomad_link = self.variant_instance.format_gnomad_link()
+        return gnomad_link
 
 class ClassificationCriteriaStrength(models.Model):
     """
@@ -152,8 +172,23 @@ class Classification(models.Model):
         return all_codes
     
     @staticmethod
+    def check_for_duplicate_codes(all_codes):
+        """
+        A given code should only be applied at one strength
+        """
+        warnings = []
+        unique_codes = len(set(all_codes))
+        if len(all_codes) != len(unique_codes):
+            warnings.append("You cannot apply the same code more than once")
+            codes_applied_multiple_times = all_codes - unique_codes
+            for code in set(codes_applied_multiple_times):
+                warnings.append(f"You have applied {code} more than once")
+        return warnings
+
+    @staticmethod
     def code_incompatibility_warnings(all_codes):
         warnings = []
+        infos = []
 
         if "PVS1" in all_codes:
             if any(["PM1", "PM4", "PP2", "PP3"]) in all_codes:
@@ -167,12 +202,12 @@ class Classification(models.Model):
         
         if any(["PS2", "PM6"]) in all_codes:
             if "PP4" in all_codes:
-                warning = """INFO: If PS2/PM6 is applied, the specificity of that patient's phenotype to the relevant disorder, should be captured using
+                info = """INFO: If PS2/PM6 is applied, the specificity of that patient's phenotype to the relevant disorder, should be captured using
                             an increased strength of PS2/PM6, rather than applying a separate and additional line of evidence within PP4."""
         
         if "PM1" in all_codes:
             if any(["PM5", "PP2"]) in all_codes:
-                warning = """INFO: Do not use the same evidence to code PM1 and PM5 or PP2, but the two codes can be used together if each
+                info = """INFO: Do not use the same evidence to code PM1 and PM5 or PP2, but the two codes can be used together if each
                             supported by independent evidence."""
                 warnings.append(warning)
         
@@ -183,16 +218,23 @@ class Classification(models.Model):
         
         if "PM5" in all_codes:
             if "PM1" in all_codes:
-                warning = """Do not use the same evidence to apply PM1 and PM5, but the two codes can be used together if each supported
+                info = """Do not use the same evidence to apply PM1 and PM5, but the two codes can be used together if each supported
                             by independent evidence."""
                 warnings.append(warning)
         
-        if len(warnings) == 0:
-            return False, []
+        if len(warnings) == 0 and len(infos) == 0:
+            return False, [], []
         else:
-            return True, warnings
-
-    
+            return True, warnings, infos
+        
+    def check_for_warnings(self):
+        pathogenic_codes, benign_codes = self.get_codes_strengths_and_scores_applied
+        all_codes = self.get_all_codes(pathogenic_codes, benign_codes)
+        dup_warnings = self.check_for_duplicate_codes(all_codes)
+        prompt, incompatibility_warnings, infos = self.code_incompatibility_warnings(all_codes)
+        warnings = dup_warnings + incompatibility_warnings
+        return prompt, warnings, infos
+   
     @staticmethod
     def format_criteria_acgs_2020(pathogenic_criteria, benign_criteria):
         strength_dict = {

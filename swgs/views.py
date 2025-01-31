@@ -221,6 +221,7 @@ def view_patient_analysis(request, patient_analysis_id):
             pass
 
     for v in germline_snvs_query:
+        #TODO replace VAF with het/hom
         variant = v.variant.variant
         gnomad = v.gnomad_popmax_af
         vaf = float(v.af) * 100
