@@ -26,6 +26,11 @@
   {% crispy form %}
   <br>
   <br>
+  <div class="float-right">
+    <button type="button" class="btn btn-success snv-submit" id = "snv-submit">Submit Checks</button>
+  </div>
+  <br>
+  <br>
   <h4>Somatic SNVs</h4>
   <h5>Tier 1</h5>
   <table class="table">
@@ -36,11 +41,13 @@
         <th class="col-md-1">Gene</th>
         <th class="col-md-1">VAF</th>
         <th class="col-md-2">GnomAD</th>
+        <th class="col-md-2">Check</th>
       </tr>
     </thead>
     <tbody>
       {% for v in somatic_snvs_tier_one %}
       <tr>
+        <td class="variant-id" style="display:none">{{ v.id }}</td>
         {% if v.force_display %}
           <td>{{ v.pk }}</br>{{ v.consequence }}</br><span class="badge badge-warning badge-pill">Possible MNV - Check IGV</span></td>
         {% else %}
@@ -50,6 +57,17 @@
         <td>{{ v.gene }}</td>
         <td>{{ v.vaf }}%</td>
         <td>{{ v.gnomad }}</td>
+        {% if v.status == 'C' %}
+        <td>{{ v.status }}</td>
+        {% else %}
+        <td class=genuine-dropdown>
+          <select name = "variant" id="variant">
+            {% for option in check_options %}
+            <option value="{{ option.0 }}">{{ option.1 }}</option>
+            {% endfor %}
+          </select>
+        </td>
+        {% endif %}
       </tr>
       {% endfor %}
     </tbody>
@@ -64,11 +82,13 @@
         <th class="col-md-1">Gene</th>
         <th class="col-md-1">VAF</th>
         <th class="col-md-2">GnomAD</th>
+        <th class="col-md-2">Check</th>
       </tr>
     </thead>
     <tbody>
       {% for v in somatic_snvs_tier_two %}
       <tr>
+        <td class="variant-id" style="display:none">{{ v.id }}</td>
         {% if v.force_display %}
           <td>{{ v.pk }}</br>{{ v.consequence }}</br><span class="badge badge-warning badge-pill">Possible MNV - Check IGV</span></td>
         {% else %}
@@ -78,6 +98,17 @@
         <td>{{ v.gene }}</td>
         <td>{{ v.vaf }}%</td>
         <td>{{ v.gnomad }}</td>
+        {% if v.status == 'C' %}
+        <td>{{ v.status }}</td>
+        {% else %}
+        <td class=genuine-dropdown>
+          <select name = "variant" id="variant">
+            {% for option in check_options %}
+            <option value="{{ option.0 }}">{{ option.1 }}</option>
+            {% endfor %}
+          </select>
+        </td>
+        {% endif %}
       </tr>
       {% endfor %}
     </tbody>
@@ -94,11 +125,13 @@
         <th class="col-md-1">Gene</th>
         <th class="col-md-1">VAF</th>
         <th class="col-md-2">GnomAD</th>
+        <th class="col-md-2">Check</th>
       </tr>
     </thead>
     <tbody>
       {% for v in germline_snvs_tier_one %}
       <tr>
+        <td class="variant-id" style="display:none">{{ v.id }}</td>
         {% if v.force_display %}
           <td>{{ v.pk }}</br>{{ v.consequence }}</br><span class="badge badge-warning badge-pill">Possible MNV - Check IGV</span></td>
         {% else %}
@@ -108,6 +141,17 @@
         <td>{{ v.gene }}</td>
         <td>{{ v.vaf }}%</td>
         <td>{{ v.gnomad }}</td>
+        {% if v.status == 'C' %}
+        <td>{{ v.status }}</td>
+        {% else %}
+        <td class=genuine-dropdown>
+          <select name = "variant" id="variant">
+            {% for option in check_options %}
+            <option value="{{ option.0 }}">{{ option.1 }}</option>
+            {% endfor %}
+          </select>
+        </td>
+        {% endif %}
       </tr>
       {% endfor %}
     </tbody>
@@ -122,11 +166,13 @@
         <th class="col-md-1">Gene</th>
         <th class="col-md-1">VAF</th>
         <th class="col-md-2">GnomAD</th>
+        <th class="col-md-2">Check</th>
       </tr>
     </thead>
     <tbody>
       {% for v in germline_snvs_tier_three %}
       <tr>
+        <td class="variant-id" style="display:none">{{ v.id }}</td>
         {% if v.force_display %}
           <td>{{ v.pk }}</br>{{ v.consequence }}</br><span class="badge badge-warning badge-pill">Possible MNV - Check IGV</span></td>
         {% else %}
@@ -136,6 +182,17 @@
         <td>{{ v.gene }}</td>
         <td>{{ v.vaf }}%</td>
         <td>{{ v.gnomad }}</td>
+        {% if v.status == 'C' %}
+        <td>{{ v.status }}</td>
+        {% else %}
+        <td class=genuine-dropdown>
+          <select name = "variant" id="variant">
+            {% for option in check_options %}
+            <option value="{{ option.0 }}">{{ option.1 }}</option>
+            {% endfor %}
+          </select>
+        </td>
+        {% endif %}
       </tr>
       {% endfor %}
     </tbody>
@@ -143,6 +200,53 @@
   <br>
   <br>
 
+  <div class="float-right">
+    <button type="button" class="btn btn-success snv-submit" id = "snv-submit">Submit Checks</button>
+  </div>
+  <br>
+  <br>
+
 </div>
+
+<script>
+  // agax code to gather selections from dropdown
+  $(".snv-submit").click(function(){
+      var rows = $("table").children("tbody").children();
+      var selection_dict = {};
+
+      for (var i=0; i<rows.length; i++){
+        // extract required variables
+        var pk = $(rows[i]).children("td.variant-id").text();
+        var genuine_selection = $(rows[i]).children("td.genuine-dropdown").children().val();
+        // compile into dictionary for individual variant
+        var d = {
+          'genuine_dropdown': genuine_selection,
+        };
+        // add to dictionary for all variants
+        selection_dict[pk] = d
+      }
+
+      // pass dict to JS form for AJAX POST
+      var formData = new FormData();
+      formData.append('csrfmiddlewaretoken',document.getElementsByName('csrfmiddlewaretoken')[0].value);
+      formData.append('selections', JSON.stringify(selection_dict));
+      formData.append('patient_analysis_pk', "{{ patient_analysis.pk }}");
+      formData.append('variant_type', "snv");
+
+      $.ajax({
+          url: "{% url 'ajax' %}",
+          type: 'POST',
+          data: formData,
+          contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
+          processData: false, // NEEDED, DON'T OMIT THIS
+          success: function(data) {
+              window.location = "{% url 'view_patient_analysis' patient_analysis.pk %}";
+          },
+          failure: function(data) {
+              alert('Got an error');
+          }
+      });
+    })
+</script>
 
 {% endblock %}

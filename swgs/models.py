@@ -392,17 +392,16 @@ class SomaticVEPAnnotations(AbstractVEPAnnotations):
 
     #TODO unique_together
 
-#Choices for checks, to be used for the variant and for the individual check
-OUTCOME_CHOICES = (
-    ('G', 'Genuine'),
-    ('A', 'Artefact'),
-)
-
 class AbstractVariantInstance(models.Model):
     """
     Abstract class for variant instance. Stores the fields common to germline and somatic instances
     """
     
+    OUTCOME_CHOICES = (
+        ('G', 'Genuine'),
+        ('A', 'Artefact'),
+    )
+
     STATUS_CHOICES = (
         ('P','Pending'),
         ('C','Complete'),
@@ -582,6 +581,11 @@ class AbstractVariantChecks(models.Model):
     Abstract class for variant checks. Stores the fields common to all checks
     """
 
+    OUTCOME_CHOICES = (
+        ('G', 'Genuine'),
+        ('A', 'Artefact'),
+    )
+    
     decision = models.CharField(max_length=1, choices = OUTCOME_CHOICES, blank=True, null=True)
     user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True)
     check_date = models.DateTimeField(blank=True, null=True)

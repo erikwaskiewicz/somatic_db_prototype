@@ -1,7 +1,8 @@
 import csv
 import datetime
+import json
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 
@@ -56,6 +57,8 @@ def view_patient_analysis(request, patient_id):
 
     patient_analysis = PatientAnalysis.objects.get(id=patient_id)
 
+    check_options = AbstractVariantInstance.OUTCOME_CHOICES
+
     germline_snvs_query = GermlineVariantInstance.objects.filter(patient_analysis=patient_analysis)
     somatic_snvs_query = SomaticVariantInstance.objects.filter(patient_analysis=patient_analysis)
     germline_snvs_tier_one = []
@@ -77,6 +80,8 @@ def view_patient_analysis(request, patient_id):
         consequences_formatted = [c.replace("_", " ") for c in consequences]
         consequences_formatted = " | ".join(consequences)
         force_display = v.force_display()
+        status = v.status
+        id = v.id
 
         # handle gnomad
         if float(gnomad) == -1:
@@ -93,7 +98,9 @@ def view_patient_analysis(request, patient_id):
                 "hgvsp": hgvsp,
                 "gene": gene,
                 "consequence": consequences_formatted,
-                "force_display": force_display
+                "force_display": force_display,
+                "status": status,
+                "id": id
             }
 
         # lose >5% in gnomad and modifier only variants
@@ -128,6 +135,8 @@ def view_patient_analysis(request, patient_id):
         consequences_formatted = [c.replace("_", " ") for c in consequences]
         consequences_formatted = " | ".join(consequences)
         force_display = v.force_display()
+        status = v.status
+        id = v.id
 
         # handle gnomad
         if float(gnomad) == -1:
@@ -144,7 +153,9 @@ def view_patient_analysis(request, patient_id):
                 "hgvsp": hgvsp,
                 "gene": gene,
                 "consequence": consequences_formatted,
-                "force_display": force_display
+                "force_display": force_display,
+                "status": status,
+                "id": id
             }
 
         # lose >5% in gnomad and modifier only variants
@@ -171,7 +182,8 @@ def view_patient_analysis(request, patient_id):
         "somatic_snvs_tier_one": somatic_snvs_tier_one,
         "somatic_snvs_tier_two": somatic_snvs_tier_two,
         "germline_snvs_tier_one": germline_snvs_tier_one,
-        "germline_snvs_tier_three": germline_snvs_tier_three
+        "germline_snvs_tier_three": germline_snvs_tier_three,
+        "check_options": check_options
     }
 
     # Download a csv
@@ -198,4 +210,44 @@ def view_patient_analysis(request, patient_id):
         return response
 
     return render(request, "swgs/view_patient_analysis.html", context)
+
+def ajax(request):
+    """
+    Ajax handling of the variant check submission
+    """
+
+    if request.is_ajax():
+        
+        selections = json.loads(request.POST.get('selections'))
+
+        print(selections)
+        
+        for variant in selections:
+
+                #Get variant object - won't know if it's a germline or somatic so try one then the other. ID isn't working, as it made all the checks germline
+                #Setting a germline/somatic marker to be used to determine type of check model
+                type = ""
+                try:
+                    variant_obj = GermlineVariantInstance.objects.get(id=variant)
+                    type = "germline"
+
+                except:
+                    variant_obj = SomaticVariantInstance.objects.get(id=variant)
+                    type = "somatic"
+
+                #Get decision
+                decision = selections[variant]['genuine_dropdown']
+
+                #Add new check
+                if type == "germline":
+                    check_obj = GermlineIGVCheck.objects.create(variant_instance = variant_obj,
+                                                                 decision = decision)
+                    check_obj.save()
+
+                elif type == "somatic":
+                    check_obj = SomaticIGVCheck.objects.create(variant_instance = variant_obj,
+                                                               decision = decision)
+                    check_obj.save()
+
+        return redirect("swgs/view_patient_analysis.html")
     
