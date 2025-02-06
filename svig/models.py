@@ -1,6 +1,7 @@
 from django.db import models, transaction
 from django.utils import timezone
 from django.template.defaultfilters import slugify
+from polymorphic.models import PolymorphicModel
 
 from somatic_variant_db.settings import (
     BASE_DIR,
@@ -14,6 +15,9 @@ from somatic_variant_db.settings import (
 import yaml
 import os
 from collections import OrderedDict
+
+from analysis.models import VariantInstance
+from swgs.models import GermlineVariantInstance, SomaticVariantInstance
 
 
 ## TODO Variant models - these need overhaul
@@ -623,3 +627,100 @@ class SystemComment(AbstractComment):
     """system comment for audit trail"""
 
     details = models.CharField(max_length=500)
+
+
+# UPDATED MODELS FOR CLASSIFYING please change as needed
+
+class Guideline(models.Model):
+    """
+    Model to store which guidelines are being used
+    """
+    guideline = models.CharField(max_length=200, unique=True)
+    criteria = models.ManyToManyField("ClassificationCriteria", related_name="guideline")
+    sort_order = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.guideline
+    
+class ClassificationCriteriaStrength(models.Model):
+    """
+    Strengths at which the criteria can be applied at
+    """
+    id = models.AutoField(primary_key=True)
+    strength = models.CharField(max_length=20)
+    evidence_points = models.IntegerField()
+
+    class Meta:
+        unique_together = ["strength", "evidence_points"]
+
+    def __str__(self):
+        return f"{self.strength} {str(self.evidence_points)}"
+
+class ClassificationCriteriaCode(models.Model):
+    """
+    Codes that can be applied
+    """
+    id = models.AutoField(primary_key=True)
+    code = models.CharField(max_length=10, unique=True)
+    pathogenic_or_benign = models.CharField(max_length=1)
+    description = models.TextField(null=True, blank=True)
+    links = models.TextField(null=True, blank=True)
+    category = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.code
+
+class ClassificationCriteria(models.Model):
+    """
+    All available combinations of codes and strengths
+    """
+    id = models.AutoField(primary_key=True)
+    code = models.ForeignKey("ClassificationCriteriaCode", on_delete=models.CASCADE)
+    strength = models.ForeignKey("ClassificationCriteriaStrength", on_delete=models.CASCADE)
+    
+    class Meta:
+        unique_together = ["code", "strength"]
+
+    def form_display(self):
+        return f"{self.code.code}_{self.strength.strength}"
+    
+class ClassifyVariant(models.Model):
+    """
+    A given variant for a given transcript
+    This is some duplication of information that's stored elsewhere but will make this app easier to work with
+    We can populate based on existing models to continue data integrity
+    """
+    hgvsc = models.CharField(max_length=200, unique=True)
+    hgvsp = models.CharField(max_length=200, null=True, blank=True)
+    b38_coords = models.CharField(max_length=200)
+    b37_coords = models.CharField(max_length=200) #autopopulate with variantvalidator? otherwise we have to make these both nullable
+
+class ClassifyVariantInstance(PolymorphicModel):
+    """
+    Top level model for variant instance to account for all the SVD apps and manual variants added directly to classify
+    """
+    variant = models.ForeignKey("ClassifyVariant", on_delete=models.CASCADE)
+
+class AnalysisVariantInstance(ClassifyVariantInstance):
+    """
+    Links out to the analysis app (TSO500, ctDNA, CRM, BRCA)
+    """
+    variant_instance = models.ForeignKey(VariantInstance, on_delete=models.CASCADE)
+
+class SWGSGermlineVariantInstance(ClassifyVariantInstance):
+    """
+    Germline variants from the SWGS app
+    """
+    variant_instance = models.ForeignKey(GermlineVariantInstance, on_delete=models.CASCADE)
+
+class SWGSSomaticVaraintInstance(ClassifyVariantInstance):
+    """
+    Somatic variants from the SWGS app
+    """
+    variant_instance = models.ForeignKey(SomaticVariantInstance, on_delete=models.CASCADE)
+
+class ManualVariantInstance(ClassifyVariantInstance):
+    """
+    Variants added manually directly to classify
+    """
+    pass
