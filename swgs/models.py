@@ -511,6 +511,18 @@ class GermlineVariantInstance(AbstractVariantInstance):
             # otherwise the nearest variants are > 2bp away
             return False
         
+    def update_status(self):
+        """
+        Update status if last two checks are matching
+        """
+
+        print("HELLO")
+        all_checks = GermlineIGVCheck.objects.filter(variant_instance__id = self.id).order_by('-check_date')
+
+        print(all_checks)
+
+
+        
 
 class SomaticVariantInstance(AbstractVariantInstance):
     """
@@ -576,6 +588,16 @@ class SomaticVariantInstance(AbstractVariantInstance):
             # otherwise the nearest variants are > 2bp away
             return False
         
+    def update_status(self):
+        """
+        Update status if last two checks are matching
+        """
+
+        print("HELLO SOMATIC")
+        all_checks = SomaticIGVCheck.objects.filter(variant_instance__id = self.id).order_by('-check_date')
+
+        print(all_checks)
+
 class AbstractVariantChecks(models.Model):
     """
     Abstract class for variant checks. Stores the fields common to all checks
@@ -585,7 +607,7 @@ class AbstractVariantChecks(models.Model):
         ('G', 'Genuine'),
         ('A', 'Artefact'),
     )
-    
+
     decision = models.CharField(max_length=1, choices = OUTCOME_CHOICES, blank=True, null=True)
     user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True)
     check_date = models.DateTimeField(blank=True, null=True)

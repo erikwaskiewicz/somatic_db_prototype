@@ -5,6 +5,7 @@ import json
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from django.utils import timezone
 
 from .models import *
 from .forms import *
@@ -82,6 +83,7 @@ def view_patient_analysis(request, patient_id):
         force_display = v.force_display()
         status = v.status
         id = v.id
+        var_type = "somatic"
 
         # handle gnomad
         if float(gnomad) == -1:
@@ -100,7 +102,9 @@ def view_patient_analysis(request, patient_id):
                 "consequence": consequences_formatted,
                 "force_display": force_display,
                 "status": status,
-                "id": id
+                "id": id,
+                "var_type": var_type
+
             }
 
         # lose >5% in gnomad and modifier only variants
@@ -137,6 +141,7 @@ def view_patient_analysis(request, patient_id):
         force_display = v.force_display()
         status = v.status
         id = v.id
+        var_type = "germline"
 
         # handle gnomad
         if float(gnomad) == -1:
@@ -155,7 +160,8 @@ def view_patient_analysis(request, patient_id):
                 "consequence": consequences_formatted,
                 "force_display": force_display,
                 "status": status,
-                "id": id
+                "id": id,
+                "var_type": var_type
             }
 
         # lose >5% in gnomad and modifier only variants
@@ -219,35 +225,35 @@ def ajax(request):
     if request.is_ajax():
         
         selections = json.loads(request.POST.get('selections'))
-
-        print(selections)
         
         for variant in selections:
-
-                #Get variant object - won't know if it's a germline or somatic so try one then the other. ID isn't working, as it made all the checks germline
-                #Setting a germline/somatic marker to be used to determine type of check model
-                type = ""
-                try:
-                    variant_obj = GermlineVariantInstance.objects.get(id=variant)
-                    type = "germline"
-
-                except:
-                    variant_obj = SomaticVariantInstance.objects.get(id=variant)
-                    type = "somatic"
-
+                
                 #Get decision
-                decision = selections[variant]['genuine_dropdown']
+                decision = selections[variant][1]['genuine_dropdown']
 
-                #Add new check
+                #Get variant object - use type marker to determine what kind of check and then create check object
+                type = selections[variant][0]
+                
                 if type == "germline":
+
+                    variant_obj = GermlineVariantInstance.objects.get(id=variant)
                     check_obj = GermlineIGVCheck.objects.create(variant_instance = variant_obj,
-                                                                 decision = decision)
+                                                                 decision = decision,
+                                                                 user = request.user,
+                                                                 check_date = timezone.now())
+                    check_obj.save()
+                   
+                elif type == "somatic":
+
+                    variant_obj = SomaticVariantInstance.objects.get(id=variant)
+                    check_obj = SomaticIGVCheck.objects.create(variant_instance = variant_obj,
+                                                               decision = decision,
+                                                               user = request.user,
+                                                               check_date = timezone.now())
                     check_obj.save()
 
-                elif type == "somatic":
-                    check_obj = SomaticIGVCheck.objects.create(variant_instance = variant_obj,
-                                                               decision = decision)
-                    check_obj.save()
+                #Update status of variant_obj - ie complete if last two checks matching
+                variant_obj.update_status()
 
         return redirect("swgs/view_patient_analysis.html")
     

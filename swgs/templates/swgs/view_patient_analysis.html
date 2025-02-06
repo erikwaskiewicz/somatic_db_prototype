@@ -48,6 +48,7 @@
       {% for v in somatic_snvs_tier_one %}
       <tr>
         <td class="variant-id" style="display:none">{{ v.id }}</td>
+        <td class="var-type" style="display:none">{{ v.var_type }}</td>
         {% if v.force_display %}
           <td>{{ v.pk }}</br>{{ v.consequence }}</br><span class="badge badge-warning badge-pill">Possible MNV - Check IGV</span></td>
         {% else %}
@@ -89,6 +90,7 @@
       {% for v in somatic_snvs_tier_two %}
       <tr>
         <td class="variant-id" style="display:none">{{ v.id }}</td>
+        <td class="var-type" style="display:none">{{ v.var_type }}</td>
         {% if v.force_display %}
           <td>{{ v.pk }}</br>{{ v.consequence }}</br><span class="badge badge-warning badge-pill">Possible MNV - Check IGV</span></td>
         {% else %}
@@ -132,6 +134,7 @@
       {% for v in germline_snvs_tier_one %}
       <tr>
         <td class="variant-id" style="display:none">{{ v.id }}</td>
+        <td class="var-type" style="display:none">{{ v.var_type }}</td>
         {% if v.force_display %}
           <td>{{ v.pk }}</br>{{ v.consequence }}</br><span class="badge badge-warning badge-pill">Possible MNV - Check IGV</span></td>
         {% else %}
@@ -173,6 +176,7 @@
       {% for v in germline_snvs_tier_three %}
       <tr>
         <td class="variant-id" style="display:none">{{ v.id }}</td>
+        <td class="var-type" style="display:none">{{ v.var_type }}</td>
         {% if v.force_display %}
           <td>{{ v.pk }}</br>{{ v.consequence }}</br><span class="badge badge-warning badge-pill">Possible MNV - Check IGV</span></td>
         {% else %}
@@ -217,13 +221,14 @@
       for (var i=0; i<rows.length; i++){
         // extract required variables
         var pk = $(rows[i]).children("td.variant-id").text();
+        var type = $(rows[i]).children("td.var-type").text();
         var genuine_selection = $(rows[i]).children("td.genuine-dropdown").children().val();
         // compile into dictionary for individual variant
         var d = {
           'genuine_dropdown': genuine_selection,
         };
         // add to dictionary for all variants
-        selection_dict[pk] = d
+        selection_dict[pk] = [type,d]
       }
 
       // pass dict to JS form for AJAX POST
