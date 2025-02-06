@@ -2,6 +2,7 @@ import random
 import string
 
 from django.db import models
+from django.contrib.auth.models import User
 from auditlog.registry import auditlog
 
 #####################
@@ -391,10 +392,22 @@ class SomaticVEPAnnotations(AbstractVEPAnnotations):
 
     #TODO unique_together
 
+#Choices for checks, to be used for the variant and for the individual check
+OUTCOME_CHOICES = (
+    ('G', 'Genuine'),
+    ('A', 'Artefact'),
+)
+
 class AbstractVariantInstance(models.Model):
     """
     Abstract class for variant instance. Stores the fields common to germline and somatic instances
     """
+    
+    STATUS_CHOICES = (
+        ('P','Pending'),
+        ('C','Complete'),
+    )
+    
     id = models.AutoField(primary_key=True)
     variant = models.ForeignKey("Variant", on_delete=models.CASCADE)
     patient_analysis = models.ForeignKey("PatientAnalysis", on_delete=models.CASCADE)
@@ -405,6 +418,8 @@ class AbstractVariantInstance(models.Model):
     max_splice_ai = models.DecimalField(max_digits=4, decimal_places=3, null=True, blank=True)
     gnomad_popmax_af = models.DecimalField(max_digits=4, decimal_places=3, null=True, blank=True)
     gnomad_nhomalt = models.IntegerField(null=True, blank=True)
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='P')
+    decision = models.CharField(max_length=1, choices=OUTCOME_CHOICES, null=True, blank=True)
     
     class Meta:
         abstract = True
@@ -561,3 +576,32 @@ class SomaticVariantInstance(AbstractVariantInstance):
             
             # otherwise the nearest variants are > 2bp away
             return False
+        
+class AbstractVariantChecks(models.Model):
+    """
+    Abstract class for variant checks. Stores the fields common to all checks
+    """
+
+    decision = models.CharField(max_length=1, choices = OUTCOME_CHOICES, blank=True, null=True)
+    user = models.ForeignKey('auth.User', on_delete=models.PROTECT, blank=True, null=True)
+    check_date = models.DateTimeField(blank=True, null=True)
+        
+    class Meta:
+        abstract = True
+
+class GermlineIGVCheck(AbstractVariantChecks):
+    """
+    IGV checks for germline variants
+    """
+    
+    variant_instance = models.ForeignKey(GermlineVariantInstance, on_delete=models.CASCADE)
+
+class SomaticIGVCheck(AbstractVariantChecks):
+    """
+    IGV checks for somatic variants
+    """
+
+    variant_instance = models.ForeignKey(SomaticVariantInstance, on_delete=models.CASCADE)
+
+
+
