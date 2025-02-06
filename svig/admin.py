@@ -35,6 +35,7 @@ admin.site.register(CanonicalList)
 @admin.register(Guideline)
 class GuidelineAdmin(admin.ModelAdmin):
     search_fields = ["guideline"]
+    filter_horizontal = ["criteria"]
 
 @admin.register(ClassificationCriteriaStrength)
 class ClassificationCriteriaStrengthAdmin(admin.ModelAdmin):

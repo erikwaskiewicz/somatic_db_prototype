@@ -638,6 +638,7 @@ class Guideline(models.Model):
     guideline = models.CharField(max_length=200, unique=True)
     criteria = models.ManyToManyField("ClassificationCriteria", related_name="guideline")
     sort_order = models.CharField(max_length=200)
+    #TODO sort order and therefore category should probably be a description/choicefield we just need to decide on the categories
 
     def __str__(self):
         return self.guideline
@@ -681,7 +682,7 @@ class ClassificationCriteria(models.Model):
     class Meta:
         unique_together = ["code", "strength"]
 
-    def form_display(self):
+    def __str__(self):
         return f"{self.code.code}_{self.strength.strength}"
     
 class ClassifyVariant(models.Model):
