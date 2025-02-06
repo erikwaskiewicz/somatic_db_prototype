@@ -14,9 +14,10 @@ from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatien
     ManualVariantCheckForm, ReopenForm, ChangeLimsInitials, EditedPasswordChangeForm, EditedUserCreationForm, NewFusionForm)
 from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
     get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, get_fusion_list, 
-    create_myeloid_coverage_summary, variant_format_check, breakpoint_format_check, lims_initials_check)
+    create_myeloid_coverage_summary, variant_format_check, breakpoint_format_check, lims_initials_check, validate_variant)
 from .models import *
 
+import csv
 import json
 import os
 import pdfkit
@@ -268,6 +269,7 @@ def view_samples(request, worksheet_id=None, user_pk=None):
     Only one of the optional args will ever be passed in, each from different URLs, 
     this will control whether a worksheet or a user is displayed
     """
+
     # start context dictionary
     context = {
         'unassign_form': UnassignForm(),
@@ -314,6 +316,66 @@ def view_samples(request, worksheet_id=None, user_pk=None):
     ####################################
     #  If any buttons are pressed
     ####################################
+
+    if request.method == 'GET':
+
+        # whole worksheet coverage tsv download
+        if 'download-run-coverage' in request.GET:
+
+            # Create a Django response object, and specify content_type as tsv
+            filename = f"{worksheet_id}_coverage.tsv"
+            response = HttpResponse(content_type='text/tab-separated-values')
+            response['Content-Disposition'] = f'attachment; filename={filename}'
+
+            # Create a CSV writer object and write the header
+            writer = csv.writer(response, delimiter='\t')
+            writer.writerow([
+                'Sample ID',
+                'Panel',
+                'Gene',
+                'Percent Coverage 135x',
+                'Percent Coverage 270x',
+                'Percent Coverage 500x',
+                'Percent Coverage 1000x',
+            ])
+
+            # loop through all samples and load in sample data
+            for sample in samples:
+                sample_data = get_sample_info(sample)
+
+                # only process samples that look at SNVs
+                if sample_data['panel_obj'].show_snvs == True:
+                    coverage_data = get_coverage_data(sample, sample_data['panel_obj'].depth_cutoffs)
+
+                    # Making sure the sample ID isn't repeated in the csv
+                    sample_id_written = False
+
+                    # output % coverage per gene at each coverage threshold
+                    for gene, coverage in coverage_data['regions'].items():
+
+                        # set sample and panel output based on if its the first occurance for the sample
+                        if not sample_id_written:
+                            sample_id_out = sample_data['sample_id']
+                            panel_out = sample_data['panel']
+                            sample_id_written = True
+
+                        else:
+                            sample_id_out = ''
+                            panel_out = ''
+
+                        # write to file
+                        writer.writerow([
+                            sample_id_out,
+                            panel_out,
+                            gene,
+                            coverage['percent_135x'],
+                            coverage['percent_270x'],
+                            coverage['percent_500x'],
+                            coverage['percent_1000x'],
+                        ])
+
+            return response
+
     if request.method == 'POST':
         # if unassign modal button is pressed
         if 'unassign' in request.POST:
@@ -896,19 +958,28 @@ def view_polys(request, list_name):
                 context['success'].append(f'Variant {variant} added to poly list')
 
         # if add new poly button is pressed
-        if 'variant' in request.POST:
+        if 'chrm' in request.POST:
             add_new_form = AddNewPolyForm(request.POST)
 
             if add_new_form.is_valid():
 
                 # get form data
-                variant = add_new_form.cleaned_data['variant']
+                chrm = add_new_form.cleaned_data['chrm']
+                position = add_new_form.cleaned_data['position']
+                ref = add_new_form.cleaned_data['ref']
+                alt = add_new_form.cleaned_data['alt']
                 comment = add_new_form.cleaned_data['comment']
             
-                # wrap in try/ except to handle when a variant doesnt match the input
-                try:
+                # check variant format is correct using variant validator
+                build = 'GRCh' + str(genome)
+                validation_error = validate_variant(chrm, position, ref, alt, build)
+                if validation_error:
+                    context['warning'].append(f'{validation_error}')
+                else:
+                    variant = chrm + ':' + str(position) + ref + '>' + alt
+
                     # load in variant and variant to list objects
-                    variant_obj = Variant.objects.get(variant=variant, genome_build=genome)
+                    variant_obj, _ = Variant.objects.get_or_create(variant=variant, genome_build=genome)
                     variant_to_variant_list_obj, created = VariantToVariantList.objects.get_or_create(
                         variant_list = poly_list,
                         variant = variant_obj,
@@ -932,10 +1003,6 @@ def view_polys(request, list_name):
                     confirmed_list, checking_list = get_poly_list(poly_list, request.user)
                     context['confirmed_list'] = confirmed_list
                     context['checking_list'] = checking_list
-
-                # throw error if there isnt a variant matching the input
-                except Variant.DoesNotExist:
-                    context['warning'].append(f'Cannot find variant matching {variant}, have you selected the correct genome build?')
 
     # render the page
     return render(request, 'analysis/view_polys.html', context)
@@ -1005,24 +1072,33 @@ def view_artefacts(request, list_name):
                 context['success'].append(f'Variant {variant} added to artefact list')
 
         # if add new artefact button is pressed
-        if 'variant' in request.POST:
+        if 'chrm' in request.POST:
             add_new_form = AddNewArtefactForm(request.POST)
 
             if add_new_form.is_valid():
 
                 # get form data
-                variant = add_new_form.cleaned_data['variant']
-                comment = add_new_form.cleaned_data['comment']
+                chrm = add_new_form.cleaned_data['chrm']
+                position = add_new_form.cleaned_data['position']
+                ref = add_new_form.cleaned_data['ref']
+                alt = add_new_form.cleaned_data['alt']
                 vaf_cutoff = add_new_form.cleaned_data['vaf_cutoff']
+                comment = add_new_form.cleaned_data['comment']
 
-                # wrap in try/ except to handle when a variant doesnt match the input
-                try:
+                # Check variant format is correct using variant validator
+                build = 'GRCh' + str(genome)
+                validation_error = validate_variant(chrm, position, ref, alt, build)
+                if validation_error:
+                    context['warning'].append(f'{validation_error}')
+                else:
+
+
                     # load in variant and variant to list objects
-                    variant_obj = Variant.objects.get(variant=variant, genome_build=genome)
+                    variant_obj, _ = Variant.objects.get_or_create(variant=variant, genome_build=genome)
                     variant_to_variant_list_obj, created = VariantToVariantList.objects.get_or_create(
                         variant_list = artefact_list,
                         variant = variant_obj,
-                    )
+                        )
 
                     # add user info if a new model is created
                     if created:
@@ -1032,7 +1108,7 @@ def view_artefacts(request, list_name):
                         variant_to_variant_list_obj.vaf_cutoff = vaf_cutoff
                         variant_to_variant_list_obj.save()
 
-                        # give success message
+                       # give success message
                         context['success'].append(f'Variant {variant} added to artefact checking list')
 
                     # throw error if already in poly list
@@ -1043,10 +1119,6 @@ def view_artefacts(request, list_name):
                     confirmed_list, checking_list = get_poly_list(artefact_list, request.user)
                     context['confirmed_list'] = confirmed_list
                     context['checking_list'] = checking_list
-
-                # throw error if there isnt a variant matching the input
-                except Variant.DoesNotExist:
-                    context['warning'].append(f'Cannot find variant matching {variant}, have you selected the correct genome build?')
 
     # render the page
     return render(request, 'analysis/view_artefacts.html', context)
