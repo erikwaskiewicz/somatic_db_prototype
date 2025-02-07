@@ -41,7 +41,8 @@
         <th class="col-md-1">Gene</th>
         <th class="col-md-1">VAF</th>
         <th class="col-md-2">GnomAD</th>
-        <th class="col-md-2">Check</th>
+        <th class="col-md-4">Checks</th>
+        <th class="col-md-2">Action</th>
       </tr>
     </thead>
     <tbody>
@@ -58,6 +59,17 @@
         <td>{{ v.gene }}</td>
         <td>{{ v.vaf }}%</td>
         <td>{{ v.gnomad }}</td>
+        
+        {% if v.checks|length > 0 %}
+        <td>
+        {% for check in v.checks %}
+        {{ forloop.counter }}: {{ check.decision }} {{ check.user }}
+        {% endfor %}
+        </td>
+        {% else %}
+        <td>1: Pending</td>
+        {% endif %}
+
         {% if v.status == 'C' %}
         <td>{{ v.status }}</td>
         {% else %}
@@ -69,6 +81,7 @@
           </select>
         </td>
         {% endif %}
+
       </tr>
       {% endfor %}
     </tbody>
@@ -83,7 +96,8 @@
         <th class="col-md-1">Gene</th>
         <th class="col-md-1">VAF</th>
         <th class="col-md-2">GnomAD</th>
-        <th class="col-md-2">Check</th>
+        <th class="col-md-4">Checks</th>
+        <th class="col-md-2">Action</th>
       </tr>
     </thead>
     <tbody>
@@ -100,6 +114,17 @@
         <td>{{ v.gene }}</td>
         <td>{{ v.vaf }}%</td>
         <td>{{ v.gnomad }}</td>
+
+        {% if v.checks|length > 0 %}
+        <td>
+        {% for check in v.checks %}
+        {{ forloop.counter }}: {{ check.decision }} {{ check.user }}
+        {% endfor %}
+        </td>
+        {% else %}
+        <td>1: Pending</td>
+        {% endif %}
+
         {% if v.status == 'C' %}
         <td>{{ v.status }}</td>
         {% else %}
@@ -111,6 +136,7 @@
           </select>
         </td>
         {% endif %}
+
       </tr>
       {% endfor %}
     </tbody>
@@ -127,7 +153,8 @@
         <th class="col-md-1">Gene</th>
         <th class="col-md-1">VAF</th>
         <th class="col-md-2">GnomAD</th>
-        <th class="col-md-2">Check</th>
+        <th class="col-md-4">Checks</th>
+        <th class="col-md-2">Action</th>
       </tr>
     </thead>
     <tbody>
@@ -144,6 +171,17 @@
         <td>{{ v.gene }}</td>
         <td>{{ v.vaf }}%</td>
         <td>{{ v.gnomad }}</td>
+
+        {% if v.checks|length > 0 %}
+        <td>
+        {% for check in v.checks %}
+        {{ forloop.counter }}: {{ check.decision }} {{ check.user }}
+        {% endfor %}
+        </td>
+        {% else %}
+        <td>1: Pending</td>
+        {% endif %}
+
         {% if v.status == 'C' %}
         <td>{{ v.status }}</td>
         {% else %}
@@ -155,6 +193,7 @@
           </select>
         </td>
         {% endif %}
+
       </tr>
       {% endfor %}
     </tbody>
@@ -169,7 +208,8 @@
         <th class="col-md-1">Gene</th>
         <th class="col-md-1">VAF</th>
         <th class="col-md-2">GnomAD</th>
-        <th class="col-md-2">Check</th>
+        <th class="col-md-4">Checks</th>
+        <th class="col-md-2">Action</th>
       </tr>
     </thead>
     <tbody>
@@ -186,6 +226,17 @@
         <td>{{ v.gene }}</td>
         <td>{{ v.vaf }}%</td>
         <td>{{ v.gnomad }}</td>
+
+        {% if v.checks|length > 0 %}
+        <td>
+        {% for check in v.checks %}
+        {{ forloop.counter }}: {{ check.decision }} {{ check.user }}
+        {% endfor %}
+        </td>
+        {% else %}
+        <td>1: Pending</td>
+        {% endif %}
+
         {% if v.status == 'C' %}
         <td>{{ v.status }}</td>
         {% else %}
@@ -197,6 +248,7 @@
           </select>
         </td>
         {% endif %}
+        
       </tr>
       {% endfor %}
     </tbody>
@@ -211,6 +263,8 @@
   <br>
 
 </div>
+
+<p>Resolved URL: {% url 'ajax' %}</p>
 
 <script>
   // agax code to gather selections from dropdown
@@ -245,7 +299,9 @@
           contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
           processData: false, // NEEDED, DON'T OMIT THIS
           success: function(data) {
-              window.location = "{% url 'view_patient_analysis' patient_analysis.pk %}";
+              if (data.redirect_url){
+                window.location.href = data.redirect_url;
+              }
           },
           failure: function(data) {
               alert('Got an error');

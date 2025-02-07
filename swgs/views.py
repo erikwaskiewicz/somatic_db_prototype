@@ -4,7 +4,7 @@ import json
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
 
 from .models import *
@@ -84,6 +84,7 @@ def view_patient_analysis(request, patient_id):
         status = v.status
         id = v.id
         var_type = "somatic"
+        checks = v.get_all_checks()
 
         # handle gnomad
         if float(gnomad) == -1:
@@ -103,7 +104,8 @@ def view_patient_analysis(request, patient_id):
                 "force_display": force_display,
                 "status": status,
                 "id": id,
-                "var_type": var_type
+                "var_type": var_type,
+                "checks": checks
 
             }
 
@@ -142,6 +144,7 @@ def view_patient_analysis(request, patient_id):
         status = v.status
         id = v.id
         var_type = "germline"
+        checks = v.get_all_checks()
 
         # handle gnomad
         if float(gnomad) == -1:
@@ -161,7 +164,8 @@ def view_patient_analysis(request, patient_id):
                 "force_display": force_display,
                 "status": status,
                 "id": id,
-                "var_type": var_type
+                "var_type": var_type,
+                "checks": checks
             }
 
         # lose >5% in gnomad and modifier only variants
@@ -225,6 +229,7 @@ def ajax(request):
     if request.is_ajax():
         
         selections = json.loads(request.POST.get('selections'))
+        patient_pk = request.POST.get('patient_analysis_pk')
         
         for variant in selections:
                 
@@ -255,5 +260,7 @@ def ajax(request):
                 #Update status of variant_obj - ie complete if last two checks matching
                 variant_obj.update_status()
 
-        return redirect("swgs/view_patient_analysis.html")
+        return JsonResponse({"status": "success", "redirect_url": f"/swgs/view_patient_analysis/{patient_pk}"})
+
+    return JsonResponse({"status": "error"}, status=400)
     

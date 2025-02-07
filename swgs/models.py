@@ -400,6 +400,7 @@ class AbstractVariantInstance(models.Model):
     OUTCOME_CHOICES = (
         ('G', 'Genuine'),
         ('A', 'Artefact'),
+        ('N', 'Not Analysed')
     )
 
     STATUS_CHOICES = (
@@ -511,18 +512,41 @@ class GermlineVariantInstance(AbstractVariantInstance):
             # otherwise the nearest variants are > 2bp away
             return False
         
+    def get_all_checks(self):
+        """
+        Get all checks carried out on the variant for displaying
+        """
+
+        checks = []
+
+        all_checks = GermlineIGVCheck.objects.filter(variant_instance__id = self.id).order_by('check_date')
+
+        for check in all_checks:
+
+            check_dict = {
+                'decision': check.get_decision_display(),
+                'user': check.user.username
+            } 
+
+            checks.append(check_dict)
+
+        return checks
+    
     def update_status(self):
         """
         Update status if last two checks are matching
         """
 
-        print("HELLO")
         all_checks = GermlineIGVCheck.objects.filter(variant_instance__id = self.id).order_by('-check_date')
 
-        print(all_checks)
+        #if only one check, don't do anything, otherwise if the last two match, update status
+        if len(all_checks) > 1:
+            
+            if all_checks[0].decision == all_checks[1].decision:
 
-
-        
+                self.decision = all_checks[0].decision
+                self.status = "C"
+                self.save()        
 
 class SomaticVariantInstance(AbstractVariantInstance):
     """
@@ -588,15 +612,41 @@ class SomaticVariantInstance(AbstractVariantInstance):
             # otherwise the nearest variants are > 2bp away
             return False
         
+    def get_all_checks(self):
+        """
+        Get all checks carried out on the variant for displaying
+        """
+
+        checks = []
+
+        all_checks = SomaticIGVCheck.objects.filter(variant_instance__id = self.id).order_by('check_date')
+
+        for check in all_checks:
+
+            check_dict = {
+                'decision': check.get_decision_display(),
+                'user': check.user.username
+            } 
+
+            checks.append(check_dict)
+
+        return checks
+
     def update_status(self):
         """
         Update status if last two checks are matching
         """
 
-        print("HELLO SOMATIC")
         all_checks = SomaticIGVCheck.objects.filter(variant_instance__id = self.id).order_by('-check_date')
 
-        print(all_checks)
+        #if only one check, don't do anything, otherwise if the last two match, update status
+        if len(all_checks) > 1:
+            
+            if all_checks[0].decision == all_checks[1].decision:
+
+                self.decision = all_checks[0].decision
+                self.status = "C"
+                self.save() 
 
 class AbstractVariantChecks(models.Model):
     """
@@ -606,6 +656,7 @@ class AbstractVariantChecks(models.Model):
     OUTCOME_CHOICES = (
         ('G', 'Genuine'),
         ('A', 'Artefact'),
+        ('N', 'Not Analysed'),
     )
 
     decision = models.CharField(max_length=1, choices = OUTCOME_CHOICES, blank=True, null=True)
