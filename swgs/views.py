@@ -81,7 +81,7 @@ def view_patient_analysis(request, patient_id):
         consequences_formatted = [c.replace("_", " ") for c in consequences]
         consequences_formatted = " | ".join(consequences)
         force_display = v.force_display()
-        status = v.status
+        status = v.get_status_display()
         id = v.id
         var_type = "somatic"
         checks = v.get_all_checks()
@@ -141,7 +141,7 @@ def view_patient_analysis(request, patient_id):
         consequences_formatted = [c.replace("_", " ") for c in consequences]
         consequences_formatted = " | ".join(consequences)
         force_display = v.force_display()
-        status = v.status
+        status = v.get_status_display()
         id = v.id
         var_type = "germline"
         checks = v.get_all_checks()

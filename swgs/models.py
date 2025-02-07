@@ -542,7 +542,7 @@ class GermlineVariantInstance(AbstractVariantInstance):
         #if only one check, don't do anything, otherwise if the last two match, update status
         if len(all_checks) > 1:
             
-            if all_checks[0].decision == all_checks[1].decision:
+            if all_checks[0].decision == all_checks[1].decision and all_checks[0].user != all_checks[1].user:
 
                 self.decision = all_checks[0].decision
                 self.status = "C"
@@ -639,10 +639,10 @@ class SomaticVariantInstance(AbstractVariantInstance):
 
         all_checks = SomaticIGVCheck.objects.filter(variant_instance__id = self.id).order_by('-check_date')
 
-        #if only one check, don't do anything, otherwise if the last two match, update status
+        #if only one check, don't do anything, otherwise if the last two match and are by different users, update status
         if len(all_checks) > 1:
             
-            if all_checks[0].decision == all_checks[1].decision:
+            if all_checks[0].decision == all_checks[1].decision and all_checks[0].user != all_checks[1].user:
 
                 self.decision = all_checks[0].decision
                 self.status = "C"

@@ -70,7 +70,7 @@
         <td>1: Pending</td>
         {% endif %}
 
-        {% if v.status == 'C' %}
+        {% if v.status == 'Complete' %}
         <td>{{ v.status }}</td>
         {% else %}
         <td class=genuine-dropdown>
@@ -125,7 +125,7 @@
         <td>1: Pending</td>
         {% endif %}
 
-        {% if v.status == 'C' %}
+        {% if v.status == 'Complete' %}
         <td>{{ v.status }}</td>
         {% else %}
         <td class=genuine-dropdown>
@@ -182,7 +182,7 @@
         <td>1: Pending</td>
         {% endif %}
 
-        {% if v.status == 'C' %}
+        {% if v.status == 'Complete' %}
         <td>{{ v.status }}</td>
         {% else %}
         <td class=genuine-dropdown>
@@ -237,7 +237,7 @@
         <td>1: Pending</td>
         {% endif %}
 
-        {% if v.status == 'C' %}
+        {% if v.status == 'Complete' %}
         <td>{{ v.status }}</td>
         {% else %}
         <td class=genuine-dropdown>
@@ -263,8 +263,6 @@
   <br>
 
 </div>
-
-<p>Resolved URL: {% url 'ajax' %}</p>
 
 <script>
   // agax code to gather selections from dropdown
