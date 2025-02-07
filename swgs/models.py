@@ -544,9 +544,12 @@ class GermlineVariantInstance(AbstractVariantInstance):
             
             if all_checks[0].decision == all_checks[1].decision and all_checks[0].user != all_checks[1].user:
 
-                self.decision = all_checks[0].decision
-                self.status = "C"
-                self.save()        
+                #Don't want to complete if the decision is not analysed
+                if all_checks[0].decision != "N":
+                
+                    self.decision = all_checks[0].decision
+                    self.status = "C"
+                    self.save()        
 
 class SomaticVariantInstance(AbstractVariantInstance):
     """
@@ -644,9 +647,12 @@ class SomaticVariantInstance(AbstractVariantInstance):
             
             if all_checks[0].decision == all_checks[1].decision and all_checks[0].user != all_checks[1].user:
 
-                self.decision = all_checks[0].decision
-                self.status = "C"
-                self.save() 
+                #Don't want to complete if the decision is not analysed
+                if all_checks[0].decision != "N":
+                
+                    self.decision = all_checks[0].decision
+                    self.status = "C"
+                    self.save() 
 
 class AbstractVariantChecks(models.Model):
     """
