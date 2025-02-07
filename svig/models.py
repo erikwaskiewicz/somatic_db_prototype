@@ -16,84 +16,128 @@ import yaml
 import os
 from collections import OrderedDict
 
-from analysis.models import VariantInstance
+from analysis.models import VariantPanelAnalysis
 from swgs.models import GermlineVariantInstance, SomaticVariantInstance
 
 
-class Variant(models.Model):
-    # TODO remove
-    svd_variant = models.ForeignKey(
-        "analysis.VariantPanelAnalysis", on_delete=models.CASCADE
-    )
+class Guideline(models.Model):
+    """
+    Model to store which guidelines are being used
+    """
+    guideline = models.CharField(max_length=200, unique=True)
+    criteria = models.ManyToManyField("ClassificationCriteria", related_name="guideline")
+    sort_order = models.CharField(max_length=200)
+    #TODO sort order and therefore category should probably be a description/choicefield we just need to decide on the categories
 
     def __str__(self):
-        gene = self.svd_variant.variant_instance.gene
-        hgvs_c = self.svd_variant.variant_instance.hgvs_c
-        return f"{gene} {hgvs_c}"
+        return self.guideline
+
+
+class ClassificationCriteria(models.Model):
+    """
+    All available combinations of codes and strengths
+    """
+    id = models.AutoField(primary_key=True)
+    code = models.ForeignKey("ClassificationCriteriaCode", on_delete=models.CASCADE)
+    strength = models.ForeignKey("ClassificationCriteriaStrength", on_delete=models.CASCADE)
+    
+    class Meta:
+        unique_together = ["code", "strength"]
+
+    def __str__(self):
+        return f"{self.code.code}_{self.strength.strength}"
+
+
+class ClassificationCriteriaCode(models.Model):
+    """
+    Codes that can be applied
+    """
+    id = models.AutoField(primary_key=True)
+    code = models.CharField(max_length=10, unique=True)
+    pathogenic_or_benign = models.CharField(max_length=1)
+    description = models.TextField(null=True, blank=True)
+    links = models.TextField(null=True, blank=True)
+    category = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.code
+
+
+class ClassificationCriteriaStrength(models.Model):
+    """
+    Strengths at which the criteria can be applied at
+    """
+    id = models.AutoField(primary_key=True)
+    strength = models.CharField(max_length=20)
+    evidence_points = models.IntegerField()
+
+    class Meta:
+        unique_together = ["strength", "evidence_points"]
+
+    def __str__(self):
+        return f"{self.strength} {str(self.evidence_points)}"
+
+
+class ClassifyVariant(models.Model):
+    """
+    A given variant for a given transcript
+    This is some duplication of information that's stored elsewhere but will make this app easier to work with
+    We can populate based on existing models to continue data integrity
+    """
+    hgvs_c = models.CharField(max_length=200, unique=True)
+    hgvs_p = models.CharField(max_length=200, null=True, blank=True)
+    b38_coords = models.CharField(max_length=200)
+    b37_coords = models.CharField(max_length=200) #autopopulate with variantvalidator? otherwise we have to make these both nullable
+
+    def __str__(self):
+        return self.hgvs_c
 
     def get_variant_info(self):
-        """get variant specific variables"""
-        build = self.svd_variant.variant_instance.variant.genome_build
+        """ get variant specific variables """
         variant_info = {
-            "genomic": self.svd_variant.variant_instance.variant.variant,
-            "build": build,
-            "hgvs_c": self.svd_variant.variant_instance.hgvs_c,
-            "hgvs_p": self.svd_variant.variant_instance.hgvs_p,
-            "gene": self.svd_variant.variant_instance.gene,
-            "exon": self.svd_variant.variant_instance.exon,
+            "genomic": self.b38_coords,
+            "build": "TODO",
+            "hgvs_c": self.hgvs_c,
+            "hgvs_p": self.hgvs_p,
+            "gene": "TODO",
+            "exon": "TODO",
         }
         return variant_info
 
-    def get_sample_info(self):
-        sample_info = {
-            "sample_id": self.svd_variant.sample_analysis.sample.sample_id,
-            "worksheet_id": self.svd_variant.sample_analysis.worksheet.ws_id,
-            "svd_panel": self.svd_variant.sample_analysis.panel,
-        }
-        return sample_info
-
     def get_previous_classifications(self):
-        """get all previous classifications of a variant TODO this is hardcoded"""
+        """ get all previous classifications of a variant """
+        # TODO this is hardcoded
         return {
             "gene_canonical_list": [],
             "canonical_match": [],
         }
-        # get all previous classifications
-        # check canonical list - how is this stored?
-        # check same tumour type
-        # check all others
 
 
-class Classification(models.Model):
+class ClassifyVariantInstance(PolymorphicModel):
     """
-    A classification of a single variant # TODO remove
-
+    Top level model for variant instance to account for all the SVD apps and manual variants added directly to classify
     """
-
-    svig_version = models.CharField(max_length=20)
-    variant = models.ForeignKey("Variant", on_delete=models.CASCADE)
-    full_classification = models.BooleanField(default=False)
-    previous_classification = models.ForeignKey(
-        "Variant",
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-        related_name="previous_classification_used",
-    )
-    final_biological_class = models.CharField(
-        max_length=2, choices=BIOLOGICAL_CLASS_CHOICES, blank=True, null=True
-    )
-    final_biological_score = models.IntegerField(blank=True, null=True)
+    variant = models.ForeignKey("ClassifyVariant", on_delete=models.CASCADE)
+    # add guideline model here?
 
     def __str__(self):
-        return f"#{self.pk} - {self.variant}"
+        return f"#{self.pk} - {self.variant.hgvs_c}"
 
-    def get_sample_info(self):
-        sample_info = self.variant.get_sample_info()
-        sample_info["specific_tumour_type"] = (
-            "MDS"  # TODO where will this come from? hopefully analysis app
-        )
-        return sample_info
+    def get_all_checks(self):
+        return Check.objects.filter(classification=self).order_by("pk")
+
+    def get_previous_checks(self):
+        return self.get_all_checks().order_by("-pk")[1:]
+
+    def get_latest_check(self):
+        return self.get_all_checks().order_by("-pk")[0]
+
+    def get_status(self):
+        if self.get_latest_check().check_complete:
+            return "Complete"
+        else:
+            num_checks = self.get_all_checks().count()
+            return f"S-VIG check {num_checks}"
 
     def get_classification_info(self):
         current_check_obj = self.get_latest_check()
@@ -108,9 +152,6 @@ class Classification(models.Model):
             classification_info["current_class"] = current_class
             classification_info["current_score"] = current_score
         return classification_info
-
-    def get_all_checks(self):
-        return Check.objects.filter(classification=self).order_by("pk")
 
     def get_dropdown_options(self, code_list):
         """get all dropdown options for a list of codes TODO can simplify"""
@@ -269,19 +310,6 @@ class Classification(models.Model):
 
         return svig_codes
 
-    def get_previous_checks(self):
-        return self.get_all_checks().order_by("-pk")[1:]
-
-    def get_latest_check(self):
-        return self.get_all_checks().order_by("-pk")[0]
-
-    def get_status(self):
-        if self.get_latest_check().check_complete:
-            return "Complete"
-        else:
-            num_checks = self.get_all_checks().count()
-            return f"S-VIG check {num_checks}"
-
     def get_previous_classification_choices(self):
         canonical_variant = False # TODO these are hardcoded
         previous_classification = False  # TODO
@@ -333,12 +361,68 @@ class Classification(models.Model):
             return True, None
 
 
+class AnalysisVariantInstance(ClassifyVariantInstance):
+    """
+    Links out to the analysis app (TSO500, ctDNA, CRM, BRCA)
+    """
+    variant_instance = models.ForeignKey(VariantPanelAnalysis, on_delete=models.CASCADE)
+
+    def get_sample_info(self):
+        sample_info = {
+            "sample_id": self.variant_instance.sample_analysis.sample.sample_id,
+            "worksheet_id": self.variant_instance.sample_analysis.worksheet.ws_id,
+            "svd_panel": self.variant_instance.sample_analysis.panel,
+            "specific_tumour_type": "TODO",
+        }
+        return sample_info
+
+
+class SWGSGermlineVariantInstance(ClassifyVariantInstance):
+    """
+    Germline variants from the SWGS app
+    """
+    variant_instance = models.ForeignKey(GermlineVariantInstance, on_delete=models.CASCADE)
+
+    def get_sample_info(self):
+        # TODO - these will need coding relative to SWGS app
+        sample_info = {
+            "sample_id": "TODO",
+            "worksheet_id": "TODO",
+            "svd_panel": "TODO",
+            "specific_tumour_type": "TODO",
+        }
+        return sample_info
+
+
+class SWGSSomaticVaraintInstance(ClassifyVariantInstance):
+    """
+    Somatic variants from the SWGS app
+    """
+    variant_instance = models.ForeignKey(SomaticVariantInstance, on_delete=models.CASCADE)
+
+    def get_sample_info(self):
+        # TODO - these will need coding relative to SWGS app
+        sample_info = {
+            "sample_id": "TODO",
+            "worksheet_id": "TODO",
+            "svd_panel": "TODO",
+            "specific_tumour_type": "TODO",
+        }
+        return sample_info
+
+
+class ManualVariantInstance(ClassifyVariantInstance):
+    """
+    Variants added manually directly to classify
+    """
+    pass
+
+
 class Check(models.Model):
     """
     A check of a classification
     """
-
-    classification = models.ForeignKey("Classification", on_delete=models.CASCADE)
+    classification = models.ForeignKey("ClassifyVariantInstance", on_delete=models.CASCADE)
     info_check = models.BooleanField(default=False)
     previous_classifications_check = models.BooleanField(default=False)
     svig_check = models.BooleanField(default=False)
@@ -352,6 +436,12 @@ class Check(models.Model):
         null=True,
         related_name="svig_checker",
     )
+    final_class = models.CharField(
+        max_length=2, choices=BIOLOGICAL_CLASS_CHOICES, blank=True, null=True
+    )
+    final_score = models.IntegerField(blank=True, null=True)
+
+    # TODO these will need removing
     final_biological_class = models.CharField(
         max_length=2, choices=BIOLOGICAL_CLASS_CHOICES, blank=True, null=True
     )
@@ -492,7 +582,6 @@ class CodeAnswer(models.Model):
     A check of an individual code
 
     """
-
     code = models.CharField(max_length=20)
     check_object = models.ForeignKey("Check", on_delete=models.CASCADE)
     pending = models.BooleanField(default=True)
@@ -534,7 +623,7 @@ class CodeAnswer(models.Model):
             return "Not applied"
 
 
-class AbstractComment(models.Model):
+'''class AbstractComment(models.Model):
     """general comment model"""
 
     classification = models.ForeignKey("Classification", on_delete=models.CASCADE)
@@ -562,112 +651,4 @@ class GeneralComment(AbstractComment):
 class SystemComment(AbstractComment):
     """system comment for audit trail"""
 
-    details = models.CharField(max_length=500)
-
-
-# UPDATED MODELS FOR CLASSIFYING please change as needed
-
-class Guideline(models.Model):
-    """
-    Model to store which guidelines are being used
-    """
-    guideline = models.CharField(max_length=200, unique=True)
-    criteria = models.ManyToManyField("ClassificationCriteria", related_name="guideline")
-    sort_order = models.CharField(max_length=200)
-    #TODO sort order and therefore category should probably be a description/choicefield we just need to decide on the categories
-
-    def __str__(self):
-        return self.guideline
-
-
-class ClassificationCriteria(models.Model):
-    """
-    All available combinations of codes and strengths
-    """
-    id = models.AutoField(primary_key=True)
-    code = models.ForeignKey("ClassificationCriteriaCode", on_delete=models.CASCADE)
-    strength = models.ForeignKey("ClassificationCriteriaStrength", on_delete=models.CASCADE)
-    
-    class Meta:
-        unique_together = ["code", "strength"]
-
-    def __str__(self):
-        return f"{self.code.code}_{self.strength.strength}"
-
-
-class ClassificationCriteriaCode(models.Model):
-    """
-    Codes that can be applied
-    """
-    id = models.AutoField(primary_key=True)
-    code = models.CharField(max_length=10, unique=True)
-    pathogenic_or_benign = models.CharField(max_length=1)
-    description = models.TextField(null=True, blank=True)
-    links = models.TextField(null=True, blank=True)
-    category = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.code
-
-
-class ClassificationCriteriaStrength(models.Model):
-    """
-    Strengths at which the criteria can be applied at
-    """
-    id = models.AutoField(primary_key=True)
-    strength = models.CharField(max_length=20)
-    evidence_points = models.IntegerField()
-
-    class Meta:
-        unique_together = ["strength", "evidence_points"]
-
-    def __str__(self):
-        return f"{self.strength} {str(self.evidence_points)}"
-
-
-class ClassifyVariant(models.Model):
-    """
-    A given variant for a given transcript
-    This is some duplication of information that's stored elsewhere but will make this app easier to work with
-    We can populate based on existing models to continue data integrity
-    """
-    hgvsc = models.CharField(max_length=200, unique=True)
-    hgvsp = models.CharField(max_length=200, null=True, blank=True)
-    b38_coords = models.CharField(max_length=200)
-    b37_coords = models.CharField(max_length=200) #autopopulate with variantvalidator? otherwise we have to make these both nullable
-
-
-
-class ClassifyVariantInstance(PolymorphicModel):
-    """
-    Top level model for variant instance to account for all the SVD apps and manual variants added directly to classify
-    """
-    variant = models.ForeignKey("ClassifyVariant", on_delete=models.CASCADE)
-
-
-class AnalysisVariantInstance(ClassifyVariantInstance):
-    """
-    Links out to the analysis app (TSO500, ctDNA, CRM, BRCA)
-    """
-    variant_instance = models.ForeignKey(VariantInstance, on_delete=models.CASCADE)
-
-
-class SWGSGermlineVariantInstance(ClassifyVariantInstance):
-    """
-    Germline variants from the SWGS app
-    """
-    variant_instance = models.ForeignKey(GermlineVariantInstance, on_delete=models.CASCADE)
-
-
-class SWGSSomaticVaraintInstance(ClassifyVariantInstance):
-    """
-    Somatic variants from the SWGS app
-    """
-    variant_instance = models.ForeignKey(SomaticVariantInstance, on_delete=models.CASCADE)
-
-
-class ManualVariantInstance(ClassifyVariantInstance):
-    """
-    Variants added manually directly to classify
-    """
-    pass
+    details = models.CharField(max_length=500)'''

@@ -20,7 +20,7 @@ def view_classifications(request):
     new_classifications_form = NewClassification()
 
     context = {
-        "classifications": Classification.objects.all(),
+        "classifications": ClassifyVariantInstance.objects.all(),
         "new_form": new_classifications_form,
     }
 
@@ -31,24 +31,23 @@ def view_classifications(request):
         new_classifications_form = NewClassification(request.POST)
         if new_classifications_form.is_valid():
             # get variant instance
-            var = VariantPanelAnalysis(id=28)  # TODO this is hardcoded for testing
+            var_inst = VariantPanelAnalysis(id=1)  # TODO this is hardcoded for testing
 
-            new_var_obj = Variant(
-                svd_variant=var,
-                vep_csq="missense_variant",
-                cgc_mode_action="TSG",
-                cgc_mutation_types="Mis; N; F",
+            var, _ = ClassifyVariant.objects.get_or_create(
+                hgvs_c = "c.123A>T",
+                hgvs_p = "p.ARG123His",
+                b38_coords = "7:12345A>T",
+                b37_coords = "7:23446A>T",
+            )
+
+            new_var_obj = AnalysisVariantInstance(
+                variant=var,
+                variant_instance=var_inst,
             )
             new_var_obj.save()
+            new_var_obj.make_new_check()
 
-            new_classification_obj = Classification(
-                variant=new_var_obj,
-                svig_version=SVIG_CODE_VERSION,
-            )
-            new_classification_obj.save()
-            new_classification_obj.make_new_check()
-
-            context["classifications"] = Classification.objects.all()
+            context["classifications"] = ClassifyVariantInstance.objects.all()
 
     return render(request, "svig/all_classifications.html", context)
 
@@ -59,7 +58,7 @@ def classify(request, classification):
     Page to perform S-VIG classifications
     """
     # load in classification and check objects from url args
-    classification_obj = Classification.objects.get(id=classification)
+    classification_obj = ClassifyVariantInstance.objects.get(id=classification)
     current_check_obj = classification_obj.get_latest_check()
 
     # assign user
