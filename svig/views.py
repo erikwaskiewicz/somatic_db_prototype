@@ -33,15 +33,11 @@ def view_classifications(request):
             # get variant instance
             var = VariantPanelAnalysis(id=28)  # TODO this is hardcoded for testing
 
-            # get latest annotations obj
-            annotation_versions_obj = AnnotationVersions.objects.latest("version")
-
             new_var_obj = Variant(
                 svd_variant=var,
                 vep_csq="missense_variant",
                 cgc_mode_action="TSG",
                 cgc_mutation_types="Mis; N; F",
-                annotation_versions=annotation_versions_obj,
             )
             new_var_obj.save()
 

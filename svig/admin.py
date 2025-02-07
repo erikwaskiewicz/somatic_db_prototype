@@ -3,10 +3,6 @@ from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModel
 from .models import *
 
 
-class AnnotationVersionsAdmin(admin.ModelAdmin):
-    search_fields = ["version"]
-
-
 class VariantAdmin(admin.ModelAdmin):
     search_fields = ["svd_variant"]
 
@@ -23,12 +19,10 @@ class CodeAnswerAdmin(admin.ModelAdmin):
     search_fields = ["code", "check_object"]
 
 
-admin.site.register(AnnotationVersions, AnnotationVersionsAdmin)
 admin.site.register(Variant, VariantAdmin)
 admin.site.register(Classification, ClassificationAdmin)
 admin.site.register(Check, CheckAdmin)
 admin.site.register(CodeAnswer, CodeAnswerAdmin)
-admin.site.register(CanonicalList)
 
 # UPDATED ADMIN PANEL FOR CLASSIFY please change as needed
 

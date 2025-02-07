@@ -20,26 +20,10 @@ from analysis.models import VariantInstance
 from swgs.models import GermlineVariantInstance, SomaticVariantInstance
 
 
-## TODO Variant models - these need overhaul
-
-
-class AnnotationVersions(models.Model):
-    version = models.IntegerField(primary_key=True)
-    vep_version = models.IntegerField()
-    cgc_version = models.CharField(max_length=20)
-    gnomad_version = models.CharField(max_length=20)
-
-
 class Variant(models.Model):
+    # TODO remove
     svd_variant = models.ForeignKey(
         "analysis.VariantPanelAnalysis", on_delete=models.CASCADE
-    )
-    # TODO can have seperate links here for e.g. SWGS variants/ manually added variants
-    vep_csq = models.CharField(max_length=20)
-    cgc_mode_action = models.CharField(max_length=20)
-    cgc_mutation_types = models.CharField(max_length=20)
-    annotation_versions = models.ForeignKey(
-        "AnnotationVersions", on_delete=models.CASCADE
     )
 
     def __str__(self):
@@ -57,10 +41,6 @@ class Variant(models.Model):
             "hgvs_p": self.svd_variant.variant_instance.hgvs_p,
             "gene": self.svd_variant.variant_instance.gene,
             "exon": self.svd_variant.variant_instance.exon,
-            "consequence": self.vep_csq,
-            "mode_action": self.cgc_mode_action,
-            "mutation_types": self.cgc_mutation_types,
-            "annotation_versions": self.annotation_versions,
         }
         return variant_info
 
@@ -72,33 +52,11 @@ class Variant(models.Model):
         }
         return sample_info
 
-    def get_canonical_gene_variants(self):
-        canonical_variants = CanonicalList.objects.filter(
-            gene=self.svd_variant.variant_instance.gene
-        )
-        l = []
-        matching = self.get_canonical_exact_match()
-        for c in canonical_variants:
-            temp_dict = {
-                "hgvs_c": c.hgvs_c,
-                "hgvs_p": c.hgvs_p,
-                "match": c == matching,
-            }
-            l.append(temp_dict)
-        return l
-
-    def get_canonical_exact_match(self):
-        try:
-            c = CanonicalList.objects.filter(variants=self.pk).latest("pk")
-            return c
-        except:
-            return False
-
     def get_previous_classifications(self):
-        """get all previous classifications of a variant"""
+        """get all previous classifications of a variant TODO this is hardcoded"""
         return {
-            "gene_canonical_list": self.get_canonical_gene_variants(),
-            "canonical_match": self.get_canonical_exact_match(),
+            "gene_canonical_list": [],
+            "canonical_match": [],
         }
         # get all previous classifications
         # check canonical list - how is this stored?
@@ -106,31 +64,9 @@ class Variant(models.Model):
         # check all others
 
 
-class CanonicalList(models.Model):
-    """TODO this will need redoing"""
-
-    gene = models.CharField(max_length=20, null=True, blank=True)
-    tumour_type = models.CharField(max_length=20, null=True, blank=True)
-    hgvs_c = models.CharField(max_length=50, null=True, blank=True)
-    hgvs_p = models.CharField(max_length=50, null=True, blank=True)
-    variants = models.ManyToManyField(
-        "Variant", blank=True, related_name="canonical_list"
-    )  # TODO this is actually more like a variant instance, should be specific variant
-
-    def contains_variant(self, variant):
-        return self.objects.filter(variants__id=variant)
-
-
-# manual variant
-# training variant lists
-
-
-## Classification models
-
-
 class Classification(models.Model):
     """
-    A classification of a single variant
+    A classification of a single variant # TODO remove
 
     """
 
@@ -347,7 +283,7 @@ class Classification(models.Model):
             return f"S-VIG check {num_checks}"
 
     def get_previous_classification_choices(self):
-        canonical_variant = self.variant.get_canonical_exact_match()
+        canonical_variant = False # TODO these are hardcoded
         previous_classification = False  # TODO
         if canonical_variant:
             return (
@@ -642,20 +578,22 @@ class Guideline(models.Model):
 
     def __str__(self):
         return self.guideline
-    
-class ClassificationCriteriaStrength(models.Model):
+
+
+class ClassificationCriteria(models.Model):
     """
-    Strengths at which the criteria can be applied at
+    All available combinations of codes and strengths
     """
     id = models.AutoField(primary_key=True)
-    strength = models.CharField(max_length=20)
-    evidence_points = models.IntegerField()
-
+    code = models.ForeignKey("ClassificationCriteriaCode", on_delete=models.CASCADE)
+    strength = models.ForeignKey("ClassificationCriteriaStrength", on_delete=models.CASCADE)
+    
     class Meta:
-        unique_together = ["strength", "evidence_points"]
+        unique_together = ["code", "strength"]
 
     def __str__(self):
-        return f"{self.strength} {str(self.evidence_points)}"
+        return f"{self.code.code}_{self.strength.strength}"
+
 
 class ClassificationCriteriaCode(models.Model):
     """
@@ -671,20 +609,22 @@ class ClassificationCriteriaCode(models.Model):
     def __str__(self):
         return self.code
 
-class ClassificationCriteria(models.Model):
+
+class ClassificationCriteriaStrength(models.Model):
     """
-    All available combinations of codes and strengths
+    Strengths at which the criteria can be applied at
     """
     id = models.AutoField(primary_key=True)
-    code = models.ForeignKey("ClassificationCriteriaCode", on_delete=models.CASCADE)
-    strength = models.ForeignKey("ClassificationCriteriaStrength", on_delete=models.CASCADE)
-    
+    strength = models.CharField(max_length=20)
+    evidence_points = models.IntegerField()
+
     class Meta:
-        unique_together = ["code", "strength"]
+        unique_together = ["strength", "evidence_points"]
 
     def __str__(self):
-        return f"{self.code.code}_{self.strength.strength}"
-    
+        return f"{self.strength} {str(self.evidence_points)}"
+
+
 class ClassifyVariant(models.Model):
     """
     A given variant for a given transcript
@@ -696,11 +636,14 @@ class ClassifyVariant(models.Model):
     b38_coords = models.CharField(max_length=200)
     b37_coords = models.CharField(max_length=200) #autopopulate with variantvalidator? otherwise we have to make these both nullable
 
+
+
 class ClassifyVariantInstance(PolymorphicModel):
     """
     Top level model for variant instance to account for all the SVD apps and manual variants added directly to classify
     """
     variant = models.ForeignKey("ClassifyVariant", on_delete=models.CASCADE)
+
 
 class AnalysisVariantInstance(ClassifyVariantInstance):
     """
@@ -708,17 +651,20 @@ class AnalysisVariantInstance(ClassifyVariantInstance):
     """
     variant_instance = models.ForeignKey(VariantInstance, on_delete=models.CASCADE)
 
+
 class SWGSGermlineVariantInstance(ClassifyVariantInstance):
     """
     Germline variants from the SWGS app
     """
     variant_instance = models.ForeignKey(GermlineVariantInstance, on_delete=models.CASCADE)
 
+
 class SWGSSomaticVaraintInstance(ClassifyVariantInstance):
     """
     Somatic variants from the SWGS app
     """
     variant_instance = models.ForeignKey(SomaticVariantInstance, on_delete=models.CASCADE)
+
 
 class ManualVariantInstance(ClassifyVariantInstance):
     """
