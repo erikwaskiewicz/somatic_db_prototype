@@ -118,7 +118,8 @@ class ClassifyVariantInstance(PolymorphicModel):
     Top level model for variant instance to account for all the SVD apps and manual variants added directly to classify
     """
     variant = models.ForeignKey("ClassifyVariant", on_delete=models.CASCADE)
-    # add guideline model here?
+    guideline = models.ForeignKey("Guideline", on_delete=models.CASCADE)
+    # TODO add guideline model here?
 
     def __str__(self):
         return f"#{self.pk} - {self.variant.hgvs_c}"
@@ -133,6 +134,7 @@ class ClassifyVariantInstance(PolymorphicModel):
         return self.get_all_checks().order_by("-pk")[0]
 
     def get_status(self):
+        # TODO make reference to SVIG more general
         if self.get_latest_check().check_complete:
             return "Complete"
         else:
@@ -154,7 +156,8 @@ class ClassifyVariantInstance(PolymorphicModel):
         return classification_info
 
     def get_dropdown_options(self, code_list):
-        """get all dropdown options for a list of codes TODO can simplify"""
+        """get all dropdown options for a list of codes"""
+        # TODO remove SVIG specifics and simplify
         config_file = os.path.join(
             BASE_DIR, f"svig/config/svig_{SVIG_CODE_VERSION}.yaml"
         )
@@ -219,8 +222,8 @@ class ClassifyVariantInstance(PolymorphicModel):
         return "|".join(l)
 
     def get_codes_by_category(self):
-        """ordered list of codes for displaying template TODO split up more"""
-
+        """ordered list of codes for displaying template"""
+        # TODO remove SVIG specifics and simplify
         config_file = os.path.join(
             BASE_DIR, f"svig/config/svig_{SVIG_CODE_VERSION}.yaml"
         )
@@ -457,6 +460,7 @@ class Check(models.Model):
 
     def update_classification(self):
         """calculate the current score and biological classification"""
+        # TODO SVIG specific
         score_counter = 0
 
         codes = self.get_codes()
@@ -489,6 +493,7 @@ class Check(models.Model):
     @transaction.atomic
     def update_codes(self, selections):
         """update each code answer and then work out overall score/ class"""
+        # TODO SVIG specific
 
         # load all code answer objects & loop through each selection
         code_objects = self.get_codes()
@@ -558,6 +563,7 @@ class Check(models.Model):
     @transaction.atomic
     def create_code_answers(self):
         """make a set of code answers against the current check"""
+        # TODO from models instead of config
         # load in list of S-VIG codes from yaml
         config_file = os.path.join(
             BASE_DIR, f"svig/config/svig_{SVIG_CODE_VERSION}.yaml"
@@ -592,6 +598,7 @@ class CodeAnswer(models.Model):
         return f"{self.get_code()}"
 
     def get_code(self):
+        # TODO SVIG specific
         if self.pending:
             return f"{self.code}_PE"
         elif self.applied:
@@ -600,15 +607,18 @@ class CodeAnswer(models.Model):
             return f"{self.code}_NA"
 
     def get_code_type(self):
+        # TODO SVIG specific
         if self.code[0] == "B":
             return "Benign"
         elif self.code[0] == "O":
             return "Oncogenic"
 
     def pretty_print_code(self):
+        # TODO models instead of settings
         return CODE_PRETTY_PRINT[self.applied_strength]
 
     def get_score(self):
+        # TODO SVIG specific
         if self.get_code_type() == "Benign":
             score = f"-{CODE_SCORES[self.applied_strength]}"
         elif self.get_code_type() == "Oncogenic":
