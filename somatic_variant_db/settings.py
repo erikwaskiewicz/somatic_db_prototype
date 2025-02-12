@@ -83,7 +83,7 @@ WSGI_APPLICATION = 'somatic_variant_db.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 
-DB_INSTANCE = 'local'
+DB_INSTANCE = 'webserver'
 
 if DB_INSTANCE == 'webserver':
     DB_PASSWORD_FILE = 'password.txt'
