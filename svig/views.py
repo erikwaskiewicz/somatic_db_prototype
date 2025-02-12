@@ -89,7 +89,6 @@ def classify(request, classification):
         "reopen_previous_class_form": ReopenPreviousClassificationsForm(),
         "complete_svig_form": CompleteSvigForm(),
         "reopen_svig_form": ReopenSvigForm(),
-        "clinical_class_form": ClinicalClassForm(check=current_check_obj),
         "finalise_form": FinaliseCheckForm(),
     }
     # TODO comments modal
@@ -152,7 +151,7 @@ def classify(request, classification):
         if "complete_svig" in request.POST:
             complete_svig_form = CompleteSvigForm(request.POST)
             if complete_svig_form.is_valid():
-                final_biological_score, final_biological_class = (
+                final_score, final_class = (
                     current_check_obj.update_classification()
                 )
                 override = complete_svig_form.cleaned_data["override"]
@@ -164,13 +163,13 @@ def classify(request, classification):
                         "Likely oncogenic": "LO",
                         "Oncogenic": "O",
                     }
-                    current_check_obj.final_biological_class = class_dict[
-                        final_biological_class
+                    current_check_obj.final_class = class_dict[
+                        final_class
                     ]
                 else:
-                    current_check_obj.final_biological_class = override
+                    current_check_obj.final_class = override
                 current_check_obj.svig_check = True
-                current_check_obj.final_biological_score = final_biological_score
+                current_check_obj.final_score = final_score
                 current_check_obj.save()
                 return redirect("svig-analysis", classification)
 
@@ -179,21 +178,6 @@ def classify(request, classification):
             reopen_svig_form = ReopenSvigForm(request.POST)
             if reopen_svig_form.is_valid():
                 current_check_obj.reopen_svig_tab()
-                return redirect("svig-analysis", classification)
-
-        # button to assign clinical class
-        if "clinical_class" in request.POST:
-            clinical_class_form = ClinicalClassForm(
-                request.POST, check=current_check_obj
-            )
-            if clinical_class_form.is_valid():
-                current_check_obj.final_clinical_class = (
-                    clinical_class_form.cleaned_data["clinical_class"]
-                )
-                current_check_obj.reporting_comment = clinical_class_form.cleaned_data[
-                    "reporting_comment"
-                ]
-                current_check_obj.save()
                 return redirect("svig-analysis", classification)
 
         # button to finish check

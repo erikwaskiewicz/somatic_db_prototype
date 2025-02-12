@@ -5,7 +5,7 @@
 <!-- TODO also handle when previous classification used -->
 {% if not classification_info.current_check.svig_check %}
 <div class="alert alert-warning">
-    Please complete the Biological interpretation tab first
+    Please complete the Classification tab first
 </div>
 
 {% else %}
@@ -15,10 +15,9 @@
         <thead>
             <tr>
                 <th class="col-1">Check</th>
-                <th class="col-3">User</th>
-                <th class="col-2">Reuse previous?</th>
-                <th class="col-3">Biological class</th>
-                <th class="col-3">Clinical class</th>
+                <th class="col-4">User</th>
+                <th class="col-3">Reuse previous?</th>
+                <th class="col-4">Class</th>
             </tr>
         </thead>
         <tbody>
@@ -27,8 +26,7 @@
                 <td>{{ forloop.counter }}</td>
                 <td>{{ c.user }}</td>
                 <td>TODO</td>
-                <td>{{ c.get_final_biological_class_display }} ({{ c.final_biological_score }})</td>
-                <td>{{ c.get_final_clinical_class_display }}</td>
+                <td>{{ c.get_final_class_display }} ({{ c.final_score }})</td>
             </tr>
         {% endfor %}
         </tbody>
@@ -38,9 +36,9 @@
 
 
     {% if classification_info.classification_obj.get_status != "Complete" %}
-    {% if not classification_info.current_check.final_clinical_class %}
+    {% if not classification_info.current_check.final_class %}
     <div class="alert alert-warning">
-        Please complete the clinical classification before submitting
+        Please complete the classification before submitting
     </div>
 
     {% else %}
@@ -54,14 +52,9 @@
     <h5>Final classification</h5>
     <div class="row">
         <div class="col-6">
-            <button class="btn btn-block btn-lg btn-disabled btn-{{ classification_info.current_check.get_final_biological_class_display|colour_by_class }}" type="button">
-                <b>{{ classification_info.current_check.get_final_biological_class_display }}</b>
-                &nbsp;<span class="badge badge-light">{{ classification_info.current_check.final_biological_score }}</span>
-            </button>
-        </div>
-        <div class="col-6">
-            <button class="btn btn-block btn-lg btn-disabled btn-{{ classification_info.current_check.get_final_clinical_class_display|colour_by_class }}" type="button">
-                <b>{{ classification_info.current_check.get_final_clinical_class_display }}</b>
+            <button class="btn btn-block btn-lg btn-disabled btn-{{ classification_info.current_check.get_final_class_display|colour_by_class }}" type="button">
+                <b>{{ classification_info.current_check.get_final_class_display }}</b>
+                &nbsp;<span class="badge badge-light">{{ classification_info.current_check.final_score }}</span>
             </button>
         </div>
     </div>

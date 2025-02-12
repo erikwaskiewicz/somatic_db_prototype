@@ -7,7 +7,6 @@ from somatic_variant_db.settings import (
     BASE_DIR,
     SVIG_CODE_VERSION,
     BIOLOGICAL_CLASS_CHOICES,
-    CLINICAL_CLASS_CHOICES,
     CODE_PRETTY_PRINT,
     CODE_SCORES,
 )
@@ -424,6 +423,7 @@ class ManualVariantInstance(ClassifyVariantInstance):
 class Check(models.Model):
     """
     A check of a classification
+    # TODO choices are linked to SVIG
     """
     classification = models.ForeignKey("ClassifyVariantInstance", on_delete=models.CASCADE)
     info_check = models.BooleanField(default=False)
@@ -443,15 +443,6 @@ class Check(models.Model):
         max_length=2, choices=BIOLOGICAL_CLASS_CHOICES, blank=True, null=True
     )
     final_score = models.IntegerField(blank=True, null=True)
-
-    # TODO these will need removing
-    final_biological_class = models.CharField(
-        max_length=2, choices=BIOLOGICAL_CLASS_CHOICES, blank=True, null=True
-    )
-    final_biological_score = models.IntegerField(blank=True, null=True)
-    final_clinical_class = models.CharField(
-        max_length=2, choices=CLINICAL_CLASS_CHOICES, blank=True, null=True
-    )
     reporting_comment = models.CharField(max_length=500, blank=True, null=True)
 
     def get_codes(self):
@@ -459,7 +450,7 @@ class Check(models.Model):
         return CodeAnswer.objects.filter(check_object=self)
 
     def update_classification(self):
-        """calculate the current score and biological classification"""
+        """calculate the current score and classification"""
         # TODO SVIG specific
         score_counter = 0
 
@@ -555,9 +546,8 @@ class Check(models.Model):
     def reopen_svig_tab(self):
         """reset the svig tab"""
         self.svig_check = False
-        self.final_biological_class = None
-        self.final_biological_score = None
-        self.final_clinical_class = None
+        self.final_score = None
+        self.final_class = None
         self.save()
 
     @transaction.atomic

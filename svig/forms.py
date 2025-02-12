@@ -2,7 +2,7 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
-from somatic_variant_db.settings import BIOLOGICAL_CLASS_CHOICES, CLINICAL_CLASS_CHOICES
+from somatic_variant_db.settings import BIOLOGICAL_CLASS_CHOICES
 
 
 class NewClassification(forms.Form):
@@ -138,33 +138,6 @@ class ReopenSvigForm(forms.Form):
         self.helper.form_method = "POST"
         self.helper.add_input(
             Submit("submit", "Reopen", css_class="btn btn-danger w-100")
-        )
-
-
-class ClinicalClassForm(forms.Form):
-    """
-    Add a sample wide comment
-
-    """
-
-    clinical_class = forms.ChoiceField(choices=CLINICAL_CLASS_CHOICES)
-    reporting_comment = forms.CharField(
-        widget=forms.Textarea(attrs={"rows": 4}),
-        required=False,
-        label="Reporting comments:",
-    )
-
-    def __init__(self, *args, **kwargs):
-
-        self.check = kwargs.pop("check")
-
-        super(ClinicalClassForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.fields["clinical_class"].initial = self.check.final_clinical_class
-        self.fields["reporting_comment"].initial = self.check.reporting_comment
-        self.helper.form_method = "POST"
-        self.helper.add_input(
-            Submit("submit", "Update clinical classification", css_class="btn btn-info")
         )
 
 
