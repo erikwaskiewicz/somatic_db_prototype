@@ -32,17 +32,20 @@ def view_classifications(request):
         if new_classifications_form.is_valid():
             # get variant instance
             var_inst = VariantPanelAnalysis(id=1)  # TODO this is hardcoded for testing
-
+            print(var_inst)
             var, _ = ClassifyVariant.objects.get_or_create(
                 hgvs_c = "c.123A>T",
                 hgvs_p = "p.ARG123His",
                 b38_coords = "7:12345A>T",
                 b37_coords = "7:23446A>T",
             )
-
+            print(var)
+            guideline_obj = Guideline.objects.get(pk=2) #TODO hardcoded for testing
+            print(guideline_obj)
             new_var_obj = AnalysisVariantInstance(
                 variant=var,
                 variant_instance=var_inst,
+                guideline=guideline_obj
             )
             new_var_obj.save()
             new_var_obj.make_new_check()
@@ -135,7 +138,7 @@ def classify(request, classification):
                     # change setting in classification obj and load up codes linked to check
                     current_check_obj.full_classification = True
                     current_check_obj.save()
-                    current_check_obj.create_code_answers()
+                    current_check_obj.create_code_answers2()
 
                     # redirect so that form isnt resubmitted on refresh
                     return redirect("svig-analysis", classification_obj.pk)

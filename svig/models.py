@@ -1,4 +1,5 @@
 from django.db import models, transaction
+from django.db.models import Q
 from django.utils import timezone
 from django.template.defaultfilters import slugify
 from polymorphic.models import PolymorphicModel
@@ -44,6 +45,11 @@ class CategorySortOrder(models.Model):
 
     def __str__(self):
         return f"{self.guideline} {self.category} {self.sort_order}"
+    
+    def get_all_codes_for_category(self):
+
+        all_codes_for_guideline = self.guideline.criteria.all().values("criteria__code__code")
+        print(all_codes_for_guideline)
 
 
 class ClassificationCriteria(models.Model):
@@ -51,7 +57,7 @@ class ClassificationCriteria(models.Model):
     All available combinations of codes and strengths
     """
     id = models.AutoField(primary_key=True)
-    code = models.ForeignKey("ClassificationCriteriaCode", on_delete=models.CASCADE)
+    code = models.ForeignKey("ClassificationCriteriaCode", on_delete=models.CASCADE, related_name="classification_criteria")
     strength = models.ForeignKey("ClassificationCriteriaStrength", on_delete=models.CASCADE)
     
     class Meta:
@@ -59,6 +65,32 @@ class ClassificationCriteria(models.Model):
 
     def __str__(self):
         return f"{self.code.code}_{self.strength.strength}"
+    
+    def classify_shorthand(self):
+        #TODO don't know if we need this but i've tried to plug directly in to how you've formatted things
+        strength_dict = {
+            "standalone": "SA",
+            "very_strong": "VS",
+            "strong": "ST",
+            "moderate": "MO",
+            "supporting": "SU"
+        }
+        paired_code = self.code.paired_criteria
+        if paired_code is not None:
+            paired_criteria = paired_code.code
+            if self.code.pathogenic_or_benign == "O" or self.code.pathogenic_or_benign == "P":
+                return f"{self.code}_{strength_dict[self.strength.strength]}|{paired_criteria}_NA"
+            elif self.code.pathogenic_or_benign == "B":
+                return f"{paired_criteria}_NA|{self.code}_{strength_dict[self.strength.strength]}"
+        else:  
+            return f"{self.code}_{strength_dict[self.strength.strength]}"
+    
+    def pretty_print(self):
+        if self.strength.evidence_points > 0:
+            evidence_points = f"+{self.strength.evidence_points}"
+        else:
+            evidence_points = self.strength.evidence_points
+        return f"{self.code.code} {self.strength.strength} ({evidence_points})"
 
 
 class ClassificationCriteriaCategory(models.Model):
@@ -69,6 +101,9 @@ class ClassificationCriteriaCategory(models.Model):
 
     def __str__(self):
         return f"{self.category}"
+    
+    def pretty_print(self):
+        return self.category.title().replace("_", " ")
 
 class ClassificationCriteriaCode(models.Model):
     """
@@ -178,83 +213,45 @@ class ClassifyVariantInstance(PolymorphicModel):
 
     def get_dropdown_options(self, code_list):
         """get all dropdown options for a list of codes"""
-        # TODO remove SVIG specifics and simplify
-        config_file = os.path.join(
-            BASE_DIR, f"svig/config/svig_{SVIG_CODE_VERSION}.yaml"
-        )
-        with open(config_file) as f:
-            config = yaml.load(f, Loader=yaml.FullLoader)
 
-        code_info = config["codes"]
+        # we're only expecting up to 2 paired codes
+        if len(code_list) > 2:
+            raise ValueError("max number of combined codes is 2")
 
+        # create pending and not applied options
         dropdown_options = [
             {"value": "|".join([f"{c}_PE" for c in code_list]), "text": "Pending"},
             {"value": "|".join([f"{c}_NA" for c in code_list]), "text": "Not applied"},
         ]
-        if len(code_list) > 2:
-            raise ValueError("max number of combined codes is 2")
 
-        elif len(code_list) == 1:
-            for option in code_info[code_list[0]]["options"]:
-                text = f"{code_list[0]} {CODE_PRETTY_PRINT[option]}"
-                if code_list[0][0] == "B":
-                    text += f" (-{CODE_SCORES[option]})"
-                elif code_list[0][0] == "O":
-                    text += f" (+{CODE_SCORES[option]})"
+        for code in code_list:
+            all_strengths = self.guideline.criteria.filter(code__code=code)
+            for strength in all_strengths:
+                value = strength.classify_shorthand()
+                text = strength.pretty_print()
                 dropdown_options.append(
-                    {
-                        "value": f"{code_list[0]}_{option}",
-                        "text": text,
-                    }
+                    {"value": value, "text": text}
                 )
-        else:
-            code_1, code_2 = code_list
-            for option in code_info[code_1]["options"]:
-                text = f"{code_1} {CODE_PRETTY_PRINT[option]}"
-                if code_1[0] == "B":
-                    text += f" (-{CODE_SCORES[option]})"
-                elif code_1[0] == "O":
-                    text += f" (+{CODE_SCORES[option]})"
-                dropdown_options.append(
-                    {
-                        "value": f"{code_1}_{option}|{code_2}_NA",
-                        "text": text,
-                    }
-                )
-            for option in code_info[code_2]["options"]:
-                text = f"{code_2} {CODE_PRETTY_PRINT[option]}"
-                if code_2[0] == "B":
-                    text += f" (-{CODE_SCORES[option]})"
-                elif code_2[0] == "O":
-                    text += f" (+{CODE_SCORES[option]})"
-                dropdown_options.append(
-                    {
-                        "value": f"{code_1}_NA|{code_2}_{option}",
-                        "text": text,
-                    }
-                )
+
         return dropdown_options
 
+
     def get_dropdown_value(self, code_list):
-        latest_code_objects = self.get_latest_check().get_codes()
+        latest_code_objects = self.get_latest_check().get_code_answers()
         l = []
         for c in code_list:
-            l.append(latest_code_objects.get(code=c).get_code())
+            l.append(latest_code_objects.get(code__code=c).get_code())
         return "|".join(l)
+
 
     def get_codes_by_category(self):
         """ordered list of codes for displaying template"""
         # TODO remove SVIG specifics and simplify
-        config_file = os.path.join(
-            BASE_DIR, f"svig/config/svig_{SVIG_CODE_VERSION}.yaml"
-        )
-        with open(config_file) as f:
-            config = yaml.load(f, Loader=yaml.FullLoader)
 
-        code_info = config["codes"]
-        order_info = config["order"]
+        order_info = self.get_order_info()
+        code_info = self.get_code_info()
 
-        latest_code_objects = self.get_latest_check().get_codes()
+        latest_code_objects = self.get_latest_check().get_code_answers()
 
         all_check_objects = self.get_all_checks()
 
@@ -275,7 +272,7 @@ class ClassifyVariantInstance(PolymorphicModel):
 
                 for c in code_list:
                     # get applied codes
-                    code_object = latest_code_objects.get(code=c)
+                    code_object = latest_code_objects.get(code__code=c)
 
                     # add detailed code description to dict
                     code_details.append({c: code_info[c]})
@@ -290,24 +287,25 @@ class ClassifyVariantInstance(PolymorphicModel):
                         svig_codes[section]["complete"] = False
 
                 all_checks = []
+                print(code_list)
                 if len(code_list) == 1:
                     # all checks for dropdown
                     for c in all_check_objects:
-                        check_code_objects = c.get_codes()
+                        check_code_objects = c.get_code_answers()
                         all_checks.append(
-                            check_code_objects.get(code=code_list[0]).get_string()
+                            check_code_objects.get(code__code=code_list[0]).get_string()
                         )
 
                 else:
                     code_1, code_2 = code_list
                     # all checks
                     for c in all_check_objects:
-                        check_code_objects = c.get_codes()
+                        check_code_objects = c.get_code_answers()
                         code_1_display = check_code_objects.get(
-                            code=code_1
+                            code__code=code_1
                         ).get_string()
                         code_2_display = check_code_objects.get(
-                            code=code_2
+                            code__code=code_2
                         ).get_string()
 
                         if code_1_display == code_2_display:
@@ -321,7 +319,6 @@ class ClassifyVariantInstance(PolymorphicModel):
 
                 # remove duplicates (template doesnt like sets so convert back to list)
                 annotations = list(set(annotations))
-
                 # add all to final dict
                 svig_codes[section]["codes"][code] = {
                     "list": code_list,
@@ -331,13 +328,85 @@ class ClassifyVariantInstance(PolymorphicModel):
                     "annotations": annotations,
                     "all_checks": all_checks,
                 }
-        print(svig_codes)
-
         return svig_codes
 
-    def get_codes_by_category2(self):
-        """ordered list of codes for displaying in the template"""
-        pass
+    def get_order_info(self):
+        """Get the ordered list of codes dictionary for the ajax"""
+
+        order_info = {}
+
+        sort_order_query = self.guideline.sort_order.all().order_by("categorysortorder__sort_order")
+        
+        for sort_order in sort_order_query:
+            pretty_print = sort_order.pretty_print()
+            code_list = []
+            codes = ClassificationCriteriaCode.objects.filter(
+                Q(category=sort_order) &
+                Q(classification_criteria__guideline=self.guideline)
+            ).distinct()
+
+            for code in codes:
+                if code.paired_criteria is not None:
+                    # some germline codes are multiple pathogenic options
+                    if code.pathogenic_or_benign == "P" and code.paired_criteria.pathogenic_or_benign == "P":
+                        codes_for_string = [code.code, code.paired_criteria.code]
+                        codes_for_string.sort()
+                        code_string = f"{codes_for_string[0]}_{codes_for_string[1]}"
+                    elif code.pathogenic_or_benign == "O" or code.pathogenic_or_benign == "P":
+                        code_string = f"{code.code}_{code.paired_criteria.code}"
+                    elif code.pathogenic_or_benign == "B":
+                        code_string = f"{code.paired_criteria.code}_{code.code}"
+                else:
+                    code_string = code.code
+                code_list.append(code_string)
+
+            code_list = list(set(code_list))
+            code_list.sort()
+            order_info[pretty_print] = code_list
+
+        return order_info
+    
+    def get_code_info(self):
+        """Get the code information dictionary for the ajax"""
+
+        type_dict = {
+            "O": "oncogenic",
+            "P": "pathogenic",
+            "B": "benign"
+        }
+
+        strength_dict = {
+            "standalone": "SA",
+            "very_strong": "VS",
+            "strong": "ST",
+            "moderate": "MO",
+            "supporting": "SU"
+        }
+
+        codes_dict = {}
+        codes = self.guideline.criteria.all()
+        for code in codes:
+
+            code_name = code.code.code
+            type = type_dict[code.code.pathogenic_or_benign]
+            category = code.code.category.category
+            options = strength_dict[code.strength.strength]
+            description = code.code.description
+            annotations = []
+
+            try:
+                codes_dict[code_name]["options"].append(options)
+            except KeyError:
+                codes_dict[code_name] = {
+                    "type": type,
+                    "category": category,
+                    "options": [options],
+                    "description": description,
+                    "annotations": annotations
+                }
+            
+        return codes_dict
+
     
     def get_previous_classification_choices(self):
         canonical_variant = False # TODO these are hardcoded
@@ -472,7 +541,7 @@ class Check(models.Model):
     final_score = models.IntegerField(blank=True, null=True)
     reporting_comment = models.CharField(max_length=500, blank=True, null=True)
 
-    def get_codes(self):
+    def get_code_answers(self):
         """get all classification codes for the current check"""
         return CodeAnswer.objects.filter(check_object=self)
 
@@ -481,14 +550,10 @@ class Check(models.Model):
         # TODO SVIG specific
         score_counter = 0
 
-        codes = self.get_codes()
+        codes = self.get_code_answers()
         for c in codes:
             if c.applied:
-                code_type = c.get_code_type()
-                if code_type == "Benign":
-                    score_counter -= CODE_SCORES[c.applied_strength]
-                elif code_type == "Oncogenic":
-                    score_counter += CODE_SCORES[c.applied_strength]
+                score_counter += c.applied_strength.evidence_points
 
         # work out class from score counter
         class_list = OrderedDict(
@@ -513,14 +578,21 @@ class Check(models.Model):
         """update each code answer and then work out overall score/ class"""
         # TODO SVIG specific
 
+        strength_dict = {
+            "SA": "standalone",
+            "VS": "very_strong",
+            "ST": "strong",
+            "MO": "moderate",
+            "SP": "supporting"
+        }
+
         # load all code answer objects & loop through each selection
-        code_objects = self.get_codes()
+        code_objects = self.get_code_answers()
         for s in selections:
 
             # get specific code & type
             c, value = s.split("_")
-            code_obj = code_objects.get(code=c)
-            code_type = code_obj.get_code_type()
+            code_obj = code_objects.get(code__code=c)
 
             # if check pending, set pending to true
             if value == "PE":
@@ -538,7 +610,8 @@ class Check(models.Model):
             else:
                 pending = False
                 applied = True
-                strength = value
+                criteria_strength_obj = ClassificationCriteria.objects.get(code=code_obj.code, strength__strength=strength_dict[value])
+                strength = criteria_strength_obj.strength
 
             # save values to database
             code_obj.pending = pending
@@ -593,9 +666,21 @@ class Check(models.Model):
             CodeAnswer.objects.create(code=code, check_object=self)
 
     @transaction.atomic
+    def create_code_answers2(self):
+        """make a set of code answers against the current check"""
+
+        all_codes_query = self.classification.guideline.criteria.all()
+        all_codes = [code.code.code for code in all_codes_query]
+        all_codes = list(set(all_codes))
+
+        for code in all_codes:
+            code_obj = ClassificationCriteriaCode.objects.get(code=code)
+            CodeAnswer.objects.create(code=code_obj, check_object=self)
+
+    @transaction.atomic
     def delete_code_answers(self):
         """remove the set of code answers for the current check"""
-        codes = self.get_codes()
+        codes = self.get_code_answers()
         for c in codes:
             c.delete()
 
@@ -605,11 +690,13 @@ class CodeAnswer(models.Model):
     A check of an individual code
 
     """
-    code = models.CharField(max_length=20)
+    #TODO change this to models instead of code and strength
+    code = models.ForeignKey("ClassificationCriteriaCode", on_delete=models.CASCADE)
     check_object = models.ForeignKey("Check", on_delete=models.CASCADE)
     pending = models.BooleanField(default=True)
     applied = models.BooleanField(default=False)
     applied_strength = models.CharField(max_length=20, blank=True, null=True)
+    applied_strength = models.ForeignKey("ClassificationCriteriaStrength", on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f"{self.get_code()}"
@@ -617,29 +704,31 @@ class CodeAnswer(models.Model):
     def get_code(self):
         # TODO SVIG specific
         if self.pending:
-            return f"{self.code}_PE"
+            return f"{self.code.code}_PE"
         elif self.applied:
-            return f"{self.code}_{self.applied_strength}"
+            return f"{self.code.code}_{self.applied_strength}"
         else:
-            return f"{self.code}_NA"
+            return f"{self.code.code}_NA"
 
     def get_code_type(self):
         # TODO SVIG specific
-        if self.code[0] == "B":
+        if self.code.pathogenic_or_benign == "B":
             return "Benign"
-        elif self.code[0] == "O":
+        elif self.code.pathogenic_or_benign == "O":
             return "Oncogenic"
+        elif self.code.pathogenic_or_benign == "P":
+            return "Pathogenic"
 
     def pretty_print_code(self):
         # TODO models instead of settings
-        return CODE_PRETTY_PRINT[self.applied_strength]
+        return self.code.code
 
     def get_score(self):
         # TODO SVIG specific
         if self.get_code_type() == "Benign":
-            score = f"-{CODE_SCORES[self.applied_strength]}"
+            score = f"{self.applied_strength.evidence_points}"
         elif self.get_code_type() == "Oncogenic":
-            score = f"+{CODE_SCORES[self.applied_strength]}"
+            score = f"+{self.strength.evidence_points}"
 
     def get_string(self):
         if self.pending:
