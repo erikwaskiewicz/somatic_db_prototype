@@ -15,7 +15,7 @@ class ClassificationCriteriaAdmin(admin.ModelAdmin):
 @admin.register(ClassificationCriteriaCode)
 class ClassificationCriteriaCodeAdmin(admin.ModelAdmin):
     search_fields = ["code"]
-    list_display = ["code", "pathogenic_or_benign", "category"]
+    list_display = ["code", "pathogenic_or_benign", "category", "paired_criteria"]
 
 @admin.register(ClassificationCriteriaStrength)
 class ClassificationCriteriaStrengthAdmin(admin.ModelAdmin):

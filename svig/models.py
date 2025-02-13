@@ -79,6 +79,7 @@ class ClassificationCriteriaCode(models.Model):
     description = models.TextField(null=True, blank=True)
     links = models.TextField(null=True, blank=True)
     category = models.ForeignKey("ClassificationCriteriaCategory", on_delete=models.CASCADE)
+    paired_criteria = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.code
