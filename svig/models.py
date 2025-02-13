@@ -49,7 +49,6 @@ class CategorySortOrder(models.Model):
     def get_all_codes_for_category(self):
 
         all_codes_for_guideline = self.guideline.criteria.all().values("criteria__code__code")
-        print(all_codes_for_guideline)
 
 
 class ClassificationCriteria(models.Model):
@@ -287,7 +286,6 @@ class ClassifyVariantInstance(PolymorphicModel):
                         svig_codes[section]["complete"] = False
 
                 all_checks = []
-                print(code_list)
                 if len(code_list) == 1:
                     # all checks for dropdown
                     for c in all_check_objects:
@@ -555,15 +553,28 @@ class Check(models.Model):
             if c.applied:
                 score_counter += c.applied_strength.evidence_points
 
+        #TODO this needs moving somewhere more modelly
         # work out class from score counter
-        class_list = OrderedDict(
-            {
-                "Likely benign": -6,
-                "VUS": 0,
-                "Likely oncogenic": 6,
-                "Oncogenic": 10,
-            }
-        )
+        if self.classification.guideline.guideline == "svig_2024":
+            class_list = OrderedDict(
+                {
+                    "Likely benign": -6,
+                    "VUS": 0,
+                    "Likely oncogenic": 6,
+                    "Oncogenic": 10,
+                }
+            )
+        elif self.classification.guideline.guideline == "acgs_2024":
+            class_list = OrderedDict(
+                {
+                    "Likely benign": -6,
+                    "VUS cold": 0,
+                    "VUS warm": 2,
+                    "VUS hot": 4,
+                    "Likely pathogenic": 6,
+                    "Pathogenic": 10
+                }
+            )
 
         # loop through in order until the score no longer meets the threshold
         classification = "Benign"
@@ -650,23 +661,9 @@ class Check(models.Model):
         self.final_class = None
         self.save()
 
+
     @transaction.atomic
     def create_code_answers(self):
-        """make a set of code answers against the current check"""
-        # TODO from models instead of config
-        # load in list of S-VIG codes from yaml
-        config_file = os.path.join(
-            BASE_DIR, f"svig/config/svig_{SVIG_CODE_VERSION}.yaml"
-        )
-        with open(config_file) as f:
-            svig_codes = yaml.load(f, Loader=yaml.FullLoader)
-
-        # loop through the codes and make code answer objects
-        for code in svig_codes["codes"]:
-            CodeAnswer.objects.create(code=code, check_object=self)
-
-    @transaction.atomic
-    def create_code_answers2(self):
         """make a set of code answers against the current check"""
 
         all_codes_query = self.classification.guideline.criteria.all()

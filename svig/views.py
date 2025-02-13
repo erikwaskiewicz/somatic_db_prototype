@@ -138,7 +138,7 @@ def classify(request, classification):
                     # change setting in classification obj and load up codes linked to check
                     current_check_obj.full_classification = True
                     current_check_obj.save()
-                    current_check_obj.create_code_answers2()
+                    current_check_obj.create_code_answers()
 
                     # redirect so that form isnt resubmitted on refresh
                     return redirect("svig-analysis", classification_obj.pk)
