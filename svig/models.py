@@ -25,11 +25,25 @@ class Guideline(models.Model):
     """
     guideline = models.CharField(max_length=200, unique=True)
     criteria = models.ManyToManyField("ClassificationCriteria", related_name="guideline")
-    sort_order = models.CharField(max_length=200)
+    sort_order = models.ManyToManyField("ClassificationCriteriaCategory", through="CategorySortOrder")
     #TODO sort order and therefore category should probably be a description/choicefield we just need to decide on the categories
 
     def __str__(self):
         return self.guideline
+    
+class CategorySortOrder(models.Model):
+    """
+    Through model to allow for categories of codes to be sorted for each guideline
+    """
+    guideline = models.ForeignKey("Guideline", on_delete=models.CASCADE)
+    category = models.ForeignKey("ClassificationCriteriaCategory", on_delete=models.CASCADE)
+    sort_order = models.IntegerField()
+
+    class Meta:
+        unique_together = ["guideline", "category"]
+
+    def __str__(self):
+        return f"{self.guideline} {self.category} {self.sort_order}"
 
 
 class ClassificationCriteria(models.Model):
@@ -47,16 +61,24 @@ class ClassificationCriteria(models.Model):
         return f"{self.code.code}_{self.strength.strength}"
 
 
+class ClassificationCriteriaCategory(models.Model):
+    """
+    Categories that the codes belong to - used to group codes for display
+    """
+    category = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.category}"
+
 class ClassificationCriteriaCode(models.Model):
     """
     Codes that can be applied
     """
-    id = models.AutoField(primary_key=True)
     code = models.CharField(max_length=10, unique=True)
     pathogenic_or_benign = models.CharField(max_length=1)
     description = models.TextField(null=True, blank=True)
     links = models.TextField(null=True, blank=True)
-    category = models.CharField(max_length=100)
+    category = models.ForeignKey("ClassificationCriteriaCategory", on_delete=models.CASCADE)
 
     def __str__(self):
         return self.code
@@ -66,7 +88,6 @@ class ClassificationCriteriaStrength(models.Model):
     """
     Strengths at which the criteria can be applied at
     """
-    id = models.AutoField(primary_key=True)
     strength = models.CharField(max_length=20)
     evidence_points = models.IntegerField()
 
@@ -309,9 +330,14 @@ class ClassifyVariantInstance(PolymorphicModel):
                     "annotations": annotations,
                     "all_checks": all_checks,
                 }
+        print(svig_codes)
 
         return svig_codes
 
+    def get_codes_by_category2(self):
+        """ordered list of codes for displaying in the template"""
+        pass
+    
     def get_previous_classification_choices(self):
         canonical_variant = False # TODO these are hardcoded
         previous_classification = False  # TODO

@@ -22,6 +22,14 @@ class ClassificationCriteriaStrengthAdmin(admin.ModelAdmin):
     search_fields = ["strength"]
     list_display = ["strength", "evidence_points"]
 
+@admin.register(ClassificationCriteriaCategory)
+class ClassificationCriteriaCategoryAdmin(admin.ModelAdmin):
+    search_fields = ["category"]
+
+@admin.register(CategorySortOrder)
+class CategorySortOrderAdmin(admin.ModelAdmin):
+    search_fileds = ["guideline", "category"]
+
 @admin.register(ClassifyVariant)
 class ClassifyVariantAdmin(admin.ModelAdmin):
     search_fields = ["hgvs_c", "hgvs_p", "b38_coords", "b37_coords"]
