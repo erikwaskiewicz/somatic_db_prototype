@@ -328,21 +328,25 @@
           success: function(data) {
               $("#class-box").html(data.class_box);
 
-              $("#codes-summary-population-databases").html(data.codes_summary_population);
+              $("#codes-summary-population").html(data.codes_summary_population);
               $("#codes-summary-mode-of-action").html(data.codes_summary_mode_of_action);
               $("#codes-summary-cancer-databases").html(data.codes_summary_cancer_databases);
               $("#codes-summary-effect-on-protein").html(data.codes_summary_effect_on_protein);
-              $("#codes-summary-computational-tools").html(data.codes_summary_computational);
+              $("#codes-summary-computational").html(data.codes_summary_computational);
               $("#codes-summary-functional-studies").html(data.codes_summary_functional_studies);
-              $("#codes-summary-other").html(data.codes_summary_phenotype);
+              $("#codes-summary-allelic").html(data.codes_summary_allelic);
+              $("#codes-summary-phenotype").html(data.codes_summary_phenotype);
+              $("#codes-summary-de-novo").html(data.codes_de_novo);
 
-              $("#complete-population-databases").html(data.complete_population);
+              $("#complete-population").html(data.complete_population);
               $("#complete-mode-of-action").html(data.complete_mode_of_action);
               $("#complete-cancer-databases").html(data.complete_cancer_databases);
               $("#complete-effect-on-protein").html(data.complete_effect_on_protein);
-              $("#complete-computational-tools").html(data.complete_computational);
+              $("#complete-computational").html(data.complete_computational);
               $("#complete-functional-studies").html(data.complete_functional_studies);
-              $("#complete-other").html(data.complete_phenotype);
+              $("#complete-allelic").html(data.complete_allelic);
+              $("#complete-phenotype").html(data.complete_phenotype);
+              $("#complete-de-novo").html(data.complete_de_novo);
               //TODO remove hardcoding?
           },
           failure: function(data) {

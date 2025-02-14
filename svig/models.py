@@ -4,13 +4,7 @@ from django.utils import timezone
 from django.template.defaultfilters import slugify
 from polymorphic.models import PolymorphicModel
 
-from somatic_variant_db.settings import (
-    BASE_DIR,
-    SVIG_CODE_VERSION,
-    BIOLOGICAL_CLASS_CHOICES,
-    CODE_PRETTY_PRINT,
-    CODE_SCORES,
-)
+from somatic_variant_db.settings import BIOLOGICAL_CLASS_CHOICES
 
 import yaml
 import os
@@ -27,7 +21,6 @@ class Guideline(models.Model):
     guideline = models.CharField(max_length=200, unique=True)
     criteria = models.ManyToManyField("ClassificationCriteria", related_name="guideline")
     sort_order = models.ManyToManyField("ClassificationCriteriaCategory", through="CategorySortOrder")
-    #TODO sort order and therefore category should probably be a description/choicefield we just need to decide on the categories
 
     def __str__(self):
         return self.guideline
@@ -58,7 +51,7 @@ class ClassificationCriteria(models.Model):
     id = models.AutoField(primary_key=True)
     code = models.ForeignKey("ClassificationCriteriaCode", on_delete=models.CASCADE, related_name="classification_criteria")
     strength = models.ForeignKey("ClassificationCriteriaStrength", on_delete=models.CASCADE)
-    
+
     class Meta:
         unique_together = ["code", "strength"]
 
@@ -66,23 +59,15 @@ class ClassificationCriteria(models.Model):
         return f"{self.code.code}_{self.strength.strength}"
     
     def classify_shorthand(self):
-        #TODO don't know if we need this but i've tried to plug directly in to how you've formatted things
-        strength_dict = {
-            "standalone": "SA",
-            "very_strong": "VS",
-            "strong": "ST",
-            "moderate": "MO",
-            "supporting": "SU"
-        }
         paired_code = self.code.paired_criteria
         if paired_code is not None:
             paired_criteria = paired_code.code
             if self.code.pathogenic_or_benign == "O" or self.code.pathogenic_or_benign == "P":
-                return f"{self.code}_{strength_dict[self.strength.strength]}|{paired_criteria}_NA"
+                return f"{self.code}_{self.strength.shorthand}|{paired_criteria}_NA"
             elif self.code.pathogenic_or_benign == "B":
-                return f"{paired_criteria}_NA|{self.code}_{strength_dict[self.strength.strength]}"
-        else:  
-            return f"{self.code}_{strength_dict[self.strength.strength]}"
+                return f"{paired_criteria}_NA|{self.code}_{self.strength.shorthand}"
+        else:
+            return f"{self.code}_{self.strength.shorthand}"
     
     def pretty_print(self):
         if self.strength.evidence_points > 0:
@@ -103,6 +88,7 @@ class ClassificationCriteriaCategory(models.Model):
     
     def pretty_print(self):
         return self.category.title().replace("_", " ")
+
 
 class ClassificationCriteriaCode(models.Model):
     """
@@ -178,7 +164,6 @@ class ClassifyVariantInstance(PolymorphicModel):
     """
     variant = models.ForeignKey("ClassifyVariant", on_delete=models.CASCADE)
     guideline = models.ForeignKey("Guideline", on_delete=models.CASCADE)
-    # TODO add guideline model here?
 
     def __str__(self):
         return f"#{self.pk} - {self.variant.hgvs_c}"
@@ -193,12 +178,11 @@ class ClassifyVariantInstance(PolymorphicModel):
         return self.get_all_checks().order_by("-pk")[0]
 
     def get_status(self):
-        # TODO make reference to SVIG more general
         if self.get_latest_check().check_complete:
             return "Complete"
         else:
             num_checks = self.get_all_checks().count()
-            return f"S-VIG check {num_checks}"
+            return f"Check {num_checks}"
 
     def get_classification_info(self):
         current_check_obj = self.get_latest_check()
@@ -377,14 +361,6 @@ class ClassifyVariantInstance(PolymorphicModel):
             "B": "benign"
         }
 
-        strength_dict = {
-            "standalone": "SA",
-            "very_strong": "VS",
-            "strong": "ST",
-            "moderate": "MO",
-            "supporting": "SU"
-        }
-
         codes_dict = {}
         codes = self.guideline.criteria.all()
         for code in codes:
@@ -392,7 +368,7 @@ class ClassifyVariantInstance(PolymorphicModel):
             code_name = code.code.code
             type = type_dict[code.code.pathogenic_or_benign]
             category = code.code.category.category
-            options = strength_dict[code.strength.strength]
+            options = code.strength.shorthand
             description = code.code.description
             annotations = []
 
@@ -541,7 +517,7 @@ class Check(models.Model):
         max_length=2, choices=BIOLOGICAL_CLASS_CHOICES, blank=True, null=True
     )
     final_score = models.IntegerField(blank=True, null=True)
-    reporting_comment = models.CharField(max_length=500, blank=True, null=True)
+    reporting_comment = models.CharField(max_length=500, blank=True, null=True) # TODO not being used, might move somewhere else
 
     def get_code_answers(self):
         """get all classification codes for the current check"""
@@ -549,9 +525,7 @@ class Check(models.Model):
 
     def update_classification(self):
         """calculate the current score and classification"""
-        # TODO SVIG specific
         score_counter = 0
-
         codes = self.get_code_answers()
         for c in codes:
             if c.applied:
@@ -591,15 +565,6 @@ class Check(models.Model):
     @transaction.atomic
     def update_codes(self, selections):
         """update each code answer and then work out overall score/ class"""
-        # TODO SVIG specific
-
-        strength_dict = {
-            "SA": "standalone",
-            "VS": "very_strong",
-            "ST": "strong",
-            "MO": "moderate",
-            "SU": "supporting"
-        }
 
         # load all code answer objects & loop through each selection
         code_objects = self.get_code_answers()
@@ -625,7 +590,7 @@ class Check(models.Model):
             else:
                 pending = False
                 applied = True
-                criteria_strength_obj = ClassificationCriteria.objects.get(code=code_obj.code, strength__strength=strength_dict[value])
+                criteria_strength_obj = ClassificationCriteria.objects.get(code=code_obj.code, strength__shorthand=value)
                 strength = criteria_strength_obj.strength
 
             # save values to database
@@ -717,13 +682,12 @@ class CodeAnswer(models.Model):
             return "Pathogenic"
 
     def pretty_print_code(self):
-        # TODO models instead of settings
         return self.code.code
 
     def get_score(self):
         # TODO SVIG specific
         if self.get_code_type() == "Benign":
-            score = f"-{self.applied_strength.evidence_points}"
+            score = f"{self.applied_strength.evidence_points}"
         elif self.get_code_type() == "Oncogenic":
             score = f"+{self.applied_strength.evidence_points}"
 
