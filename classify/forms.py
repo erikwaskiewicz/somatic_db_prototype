@@ -10,7 +10,6 @@ class NewClassification(forms.Form):
     TODO remove this. just for adding a clean classification for testing
 
     """
-
     def __init__(self, *args, **kwargs):
         super(NewClassification, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -23,7 +22,6 @@ class CheckInfoForm(forms.Form):
     Form that users tick to confirm they've checked the patient/variant info tab
 
     """
-
     check_info_form = forms.BooleanField(
         required=True, label="Confirm that the information on this page is correct"
     )
@@ -42,7 +40,6 @@ class ReopenCheckInfoForm(forms.Form):
     Form to reset the check info form
 
     """
-
     reset_info_check = forms.BooleanField(
         required=True,
         label="Confirm that you want to reopen and that any analysis you've done so far will be wiped",
@@ -62,7 +59,6 @@ class PreviousClassificationForm(forms.Form):
     Choose whether to use a previous class of start a new one
 
     """
-
     use_previous_class = forms.ChoiceField(label="Choose next step")
     confirm_use_previous_class = forms.BooleanField(
         required=True, label="Confirm decision"
@@ -85,7 +81,6 @@ class ReopenPreviousClassificationsForm(forms.Form):
     Form to reopen the previous classifications form
 
     """
-
     reset_previous_class_check = forms.BooleanField(
         required=True,
         label="Confirm that you want to reopen and that any interpretation you've done so far will be wiped",
@@ -100,21 +95,21 @@ class ReopenPreviousClassificationsForm(forms.Form):
         )
 
 
-class CompleteSvigForm(forms.Form):
+class CompleteClassificationForm(forms.Form):
     """
-    Form to complete the SVIG tab
+    Form to complete the classification tab
+    # TODO class options are SVIG specific
 
     """
-
     CLASS_CHOICES = (("No", "No override"),) + BIOLOGICAL_CLASS_CHOICES
 
     override = forms.ChoiceField(choices=CLASS_CHOICES)
-    complete_svig = forms.BooleanField(
+    complete_classification = forms.BooleanField(
         required=True, label="Confirm analysis is complete"
     )
 
     def __init__(self, *args, **kwargs):
-        super(CompleteSvigForm, self).__init__(*args, **kwargs)
+        super(CompleteClassificationForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = "POST"
         self.helper.add_input(
@@ -122,18 +117,17 @@ class CompleteSvigForm(forms.Form):
         )
 
 
-class ReopenSvigForm(forms.Form):
+class ReopenClassificationForm(forms.Form):
     """
     Form to reopen the previous classifications form
 
     """
-
-    reset_svig_check = forms.BooleanField(
+    reset_classification_check = forms.BooleanField(
         required=True, label="Confirm that you want to reopen"
     )
 
     def __init__(self, *args, **kwargs):
-        super(ReopenSvigForm, self).__init__(*args, **kwargs)
+        super(ReopenClassificationForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = "POST"
         self.helper.add_input(
@@ -146,7 +140,6 @@ class FinaliseCheckForm(forms.Form):
     Form to close a checkand specify the next action
 
     """
-
     NEXT_STEP_CHOICES = (
         ("E", "Send for another check"),
         ("C", "Analysis complete"),

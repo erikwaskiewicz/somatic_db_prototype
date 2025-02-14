@@ -34,7 +34,7 @@
               </th>
               <th class="col-4">
                 <select 
-                 {% if classification_info.current_check.svig_check %}disabled{% endif %}
+                 {% if classification_info.current_check.classification_check %}disabled{% endif %}
                  size="1" id="code_{{ code }}"
                  name="code_{{ code }}"
                  class="btn btn-lg btn-block code-dropdown">
@@ -48,7 +48,7 @@
             <tr>
               <td colspan="2">
                 {% if "gnomad" in code_details.annotations %}
-                  {% include 'svig/annotations/gnomad.html' %}
+                  {% include 'classify/annotations/gnomad.html' %}
                 {% else %}
                   <p>TODO - add annotations here</p>
                 {% endif %}
@@ -93,7 +93,7 @@
         </button>
       </div>
       <p></p>
-      {% if not classification_info.current_check.svig_check %}
+      {% if not classification_info.current_check.classification_check %}
       <button class="btn btn-block btn-lg btn-outline-dark calculate-class" type="button">Recalculate classification</button>
       <p></p>
       <p></p>
@@ -127,17 +127,17 @@
       <p></p>
       <p></p>
       {% if classification_info.classification_obj.get_status != "Complete" %}
-      {% if not classification_info.current_check.svig_check %}
+      {% if not classification_info.current_check.classification_check %}
       <div class="alert alert-info">
         <p><b>Complete?</b></p>
-        {% crispy forms.complete_svig_form %}
+        {% crispy forms.complete_classification_form %}
       </div>
       {% else %}
       <div class="alert alert-success">
         <h5>Section complete!</h5>
         <p>
-            You have completed S-VIG classification.<br>
-            <a href="" data-toggle="modal" data-target="#reopen_svig_modal">Click here to reopen</a>
+            You have completed classification.<br>
+            <a href="" data-toggle="modal" data-target="#reopen_classification_modal">Click here to reopen</a>
         </p>
       </div>
 
@@ -187,7 +187,7 @@
   <div class="modal-dialog" style="min-width:90%;" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="guidence-modal-label">S-VIG guidence</h5>
+        <h5 class="modal-title" id="guidence-modal-label">Guidence</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -222,20 +222,20 @@
 </div>
 
 <!-- Reopen modal -->
-<div class="modal fade" id="reopen_svig_modal" tabindex="-1" aria-labelledby="reopen_svig_modal_label" aria-hidden="true">
+<div class="modal fade" id="reopen_classification_modal" tabindex="-1" aria-labelledby="reopen_classification_modal_label" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="reopen_svig_modal_label">Reopen?</h5>
+          <h5 class="modal-title" id="reopen_classification_modal_label">Reopen?</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
           <div class="alert alert-danger">
-            <p><b>Warning!</b> This will reopen the S-VIG tab</p>
+            <p><b>Warning!</b> This will reopen the Classification tab</p>
           </div>
-          {% crispy forms.reopen_svig_form %}
+          {% crispy forms.reopen_classification_form %}
 
         </div>
       </div>

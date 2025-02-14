@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class AppSvigConfig(AppConfig):
+class AppClassifyConfig(AppConfig):
     name = "classify"

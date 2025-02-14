@@ -162,9 +162,7 @@ LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = f'/{URL_PREFIX}login/'
 
-## SVIG settings
-
-SVIG_CODE_VERSION = 'v1.0'
+# TODO classification settings - need to make into models?
 
 BIOLOGICAL_CLASS_CHOICES = (
     ('B', 'Benign'),

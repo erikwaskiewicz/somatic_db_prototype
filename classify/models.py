@@ -233,18 +233,17 @@ class ClassifyVariantInstance(PolymorphicModel):
 
     def get_codes_by_category(self):
         """ordered list of codes for displaying template"""
-        # TODO remove SVIG specifics and simplify
+        # TODO simplify
 
         order_info = self.get_order_info()
         code_info = self.get_code_info()
 
         latest_code_objects = self.get_latest_check().get_code_answers()
-
         all_check_objects = self.get_all_checks()
 
-        svig_codes = {}
+        output_dict = {}
         for section, codes in order_info.items():
-            svig_codes[section] = {
+            output_dict[section] = {
                 "slug": slugify(section),
                 "codes": {},
                 "applied_codes": [],
@@ -267,11 +266,11 @@ class ClassifyVariantInstance(PolymorphicModel):
 
                     # get info on what codes have been applied
                     if code_object.applied:
-                        svig_codes[section]["applied_codes"].append(
+                        output_dict[section]["applied_codes"].append(
                             f"{c}_{code_object.applied_strength.shorthand}"
                         )
                     if code_object.pending:
-                        svig_codes[section]["complete"] = False
+                        output_dict[section]["complete"] = False
 
                 all_checks = []
                 if len(code_list) == 1:
@@ -306,7 +305,7 @@ class ClassifyVariantInstance(PolymorphicModel):
                 # remove duplicates (template doesnt like sets so convert back to list)
                 annotations = list(set(annotations))
                 # add all to final dict
-                svig_codes[section]["codes"][code] = {
+                output_dict[section]["codes"][code] = {
                     "list": code_list,
                     "details": code_details,
                     "dropdown": self.get_dropdown_options(code_list),
@@ -314,7 +313,7 @@ class ClassifyVariantInstance(PolymorphicModel):
                     "annotations": annotations,
                     "all_checks": all_checks,
                 }
-        return svig_codes
+        return output_dict
 
     def get_order_info(self):
         """Get the ordered list of codes dictionary for the ajax"""
@@ -502,22 +501,13 @@ class Check(models.Model):
     classification = models.ForeignKey("ClassifyVariantInstance", on_delete=models.CASCADE)
     info_check = models.BooleanField(default=False)
     previous_classifications_check = models.BooleanField(default=False)
-    svig_check = models.BooleanField(default=False)
+    classification_check = models.BooleanField(default=False)
     full_classification = models.BooleanField(default=False)
     check_complete = models.BooleanField(default=False)
     signoff_time = models.DateTimeField(blank=True, null=True)
-    user = models.ForeignKey(
-        "auth.User",
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name="svig_checker",
-    )
-    final_class = models.CharField(
-        max_length=2, choices=BIOLOGICAL_CLASS_CHOICES, blank=True, null=True
-    )
+    user = models.ForeignKey("auth.User", on_delete=models.PROTECT, blank=True, null=True, related_name="classification_checker")
+    final_class = models.CharField(max_length=2, choices=BIOLOGICAL_CLASS_CHOICES, blank=True, null=True)
     final_score = models.IntegerField(blank=True, null=True)
-    reporting_comment = models.CharField(max_length=500, blank=True, null=True) # TODO not being used, might move somewhere else
 
     def get_code_answers(self):
         """get all classification codes for the current check"""
@@ -610,22 +600,22 @@ class Check(models.Model):
 
     @transaction.atomic
     def reopen_info_tab(self):
-        """reset variant tab, calls other reset functions to reset other two tabs"""
+        """reset variant tab, also resets other two tabs"""
         self.info_check = False
         self.reopen_previous_class_tab()
 
     @transaction.atomic
     def reopen_previous_class_tab(self):
-        """reset previous classifications tab, calls svig function to reset svig tab"""
+        """reset previous classifications and classify tabs"""
         self.previous_classifications_check = False
         self.full_classification = False
-        self.reopen_svig_tab()
+        self.reopen_classification_tab()
         self.delete_code_answers()
 
     @transaction.atomic
-    def reopen_svig_tab(self):
-        """reset the svig tab"""
-        self.svig_check = False
+    def reopen_classification_tab(self):
+        """reset the classifications tab"""
+        self.classification_check = False
         self.final_score = None
         self.final_class = None
         self.save()
@@ -685,11 +675,10 @@ class CodeAnswer(models.Model):
         return self.code.code
 
     def get_score(self):
-        # TODO SVIG specific
-        if self.get_code_type() == "Benign":
-            score = f"{self.applied_strength.evidence_points}"
-        elif self.get_code_type() == "Oncogenic":
-            score = f"+{self.applied_strength.evidence_points}"
+        if self.code.pathogenic_or_benign == "B":
+            return f"{self.applied_strength.evidence_points}"
+        elif self.code.pathogenic_or_benign == "O" or "P":
+            return f"+{self.applied_strength.evidence_points}"
 
     def get_string(self):
         if self.pending:

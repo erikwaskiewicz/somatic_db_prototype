@@ -3,8 +3,6 @@ from django.template.loader import render_to_string
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 
-from somatic_variant_db.settings import SVIG_CODE_VERSION
-
 from .models import *
 from .forms import *
 
@@ -55,7 +53,7 @@ def view_classifications(request):
 @login_required
 def classify(request, classification):
     """
-    Page to perform S-VIG classifications
+    Page to perform classifications
     """
     # load in classification and check objects from url args
     classification_obj = ClassifyVariantInstance.objects.get(id=classification)
@@ -87,8 +85,8 @@ def classify(request, classification):
             previous_class_choices=previous_class_choices
         ),
         "reopen_previous_class_form": ReopenPreviousClassificationsForm(),
-        "complete_svig_form": CompleteSvigForm(),
-        "reopen_svig_form": ReopenSvigForm(),
+        "complete_classification_form": CompleteClassificationForm(),
+        "reopen_classification_form": ReopenClassificationForm(),
         "finalise_form": FinaliseCheckForm(),
     }
     # TODO comments modal
@@ -147,14 +145,14 @@ def classify(request, classification):
                 current_check_obj.reopen_previous_class_tab()
                 return redirect("perform-classification", classification)
 
-        # button to complete SVIG classification
-        if "complete_svig" in request.POST:
-            complete_svig_form = CompleteSvigForm(request.POST)
-            if complete_svig_form.is_valid():
+        # button to complete classification
+        if "complete_classification" in request.POST:
+            complete_classification_form = CompleteClassificationForm(request.POST)
+            if complete_classification_form.is_valid():
                 final_score, final_class = (
                     current_check_obj.update_classification()
                 )
-                override = complete_svig_form.cleaned_data["override"]
+                override = complete_classification_form.cleaned_data["override"]
                 if override == "No":
                     class_dict = {
                         "Benign": "B",
@@ -168,16 +166,16 @@ def classify(request, classification):
                     ]
                 else:
                     current_check_obj.final_class = override
-                current_check_obj.svig_check = True
+                current_check_obj.classification_check = True
                 current_check_obj.final_score = final_score
                 current_check_obj.save()
                 return redirect("perform-classification", classification)
 
-        # button to reopen SVIG classification
-        if "reset_svig_check" in request.POST:
-            reopen_svig_form = ReopenSvigForm(request.POST)
-            if reopen_svig_form.is_valid():
-                current_check_obj.reopen_svig_tab()
+        # button to reopen classification
+        if "reset_classification_check" in request.POST:
+            reopen_classification_form = ReopenClassificationForm(request.POST)
+            if reopen_classification_form.is_valid():
+                current_check_obj.reopen_classification_tab()
                 return redirect("perform-classification", classification)
 
         # button to finish check
@@ -198,7 +196,7 @@ def classify(request, classification):
 
 def ajax_classify(request):
     """
-    Generates new chunks of HTML for the classification summary boxes on the S-VIG tab (within a div called class-box).
+    Generates new chunks of HTML for the classification summary boxes on the classify tab (within a div called class-box).
     Called in JS at bottom of classify_classify.html
     """
     if request.is_ajax():
