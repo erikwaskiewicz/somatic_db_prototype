@@ -9,7 +9,7 @@ register = template.Library()
 def colour_by_class(value):
     """
     colour anywhere the current classification is displayed
-    e.g. smmary buttons, dropdowns, table rows
+    e.g. summary buttons, dropdowns, table rows
     """
     value = value.lower()
     if value == "pending" or "vus" in value:
@@ -48,3 +48,18 @@ def colour_by_build(value):
         return "success"
     else:
         return "info"
+
+
+@register.filter
+@stringfilter
+def colour_by_guideline(value):
+    """
+    colour different guidelines differently, e.g. ACMG/ SVIG
+    """
+    value = value.lower()
+    if "acmg" in value:
+        return "primary"
+    if "svig" in value:
+        return "info"
+    else:
+        return "success"

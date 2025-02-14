@@ -1,4 +1,5 @@
 {% extends 'analysis/base.html' %}
+{% load custom_tags %}
 {% load crispy_forms_tags %}
 
 {% block breadcrumbs %}
@@ -29,7 +30,7 @@
         {% for c in classifications %}
         <tr>
           <td>{{ c }}</td>
-          <td>{{ c.guideline }}</td>
+          <td><h4><span class="badge badge-{{ c.guideline|colour_by_guideline }}">{{ c.guideline }}</span></h4></td>
           <td>{{ c.get_status }}</td>
           <td style="text-align:right">
             <a class="btn btn-secondary" href="{% url 'perform-classification' c.pk %}" role="button">View</a>

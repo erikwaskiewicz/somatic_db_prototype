@@ -81,9 +81,7 @@ def classify(request, classification):
     context["forms"] = {
         "check_info_form": CheckInfoForm(),
         "reopen_check_info_form": ReopenCheckInfoForm(),
-        "previous_class_form": PreviousClassificationForm(
-            previous_class_choices=previous_class_choices
-        ),
+        "previous_class_form": PreviousClassificationForm(previous_class_choices=previous_class_choices),
         "reopen_previous_class_form": ReopenPreviousClassificationsForm(),
         "complete_classification_form": CompleteClassificationForm(),
         "reopen_classification_form": ReopenClassificationForm(),
@@ -148,6 +146,7 @@ def classify(request, classification):
                     current_check_obj.update_classification()
                 )
                 override = complete_classification_form.cleaned_data["override"]
+                # TODO pathogenic not here, needs simplifing too
                 if override == "No":
                     class_dict = {
                         "Benign": "B",
@@ -156,9 +155,7 @@ def classify(request, classification):
                         "Likely oncogenic": "LO",
                         "Oncogenic": "O",
                     }
-                    current_check_obj.final_class = class_dict[
-                        final_class
-                    ]
+                    current_check_obj.final_class = class_dict[final_class]
                 else:
                     current_check_obj.final_class = override
                 current_check_obj.classification_check = True

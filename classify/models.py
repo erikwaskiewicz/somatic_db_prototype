@@ -191,6 +191,7 @@ class ClassifyVariantInstance(PolymorphicModel):
         classification_info = {
             "classification_obj": self,
             "current_check": current_check_obj,
+            "guidelines": self.guideline.guideline,
             "all_checks": self.get_all_checks(),
         }
         if current_check_obj.full_classification:

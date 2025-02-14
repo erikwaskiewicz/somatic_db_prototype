@@ -1,4 +1,5 @@
 {% extends 'analysis/base.html' %}
+{% load custom_tags %}
 {% load crispy_forms_tags %}
 
 {% block breadcrumbs %}
@@ -16,6 +17,7 @@
 {% block content %}
 <div class="container">
 
+    <!-- TODO this header bit could do with a tidy up-->
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -31,7 +33,10 @@
                 <td>{{ variant_info.gene }}<br>{{ variant_info.hgvs_c }}<br>{{ variant_info.hgvs_p }}</td>
                 <td>{{ sample_info.sample_id }}<br>{{ sample_info.worksheet_id }}</td>
                 <td>{{ sample_info.svd_panel }}<br>{{ sample_info.specific_tumour_type }}</td>
-                <td>{{ classification_info.classification_obj.get_status }}</td>
+                <td>
+                    <h4><span class="badge badge-{{ classification_info.guidelines|colour_by_guideline }}">{{ classification_info.guidelines }}</span></h4>
+                    {{ classification_info.classification_obj.get_status }}
+                </td>
                 <td>
                     <a class="btn btn-light" data-toggle="modal" href="#comments-modal" role="button" aria-expanded="false" aria-controls="comments-modal">
                         View all comments
