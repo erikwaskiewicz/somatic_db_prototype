@@ -32,17 +32,17 @@ def view_classifications(request):
         if new_classifications_form.is_valid():
             # get variant instance
             var_inst = VariantPanelAnalysis(id=1)  # TODO this is hardcoded for testing
-
             var, _ = ClassifyVariant.objects.get_or_create(
                 hgvs_c = "c.123A>T",
                 hgvs_p = "p.ARG123His",
                 b38_coords = "7:12345A>T",
                 b37_coords = "7:23446A>T",
             )
-
+            guideline_obj = Guideline.objects.get(pk=2) #TODO hardcoded for testing
             new_var_obj = AnalysisVariantInstance(
                 variant=var,
                 variant_instance=var_inst,
+                guideline=guideline_obj
             )
             new_var_obj.save()
             new_var_obj.make_new_check()

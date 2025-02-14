@@ -15,12 +15,20 @@ class ClassificationCriteriaAdmin(admin.ModelAdmin):
 @admin.register(ClassificationCriteriaCode)
 class ClassificationCriteriaCodeAdmin(admin.ModelAdmin):
     search_fields = ["code"]
-    list_display = ["code", "pathogenic_or_benign", "category"]
+    list_display = ["code", "pathogenic_or_benign", "category", "paired_criteria"]
 
 @admin.register(ClassificationCriteriaStrength)
 class ClassificationCriteriaStrengthAdmin(admin.ModelAdmin):
     search_fields = ["strength"]
     list_display = ["strength", "evidence_points"]
+
+@admin.register(ClassificationCriteriaCategory)
+class ClassificationCriteriaCategoryAdmin(admin.ModelAdmin):
+    search_fields = ["category"]
+
+@admin.register(CategorySortOrder)
+class CategorySortOrderAdmin(admin.ModelAdmin):
+    search_fileds = ["guideline", "category"]
 
 @admin.register(ClassifyVariant)
 class ClassifyVariantAdmin(admin.ModelAdmin):
