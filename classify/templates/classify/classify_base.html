@@ -6,7 +6,7 @@
     <div class="container">
         <ol class="breadcrumb" style="background-color: transparent;">
             <li class="breadcrumb-item active"><a href="{% url 'home' %}"><span class="fa fa-home"></span></a></li>
-            <li class="breadcrumb-item"><a href="{% url 'view-all-svig' %}">S-VIG</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'view-all-classifications' %}">Classify</a></li>
             <li class="breadcrumb-item active">{{ classification_info.classification_obj }}</li>
         </ol>
     </div>
@@ -69,10 +69,10 @@
 
 
 <!-- load in each section from template -->
-<div class="container" id="details">{% include 'svig/svig_info.html' %}</div>
-<div class="container" id="previous">{% include 'svig/svig_previous.html' %}</div>
-<div class="container-fluid" id="classify">{% include 'svig/svig_classify.html' %}</div>
-<div class="container" id="finalise">{% include 'svig/svig_finalise.html' %}</div>
+<div class="container" id="details">{% include 'classify/classify_info.html' %}</div>
+<div class="container" id="previous">{% include 'classify/classify_previous.html' %}</div>
+<div class="container-fluid" id="classify">{% include 'classify/classify_classify.html' %}</div>
+<div class="container" id="finalise">{% include 'classify/classify_finalise.html' %}</div>
 
 
 <!-- comments modal -->

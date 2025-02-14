@@ -40,10 +40,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'polymorphic',
-    'analysis',
-    'svig',
     'crispy_forms',
     'auditlog',
+    'analysis',
+    'classify',
     'swgs'
 ]
 

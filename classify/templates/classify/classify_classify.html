@@ -1,4 +1,4 @@
-{% load svig_tags %}
+{% load custom_tags %}
 {% load crispy_forms_tags %}
 
 {% if classification_info.current_check.full_classification %}
@@ -320,7 +320,7 @@
       formData.append('check_pk', "{{ classification_info.current_check.pk }}");
 
       $.ajax({
-          url: "{% url 'ajax-svig' %}",
+          url: "{% url 'ajax-classification' %}",
           type: 'POST',
           data: formData,
           contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)

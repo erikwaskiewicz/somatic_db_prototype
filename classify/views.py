@@ -5,8 +5,8 @@ from django.contrib.auth.decorators import login_required
 
 from somatic_variant_db.settings import SVIG_CODE_VERSION
 
-from svig.models import *
-from svig.forms import *
+from .models import *
+from .forms import *
 
 from analysis.models import VariantPanelAnalysis
 
@@ -49,7 +49,7 @@ def view_classifications(request):
 
             context["classifications"] = ClassifyVariantInstance.objects.all()
 
-    return render(request, "svig/all_classifications.html", context)
+    return render(request, "classify/all_classifications.html", context)
 
 
 @login_required
@@ -107,14 +107,14 @@ def classify(request, classification):
             if check_info_form.is_valid():
                 current_check_obj.info_check = True
                 current_check_obj.save()
-                return redirect("svig-analysis", classification)
+                return redirect("perform-classification", classification)
 
         # button to reset sample/patient info tab
         if "reset_info_check" in request.POST:
             reopen_check_info_form = ReopenCheckInfoForm(request.POST)
             if reopen_check_info_form.is_valid():
                 current_check_obj.reopen_info_tab()
-                return redirect("svig-analysis", classification)
+                return redirect("perform-classification", classification)
 
         # button to select to use a previous classification or start a new one
         if "use_previous_class" in request.POST:
@@ -138,14 +138,14 @@ def classify(request, classification):
                     current_check_obj.create_code_answers()
 
                     # redirect so that form isnt resubmitted on refresh
-                    return redirect("svig-analysis", classification_obj.pk)
+                    return redirect("perform-classification", classification_obj.pk)
 
         # button to revert previous/new classification form
         if "reset_previous_class_check" in request.POST:
             reopen_previous_class_form = ReopenPreviousClassificationsForm(request.POST)
             if reopen_previous_class_form.is_valid():
                 current_check_obj.reopen_previous_class_tab()
-                return redirect("svig-analysis", classification)
+                return redirect("perform-classification", classification)
 
         # button to complete SVIG classification
         if "complete_svig" in request.POST:
@@ -171,14 +171,14 @@ def classify(request, classification):
                 current_check_obj.svig_check = True
                 current_check_obj.final_score = final_score
                 current_check_obj.save()
-                return redirect("svig-analysis", classification)
+                return redirect("perform-classification", classification)
 
         # button to reopen SVIG classification
         if "reset_svig_check" in request.POST:
             reopen_svig_form = ReopenSvigForm(request.POST)
             if reopen_svig_form.is_valid():
                 current_check_obj.reopen_svig_tab()
-                return redirect("svig-analysis", classification)
+                return redirect("perform-classification", classification)
 
         # button to finish check
         if "finalise_check" in request.POST:
@@ -189,17 +189,17 @@ def classify(request, classification):
                     current_check_obj, next_step
                 )
                 if updated:
-                    return redirect("view-all-svig")
+                    return redirect("view-all-classifications")
                 else:
                     context["warning"] = [err]
 
-    return render(request, "svig/svig_base.html", context)
+    return render(request, "classify/classify_base.html", context)
 
 
-def ajax_svig(request):
+def ajax_classify(request):
     """
     Generates new chunks of HTML for the classification summary boxes on the S-VIG tab (within a div called class-box).
-    Called in JS at bottom of svig_classify.html
+    Called in JS at bottom of classify_classify.html
     """
     if request.is_ajax():
         # get variables from AJAX input
@@ -221,7 +221,7 @@ def ajax_svig(request):
             "current_class": final_class,
         }
         class_box_html = render_to_string(
-            "svig/ajax/classification.html", class_box_context
+            "classify/ajax/classification.html", class_box_context
         )
         data["class_box"] = class_box_html
 
@@ -230,14 +230,14 @@ def ajax_svig(request):
 
             # summary of codes applied
             html = render_to_string(
-                "svig/ajax/category_summary.html",
+                "classify/ajax/category_summary.html",
                 {"applied_codes": value["applied_codes"]},
             )
             data[f'codes_summary_{value["slug"].replace("-", "_")}'] = html
 
             # complete yes/no
             html = render_to_string(
-                "svig/ajax/category_complete.html", {"complete": value["complete"]}
+                "classify/ajax/category_complete.html", {"complete": value["complete"]}
             )
             data[f'complete_{value["slug"].replace("-", "_")}'] = html
 

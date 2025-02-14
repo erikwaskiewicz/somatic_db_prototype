@@ -1,6 +1,6 @@
 [
 {
-    "model": "svig.guideline",
+    "model": "classify.guideline",
     "pk": 1,
     "fields": {
         "guideline": "acgs_2024",
@@ -62,7 +62,7 @@
     }
 },
 {
-    "model": "svig.guideline",
+    "model": "classify.guideline",
     "pk": 2,
     "fields": {
         "guideline": "svig_2024",
@@ -108,7 +108,7 @@
     }
 },
 {
-    "model": "svig.categorysortorder",
+    "model": "classify.categorysortorder",
     "pk": 1,
     "fields": {
         "guideline": 2,
@@ -117,7 +117,7 @@
     }
 },
 {
-    "model": "svig.categorysortorder",
+    "model": "classify.categorysortorder",
     "pk": 2,
     "fields": {
         "guideline": 2,
@@ -126,7 +126,7 @@
     }
 },
 {
-    "model": "svig.categorysortorder",
+    "model": "classify.categorysortorder",
     "pk": 3,
     "fields": {
         "guideline": 2,
@@ -135,7 +135,7 @@
     }
 },
 {
-    "model": "svig.categorysortorder",
+    "model": "classify.categorysortorder",
     "pk": 4,
     "fields": {
         "guideline": 2,
@@ -144,7 +144,7 @@
     }
 },
 {
-    "model": "svig.categorysortorder",
+    "model": "classify.categorysortorder",
     "pk": 5,
     "fields": {
         "guideline": 2,
@@ -153,7 +153,7 @@
     }
 },
 {
-    "model": "svig.categorysortorder",
+    "model": "classify.categorysortorder",
     "pk": 6,
     "fields": {
         "guideline": 2,
@@ -162,7 +162,7 @@
     }
 },
 {
-    "model": "svig.categorysortorder",
+    "model": "classify.categorysortorder",
     "pk": 7,
     "fields": {
         "guideline": 1,
@@ -171,7 +171,7 @@
     }
 },
 {
-    "model": "svig.categorysortorder",
+    "model": "classify.categorysortorder",
     "pk": 8,
     "fields": {
         "guideline": 1,
@@ -180,7 +180,7 @@
     }
 },
 {
-    "model": "svig.categorysortorder",
+    "model": "classify.categorysortorder",
     "pk": 9,
     "fields": {
         "guideline": 1,
@@ -189,7 +189,7 @@
     }
 },
 {
-    "model": "svig.categorysortorder",
+    "model": "classify.categorysortorder",
     "pk": 10,
     "fields": {
         "guideline": 1,
@@ -198,7 +198,7 @@
     }
 },
 {
-    "model": "svig.categorysortorder",
+    "model": "classify.categorysortorder",
     "pk": 11,
     "fields": {
         "guideline": 1,
@@ -207,7 +207,7 @@
     }
 },
 {
-    "model": "svig.categorysortorder",
+    "model": "classify.categorysortorder",
     "pk": 12,
     "fields": {
         "guideline": 1,
@@ -216,7 +216,7 @@
     }
 },
 {
-    "model": "svig.categorysortorder",
+    "model": "classify.categorysortorder",
     "pk": 13,
     "fields": {
         "guideline": 1,
@@ -225,7 +225,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 1,
     "fields": {
         "code": 1,
@@ -233,7 +233,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 2,
     "fields": {
         "code": 1,
@@ -241,7 +241,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 3,
     "fields": {
         "code": 1,
@@ -249,7 +249,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 4,
     "fields": {
         "code": 1,
@@ -257,7 +257,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 5,
     "fields": {
         "code": 2,
@@ -265,7 +265,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 6,
     "fields": {
         "code": 2,
@@ -273,7 +273,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 7,
     "fields": {
         "code": 2,
@@ -281,7 +281,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 8,
     "fields": {
         "code": 3,
@@ -289,7 +289,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 9,
     "fields": {
         "code": 3,
@@ -297,7 +297,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 10,
     "fields": {
         "code": 3,
@@ -305,7 +305,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 11,
     "fields": {
         "code": 3,
@@ -313,7 +313,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 12,
     "fields": {
         "code": 4,
@@ -321,7 +321,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 13,
     "fields": {
         "code": 4,
@@ -329,7 +329,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 14,
     "fields": {
         "code": 4,
@@ -337,7 +337,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 15,
     "fields": {
         "code": 4,
@@ -345,7 +345,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 16,
     "fields": {
         "code": 5,
@@ -353,7 +353,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 17,
     "fields": {
         "code": 5,
@@ -361,7 +361,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 18,
     "fields": {
         "code": 5,
@@ -369,7 +369,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 19,
     "fields": {
         "code": 6,
@@ -377,7 +377,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 20,
     "fields": {
         "code": 6,
@@ -385,7 +385,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 21,
     "fields": {
         "code": 6,
@@ -393,7 +393,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 22,
     "fields": {
         "code": 7,
@@ -401,7 +401,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 23,
     "fields": {
         "code": 7,
@@ -409,7 +409,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 24,
     "fields": {
         "code": 8,
@@ -417,7 +417,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 25,
     "fields": {
         "code": 9,
@@ -425,7 +425,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 26,
     "fields": {
         "code": 10,
@@ -433,7 +433,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 27,
     "fields": {
         "code": 10,
@@ -441,7 +441,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 28,
     "fields": {
         "code": 11,
@@ -449,7 +449,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 29,
     "fields": {
         "code": 11,
@@ -457,7 +457,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 30,
     "fields": {
         "code": 11,
@@ -465,7 +465,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 31,
     "fields": {
         "code": 11,
@@ -473,7 +473,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 32,
     "fields": {
         "code": 12,
@@ -481,7 +481,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 33,
     "fields": {
         "code": 13,
@@ -489,7 +489,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 34,
     "fields": {
         "code": 14,
@@ -497,7 +497,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 35,
     "fields": {
         "code": 14,
@@ -505,7 +505,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 36,
     "fields": {
         "code": 14,
@@ -513,7 +513,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 37,
     "fields": {
         "code": 15,
@@ -521,7 +521,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 38,
     "fields": {
         "code": 15,
@@ -529,7 +529,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 39,
     "fields": {
         "code": 15,
@@ -537,7 +537,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 40,
     "fields": {
         "code": 16,
@@ -545,7 +545,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 41,
     "fields": {
         "code": 17,
@@ -553,7 +553,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 42,
     "fields": {
         "code": 18,
@@ -561,7 +561,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 43,
     "fields": {
         "code": 19,
@@ -569,7 +569,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 44,
     "fields": {
         "code": 19,
@@ -577,7 +577,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 45,
     "fields": {
         "code": 19,
@@ -585,7 +585,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 46,
     "fields": {
         "code": 20,
@@ -593,7 +593,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 47,
     "fields": {
         "code": 21,
@@ -601,7 +601,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 48,
     "fields": {
         "code": 22,
@@ -609,7 +609,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 49,
     "fields": {
         "code": 23,
@@ -617,7 +617,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 50,
     "fields": {
         "code": 24,
@@ -625,7 +625,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 52,
     "fields": {
         "code": 25,
@@ -633,7 +633,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 53,
     "fields": {
         "code": 26,
@@ -641,7 +641,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 54,
     "fields": {
         "code": 26,
@@ -649,7 +649,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 55,
     "fields": {
         "code": 27,
@@ -657,7 +657,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 56,
     "fields": {
         "code": 28,
@@ -665,7 +665,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 57,
     "fields": {
         "code": 28,
@@ -673,7 +673,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 58,
     "fields": {
         "code": 28,
@@ -681,7 +681,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 59,
     "fields": {
         "code": 28,
@@ -689,7 +689,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 60,
     "fields": {
         "code": 28,
@@ -697,7 +697,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 61,
     "fields": {
         "code": 29,
@@ -705,7 +705,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 62,
     "fields": {
         "code": 29,
@@ -713,7 +713,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 63,
     "fields": {
         "code": 29,
@@ -721,7 +721,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 64,
     "fields": {
         "code": 29,
@@ -729,7 +729,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 65,
     "fields": {
         "code": 29,
@@ -737,7 +737,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 66,
     "fields": {
         "code": 30,
@@ -745,7 +745,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 67,
     "fields": {
         "code": 31,
@@ -753,7 +753,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 68,
     "fields": {
         "code": 31,
@@ -761,7 +761,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 69,
     "fields": {
         "code": 31,
@@ -769,7 +769,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 70,
     "fields": {
         "code": 32,
@@ -777,7 +777,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 71,
     "fields": {
         "code": 32,
@@ -785,7 +785,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 72,
     "fields": {
         "code": 33,
@@ -793,7 +793,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 73,
     "fields": {
         "code": 33,
@@ -801,7 +801,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 74,
     "fields": {
         "code": 33,
@@ -809,7 +809,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 75,
     "fields": {
         "code": 34,
@@ -817,7 +817,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 76,
     "fields": {
         "code": 34,
@@ -825,7 +825,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 77,
     "fields": {
         "code": 35,
@@ -833,7 +833,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 78,
     "fields": {
         "code": 36,
@@ -841,7 +841,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 79,
     "fields": {
         "code": 37,
@@ -849,7 +849,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 80,
     "fields": {
         "code": 38,
@@ -857,7 +857,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 81,
     "fields": {
         "code": 39,
@@ -865,7 +865,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 82,
     "fields": {
         "code": 39,
@@ -873,7 +873,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 83,
     "fields": {
         "code": 39,
@@ -881,7 +881,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 84,
     "fields": {
         "code": 39,
@@ -889,7 +889,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 85,
     "fields": {
         "code": 40,
@@ -897,7 +897,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 86,
     "fields": {
         "code": 40,
@@ -905,7 +905,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 87,
     "fields": {
         "code": 40,
@@ -913,7 +913,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 88,
     "fields": {
         "code": 41,
@@ -921,7 +921,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 89,
     "fields": {
         "code": 41,
@@ -929,7 +929,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 90,
     "fields": {
         "code": 42,
@@ -937,7 +937,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteria",
+    "model": "classify.classificationcriteria",
     "pk": 91,
     "fields": {
         "code": 42,
@@ -945,91 +945,91 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacategory",
+    "model": "classify.classificationcriteriacategory",
     "pk": 1,
     "fields": {
         "category": "population"
     }
 },
 {
-    "model": "svig.classificationcriteriacategory",
+    "model": "classify.classificationcriteriacategory",
     "pk": 2,
     "fields": {
         "category": "predictive"
     }
 },
 {
-    "model": "svig.classificationcriteriacategory",
+    "model": "classify.classificationcriteriacategory",
     "pk": 3,
     "fields": {
         "category": "computational"
     }
 },
 {
-    "model": "svig.classificationcriteriacategory",
+    "model": "classify.classificationcriteriacategory",
     "pk": 4,
     "fields": {
         "category": "effect_on_protein"
     }
 },
 {
-    "model": "svig.classificationcriteriacategory",
+    "model": "classify.classificationcriteriacategory",
     "pk": 5,
     "fields": {
         "category": "phenotype"
     }
 },
 {
-    "model": "svig.classificationcriteriacategory",
+    "model": "classify.classificationcriteriacategory",
     "pk": 6,
     "fields": {
         "category": "cancer_databases"
     }
 },
 {
-    "model": "svig.classificationcriteriacategory",
+    "model": "classify.classificationcriteriacategory",
     "pk": 7,
     "fields": {
         "category": "allelic"
     }
 },
 {
-    "model": "svig.classificationcriteriacategory",
+    "model": "classify.classificationcriteriacategory",
     "pk": 8,
     "fields": {
         "category": "cancer_databases"
     }
 },
 {
-    "model": "svig.classificationcriteriacategory",
+    "model": "classify.classificationcriteriacategory",
     "pk": 9,
     "fields": {
         "category": "change"
     }
 },
 {
-    "model": "svig.classificationcriteriacategory",
+    "model": "classify.classificationcriteriacategory",
     "pk": 10,
     "fields": {
         "category": "mode_of_action"
     }
 },
 {
-    "model": "svig.classificationcriteriacategory",
+    "model": "classify.classificationcriteriacategory",
     "pk": 11,
     "fields": {
         "category": "de_novo"
     }
 },
 {
-    "model": "svig.classificationcriteriacategory",
+    "model": "classify.classificationcriteriacategory",
     "pk": 12,
     "fields": {
         "category": "functional_studies"
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 1,
     "fields": {
         "code": "PVS1",
@@ -1041,7 +1041,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 2,
     "fields": {
         "code": "PS1",
@@ -1053,7 +1053,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 3,
     "fields": {
         "code": "PS2",
@@ -1065,7 +1065,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 4,
     "fields": {
         "code": "PS3",
@@ -1077,7 +1077,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 5,
     "fields": {
         "code": "PS4",
@@ -1089,7 +1089,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 6,
     "fields": {
         "code": "PM1",
@@ -1101,7 +1101,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 7,
     "fields": {
         "code": "PM2",
@@ -1113,7 +1113,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 8,
     "fields": {
         "code": "PM3",
@@ -1125,7 +1125,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 9,
     "fields": {
         "code": "PM4",
@@ -1137,7 +1137,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 10,
     "fields": {
         "code": "PM5",
@@ -1149,7 +1149,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 11,
     "fields": {
         "code": "PM6",
@@ -1161,7 +1161,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 12,
     "fields": {
         "code": "PP1",
@@ -1173,7 +1173,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 13,
     "fields": {
         "code": "PP2",
@@ -1185,7 +1185,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 14,
     "fields": {
         "code": "PP3",
@@ -1197,7 +1197,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 15,
     "fields": {
         "code": "PP4",
@@ -1209,7 +1209,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 16,
     "fields": {
         "code": "BA1",
@@ -1221,7 +1221,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 17,
     "fields": {
         "code": "BS1",
@@ -1233,7 +1233,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 18,
     "fields": {
         "code": "BS2",
@@ -1245,7 +1245,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 19,
     "fields": {
         "code": "BS3",
@@ -1257,7 +1257,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 20,
     "fields": {
         "code": "BS4",
@@ -1269,7 +1269,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 21,
     "fields": {
         "code": "BP1",
@@ -1281,7 +1281,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 22,
     "fields": {
         "code": "BP2",
@@ -1293,7 +1293,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 23,
     "fields": {
         "code": "BP3",
@@ -1305,7 +1305,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 24,
     "fields": {
         "code": "BP4",
@@ -1317,7 +1317,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 25,
     "fields": {
         "code": "BP5",
@@ -1329,7 +1329,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 26,
     "fields": {
         "code": "BP7",
@@ -1341,7 +1341,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 27,
     "fields": {
         "code": "O3",
@@ -1353,7 +1353,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 28,
     "fields": {
         "code": "B1",
@@ -1365,7 +1365,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 29,
     "fields": {
         "code": "O2",
@@ -1377,7 +1377,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 30,
     "fields": {
         "code": "B2",
@@ -1389,7 +1389,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 31,
     "fields": {
         "code": "O4",
@@ -1401,7 +1401,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 32,
     "fields": {
         "code": "O5",
@@ -1413,7 +1413,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 33,
     "fields": {
         "code": "O7",
@@ -1425,7 +1425,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 34,
     "fields": {
         "code": "O8",
@@ -1437,7 +1437,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 35,
     "fields": {
         "code": "B4",
@@ -1449,7 +1449,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 36,
     "fields": {
         "code": "B5",
@@ -1461,7 +1461,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 37,
     "fields": {
         "code": "O6",
@@ -1473,7 +1473,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 38,
     "fields": {
         "code": "B3",
@@ -1485,7 +1485,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 39,
     "fields": {
         "code": "O9",
@@ -1497,7 +1497,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 40,
     "fields": {
         "code": "B6",
@@ -1509,7 +1509,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 41,
     "fields": {
         "code": "O10",
@@ -1521,7 +1521,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriacode",
+    "model": "classify.classificationcriteriacode",
     "pk": 42,
     "fields": {
         "code": "B7",
@@ -1533,7 +1533,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriastrength",
+    "model": "classify.classificationcriteriastrength",
     "pk": 1,
     "fields": {
         "strength": "very_strong",
@@ -1542,7 +1542,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriastrength",
+    "model": "classify.classificationcriteriastrength",
     "pk": 2,
     "fields": {
         "strength": "strong",
@@ -1551,7 +1551,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriastrength",
+    "model": "classify.classificationcriteriastrength",
     "pk": 3,
     "fields": {
         "strength": "moderate",
@@ -1560,7 +1560,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriastrength",
+    "model": "classify.classificationcriteriastrength",
     "pk": 4,
     "fields": {
         "strength": "supporting",
@@ -1569,7 +1569,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriastrength",
+    "model": "classify.classificationcriteriastrength",
     "pk": 5,
     "fields": {
         "strength": "supporting",
@@ -1578,7 +1578,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriastrength",
+    "model": "classify.classificationcriteriastrength",
     "pk": 6,
     "fields": {
         "strength": "moderate",
@@ -1587,7 +1587,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriastrength",
+    "model": "classify.classificationcriteriastrength",
     "pk": 7,
     "fields": {
         "strength": "strong",
@@ -1596,7 +1596,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriastrength",
+    "model": "classify.classificationcriteriastrength",
     "pk": 8,
     "fields": {
         "strength": "standalone",
@@ -1605,7 +1605,7 @@
     }
 },
 {
-    "model": "svig.classificationcriteriastrength",
+    "model": "classify.classificationcriteriastrength",
     "pk": 9,
     "fields": {
         "strength": "very_strong",
@@ -1614,853 +1614,12 @@
     }
 },
 {
-    "model": "svig.classificationcriteriastrength",
+    "model": "classify.classificationcriteriastrength",
     "pk": 10,
     "fields": {
         "strength": "standalone",
         "shorthand": "SA",
         "evidence_points": 100
-    }
-},
-{
-    "model": "svig.classifyvariant",
-    "pk": 1,
-    "fields": {
-        "hgvs_c": "c.123A>T",
-        "hgvs_p": "p.ARG123His",
-        "b38_coords": "7:12345A>T",
-        "b37_coords": "7:23446A>T"
-    }
-},
-{
-    "model": "svig.classifyvariantinstance",
-    "pk": 5,
-    "fields": {
-        "polymorphic_ctype": 39,
-        "variant": 1,
-        "guideline": 2
-    }
-},
-{
-    "model": "svig.classifyvariantinstance",
-    "pk": 6,
-    "fields": {
-        "polymorphic_ctype": 39,
-        "variant": 1,
-        "guideline": 1
-    }
-},
-{
-    "model": "svig.analysisvariantinstance",
-    "pk": 5,
-    "fields": {
-        "variant_instance": 1
-    }
-},
-{
-    "model": "svig.analysisvariantinstance",
-    "pk": 6,
-    "fields": {
-        "variant_instance": 1
-    }
-},
-{
-    "model": "svig.check",
-    "pk": 5,
-    "fields": {
-        "classification": 5,
-        "info_check": true,
-        "previous_classifications_check": false,
-        "svig_check": false,
-        "full_classification": true,
-        "check_complete": false,
-        "signoff_time": null,
-        "user": 1,
-        "final_class": null,
-        "final_score": null,
-        "reporting_comment": null
-    }
-},
-{
-    "model": "svig.check",
-    "pk": 6,
-    "fields": {
-        "classification": 6,
-        "info_check": true,
-        "previous_classifications_check": false,
-        "svig_check": true,
-        "full_classification": true,
-        "check_complete": true,
-        "signoff_time": "2025-02-14T15:22:18.448Z",
-        "user": 1,
-        "final_class": "B",
-        "final_score": -66,
-        "reporting_comment": null
-    }
-},
-{
-    "model": "svig.check",
-    "pk": 7,
-    "fields": {
-        "classification": 6,
-        "info_check": true,
-        "previous_classifications_check": false,
-        "svig_check": true,
-        "full_classification": true,
-        "check_complete": false,
-        "signoff_time": null,
-        "user": 1,
-        "final_class": "B",
-        "final_score": -98,
-        "reporting_comment": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 75,
-    "fields": {
-        "code": 29,
-        "check_object": 5,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 76,
-    "fields": {
-        "code": 41,
-        "check_object": 5,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 77,
-    "fields": {
-        "code": 34,
-        "check_object": 5,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 78,
-    "fields": {
-        "code": 35,
-        "check_object": 5,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 79,
-    "fields": {
-        "code": 32,
-        "check_object": 5,
-        "pending": false,
-        "applied": true,
-        "applied_strength": 3
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 80,
-    "fields": {
-        "code": 36,
-        "check_object": 5,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 81,
-    "fields": {
-        "code": 42,
-        "check_object": 5,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 82,
-    "fields": {
-        "code": 39,
-        "check_object": 5,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 83,
-    "fields": {
-        "code": 38,
-        "check_object": 5,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 84,
-    "fields": {
-        "code": 31,
-        "check_object": 5,
-        "pending": false,
-        "applied": true,
-        "applied_strength": 2
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 85,
-    "fields": {
-        "code": 33,
-        "check_object": 5,
-        "pending": false,
-        "applied": true,
-        "applied_strength": 2
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 86,
-    "fields": {
-        "code": 40,
-        "check_object": 5,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 87,
-    "fields": {
-        "code": 30,
-        "check_object": 5,
-        "pending": false,
-        "applied": true,
-        "applied_strength": 8
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 88,
-    "fields": {
-        "code": 28,
-        "check_object": 5,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 89,
-    "fields": {
-        "code": 27,
-        "check_object": 5,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 90,
-    "fields": {
-        "code": 37,
-        "check_object": 5,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 91,
-    "fields": {
-        "code": 5,
-        "check_object": 6,
-        "pending": false,
-        "applied": true,
-        "applied_strength": 3
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 92,
-    "fields": {
-        "code": 8,
-        "check_object": 6,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 93,
-    "fields": {
-        "code": 20,
-        "check_object": 6,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 94,
-    "fields": {
-        "code": 19,
-        "check_object": 6,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 95,
-    "fields": {
-        "code": 22,
-        "check_object": 6,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 96,
-    "fields": {
-        "code": 24,
-        "check_object": 6,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 97,
-    "fields": {
-        "code": 3,
-        "check_object": 6,
-        "pending": false,
-        "applied": true,
-        "applied_strength": 1
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 98,
-    "fields": {
-        "code": 4,
-        "check_object": 6,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 99,
-    "fields": {
-        "code": 7,
-        "check_object": 6,
-        "pending": false,
-        "applied": true,
-        "applied_strength": 3
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 100,
-    "fields": {
-        "code": 15,
-        "check_object": 6,
-        "pending": false,
-        "applied": true,
-        "applied_strength": 4
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 101,
-    "fields": {
-        "code": 1,
-        "check_object": 6,
-        "pending": false,
-        "applied": true,
-        "applied_strength": 1
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 102,
-    "fields": {
-        "code": 17,
-        "check_object": 6,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 103,
-    "fields": {
-        "code": 9,
-        "check_object": 6,
-        "pending": false,
-        "applied": true,
-        "applied_strength": 3
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 104,
-    "fields": {
-        "code": 11,
-        "check_object": 6,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 105,
-    "fields": {
-        "code": 13,
-        "check_object": 6,
-        "pending": false,
-        "applied": true,
-        "applied_strength": 4
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 106,
-    "fields": {
-        "code": 26,
-        "check_object": 6,
-        "pending": false,
-        "applied": true,
-        "applied_strength": 5
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 107,
-    "fields": {
-        "code": 2,
-        "check_object": 6,
-        "pending": false,
-        "applied": true,
-        "applied_strength": 2
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 108,
-    "fields": {
-        "code": 10,
-        "check_object": 6,
-        "pending": false,
-        "applied": true,
-        "applied_strength": 3
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 109,
-    "fields": {
-        "code": 16,
-        "check_object": 6,
-        "pending": false,
-        "applied": true,
-        "applied_strength": 8
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 110,
-    "fields": {
-        "code": 21,
-        "check_object": 6,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 111,
-    "fields": {
-        "code": 18,
-        "check_object": 6,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 112,
-    "fields": {
-        "code": 6,
-        "check_object": 6,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 113,
-    "fields": {
-        "code": 14,
-        "check_object": 6,
-        "pending": false,
-        "applied": true,
-        "applied_strength": 2
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 114,
-    "fields": {
-        "code": 12,
-        "check_object": 6,
-        "pending": false,
-        "applied": true,
-        "applied_strength": 4
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 115,
-    "fields": {
-        "code": 25,
-        "check_object": 6,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 116,
-    "fields": {
-        "code": 23,
-        "check_object": 6,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 117,
-    "fields": {
-        "code": 25,
-        "check_object": 7,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 118,
-    "fields": {
-        "code": 8,
-        "check_object": 7,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 119,
-    "fields": {
-        "code": 2,
-        "check_object": 7,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 120,
-    "fields": {
-        "code": 13,
-        "check_object": 7,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 121,
-    "fields": {
-        "code": 9,
-        "check_object": 7,
-        "pending": false,
-        "applied": true,
-        "applied_strength": 3
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 122,
-    "fields": {
-        "code": 10,
-        "check_object": 7,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 123,
-    "fields": {
-        "code": 16,
-        "check_object": 7,
-        "pending": false,
-        "applied": true,
-        "applied_strength": 8
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 124,
-    "fields": {
-        "code": 7,
-        "check_object": 7,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 125,
-    "fields": {
-        "code": 14,
-        "check_object": 7,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 126,
-    "fields": {
-        "code": 23,
-        "check_object": 7,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 127,
-    "fields": {
-        "code": 18,
-        "check_object": 7,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 128,
-    "fields": {
-        "code": 6,
-        "check_object": 7,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 129,
-    "fields": {
-        "code": 11,
-        "check_object": 7,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 130,
-    "fields": {
-        "code": 1,
-        "check_object": 7,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 131,
-    "fields": {
-        "code": 19,
-        "check_object": 7,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 132,
-    "fields": {
-        "code": 22,
-        "check_object": 7,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 133,
-    "fields": {
-        "code": 20,
-        "check_object": 7,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 134,
-    "fields": {
-        "code": 21,
-        "check_object": 7,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 135,
-    "fields": {
-        "code": 24,
-        "check_object": 7,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 136,
-    "fields": {
-        "code": 15,
-        "check_object": 7,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 137,
-    "fields": {
-        "code": 3,
-        "check_object": 7,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 138,
-    "fields": {
-        "code": 5,
-        "check_object": 7,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 139,
-    "fields": {
-        "code": 17,
-        "check_object": 7,
-        "pending": false,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 140,
-    "fields": {
-        "code": 12,
-        "check_object": 7,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 141,
-    "fields": {
-        "code": 4,
-        "check_object": 7,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
-    }
-},
-{
-    "model": "svig.codeanswer",
-    "pk": 142,
-    "fields": {
-        "code": 26,
-        "check_object": 7,
-        "pending": true,
-        "applied": false,
-        "applied_strength": null
     }
 }
 ]
