@@ -103,8 +103,7 @@ def classify(request, classification):
         if "check_info_form" in request.POST:
             check_info_form = CheckInfoForm(request.POST)
             if check_info_form.is_valid():
-                current_check_obj.info_check = True
-                current_check_obj.save()
+                current_check_obj.complete_info_tab()
                 return redirect("perform-classification", classification)
 
         # button to reset sample/patient info tab
@@ -131,11 +130,7 @@ def classify(request, classification):
 
                 elif use_previous == "new":
                     # change setting in classification obj and load up codes linked to check
-                    current_check_obj.full_classification = True
-                    current_check_obj.save()
-                    current_check_obj.create_code_answers()
-
-                    # redirect so that form isnt resubmitted on refresh
+                    current_check_obj.complete_previous_class_tab()
                     return redirect("perform-classification", classification_obj.pk)
 
         # button to revert previous/new classification form

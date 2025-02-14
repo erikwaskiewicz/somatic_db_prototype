@@ -164,6 +164,8 @@ class ClassifyVariantInstance(PolymorphicModel):
     """
     variant = models.ForeignKey("ClassifyVariant", on_delete=models.CASCADE)
     guideline = models.ForeignKey("Guideline", on_delete=models.CASCADE)
+    final_class = models.CharField(max_length=2, choices=BIOLOGICAL_CLASS_CHOICES, blank=True, null=True)
+    final_score = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return f"#{self.pk} - {self.variant.hgvs_c}"
@@ -222,14 +224,12 @@ class ClassifyVariantInstance(PolymorphicModel):
 
         return dropdown_options
 
-
     def get_dropdown_value(self, code_list):
         latest_code_objects = self.get_latest_check().get_code_answers()
         l = []
         for c in code_list:
             l.append(latest_code_objects.get(code__code=c).get_code())
         return "|".join(l)
-
 
     def get_codes_by_category(self):
         """ordered list of codes for displaying template"""
@@ -384,7 +384,6 @@ class ClassifyVariantInstance(PolymorphicModel):
             
         return codes_dict
 
-    
     def get_previous_classification_choices(self):
         canonical_variant = False # TODO these are hardcoded
         previous_classification = False  # TODO
@@ -409,31 +408,32 @@ class ClassifyVariantInstance(PolymorphicModel):
     @transaction.atomic
     def signoff_check(self, current_check, next_step):
         """complete a whole check"""
-        if next_step == "C":
-            previous_checks = self.get_previous_checks()
-            if not previous_checks.exists():
-                return False, "Cannot complete analysis, two checks required"
+        if next_step == "extra_check":
+            self.make_new_check()
 
-        elif next_step == "B":
+        if next_step == "send_back":
             previous_checks = self.get_previous_checks()
             if previous_checks.exists():
                 previous_check = previous_checks[0]
                 previous_check.reopen_check()
                 current_check.delete()
-                return True, previous_check
+                return True, None
             else:
                 return False, "Cannot send back, this is the first check"
 
-        else:
-            current_check.check_complete = True
-            current_check.signoff_time = timezone.now()
-            current_check.save()
+        if next_step == "complete":
+            previous_checks = self.get_previous_checks()
+            if not previous_checks.exists():
+                return False, "Cannot complete analysis, two checks required"
+            else:
+                # save results to classification obj if final check
+                self.final_class = current_check.final_class
+                self.final_score = current_check.final_score
+                self.save()
 
-            if next_step == "E":
-                self.make_new_check()
-            # TODO save results to classification obj if final check
+        current_check.complete_check()
 
-            return True, None
+        return True, None
 
 
 class AnalysisVariantInstance(ClassifyVariantInstance):
@@ -499,10 +499,10 @@ class Check(models.Model):
     # TODO choices are linked to SVIG
     """
     classification = models.ForeignKey("ClassifyVariantInstance", on_delete=models.CASCADE)
+    full_classification = models.BooleanField(default=False)
     info_check = models.BooleanField(default=False)
     previous_classifications_check = models.BooleanField(default=False)
     classification_check = models.BooleanField(default=False)
-    full_classification = models.BooleanField(default=False)
     check_complete = models.BooleanField(default=False)
     signoff_time = models.DateTimeField(blank=True, null=True)
     user = models.ForeignKey("auth.User", on_delete=models.PROTECT, blank=True, null=True, related_name="classification_checker")
@@ -592,10 +592,27 @@ class Check(models.Model):
         return True
 
     @transaction.atomic
-    def reopen_check(self):
-        """reopen a completed check"""
-        self.check_complete = False
-        self.signoff_time = None
+    def complete_info_tab(self):
+        self.info_check = True
+        self.save()
+
+    @transaction.atomic
+    def complete_previous_class_tab(self):
+        """ complete step in check obj and load up codes linked to check """
+        self.previous_classifications_check = True
+        self.full_classification = True
+        self.save()
+        self.create_code_answers()
+
+    @transaction.atomic
+    def complete_classification_tab(self):
+        # TODO transfer from view
+        pass
+
+    @transaction.atomic
+    def complete_check(self):
+        self.check_complete = True
+        self.signoff_time = timezone.now()
         self.save()
 
     @transaction.atomic
@@ -620,11 +637,16 @@ class Check(models.Model):
         self.final_class = None
         self.save()
 
+    @transaction.atomic
+    def reopen_check(self):
+        """reopen a completed check"""
+        self.check_complete = False
+        self.signoff_time = None
+        self.save()
 
     @transaction.atomic
     def create_code_answers(self):
         """make a set of code answers against the current check"""
-
         all_codes_query = self.classification.guideline.criteria.all()
         all_codes = [code.code.code for code in all_codes_query]
         all_codes = list(set(all_codes))
