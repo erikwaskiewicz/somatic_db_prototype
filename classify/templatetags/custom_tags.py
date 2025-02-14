@@ -63,3 +63,16 @@ def colour_by_guideline(value):
         return "info"
     else:
         return "success"
+
+
+@register.filter
+@stringfilter
+def colour_by_count(value):
+    """
+    colour different guidelines differently, e.g. ACMG/ SVIG
+    """
+    value = int(value)
+    if value > 0:
+        return "warning"
+    else:
+        return "secondary"

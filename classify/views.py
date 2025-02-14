@@ -73,8 +73,9 @@ def classify(request, classification):
         "sample_info": classification_obj.get_sample_info(),
         "variant_info": classification_obj.variant.get_variant_info(),
         "classification_info": classification_obj.get_classification_info(),
-        "previous_classifications": classification_obj.variant.get_previous_classifications(),
+        "previous_classifications": classification_obj.get_previous_classifications(),
     }
+    # TODO need way of splitting previous classifications into on site and off site
 
     # load in forms and add to context
     previous_class_choices = classification_obj.get_previous_classification_choices()
@@ -118,11 +119,7 @@ def classify(request, classification):
             )
             if previous_class_form.is_valid():
                 use_previous = previous_class_form.cleaned_data["use_previous_class"]
-                if use_previous == "canonical":
-                    print(use_previous)
-                    # TODO change setting in classification obj and save link to reused classification
-
-                elif use_previous == "previous":
+                if use_previous == "previous":
                     print(use_previous)
                     # TODO change setting in classification obj and save link to reused classification
 

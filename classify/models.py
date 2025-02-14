@@ -133,6 +133,7 @@ class ClassifyVariant(models.Model):
     hgvs_p = models.CharField(max_length=200, null=True, blank=True)
     b38_coords = models.CharField(max_length=200)
     b37_coords = models.CharField(max_length=200) #autopopulate with variantvalidator? otherwise we have to make these both nullable
+    # TODO add gene? have genome build field and just one coords field?
 
     def __str__(self):
         return self.hgvs_c
@@ -149,14 +150,6 @@ class ClassifyVariant(models.Model):
         }
         return variant_info
 
-    def get_previous_classifications(self):
-        """ get all previous classifications of a variant """
-        # TODO this is hardcoded
-        return {
-            "gene_canonical_list": [],
-            "canonical_match": [],
-        }
-
 
 class ClassifyVariantInstance(PolymorphicModel):
     """
@@ -166,6 +159,7 @@ class ClassifyVariantInstance(PolymorphicModel):
     guideline = models.ForeignKey("Guideline", on_delete=models.CASCADE)
     final_class = models.CharField(max_length=2, choices=BIOLOGICAL_CLASS_CHOICES, blank=True, null=True)
     final_score = models.IntegerField(blank=True, null=True)
+    # TODO? complete and date and link to previous classification
 
     def __str__(self):
         return f"#{self.pk} - {self.variant.hgvs_c}"
@@ -385,19 +379,19 @@ class ClassifyVariantInstance(PolymorphicModel):
             
         return codes_dict
 
+    def get_previous_classifications(self):
+        all_previous = ClassifyVariantInstance.objects.filter(variant=self.variant, guideline=self.guideline)
+        return all_previous.exclude(pk=self.pk)
+
     def get_previous_classification_choices(self):
-        canonical_variant = False # TODO these are hardcoded
-        previous_classification = False  # TODO
-        if canonical_variant:
+        """
+        get options for the previous classifiation tab dropdown,
+        will only let you use previous if there is one
+        """
+        previous_classification = self.get_previous_classifications()
+        if previous_classification.exists():
             return (
-                (
-                    "canonical",
-                    f"Confirm selected canonical variant - {canonical_variant.hgvs_p}",
-                ),
-            )
-        elif previous_classification:
-            return (
-                ("previous", f"Use selected previous classification - ???"),
+                ("previous", "Use previous classification"),
                 ("new", "Perform full classification"),
             )
         else:
