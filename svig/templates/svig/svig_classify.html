@@ -257,7 +257,7 @@
     row_element.classList.remove('table-info', 'table-secondary', 'table-danger', 'table-warning');
     row_element.classList.add("table-" + css_class);
 
-    // change current scheck button CSS here
+    // change current check button CSS here
     var next_row = row_element.parentNode.rows[ row_element.rowIndex + 1 ].children[1].children[1].children[0];
     var class_box = next_row.children[next_row.childElementCount - 1].children[1].children[0];
     class_box.classList.remove('badge-info', 'badge-secondary', 'badge-danger', 'badge-warning');
@@ -285,10 +285,10 @@
 
   // preset each dropdown
   // get the all codes variable from variable called in main html
-  const initial_codes1 = JSON.parse(document.getElementById('codes_by_category').textContent);
+  const initial_codes = JSON.parse(document.getElementById('codes_by_category').textContent);
 
   // loop through each code, get the dropdown element, preselect and add css classes
-  for (const [key, c] of Object.entries(initial_codes1)) {
+  for (const [key, c] of Object.entries(initial_codes)) {
     for (const [key1, c1] of Object.entries(c.codes)) {
       drop_down = document.getElementById("code_" + key1);
       drop_down.value = c1.value;
@@ -328,21 +328,21 @@
           success: function(data) {
               $("#class-box").html(data.class_box);
 
-              $("#codes-summary-population-databases").html(data.codes_summary_population_databases);
+              $("#codes-summary-population-databases").html(data.codes_summary_population);
               $("#codes-summary-mode-of-action").html(data.codes_summary_mode_of_action);
               $("#codes-summary-cancer-databases").html(data.codes_summary_cancer_databases);
               $("#codes-summary-effect-on-protein").html(data.codes_summary_effect_on_protein);
-              $("#codes-summary-computational-tools").html(data.codes_summary_computational_tools);
+              $("#codes-summary-computational-tools").html(data.codes_summary_computational);
               $("#codes-summary-functional-studies").html(data.codes_summary_functional_studies);
-              $("#codes-summary-other").html(data.codes_summary_other);
+              $("#codes-summary-other").html(data.codes_summary_phenotype);
 
-              $("#complete-population-databases").html(data.complete_population_databases);
+              $("#complete-population-databases").html(data.complete_population);
               $("#complete-mode-of-action").html(data.complete_mode_of_action);
               $("#complete-cancer-databases").html(data.complete_cancer_databases);
               $("#complete-effect-on-protein").html(data.complete_effect_on_protein);
-              $("#complete-computational-tools").html(data.complete_computational_tools);
+              $("#complete-computational-tools").html(data.complete_computational);
               $("#complete-functional-studies").html(data.complete_functional_studies);
-              $("#complete-other").html(data.complete_other);
+              $("#complete-other").html(data.complete_phenotype);
               //TODO remove hardcoding?
           },
           failure: function(data) {

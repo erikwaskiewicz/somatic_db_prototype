@@ -20,7 +20,7 @@ class ClassificationCriteriaCodeAdmin(admin.ModelAdmin):
 @admin.register(ClassificationCriteriaStrength)
 class ClassificationCriteriaStrengthAdmin(admin.ModelAdmin):
     search_fields = ["strength"]
-    list_display = ["strength", "evidence_points"]
+    list_display = ["strength", "shorthand", "evidence_points"]
 
 @admin.register(ClassificationCriteriaCategory)
 class ClassificationCriteriaCategoryAdmin(admin.ModelAdmin):

@@ -31,7 +31,8 @@ class Guideline(models.Model):
 
     def __str__(self):
         return self.guideline
-    
+
+
 class CategorySortOrder(models.Model):
     """
     Through model to allow for categories of codes to be sorted for each guideline
@@ -47,7 +48,6 @@ class CategorySortOrder(models.Model):
         return f"{self.guideline} {self.category} {self.sort_order}"
     
     def get_all_codes_for_category(self):
-
         all_codes_for_guideline = self.guideline.criteria.all().values("criteria__code__code")
 
 
@@ -89,7 +89,7 @@ class ClassificationCriteria(models.Model):
             evidence_points = f"+{self.strength.evidence_points}"
         else:
             evidence_points = self.strength.evidence_points
-        return f"{self.code.code} {self.strength.strength} ({evidence_points})"
+        return f"{self.code.code} {self.strength.pretty_print()} ({evidence_points})"
 
 
 class ClassificationCriteriaCategory(models.Model):
@@ -124,6 +124,7 @@ class ClassificationCriteriaStrength(models.Model):
     Strengths at which the criteria can be applied at
     """
     strength = models.CharField(max_length=20)
+    shorthand = models.CharField(max_length=2)
     evidence_points = models.IntegerField()
 
     class Meta:
@@ -131,6 +132,9 @@ class ClassificationCriteriaStrength(models.Model):
 
     def __str__(self):
         return f"{self.strength} {str(self.evidence_points)}"
+
+    def pretty_print(self):
+        return self.strength.title().replace("_", " ")
 
 
 class ClassifyVariant(models.Model):
@@ -280,7 +284,7 @@ class ClassifyVariantInstance(PolymorphicModel):
                     # get info on what codes have been applied
                     if code_object.applied:
                         svig_codes[section]["applied_codes"].append(
-                            f"{c}_{code_object.applied_strength}"
+                            f"{c}_{code_object.applied_strength.shorthand}"
                         )
                     if code_object.pending:
                         svig_codes[section]["complete"] = False
@@ -594,7 +598,7 @@ class Check(models.Model):
             "VS": "very_strong",
             "ST": "strong",
             "MO": "moderate",
-            "SP": "supporting"
+            "SU": "supporting"
         }
 
         # load all code answer objects & loop through each selection
@@ -687,28 +691,24 @@ class CodeAnswer(models.Model):
     A check of an individual code
 
     """
-    #TODO change this to models instead of code and strength
     code = models.ForeignKey("ClassificationCriteriaCode", on_delete=models.CASCADE)
     check_object = models.ForeignKey("Check", on_delete=models.CASCADE)
     pending = models.BooleanField(default=True)
     applied = models.BooleanField(default=False)
-    applied_strength = models.CharField(max_length=20, blank=True, null=True)
     applied_strength = models.ForeignKey("ClassificationCriteriaStrength", on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f"{self.get_code()}"
 
     def get_code(self):
-        # TODO SVIG specific
         if self.pending:
             return f"{self.code.code}_PE"
         elif self.applied:
-            return f"{self.code.code}_{self.applied_strength}"
+            return f"{self.code.code}_{self.applied_strength.shorthand}"
         else:
             return f"{self.code.code}_NA"
 
     def get_code_type(self):
-        # TODO SVIG specific
         if self.code.pathogenic_or_benign == "B":
             return "Benign"
         elif self.code.pathogenic_or_benign == "O":
@@ -723,9 +723,9 @@ class CodeAnswer(models.Model):
     def get_score(self):
         # TODO SVIG specific
         if self.get_code_type() == "Benign":
-            score = f"{self.applied_strength.evidence_points}"
+            score = f"-{self.applied_strength.evidence_points}"
         elif self.get_code_type() == "Oncogenic":
-            score = f"+{self.strength.evidence_points}"
+            score = f"+{self.applied_strength.evidence_points}"
 
     def get_string(self):
         if self.pending:
