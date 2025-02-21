@@ -9,6 +9,7 @@ from somatic_variant_db.settings import BIOLOGICAL_CLASS_CHOICES
 import yaml
 import os
 from collections import OrderedDict
+import datetime
 
 from analysis.models import VariantPanelAnalysis
 from swgs.models import GermlineVariantInstance, SomaticVariantInstance
@@ -177,9 +178,9 @@ class ClassifyVariantInstance(PolymorphicModel):
 
     def is_full_classification(self):
         if self.reused_classification is None:
-            return False
-        else:
             return True
+        else:
+            return False
 
     def get_all_checks(self):
         return Check.objects.filter(classification=self).order_by("pk")
@@ -397,24 +398,42 @@ class ClassifyVariantInstance(PolymorphicModel):
         return codes_dict
 
     def get_all_previous_classifications(self):
-        all_previous = ClassifyVariantInstance.objects.filter(variant=self.variant, guideline=self.guideline)
+        all_previous = ClassifyVariantInstance.objects.filter(variant=self.variant, guideline=self.guideline).order_by("-pk")
         return all_previous.exclude(pk=self.pk)
 
     def get_most_recent_full_classification(self):
-        # TODO filter for tumour type and full classification
+        # TODO filter for tumour type
         try:
-            most_recent = self.get_all_previous_classifications().latest()
+            # get the most recent classification where the complete_date is not empty
+            most_recent = ClassifyVariantInstance.objects.filter(
+                variant=self.variant,
+                guideline=self.guideline,
+                reused_classification=None,
+            ).latest()
+
+            # check if a review is needed (every 6 months for VUS, 2 years otherwise)
+            if "vus" in most_recent.get_final_class_display().lower():
+                review_period = datetime.timedelta(days=6*365/12)
+            else:
+                review_period = datetime.timedelta(days=24*365/12)
+
+            # work out if date is longer than review period
+            time_diff = timezone.now() - most_recent.complete_date
+            needs_review = time_diff > review_period
+
+            return most_recent, needs_review
+
+        # return none if no previous completed classifications (pending ones wont be included)
         except ClassifyVariantInstance.DoesNotExist:
-            most_recent = None
-        return most_recent
+            return None, False
 
     def get_previous_classification_choices(self):
         """
         get options for the previous classifiation tab dropdown,
         will only let you use previous if there is one
         """
-        previous_classification = self.get_all_previous_classifications()
-        if previous_classification.exists():
+        previous_classification, needs_review = self.get_most_recent_full_classification()
+        if previous_classification and needs_review == False:
             return (
                 ("previous", "Use previous classification"),
                 ("new", "Perform full classification"),

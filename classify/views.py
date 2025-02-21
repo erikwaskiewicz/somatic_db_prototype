@@ -70,13 +70,15 @@ def classify(request, classification):
             raise PermissionDenied()
 
     # load context from classification obj
+    recent_classification, needs_review = classification_obj.get_most_recent_full_classification()
     context = {
         "sample_info": classification_obj.get_sample_info(),
         "variant_info": classification_obj.variant.get_variant_info(),
         "classification_info": classification_obj.get_classification_info(),
         "previous_classifications": {
             "all": classification_obj.get_all_previous_classifications(),
-            "recent": classification_obj.get_most_recent_full_classification(),
+            "recent": recent_classification,
+            "recent_needs_review": needs_review,
         },
     }
 
