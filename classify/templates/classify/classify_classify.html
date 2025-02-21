@@ -1,7 +1,7 @@
 {% load custom_tags %}
 {% load crispy_forms_tags %}
 
-{% if classification_info.current_check.full_classification %}
+{% if classification_info.current_check.previous_classifications_check and classification_info.classification_obj.full_classification %}
 <div class="row">
 
   <!-- Main area ------------------------------------------------------------------------------->

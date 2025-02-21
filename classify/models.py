@@ -201,7 +201,7 @@ class ClassifyVariantInstance(PolymorphicModel):
             "guidelines": self.guideline.guideline,
             "all_checks": self.get_all_checks(),
         }
-        if self.full_classification:
+        if self.full_classification and self.get_latest_check().previous_classifications_check:
             current_score, current_class = current_check_obj.update_classification()
             classification_info["codes_by_category"] = self.get_codes_by_category()
             classification_info["current_class"] = current_class
@@ -393,8 +393,7 @@ class ClassifyVariantInstance(PolymorphicModel):
         return codes_dict
 
     def get_all_previous_classifications(self):
-        all_previous = ClassifyVariantInstance.objects.filter(variant=self.variant, guideline=self.guideline).order_by("-pk")
-        return all_previous.exclude(pk=self.pk)
+        return ClassifyVariantInstance.objects.filter(variant=self.variant, guideline=self.guideline).order_by("-pk")
 
     def get_most_recent_full_classification(self):
         # TODO filter for tumour type
@@ -404,10 +403,8 @@ class ClassifyVariantInstance(PolymorphicModel):
         }
         try:
             # get the most recent classification where the complete_date is not empty
-            most_recent = ClassifyVariantInstance.objects.filter(
-                variant=self.variant,
-                guideline=self.guideline,
-                full_classification=None,
+            most_recent = self.get_all_previous_classifications().filter(
+                full_classification=True,
             ).latest()
 
             # return none if the only response is the current object
@@ -446,8 +443,6 @@ class ClassifyVariantInstance(PolymorphicModel):
 
     def make_new_check(self):
         new_check = Check.objects.create(classification=self)
-        if self.full_classification:
-            new_check.create_code_answers()
 
     @transaction.atomic
     def signoff_check(self, current_check, next_step):
@@ -473,6 +468,7 @@ class ClassifyVariantInstance(PolymorphicModel):
                 # save results to classification obj if final check
                 self.final_class = current_check.final_class
                 self.final_score = current_check.final_score
+                self.complete_date = timezone.now()
                 self.save()
 
         current_check.complete_check()
@@ -543,7 +539,6 @@ class Check(models.Model):
     # TODO choices are linked to SVIG
     """
     classification = models.ForeignKey("ClassifyVariantInstance", on_delete=models.CASCADE)
-    full_classification = models.BooleanField(default=False)
     info_check = models.BooleanField(default=False)
     previous_classifications_check = models.BooleanField(default=False)
     classification_check = models.BooleanField(default=False)
@@ -651,7 +646,7 @@ class Check(models.Model):
             self.final_score = reuse_classification_obj.final_score
             self.classification.save()
         else:
-            self.full_classification = True
+            #self.full_classification = True
             self.classification.full_classification = True
             self.classification.save()
             self.create_code_answers()
@@ -678,7 +673,7 @@ class Check(models.Model):
     def reopen_previous_class_tab(self):
         """reset previous classifications and classify tabs"""
         self.previous_classifications_check = False
-        self.full_classification = False
+        #self.full_classification = False
         self.classification.reused_classification = None
         self.classification.full_classification = False
         self.classification.save()

@@ -132,7 +132,7 @@
             <tbody>
             {% for c in previous_classifications.all %}
               <tr>
-                <td>#{{ c.pk }}</td>
+                <td>#{{ c.pk }} {% if c == classification_info.classification_obj %}<span class="badge badge-warning">Current</span>{% endif %}</td>
                 <td>{{ c.get_sample_info.sample_id }}</td>
                 <td>{{ c.get_sample_info.worksheet_id }}</td>
                 <td>{{ c.get_sample_info.svd_panel }}</td>

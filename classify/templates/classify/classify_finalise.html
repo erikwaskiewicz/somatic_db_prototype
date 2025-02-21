@@ -15,7 +15,7 @@
   {% for c in classification_info.all_checks %}
     <tr>
       <td>{{ forloop.counter }}</td>
-      <td>{{ c.full_classification }}</td>
+      <td>{{ c.classification.full_classification }}</td>
       <td>{{ c.get_final_class_display }} ({{ c.final_score }})</td>
       <td>{{ c.user }}</td>
     </tr>
