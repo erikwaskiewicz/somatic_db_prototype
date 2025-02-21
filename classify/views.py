@@ -29,7 +29,7 @@ def view_classifications(request):
         new_classifications_form = NewClassification(request.POST)
         if new_classifications_form.is_valid():
             # get variant instance
-            var_inst = VariantPanelAnalysis(id=1)  # TODO this is hardcoded for testing
+            var_inst = VariantPanelAnalysis(id=60)  # TODO this is hardcoded for testing
             var, _ = ClassifyVariant.objects.get_or_create(
                 gene = "TET2",
                 hgvs_c = "NM_001127208.3:c.4139A>G",
@@ -74,9 +74,11 @@ def classify(request, classification):
         "sample_info": classification_obj.get_sample_info(),
         "variant_info": classification_obj.variant.get_variant_info(),
         "classification_info": classification_obj.get_classification_info(),
-        "previous_classifications": classification_obj.get_previous_classifications(),
+        "previous_classifications": {
+            "all": classification_obj.get_all_previous_classifications(),
+            "recent": classification_obj.get_most_recent_full_classification(),
+        },
     }
-    # TODO need way of splitting previous classifications into on site and off site
 
     # load in forms and add to context
     previous_class_choices = classification_obj.get_previous_classification_choices()

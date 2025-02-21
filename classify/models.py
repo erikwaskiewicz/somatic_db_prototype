@@ -159,10 +159,27 @@ class ClassifyVariantInstance(PolymorphicModel):
     guideline = models.ForeignKey("Guideline", on_delete=models.CASCADE)
     final_class = models.CharField(max_length=2, choices=BIOLOGICAL_CLASS_CHOICES, blank=True, null=True)
     final_score = models.IntegerField(blank=True, null=True)
-    # TODO? complete and date and link to previous classification
+    complete_date = models.DateTimeField(blank=True, null=True)
+    reused_classification = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
+    # TODO might need to move some references from check.full_classifiaciton
+
+    class Meta:
+        get_latest_by = ["complete_date"]
 
     def __str__(self):
         return f"{self.variant.gene} {self.variant.hgvs_c} (#{self.pk})"
+
+    def is_complete(self):
+        if self.complete_date is None:
+            return False
+        else:
+            return True
+
+    def is_full_classification(self):
+        if self.reused_classification is None:
+            return False
+        else:
+            return True
 
     def get_all_checks(self):
         return Check.objects.filter(classification=self).order_by("pk")
@@ -379,16 +396,24 @@ class ClassifyVariantInstance(PolymorphicModel):
             
         return codes_dict
 
-    def get_previous_classifications(self):
+    def get_all_previous_classifications(self):
         all_previous = ClassifyVariantInstance.objects.filter(variant=self.variant, guideline=self.guideline)
         return all_previous.exclude(pk=self.pk)
+
+    def get_most_recent_full_classification(self):
+        # TODO filter for tumour type and full classification
+        try:
+            most_recent = self.get_all_previous_classifications().latest()
+        except ClassifyVariantInstance.DoesNotExist:
+            most_recent = None
+        return most_recent
 
     def get_previous_classification_choices(self):
         """
         get options for the previous classifiation tab dropdown,
         will only let you use previous if there is one
         """
-        previous_classification = self.get_previous_classifications()
+        previous_classification = self.get_all_previous_classifications()
         if previous_classification.exists():
             return (
                 ("previous", "Use previous classification"),

@@ -23,39 +23,45 @@
   {% endif %}
 
   <!-- main section -->
-   <!-- TODO this is showing the current classification and uncompleted ones-->
-  <h5>Most recent full classification of this variant in {{ sample_info.specific_tumour_type }}</h5>
+  {% if previous_classifications.recent %}
+  <div class="alert alert-success">
+    <h5>There is a previous classification of this variant in this tumour type</h5>
+  </div>
   <table class="table table-hover">
-    <thead>
-      <tr>
-        <th class="col-5">Classification</th>
-        <th class="col-5">Date of classification</th>
-        <th class="col-2"></th>
-      </tr>
-    </thead>
     <tbody>
-      {% for c in previous_classifications|slice:":1" %}
       <tr>
-        <td>{{ c.get_final_class_display }} ({{ c.final_score }})</td>
-        <td>TODO</td>
-        <td><a class="btn btn-light w-100">View</a></td>
+        <th class="col-4">Classification</th>
+        <td class="col-8">
+          {{ previous_classifications.recent.get_final_class_display }} 
+          ({{ previous_classifications.recent.final_score }})
+        </td>
       </tr>
-      {% empty %}
       <tr>
-        <td colspan="3">There are no recent full classifications of this variant in {{ sample_info.specific_tumour_type }}</td>
+        <th>Date</th>
+        <td>{{ previous_classifications.recent.complete_date }}</td>
       </tr>
-      {% endfor %}
+      <tr>
+        <td><a class="btn btn-info w-100" href="{% url 'perform-classification' previous_classifications.recent.pk %}" target="_blank" role="button">View</a></td>
+        <td></td>
+      </tr>
     </tbody>
   </table>
-  <br>
-  <br>
 
+  {% else %}
+  <div class="alert alert-warning">
+     <h5>There are no recent classifications of this variant within this tumour type</h5>
+     <p>Please select "Perform full classification" below</p>
+  </div>
+
+  {% endif %}
+  <br>
+  <br>
 
   <div class="row">
     <div class="col-6"><h5>All classifications of this variant across all tumour types</h5></div>
     <div class="col-6">
       <a class="btn btn-light w-100" data-toggle="modal" href="#previous-modal" role="button" aria-expanded="false" aria-controls="previous-modal">
-        View <span class="badge badge-pill badge-{{ previous_classifications|length|colour_by_count }}">{{ previous_classifications|length }}</span>
+        View <span class="badge badge-pill badge-{{ previous_classifications|length|colour_by_count }}">{{ previous_classifications.all|length }}</span>
       </a>
     </div>
   </div>
@@ -110,15 +116,15 @@
               </tr>
             </thead>
             <tbody>
-            {% for c in previous_classifications %}
+            {% for c in previous_classifications.all %}
               <tr>
-                <td>TODO</td>
+                <td>{{ c.complete_date }}</td>
                 <td>{{ c.get_sample_info.sample_id }}</td>
                 <td>{{ c.get_sample_info.worksheet_id }}</td>
                 <td>{{ c.get_sample_info.svd_panel }}</td>
-                <td>TODO</td>
+                <td>{{ c.is_full_classification }}</td>
                 <td>
-                  {% if c.get_final_class_display %}
+                  {% if c.is_complete %}
                     {{ c.get_final_class_display }} ({{ c.final_score }})
                   {% else %}
                     Pending
