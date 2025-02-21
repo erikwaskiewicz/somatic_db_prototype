@@ -148,6 +148,14 @@
   </div>
 </div>
 
+{% elif classification_info.current_check.classification_check %}
+<div class="container">
+    <div class="alert alert-success">
+      <h5>Section complete!</h5>
+      <p>This step is not required - you have chosen to reruse a previous classification. See Previous classifications tab for details.</p>
+    </div>
+</div>
+
 {% else %}
 <div class="container">
     <div class="alert alert-warning">

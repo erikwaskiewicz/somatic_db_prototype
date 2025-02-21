@@ -96,7 +96,7 @@ def classify(request, classification):
     # TODO comments modal
     # TODO when checks disagree
     # TODO papers model with pubmed api
-    # TODO finish previous classifications page
+    # TODO previous classifications page done but errors if 1st reuses and 2nd does from scratch - force 2nd to send check back
     # TODO send back option should be available all the time
 
     # ------------------------------------------------------------------------
@@ -125,13 +125,11 @@ def classify(request, classification):
             if previous_class_form.is_valid():
                 use_previous = previous_class_form.cleaned_data["use_previous_class"]
                 if use_previous == "previous":
-                    print(use_previous)
-                    # TODO change setting in classification obj and save link to reused classification
-
+                    reuse_classification_obj = recent_classification
                 elif use_previous == "new":
-                    # change setting in classification obj and load up codes linked to check
-                    current_check_obj.complete_previous_class_tab()
-                    return redirect("perform-classification", classification_obj.pk)
+                    reuse_classification_obj = None
+                current_check_obj.complete_previous_class_tab(reuse_classification_obj)
+                return redirect("perform-classification", classification_obj.pk)
 
         # button to revert previous/new classification form
         if "reset_previous_class_check" in request.POST:

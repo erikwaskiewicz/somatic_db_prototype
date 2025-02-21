@@ -161,8 +161,9 @@ class ClassifyVariantInstance(PolymorphicModel):
     final_class = models.CharField(max_length=2, choices=BIOLOGICAL_CLASS_CHOICES, blank=True, null=True)
     final_score = models.IntegerField(blank=True, null=True)
     complete_date = models.DateTimeField(blank=True, null=True)
+    full_classification = models.BooleanField(default=False)
     reused_classification = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
-    # TODO might need to move some references from check.full_classifiaciton
+    # TODO might need to move some references from check.full_classifiaciton. add override bool
 
     class Meta:
         get_latest_by = ["complete_date"]
@@ -175,12 +176,6 @@ class ClassifyVariantInstance(PolymorphicModel):
             return False
         else:
             return True
-
-    def is_full_classification(self):
-        if self.reused_classification is None:
-            return True
-        else:
-            return False
 
     def get_all_checks(self):
         return Check.objects.filter(classification=self).order_by("pk")
@@ -206,7 +201,7 @@ class ClassifyVariantInstance(PolymorphicModel):
             "guidelines": self.guideline.guideline,
             "all_checks": self.get_all_checks(),
         }
-        if current_check_obj.full_classification:
+        if self.full_classification:
             current_score, current_class = current_check_obj.update_classification()
             classification_info["codes_by_category"] = self.get_codes_by_category()
             classification_info["current_class"] = current_class
@@ -403,19 +398,27 @@ class ClassifyVariantInstance(PolymorphicModel):
 
     def get_most_recent_full_classification(self):
         # TODO filter for tumour type
+        review_periods = {
+            "vus": 6,
+            "other": 24,
+        }
         try:
             # get the most recent classification where the complete_date is not empty
             most_recent = ClassifyVariantInstance.objects.filter(
                 variant=self.variant,
                 guideline=self.guideline,
-                reused_classification=None,
+                full_classification=None,
             ).latest()
+
+            # return none if the only response is the current object
+            if most_recent == self:
+                return None, False
 
             # check if a review is needed (every 6 months for VUS, 2 years otherwise)
             if "vus" in most_recent.get_final_class_display().lower():
-                review_period = datetime.timedelta(days=6*365/12)
+                review_period = datetime.timedelta(days=review_periods["vus"]*365/12)
             else:
-                review_period = datetime.timedelta(days=24*365/12)
+                review_period = datetime.timedelta(days=review_periods["other"]*365/12)
 
             # work out if date is longer than review period
             time_diff = timezone.now() - most_recent.complete_date
@@ -443,6 +446,8 @@ class ClassifyVariantInstance(PolymorphicModel):
 
     def make_new_check(self):
         new_check = Check.objects.create(classification=self)
+        if self.full_classification:
+            new_check.create_code_answers()
 
     @transaction.atomic
     def signoff_check(self, current_check, next_step):
@@ -636,12 +641,21 @@ class Check(models.Model):
         self.save()
 
     @transaction.atomic
-    def complete_previous_class_tab(self):
+    def complete_previous_class_tab(self, reuse_classification_obj):
         """ complete step in check obj and load up codes linked to check """
         self.previous_classifications_check = True
-        self.full_classification = True
+        if reuse_classification_obj:
+            self.classification_check = True
+            self.classification.reused_classification = reuse_classification_obj
+            self.final_class = reuse_classification_obj.final_class
+            self.final_score = reuse_classification_obj.final_score
+            self.classification.save()
+        else:
+            self.full_classification = True
+            self.classification.full_classification = True
+            self.classification.save()
+            self.create_code_answers()
         self.save()
-        self.create_code_answers()
 
     @transaction.atomic
     def complete_classification_tab(self):
@@ -665,6 +679,9 @@ class Check(models.Model):
         """reset previous classifications and classify tabs"""
         self.previous_classifications_check = False
         self.full_classification = False
+        self.classification.reused_classification = None
+        self.classification.full_classification = False
+        self.classification.save()
         self.reopen_classification_tab()
         self.delete_code_answers()
 

@@ -11,11 +11,15 @@
 
   <!-- alert if step is complete -->
   {% if classification_info.classification_obj.get_status != "Complete" %}
-  {% if classification_info.current_check.full_classification %}
+  {% if classification_info.current_check.previous_classifications_check %}
   <div class="alert alert-success">
     <h5>Section complete!</h5>
     <p>
+      {% if classification_info.classification_obj.full_classification %}
       You have selected to perform a full classification.
+      {% else %}
+      You have selected to reuse a previous classification.
+      {% endif %}
       <a href="" data-toggle="modal" data-target="#reopen_previous_modal">Click here to reopen</a>
     </p>
   </div>
@@ -23,19 +27,26 @@
   {% endif %}
 
   <!-- main section -->
+  <h5>Most recent classification in this tumour type</h5>
   {% if previous_classifications.recent %}
+
+
+  {% if classification_info.classification_obj.get_status != "Complete" %}
+  {% if not classification_info.current_check.previous_classifications_check %}
     {% if previous_classifications.recent_needs_review %}
     <div class="alert alert-warning">
-      <h5>There is an expired previous classification of this variant in this tumour type</h5>
+      <b>There is an expired previous classification of this variant in this tumour type</b>
       <p>Please select "Perform full classification" from the dropdown below to.</p>
     </div>
 
     {% else %}
     <div class="alert alert-success">
-      <h5>There is a recent previous classification of this variant in this tumour type</h5>
+      <b>There is a recent previous classification of this variant in this tumour type</b>
       <p>Unless there is a specific reason to carry out a full classification, please select "Use previous classification" from the dropdown below.</p>
     </div>
     {% endif %}
+  {% endif %}
+  {% endif %}
 
     <table class="table table-hover">
       <tbody>
@@ -48,7 +59,8 @@
         </tr>
         <tr>
           <th>Date</th>
-          <td colspan="2">{{ previous_classifications.recent.complete_date }}
+          <td colspan="2">{{ previous_classifications.recent.complete_date }} 
+            {% if previous_classifications.recent_needs_review %}<span class="badge badge-pill badge-warning">Review needed</span>{% endif %}
         </td>
         </tr>
         <tr>
@@ -61,7 +73,7 @@
 
   {% else %}
   <div class="alert alert-warning">
-    <h5>There are no recent classifications of this variant within this tumour type</h5>
+    <b>There are no recent classifications of this variant within this tumour type</b>
     <p>Please select "Perform full classification" from the dropdown below.</p>
   </div>
 
@@ -83,23 +95,12 @@
 
   <!-- form to complete section-->
   {% if classification_info.classification_obj.get_status != "Complete" %}
-  {% if not classification_info.current_check.full_classification %}
-  <div class="alert alert-info">
-    <h5>Pick next step</h5>
-    <!--{% if previous_classifications.canonical_match %}
-    <div class="alert alert-success">
-      <p><b>This variant is on the canonical list</b></p>
-      <p><b>TODO add loop for this - This variant has been recently classified in another MPN sample</b></p>
+    {% if not classification_info.current_check.previous_classifications_check %}
+    <div class="alert alert-info">
+      <h5>Pick next step</h5>
+      {% crispy forms.previous_class_form %}
     </div>
-    {% else %}
-    <div class="alert alert-warning">
-      <p>Cannot match this variant to the canonical list or any previously classified variants, please review the variants above and select the next option from the dropdown</p>
-    </div>
-    {% endif %}-->
-
-    {% crispy forms.previous_class_form %}
-  </div>
-  {% endif %}
+    {% endif %}
   {% endif %}
 
 {% endif %}
@@ -138,7 +139,7 @@
                 {% if c.is_complete %}
 
                 <td>{{ c.complete_date|date:"Y-m-d" }}</td>
-                <td>{{ c.is_full_classification }}</td>
+                <td>{{ c.full_classification }}</td>
                 <td><span class="btn btn-{{ c.get_final_class_display|colour_by_class }} w-100">{{ c.get_final_class_display }} ({{ c.final_score }})</span></td>
 
                 {% else %}
