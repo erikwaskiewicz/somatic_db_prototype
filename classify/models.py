@@ -159,10 +159,10 @@ class ClassifyVariantInstance(PolymorphicModel):
     guideline = models.ForeignKey("Guideline", on_delete=models.CASCADE)
     final_class = models.CharField(max_length=2, choices=BIOLOGICAL_CLASS_CHOICES, blank=True, null=True)
     final_score = models.IntegerField(blank=True, null=True)
+    final_class_overridden = models.BooleanField(default=False)
     complete_date = models.DateTimeField(blank=True, null=True)
     full_classification = models.BooleanField(default=False)
     reused_classification = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
-    # TODO add override bool
 
     class Meta:
         get_latest_by = ["complete_date"]
@@ -201,6 +201,7 @@ class ClassifyVariantInstance(PolymorphicModel):
             "all_checks": self.get_all_checks(),
         }
         if self.full_classification and self.get_latest_check().previous_classifications_check:
+            # TODO this isnt displaying overridden classes
             current_score, current_class = current_check_obj.update_classification()
             classification_info["codes_by_category"] = self.get_codes_by_category()
             classification_info["current_class"] = current_class
@@ -473,6 +474,7 @@ class ClassifyVariantInstance(PolymorphicModel):
                 # save results to classification obj if final check
                 self.final_class = current_check.final_class
                 self.final_score = current_check.final_score
+                self.final_class_overridden = current_check.final_class_overridden
                 self.complete_date = timezone.now()
                 self.save()
 
@@ -552,6 +554,7 @@ class Check(models.Model):
     user = models.ForeignKey("auth.User", on_delete=models.PROTECT, blank=True, null=True, related_name="classification_checker")
     final_class = models.CharField(max_length=2, choices=BIOLOGICAL_CLASS_CHOICES, blank=True, null=True)
     final_score = models.IntegerField(blank=True, null=True)
+    final_class_overridden = models.BooleanField(default=False)
 
     def get_code_answers(self):
         """get all classification codes for the current check"""

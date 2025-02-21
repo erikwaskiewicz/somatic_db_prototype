@@ -157,6 +157,7 @@ def classify(request, classification):
                     current_check_obj.final_class = class_dict[final_class]
                 else:
                     current_check_obj.final_class = override
+                    current_check_obj.final_class_overridden = True
                 current_check_obj.classification_check = True
                 current_check_obj.final_score = final_score
                 current_check_obj.save()

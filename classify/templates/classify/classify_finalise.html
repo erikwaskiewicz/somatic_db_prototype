@@ -6,7 +6,7 @@
   <thead>
     <tr>
       <th class="col-2">Check</th>
-      <th class="col-3">Full classification?</th>
+      <th class="col-3">Full classification</th>
       <th class="col-3">Class</th>
       <th class="col-4">User</th>
     </tr>
@@ -21,7 +21,8 @@
       <td>{{ c.classification.full_classification }}</td>
       <td>
         {% if c.get_final_class_display %}
-        {{ c.get_final_class_display }} ({{ c.final_score }})
+        <span class="badge badge-pill badge-{{ c.get_final_class_display|colour_by_class }}">{{ c.get_final_class_display }} ({{ c.final_score }})</span>
+        {% if c.final_class_overridden %}<span class="badge badge-pill badge-warning">Overridden</span>{% endif %}
         {% else %}
         Pending
         {% endif %}
