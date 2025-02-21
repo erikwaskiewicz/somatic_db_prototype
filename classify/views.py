@@ -96,7 +96,7 @@ def classify(request, classification):
     # TODO comments modal
     # TODO when checks disagree
     # TODO papers model with pubmed api
-    # TODO send back option should be available all the time
+    # TODO error handing at finalise tab e.g. prevent variant being closed with only one check
 
     # ------------------------------------------------------------------------
     # when buttons are pressed

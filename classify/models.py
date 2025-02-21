@@ -147,7 +147,6 @@ class ClassifyVariant(models.Model):
             "hgvs_c": self.hgvs_c,
             "hgvs_p": self.hgvs_p,
             "gene": self.gene,
-            "exon": "TODO",
         }
         return variant_info
 
@@ -163,7 +162,7 @@ class ClassifyVariantInstance(PolymorphicModel):
     complete_date = models.DateTimeField(blank=True, null=True)
     full_classification = models.BooleanField(default=False)
     reused_classification = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
-    # TODO might need to move some references from check.full_classifiaciton. add override bool
+    # TODO add override bool
 
     class Meta:
         get_latest_by = ["complete_date"]
