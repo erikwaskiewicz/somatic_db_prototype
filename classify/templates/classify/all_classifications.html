@@ -20,6 +20,7 @@
     <table class="table" id="classifications-table">
       <thead>
         <tr>
+          <th scope="col">Gene</th>
           <th scope="col">Variant</th>
           <th scope="col">Guidelines</th>
           <th scope="col">Status</th>
@@ -29,7 +30,8 @@
       <tbody>
         {% for c in classifications %}
         <tr>
-          <td>{{ c }}</td>
+          <td>{{ c.variant.gene }}</td>
+          <td>{{ c.variant.hgvs_c }}<br>{{ c.variant.hgvs_p }}</td>
           <td><h4><span class="badge badge-{{ c.guideline|colour_by_guideline }}">{{ c.guideline }}</span></h4></td>
           <td>{{ c.get_status }}</td>
           <td style="text-align:right">
@@ -53,6 +55,7 @@
         $('#classifications-table').DataTable({
             paging: true,
             columns: [
+                {orderable: true},
                 {orderable: true},
                 {orderable: true},
                 {orderable: true},
