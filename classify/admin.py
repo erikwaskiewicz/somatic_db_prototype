@@ -32,7 +32,7 @@ class CategorySortOrderAdmin(admin.ModelAdmin):
 
 @admin.register(ClassifyVariant)
 class ClassifyVariantAdmin(admin.ModelAdmin):
-    search_fields = ["hgvs_c", "hgvs_p", "b38_coords", "b37_coords"]
+    search_fields = ["gene", "hgvs_c", "hgvs_p", "genomic_coords", "genome_build"]
 
 @admin.register(ClassifyVariantInstance)
 class ClassifyVariantInstanceAdmin(PolymorphicParentModelAdmin):

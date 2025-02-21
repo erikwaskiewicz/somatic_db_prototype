@@ -32,9 +32,9 @@ def view_classifications(request):
             var_inst = VariantPanelAnalysis(id=1)  # TODO this is hardcoded for testing
             var, _ = ClassifyVariant.objects.get_or_create(
                 hgvs_c = "c.123A>T",
-                hgvs_p = "p.ARG123His",
-                b38_coords = "7:12345A>T",
-                b37_coords = "7:23446A>T",
+                hgvs_p = "p.Arg123His",
+                genomic_coords = "7:12345A>T",
+                genome_build = 38,
             )
             guideline_obj = Guideline.objects.get(pk=2) #TODO hardcoded for testing
             new_var_obj = AnalysisVariantInstance(

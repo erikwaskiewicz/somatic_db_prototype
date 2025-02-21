@@ -129,11 +129,11 @@ class ClassifyVariant(models.Model):
     This is some duplication of information that's stored elsewhere but will make this app easier to work with
     We can populate based on existing models to continue data integrity
     """
+    gene = models.CharField(max_length=200)
     hgvs_c = models.CharField(max_length=200, unique=True)
     hgvs_p = models.CharField(max_length=200, null=True, blank=True)
-    b38_coords = models.CharField(max_length=200)
-    b37_coords = models.CharField(max_length=200) #autopopulate with variantvalidator? otherwise we have to make these both nullable
-    # TODO add gene? have genome build field and just one coords field?
+    genomic_coords = models.CharField(max_length=200)
+    genome_build = models.IntegerField()
 
     def __str__(self):
         return self.hgvs_c
@@ -141,11 +141,11 @@ class ClassifyVariant(models.Model):
     def get_variant_info(self):
         """ get variant specific variables """
         variant_info = {
-            "genomic": self.b38_coords,
-            "build": "TODO",
+            "genomic": self.genomic_coords,
+            "build": self.genome_build,
             "hgvs_c": self.hgvs_c,
             "hgvs_p": self.hgvs_p,
-            "gene": "TODO",
+            "gene": self.gene,
             "exon": "TODO",
         }
         return variant_info
@@ -162,7 +162,7 @@ class ClassifyVariantInstance(PolymorphicModel):
     # TODO? complete and date and link to previous classification
 
     def __str__(self):
-        return f"#{self.pk} - {self.variant.hgvs_c}"
+        return f"{self.variant.gene} {self.variant.hgvs_c} (#{self.pk})"
 
     def get_all_checks(self):
         return Check.objects.filter(classification=self).order_by("pk")
