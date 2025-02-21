@@ -20,22 +20,30 @@
     <table class="table" id="classifications-table">
       <thead>
         <tr>
-          <th scope="col">Gene</th>
-          <th scope="col">Variant</th>
-          <th scope="col">Guidelines</th>
-          <th scope="col">Status</th>
-          <th scope="col"></th>
+          <th class="col-1">ID</th>
+          <th class="col-2">Gene</th>
+          <th class="col-4">Variant</th>
+          <th class="col-1">Guidelines</th>
+          <th class="col-4">Status</th>
         </tr>
       </thead>
       <tbody>
         {% for c in classifications %}
         <tr>
+          <td>{{ c.pk }}</td>
           <td>{{ c.variant.gene }}</td>
           <td>{{ c.variant.hgvs_c }}<br>{{ c.variant.hgvs_p }}</td>
           <td><h4><span class="badge badge-{{ c.guideline|colour_by_guideline }}">{{ c.guideline }}</span></h4></td>
-          <td>{{ c.get_status }}</td>
-          <td style="text-align:right">
-            <a class="btn btn-secondary" href="{% url 'perform-classification' c.pk %}" role="button">View</a>
+          <td>
+            {% if c.get_status == "Complete" %}
+            <a class="btn btn-secondary w-100" href="{% url 'perform-classification' c.pk %}" role="button">Complete</a>
+            {% elif c.get_latest_check.user == None %}
+            <a class="btn btn-primary w-100" href="{% url 'perform-classification' c.pk %}" role="button">{{ c.get_status }} pending - assign to me</a>
+            {% elif c.get_latest_check.user == request.user %}
+            <a class="btn btn-primary w-100" href="{% url 'perform-classification' c.pk %}" role="button">{{ c.get_status }} - assigned to me</a>
+            {% else %}
+            <a class="btn btn-primary w-100 disabled" href="{% url 'perform-classification' c.pk %}" role="button">{{ c.get_status }} - assigned to {{ c.get_latest_check.user }}</a>
+            {% endif %}
           </td>
         </tr>
         {% endfor %}
@@ -59,7 +67,7 @@
                 {orderable: true},
                 {orderable: true},
                 {orderable: true},
-                {orderable: false},
+                {orderable: true},
             ],
             info: true,
             pageLength: 10,
