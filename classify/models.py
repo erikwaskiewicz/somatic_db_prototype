@@ -433,6 +433,12 @@ class ClassifyVariantInstance(PolymorphicModel):
         will only let you use previous if there is one
         """
         previous_classification, needs_review = self.get_most_recent_full_classification()
+        if self.get_all_checks().count() > 1:
+            if self.full_classification:
+                return (("new", "Perform full classification"),)
+            else:
+                return (("previous", "Use previous classification"),)
+
         if previous_classification and needs_review == False:
             return (
                 ("previous", "Use previous classification"),

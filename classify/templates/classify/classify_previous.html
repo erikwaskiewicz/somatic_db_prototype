@@ -33,10 +33,22 @@
 
   {% if classification_info.classification_obj.get_status != "Complete" %}
   {% if not classification_info.current_check.previous_classifications_check %}
-    {% if previous_classifications.recent_needs_review %}
+    {% if classification_info.all_checks|length > 1 %}
+      <div class="alert alert-warning">
+        {% if classification_info.classification_obj.full_classification %}
+        <b>The previous checker selected to perform a full classification</b>
+        <p>Please select "Perform full classification" from the dropdown below to continue, if you disagree with the previous checker then please send the check back on the Finalise tab.</p>
+        {% else %}
+        <b>The previous checker selected to reuse a previous classification</b>
+        <p>Please select "Use previous classification" from the dropdown below to continue, if you disagree with the previous checker then please send the check back on the Finalise tab.</p>
+        {% endif %}
+    </div>
+
+
+    {% elif previous_classifications.recent_needs_review %}
     <div class="alert alert-warning">
       <b>There is an expired previous classification of this variant in this tumour type</b>
-      <p>Please select "Perform full classification" from the dropdown below to.</p>
+      <p>Please select "Perform full classification" from the dropdown below.</p>
     </div>
 
     {% else %}

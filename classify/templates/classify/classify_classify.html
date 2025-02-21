@@ -152,7 +152,31 @@
 <div class="container">
     <div class="alert alert-success">
       <h5>Section complete!</h5>
-      <p>This step is not required - you have chosen to reruse a previous classification. See Previous classifications tab for details.</p>
+      <p>This step is not required - you have chosen to reuse this classification:</p>
+
+      <table class="table table-hover">
+        <tbody>
+          <tr>
+            <th>Classification</th>
+            <td colspan="2">
+              {{ classification_info.classification_obj.reused_classification.get_final_class_display }} 
+              ({{ classification_info.classification_obj.reused_classification.final_score }})
+            </td>
+          </tr>
+          <tr>
+            <th>Date</th>
+            <td colspan="2">{{ classification_info.classification_obj.reused_classification.complete_date }} 
+              {% if previous_classifications.recent_needs_review %}<span class="badge badge-pill badge-warning">Review needed</span>{% endif %}
+          </td>
+          </tr>
+          <tr>
+            <th class="col-4">SVD record</th>
+            <td class="col-4">#{{ classification_info.classification_obj.reused_classification.pk }}</td>
+            <td class="col-4"><a class="btn btn-info w-100" href="{% url 'perform-classification' previous_classifications.recent.pk %}" target="_blank" role="button">View (opens in new tab)</a></td>
+          </tr>
+        </tbody>
+      </table>
+
     </div>
 </div>
 

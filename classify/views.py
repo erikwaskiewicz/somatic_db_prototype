@@ -96,7 +96,6 @@ def classify(request, classification):
     # TODO comments modal
     # TODO when checks disagree
     # TODO papers model with pubmed api
-    # TODO previous classifications page done but errors if 1st reuses and 2nd does from scratch - force 2nd to send check back
     # TODO send back option should be available all the time
 
     # ------------------------------------------------------------------------
