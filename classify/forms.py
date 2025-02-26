@@ -35,25 +35,6 @@ class CheckInfoForm(forms.Form):
         )
 
 
-class ReopenCheckInfoForm(forms.Form):
-    """
-    Form to reset the check info form
-
-    """
-    reset_info_check = forms.BooleanField(
-        required=True,
-        label="Confirm that you want to reopen and that any analysis you've done so far will be wiped",
-    )
-
-    def __init__(self, *args, **kwargs):
-        super(ReopenCheckInfoForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_method = "POST"
-        self.helper.add_input(
-            Submit("submit", "Reopen", css_class="btn btn-danger w-100")
-        )
-
-
 class PreviousClassificationForm(forms.Form):
     """
     Choose whether to use a previous class of start a new one
@@ -76,29 +57,9 @@ class PreviousClassificationForm(forms.Form):
         )
 
 
-class ReopenPreviousClassificationsForm(forms.Form):
-    """
-    Form to reopen the previous classifications form
-
-    """
-    reset_previous_class_check = forms.BooleanField(
-        required=True,
-        label="Confirm that you want to reopen and that any interpretation you've done so far will be wiped",
-    )
-
-    def __init__(self, *args, **kwargs):
-        super(ReopenPreviousClassificationsForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_method = "POST"
-        self.helper.add_input(
-            Submit("submit", "Reopen", css_class="btn btn-danger w-100")
-        )
-
-
 class CompleteClassificationForm(forms.Form):
     """
     Form to complete the classification tab
-    # TODO class options are SVIG specific
 
     """
     CLASS_CHOICES = (("No", "No override"),) + CLASSIFICATION_CHOICES
@@ -117,27 +78,9 @@ class CompleteClassificationForm(forms.Form):
         )
 
 
-class ReopenClassificationForm(forms.Form):
-    """
-    Form to reopen the previous classifications form
-
-    """
-    reset_classification_check = forms.BooleanField(
-        required=True, label="Confirm that you want to reopen"
-    )
-
-    def __init__(self, *args, **kwargs):
-        super(ReopenClassificationForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_method = "POST"
-        self.helper.add_input(
-            Submit("submit", "Reopen", css_class="btn btn-danger w-100")
-        )
-
-
 class FinaliseCheckForm(forms.Form):
     """
-    Form to close a checkand specify the next action
+    Form to close a check and specify the next action
 
     """
     NEXT_STEP_CHOICES = (
@@ -157,3 +100,54 @@ class FinaliseCheckForm(forms.Form):
         self.helper.add_input(
             Submit("submit", "Complete check", css_class="btn btn-danger w-100")
         )
+
+
+class GenericReopenForm(forms.Form):
+    """
+    Generic form to be inherited by all reopen forms
+    """
+    def __init__(self, *args, **kwargs):
+        super(GenericReopenForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "POST"
+        self.helper.add_input(
+            Submit("submit", "Reopen", css_class="btn btn-danger w-100")
+        )
+
+
+class ReopenCheckInfoForm(GenericReopenForm):
+    """
+    Form to reset the check info form
+    """
+    reset_info_check = forms.BooleanField(
+        required=True,
+        label="Confirm that you want to reopen and that any analysis you've done so far will be wiped",
+    )
+
+
+class ReopenPreviousClassificationsForm(GenericReopenForm):
+    """
+    Form to reopen the previous classifications form
+    """
+    reset_previous_class_check = forms.BooleanField(
+        required=True,
+        label="Confirm that you want to reopen and that any interpretation you've done so far will be wiped",
+    )
+
+
+class ReopenClassificationForm(GenericReopenForm):
+    """
+    Form to reopen the previous classifications form
+    """
+    reset_classification_check = forms.BooleanField(
+        required=True, label="Confirm that you want to reopen"
+    )
+
+
+class ReopenAnalysisForm(GenericReopenForm):
+    """
+    Form to reopen a case that was previously closed
+    """
+    reset_analysis_check = forms.BooleanField(
+        required=True, label="Confirm that you want to reopen"
+    )

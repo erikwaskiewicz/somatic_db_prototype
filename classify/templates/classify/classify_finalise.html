@@ -16,7 +16,9 @@
     <tr>
       <td>
         {{ forloop.counter }}
-        {% if c == classification_info.current_check %}<span class="badge badge-pill badge-warning">Current</span>{% endif %}
+        {% if classification_info.classification_obj.get_status != "Complete" and c == classification_info.current_check %}
+        <span class="badge badge-pill badge-warning">Current</span>
+        {% endif %}
       </td>
       <td>{{ c.classification.full_classification }}</td>
       <td>
@@ -45,24 +47,43 @@
 
 {% else %}
   <h5>Final classification</h5>
-  <div class="row">
-    <div class="col-6">
-      <button class="btn btn-block btn-lg btn-disabled btn-{{ classification_info.current_check.get_final_class_display|colour_by_class }}" type="button">
-        <b>{{ classification_info.current_check.get_final_class_display }}</b>
-        &nbsp;<span class="badge badge-light">{{ classification_info.current_check.final_score }}</span>
-      </button>
-    </div>
-  </div>
+  <button class="btn btn-block btn-lg btn-disabled btn-{{ classification_info.current_check.get_final_class_display|colour_by_class }}" type="button">
+    <b>{{ classification_info.current_check.get_final_class_display }}</b>&nbsp;
+    <span class="badge badge-light">
+        {{ classification_info.current_check.final_score }}
+        {% if classification_info.current_check.final_class_overridden %} - overridden{% endif %}
+    </span>
+  </button>
   <br>
   <br>
 
   <div class="alert alert-warning">
     <h5>Analysis complete!</h5>
     <p>
-      Analysis for this variant has been completed.
-      <a href="" data-toggle="modal" data-target="#">Click here to reopen</a>
+      Analysis for this variant has been completed. <a href="" data-toggle="modal" data-target="#reopen_analysis_modal">Click here to reopen</a>
     </p>
   </div>
 
 {% endif %}
 
+
+
+<!-- Reopen modal -->
+<div class="modal fade" id="reopen_analysis_modal" tabindex="-1" aria-labelledby="reopen_analysis_modal_label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reopen_analysis_modal_label">Reopen?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger">
+          <p><b>Warning!</b> Analysis for this variant is complete, this will reopen analysis from the finalise tab of the last checker</p>
+        </div>
+        {% crispy forms.reopen_analysis_form %}
+      </div>
+    </div>
+  </div>
+</div>

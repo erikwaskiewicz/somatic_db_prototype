@@ -88,17 +88,14 @@ def classify(request, classification):
     previous_class_choices = classification_obj.get_previous_classification_choices()
     context["forms"] = {
         "check_info_form": CheckInfoForm(),
-        "reopen_check_info_form": ReopenCheckInfoForm(),
         "previous_class_form": PreviousClassificationForm(previous_class_choices=previous_class_choices),
-        "reopen_previous_class_form": ReopenPreviousClassificationsForm(),
         "complete_classification_form": CompleteClassificationForm(),
-        "reopen_classification_form": ReopenClassificationForm(),
         "finalise_form": FinaliseCheckForm(),
+        "reopen_check_info_form": ReopenCheckInfoForm(),
+        "reopen_previous_class_form": ReopenPreviousClassificationsForm(),
+        "reopen_classification_form": ReopenClassificationForm(),
+        "reopen_analysis_form": ReopenAnalysisForm(),
     }
-    # TODO comments modal
-    # TODO when checks disagree
-    # TODO papers model with pubmed api
-    # TODO error handing at finalise tab e.g. prevent variant being closed with only one check
 
     # ------------------------------------------------------------------------
     # when buttons are pressed
@@ -175,6 +172,16 @@ def classify(request, classification):
                 updated, err = classification_obj.signoff_check(
                     current_check_obj, next_step
                 )
+                if updated:
+                    return redirect("view-all-classifications")
+                else:
+                    context["warning"] = [err]
+
+        # button to reopen a closed analysis
+        if "reset_analysis_check" in request.POST:
+            reopen_analysis_form = ReopenAnalysisForm(request.POST)
+            if reopen_analysis_form.is_valid():
+                updated, err = classification_obj.reopen_analysis(request.user)
                 if updated:
                     return redirect("view-all-classifications")
                 else:

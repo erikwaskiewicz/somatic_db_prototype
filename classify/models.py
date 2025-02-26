@@ -203,7 +203,6 @@ class ClassifyVariantInstance(PolymorphicModel):
 
         # only pull this info if user selected full classification, otherwise code objects wont exist and it'll error
         if self.full_classification and self.get_latest_check().previous_classifications_check:
-            # TODO this isnt displaying overridden classes
             current_score, current_class = current_check_obj.update_classification()
             classification_info["codes_by_category"] = self.get_codes_by_category()
             classification_info["current_score"] = current_score
@@ -462,17 +461,34 @@ class ClassifyVariantInstance(PolymorphicModel):
     def make_new_check(self):
         new_check = Check.objects.create(classification=self)
 
+    def reopen_analysis(self, user):
+        previous_check = self.get_latest_check()
+        if user != previous_check.user:
+            return False, f"Only {previous_check.user} can reopen this case"
+        else:
+            self.final_class = None
+            self.final_score = None
+            self.final_class_overridden = False
+            self.complete_date = None
+            previous_check.reopen_check()
+            self.save()
+            return True, None
+
     @transaction.atomic
     def signoff_check(self, current_check, next_step):
         """complete a whole check"""
+        # always complete the current check regardless of next step
+        updated, err = current_check.complete_check()
+        if not updated:
+            return False, err
+
         if next_step == "extra_check":
             self.make_new_check()
 
         if next_step == "send_back":
             previous_checks = self.get_previous_checks()
             if previous_checks.exists():
-                previous_check = previous_checks[0]
-                previous_check.reopen_check()
+                previous_check[0].reopen_check()
                 current_check.delete()
                 return True, None
             else:
@@ -489,8 +505,6 @@ class ClassifyVariantInstance(PolymorphicModel):
                 self.final_class_overridden = current_check.final_class_overridden
                 self.complete_date = timezone.now()
                 self.save()
-
-        current_check.complete_check()
 
         return True, None
 
@@ -555,7 +569,6 @@ class ManualVariantInstance(ClassifyVariantInstance):
 class Check(models.Model):
     """
     A check of a classification
-    # TODO choices are linked to SVIG
     """
     classification = models.ForeignKey("ClassifyVariantInstance", on_delete=models.CASCADE)
     info_check = models.BooleanField(default=False)
@@ -679,9 +692,17 @@ class Check(models.Model):
 
     @transaction.atomic
     def complete_check(self):
-        self.check_complete = True
-        self.signoff_time = timezone.now()
-        self.save()
+        if self.info_check == False:
+            return False, "Please complete the Variant details tab"
+        elif self.previous_classifications_check == False:
+            return False, "Please complete the Previous classifications tab"
+        elif self.classification_check == False:
+            return False, "Please complete the Classification tab"
+        else:
+            self.check_complete = True
+            self.signoff_time = timezone.now()
+            self.save()
+            return True, None
 
     @transaction.atomic
     def reopen_info_tab(self):
@@ -693,7 +714,6 @@ class Check(models.Model):
     def reopen_previous_class_tab(self):
         """reset previous classifications and classify tabs"""
         self.previous_classifications_check = False
-        #self.full_classification = False
         self.classification.reused_classification = None
         self.classification.full_classification = False
         self.classification.save()
