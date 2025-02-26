@@ -125,7 +125,7 @@
     {% if not classification_info.current_check.previous_classifications_check %}
     <div class="alert alert-info">
       <h5>Pick next step</h5>
-      {% crispy forms.previous_class_form %}
+      {% crispy forms.complete_previous_class_form %}
     </div>
     {% endif %}
   {% endif %}

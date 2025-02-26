@@ -87,10 +87,10 @@ def classify(request, classification):
     # load in forms and add to context
     previous_class_choices = classification_obj.get_previous_classification_choices()
     context["forms"] = {
-        "check_info_form": CheckInfoForm(),
-        "previous_class_form": PreviousClassificationForm(previous_class_choices=previous_class_choices),
+        "complete_check_info_form": CompleteCheckInfoForm(),
+        "complete_previous_class_form": CompletePreviousClassificationsForm(previous_class_choices=previous_class_choices),
         "complete_classification_form": CompleteClassificationForm(),
-        "finalise_form": FinaliseCheckForm(),
+        "complete_analysis_form": CompleteAnalysisForm(),
         "reopen_check_info_form": ReopenCheckInfoForm(),
         "reopen_previous_class_form": ReopenPreviousClassificationsForm(),
         "reopen_classification_form": ReopenClassificationForm(),
@@ -102,14 +102,14 @@ def classify(request, classification):
     if request.method == "POST":
 
         # button to confirm sample/variant tab has been checked
-        if "check_info_form" in request.POST:
-            check_info_form = CheckInfoForm(request.POST)
-            if check_info_form.is_valid():
+        if "complete_check_info_form" in request.POST:
+            complete_check_info_form = CompleteCheckInfoForm(request.POST)
+            if complete_check_info_form.is_valid():
                 current_check_obj.complete_info_tab()
                 return redirect("perform-classification", classification)
 
         # button to reset sample/patient info tab
-        if "reset_info_check" in request.POST:
+        if "reopen_check_info_form" in request.POST:
             reopen_check_info_form = ReopenCheckInfoForm(request.POST)
             if reopen_check_info_form.is_valid():
                 current_check_obj.reopen_info_tab()
@@ -117,11 +117,11 @@ def classify(request, classification):
 
         # button to select to use a previous classification or start a new one
         if "use_previous_class" in request.POST:
-            previous_class_form = PreviousClassificationForm(
+            complete_previous_class_form = CompletePreviousClassificationsForm(
                 request.POST, previous_class_choices=previous_class_choices
             )
-            if previous_class_form.is_valid():
-                use_previous = previous_class_form.cleaned_data["use_previous_class"]
+            if complete_previous_class_form.is_valid():
+                use_previous = complete_previous_class_form.cleaned_data["use_previous_class"]
                 if use_previous == "previous":
                     reuse_classification_obj = recent_classification
                 elif use_previous == "new":
@@ -130,7 +130,7 @@ def classify(request, classification):
                 return redirect("perform-classification", classification_obj.pk)
 
         # button to revert previous/new classification form
-        if "reset_previous_class_check" in request.POST:
+        if "reopen_previous_class_form" in request.POST:
             reopen_previous_class_form = ReopenPreviousClassificationsForm(request.POST)
             if reopen_previous_class_form.is_valid():
                 current_check_obj.reopen_previous_class_tab()
@@ -145,17 +145,17 @@ def classify(request, classification):
                 return redirect("perform-classification", classification)
 
         # button to reopen classification
-        if "reset_classification_check" in request.POST:
+        if "reopen_classification_check" in request.POST:
             reopen_classification_form = ReopenClassificationForm(request.POST)
             if reopen_classification_form.is_valid():
                 current_check_obj.reopen_classification_tab()
                 return redirect("perform-classification", classification)
 
         # button to finish check
-        if "finalise_check" in request.POST:
-            finalise_form = FinaliseCheckForm(request.POST)
-            if finalise_form.is_valid():
-                next_step = finalise_form.cleaned_data["next_step"]
+        if "complete_analysis_form" in request.POST:
+            complete_analysis_form = CompleteAnalysisForm(request.POST)
+            if complete_analysis_form.is_valid():
+                next_step = complete_analysis_form.cleaned_data["next_step"]
                 updated, err = classification_obj.signoff_check(
                     current_check_obj, next_step
                 )
@@ -165,7 +165,7 @@ def classify(request, classification):
                     context["warning"] = [err]
 
         # button to reopen a closed analysis
-        if "reset_analysis_check" in request.POST:
+        if "reopen_analysis_form" in request.POST:
             reopen_analysis_form = ReopenAnalysisForm(request.POST)
             if reopen_analysis_form.is_valid():
                 updated, err = classification_obj.reopen_analysis(request.user)

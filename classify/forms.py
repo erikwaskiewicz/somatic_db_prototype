@@ -17,17 +17,17 @@ class NewClassification(forms.Form):
         self.helper.add_input(Submit("submit", "New", css_class="btn btn-info w-100"))
 
 
-class CheckInfoForm(forms.Form):
+class CompleteCheckInfoForm(forms.Form):
     """
     Form that users tick to confirm they've checked the patient/variant info tab
 
     """
-    check_info_form = forms.BooleanField(
+    complete_check_info_form = forms.BooleanField(
         required=True, label="Confirm that the information on this page is correct"
     )
 
     def __init__(self, *args, **kwargs):
-        super(CheckInfoForm, self).__init__(*args, **kwargs)
+        super(CompleteCheckInfoForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = "POST"
         self.helper.add_input(
@@ -35,7 +35,7 @@ class CheckInfoForm(forms.Form):
         )
 
 
-class PreviousClassificationForm(forms.Form):
+class CompletePreviousClassificationsForm(forms.Form):
     """
     Choose whether to use a previous class of start a new one
 
@@ -48,7 +48,7 @@ class PreviousClassificationForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.previous_class_choices = kwargs.pop("previous_class_choices")
 
-        super(PreviousClassificationForm, self).__init__(*args, **kwargs)
+        super(CompletePreviousClassificationsForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = "POST"
         self.fields["use_previous_class"].choices = self.previous_class_choices
@@ -78,7 +78,7 @@ class CompleteClassificationForm(forms.Form):
         )
 
 
-class FinaliseCheckForm(forms.Form):
+class CompleteAnalysisForm(forms.Form):
     """
     Form to close a check and specify the next action
 
@@ -89,12 +89,12 @@ class FinaliseCheckForm(forms.Form):
         ("send_back", "Send back to previous checker"),
     )
     next_step = forms.ChoiceField(choices=NEXT_STEP_CHOICES)
-    finalise_check = forms.BooleanField(
+    complete_analysis_form = forms.BooleanField(
         required=True, label="Confirm that analysis is complete"
     )
 
     def __init__(self, *args, **kwargs):
-        super(FinaliseCheckForm, self).__init__(*args, **kwargs)
+        super(CompleteAnalysisForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = "POST"
         self.helper.add_input(
@@ -119,7 +119,7 @@ class ReopenCheckInfoForm(GenericReopenForm):
     """
     Form to reset the check info form
     """
-    reset_info_check = forms.BooleanField(
+    reopen_check_info_form = forms.BooleanField(
         required=True,
         label="Confirm that you want to reopen and that any analysis you've done so far will be wiped",
     )
@@ -129,7 +129,7 @@ class ReopenPreviousClassificationsForm(GenericReopenForm):
     """
     Form to reopen the previous classifications form
     """
-    reset_previous_class_check = forms.BooleanField(
+    reopen_previous_class_form = forms.BooleanField(
         required=True,
         label="Confirm that you want to reopen and that any interpretation you've done so far will be wiped",
     )
@@ -139,7 +139,7 @@ class ReopenClassificationForm(GenericReopenForm):
     """
     Form to reopen the previous classifications form
     """
-    reset_classification_check = forms.BooleanField(
+    reopen_classification_check = forms.BooleanField(
         required=True, label="Confirm that you want to reopen"
     )
 
@@ -148,6 +148,6 @@ class ReopenAnalysisForm(GenericReopenForm):
     """
     Form to reopen a case that was previously closed
     """
-    reset_analysis_check = forms.BooleanField(
+    reopen_analysis_form = forms.BooleanField(
         required=True, label="Confirm that you want to reopen"
     )
