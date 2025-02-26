@@ -686,9 +686,22 @@ class Check(models.Model):
         self.save()
 
     @transaction.atomic
-    def complete_classification_tab(self):
-        # TODO transfer from view
-        pass
+    def complete_classification_tab(self, override):
+        """complete classification tab and same final class into to check model"""
+        final_score, final_class = self.update_classification()
+        # if final classification isnt overridden
+        if override == "No":
+            # TODO needs to be from models
+            class_dict = dict(map(reversed, CLASSIFICATION_CHOICES))
+            self.final_class = class_dict[final_class]
+        # if final class is overridden, override variable will contain what class its been overridden to
+        else:
+            self.final_class = override
+            self.final_class_overridden = True
+
+        self.classification_check = True
+        self.final_score = final_score
+        self.save()
 
     @transaction.atomic
     def complete_check(self):

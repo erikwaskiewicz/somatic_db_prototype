@@ -140,21 +140,8 @@ def classify(request, classification):
         if "complete_classification" in request.POST:
             complete_classification_form = CompleteClassificationForm(request.POST)
             if complete_classification_form.is_valid():
-                final_score, final_class = (
-                    current_check_obj.update_classification()
-                )
                 override = complete_classification_form.cleaned_data["override"]
-                # TODO needs to be from models
-                if override == "No":
-                    class_dict = dict(map(reversed, CLASSIFICATION_CHOICES))
-                    current_check_obj.final_class = class_dict[final_class]
-                else:
-                    current_check_obj.final_class = override
-                    current_check_obj.final_class_overridden = True
-
-                current_check_obj.classification_check = True
-                current_check_obj.final_score = final_score
-                current_check_obj.save()
+                current_check_obj.complete_classification_tab(override)
                 return redirect("perform-classification", classification)
 
         # button to reopen classification
