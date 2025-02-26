@@ -40,7 +40,7 @@
             {% if c.get_status == "Complete" %}
             <a class="btn btn-secondary w-100" href="{% url 'perform-classification' c.pk %}" role="button">Complete<br>&nbsp;</a>
             {% elif c.get_latest_check.user == None %}
-            <a class="btn btn-primary w-100" href="{% url 'perform-classification' c.pk %}" role="button">{{ c.get_status }} pending<br>Assign to me</a>
+            <a class="btn btn-primary w-100" href="{% url 'perform-classification' c.pk %}" role="button">{{ c.get_status }}<br>Pending - Assign to me</a>
             {% elif c.get_latest_check.user == request.user %}
             <a class="btn btn-primary w-100" href="{% url 'perform-classification' c.pk %}" role="button">{{ c.get_status }}<br>Assigned to me</a>
             {% else %}
