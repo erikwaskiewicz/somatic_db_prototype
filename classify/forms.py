@@ -2,7 +2,7 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
-from somatic_variant_db.settings import BIOLOGICAL_CLASS_CHOICES
+from somatic_variant_db.settings import CLASSIFICATION_CHOICES
 
 
 class NewClassification(forms.Form):
@@ -101,7 +101,7 @@ class CompleteClassificationForm(forms.Form):
     # TODO class options are SVIG specific
 
     """
-    CLASS_CHOICES = (("No", "No override"),) + BIOLOGICAL_CLASS_CHOICES
+    CLASS_CHOICES = (("No", "No override"),) + CLASSIFICATION_CHOICES
 
     override = forms.ChoiceField(choices=CLASS_CHOICES)
     complete_classification = forms.BooleanField(

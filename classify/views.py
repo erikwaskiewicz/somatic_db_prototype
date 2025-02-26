@@ -7,6 +7,8 @@ from .models import *
 from .forms import *
 
 from analysis.models import VariantPanelAnalysis
+from somatic_variant_db.settings import CLASSIFICATION_CHOICES
+
 
 import json
 
@@ -145,19 +147,14 @@ def classify(request, classification):
                     current_check_obj.update_classification()
                 )
                 override = complete_classification_form.cleaned_data["override"]
-                # TODO pathogenic not here, needs simplifing too
+                # TODO needs to be from models
                 if override == "No":
-                    class_dict = {
-                        "Benign": "B",
-                        "Likely benign": "LB",
-                        "VUS": "V",
-                        "Likely oncogenic": "LO",
-                        "Oncogenic": "O",
-                    }
+                    class_dict = dict(map(reversed, CLASSIFICATION_CHOICES))
                     current_check_obj.final_class = class_dict[final_class]
                 else:
                     current_check_obj.final_class = override
                     current_check_obj.final_class_overridden = True
+
                 current_check_obj.classification_check = True
                 current_check_obj.final_score = final_score
                 current_check_obj.save()

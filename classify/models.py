@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.template.defaultfilters import slugify
 from polymorphic.models import PolymorphicModel
 
-from somatic_variant_db.settings import BIOLOGICAL_CLASS_CHOICES
+from somatic_variant_db.settings import CLASSIFICATION_CHOICES
 
 import yaml
 import os
@@ -157,7 +157,7 @@ class ClassifyVariantInstance(PolymorphicModel):
     """
     variant = models.ForeignKey("ClassifyVariant", on_delete=models.CASCADE)
     guideline = models.ForeignKey("Guideline", on_delete=models.CASCADE)
-    final_class = models.CharField(max_length=2, choices=BIOLOGICAL_CLASS_CHOICES, blank=True, null=True)
+    final_class = models.CharField(max_length=2, choices=CLASSIFICATION_CHOICES, blank=True, null=True)
     final_score = models.IntegerField(blank=True, null=True)
     final_class_overridden = models.BooleanField(default=False)
     complete_date = models.DateTimeField(blank=True, null=True)
@@ -412,10 +412,16 @@ class ClassifyVariantInstance(PolymorphicModel):
                 return None, False
 
             # check if a review is needed (every 6 months for VUS, 2 years otherwise)
-            if "vus" in most_recent.get_final_class_display().lower():
-                review_period = datetime.timedelta(days=review_periods["vus"]*365/12)
+            previous = most_recent.get_final_class_display()
+            if previous:
+                if "vus" in previous.lower():
+                    review_period = datetime.timedelta(days=review_periods["vus"]*365/12)
+                else:
+                    review_period = datetime.timedelta(days=review_periods["other"]*365/12)
             else:
-                review_period = datetime.timedelta(days=review_periods["other"]*365/12)
+                return None, False
+
+            # TODO maybe a warning if multiple pending classifications for same variant?
 
             # work out if date is longer than review period
             time_diff = timezone.now() - most_recent.complete_date
@@ -552,7 +558,7 @@ class Check(models.Model):
     check_complete = models.BooleanField(default=False)
     signoff_time = models.DateTimeField(blank=True, null=True)
     user = models.ForeignKey("auth.User", on_delete=models.PROTECT, blank=True, null=True, related_name="classification_checker")
-    final_class = models.CharField(max_length=2, choices=BIOLOGICAL_CLASS_CHOICES, blank=True, null=True)
+    final_class = models.CharField(max_length=2, choices=CLASSIFICATION_CHOICES, blank=True, null=True)
     final_score = models.IntegerField(blank=True, null=True)
     final_class_overridden = models.BooleanField(default=False)
 
