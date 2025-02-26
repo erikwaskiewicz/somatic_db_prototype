@@ -200,12 +200,18 @@ class ClassifyVariantInstance(PolymorphicModel):
             "guidelines": self.guideline.guideline,
             "all_checks": self.get_all_checks(),
         }
+
+        # only pull this info if user selected full classification, otherwise code objects wont exist and it'll error
         if self.full_classification and self.get_latest_check().previous_classifications_check:
             # TODO this isnt displaying overridden classes
             current_score, current_class = current_check_obj.update_classification()
             classification_info["codes_by_category"] = self.get_codes_by_category()
-            classification_info["current_class"] = current_class
             classification_info["current_score"] = current_score
+            classification_info["final_class_overridden"] = current_check_obj.final_class_overridden
+            if current_check_obj.final_class_overridden:
+                classification_info["current_class"] = current_check_obj.get_final_class_display()
+            else:
+                classification_info["current_class"] = current_class
         return classification_info
 
     def get_dropdown_options(self, code_list):

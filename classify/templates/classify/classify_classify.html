@@ -89,7 +89,11 @@
 
       <div id="class-box" >
         <button class="btn btn-block btn-lg btn-disabled btn-{{ classification_info.current_class|colour_by_class }}" type="button">
-          Current class:<br><b>{{ classification_info.current_class }} </b><span class="badge badge-light">{{ classification_info.current_score }}</span>
+          Current class:<br><b>{{ classification_info.current_class }}&nbsp;</b>
+          <span class="badge badge-light">
+            {{ classification_info.current_score }}
+            {% if classification_info.final_class_overridden %} - overridden{% endif %}
+        </span>
         </button>
       </div>
       <p></p>
