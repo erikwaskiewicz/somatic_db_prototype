@@ -643,7 +643,10 @@ class Check(models.Model):
         return score_counter, classification
     
     def get_final_class_display(self):
-        return self.final_class.final_classification
+        try:
+            return self.final_class.final_classification
+        except AttributeError:
+            return "Pending"
 
     @transaction.atomic
     def update_codes(self, selections):
@@ -747,6 +750,7 @@ class Check(models.Model):
         self.classification.reused_classification = None
         self.classification.full_classification = False
         self.classification.save()
+        self.final_class_overridden = False # reset to False if needed
         self.reopen_classification_tab()
         self.delete_code_answers()
 
