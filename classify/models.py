@@ -762,6 +762,7 @@ class Check(models.Model):
         self.classification_check = False
         self.final_score = None
         self.final_class = None
+        self.final_class_overridden = False # reset to False if needed
         self.save()
 
     @transaction.atomic
