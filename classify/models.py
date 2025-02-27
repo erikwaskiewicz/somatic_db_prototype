@@ -717,6 +717,8 @@ class Check(models.Model):
         # if final classification isnt overridden
         if override != "No":
             self.final_class_overridden = True
+            override_final_class_obj = self.classification.guideline.final_classifications.filter(pk=override)[0]
+            self.final_class = override_final_class_obj
         else:
             self.final_class = final_class_obj
         self.classification_check = True
