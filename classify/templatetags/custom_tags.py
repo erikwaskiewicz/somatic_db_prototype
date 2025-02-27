@@ -56,10 +56,10 @@ def colour_by_guideline(value):
     """
     colour different guidelines differently, e.g. ACMG/ SVIG
     """
-    value = value.lower()
-    if "acmg" in value:
+    print(value)
+    if value=="G":
         return "primary"
-    if "svig" in value:
+    if value=="S":
         return "info"
     else:
         return "success"

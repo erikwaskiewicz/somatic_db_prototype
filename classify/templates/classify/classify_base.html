@@ -34,7 +34,7 @@
                 <td>{{ sample_info.sample_id }}<br>{{ sample_info.worksheet_id }}</td>
                 <td>{{ sample_info.svd_panel }}<br>{{ sample_info.specific_tumour_type }}</td>
                 <td>
-                    <h4><span class="badge badge-{{ classification_info.guidelines|colour_by_guideline }}">{{ classification_info.guidelines }}</span></h4>
+                    <h4><span class="badge badge-{{ classification_info.somatic_or_germline|colour_by_guideline }}">{{ classification_info.guidelines }}</span></h4>
                     {{ classification_info.classification_obj.get_status }}
                 </td>
                 <td>

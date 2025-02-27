@@ -237,6 +237,7 @@ class ClassifyVariantInstance(PolymorphicModel):
             "classification_obj": self,
             "current_check": current_check_obj,
             "guidelines": self.guideline.guideline,
+            "somatic_or_germline": self.guideline.somatic_or_germline,
             "all_checks": self.get_all_checks(),
         }
 
