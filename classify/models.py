@@ -527,7 +527,7 @@ class ClassifyVariantInstance(PolymorphicModel):
         if next_step == "send_back":
             previous_checks = self.get_previous_checks()
             if previous_checks.exists():
-                previous_check[0].reopen_check()
+                previous_checks[0].reopen_check()
                 current_check.delete()
                 return True, None
             else:
