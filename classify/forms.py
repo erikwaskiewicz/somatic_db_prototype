@@ -2,8 +2,6 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
-from somatic_variant_db.settings import CLASSIFICATION_CHOICES
-
 
 class NewClassification(forms.Form):
     """
@@ -62,15 +60,18 @@ class CompleteClassificationForm(forms.Form):
     Form to complete the classification tab
 
     """
-    CLASS_CHOICES = (("No", "No override"),) + CLASSIFICATION_CHOICES
 
-    override = forms.ChoiceField(choices=CLASS_CHOICES)
+    # choicefield will be populated depending on the guideline
+    override = forms.ChoiceField()
     complete_classification = forms.BooleanField(
         required=True, label="Confirm analysis is complete"
     )
 
     def __init__(self, *args, **kwargs):
+        classification_options = kwargs.pop("classification_options")
+        self.CLASS_CHOICES = (("No", "No override"),) + classification_options
         super(CompleteClassificationForm, self).__init__(*args, **kwargs)
+        self.fields['override'].choices = self.CLASS_CHOICES
         self.helper = FormHelper()
         self.helper.form_method = "POST"
         self.helper.add_input(

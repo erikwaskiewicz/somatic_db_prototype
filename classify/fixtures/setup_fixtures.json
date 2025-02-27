@@ -4,6 +4,7 @@
     "pk": 1,
     "fields": {
         "guideline": "acgs_2024",
+        "somatic_or_germline": "G",
         "criteria": [
             1,
             2,
@@ -58,6 +59,15 @@
             52,
             53,
             54
+        ],
+        "final_classifications": [
+            1,
+            2,
+            4,
+            5,
+            6,
+            8,
+            10
         ]
     }
 },
@@ -66,6 +76,7 @@
     "pk": 2,
     "fields": {
         "guideline": "svig_2024",
+        "somatic_or_germline": "S",
         "criteria": [
             55,
             56,
@@ -104,7 +115,94 @@
             89,
             90,
             91
+        ],
+        "final_classifications": [
+            1,
+            2,
+            3,
+            7,
+            9
         ]
+    }
+},
+{
+    "model": "classify.finalclassification",
+    "pk": 1,
+    "fields": {
+        "final_classification": "Benign",
+        "minimum_score": -9999
+    }
+},
+{
+    "model": "classify.finalclassification",
+    "pk": 2,
+    "fields": {
+        "final_classification": "Likely benign",
+        "minimum_score": -6
+    }
+},
+{
+    "model": "classify.finalclassification",
+    "pk": 3,
+    "fields": {
+        "final_classification": "VUS",
+        "minimum_score": 0
+    }
+},
+{
+    "model": "classify.finalclassification",
+    "pk": 4,
+    "fields": {
+        "final_classification": "VUS cold",
+        "minimum_score": 0
+    }
+},
+{
+    "model": "classify.finalclassification",
+    "pk": 5,
+    "fields": {
+        "final_classification": "VUS warm",
+        "minimum_score": 2
+    }
+},
+{
+    "model": "classify.finalclassification",
+    "pk": 6,
+    "fields": {
+        "final_classification": "VUS hot",
+        "minimum_score": 4
+    }
+},
+{
+    "model": "classify.finalclassification",
+    "pk": 7,
+    "fields": {
+        "final_classification": "Likely oncogenic",
+        "minimum_score": 6
+    }
+},
+{
+    "model": "classify.finalclassification",
+    "pk": 8,
+    "fields": {
+        "final_classification": "Likely pathogenic",
+        "minimum_score": 6
+    }
+},
+{
+    "model": "classify.finalclassification",
+    "pk": 9,
+    "fields": {
+        "final_classification": "Oncogenic",
+        "minimum_score": 10
+    }
+},
+{
+    "model": "classify.finalclassification",
+    "pk": 10,
+    "fields": {
+        "final_classification": "Pathogenic",
+        "minimum_score": 10
     }
 },
 {

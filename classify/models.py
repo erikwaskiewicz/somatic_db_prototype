@@ -4,8 +4,6 @@ from django.utils import timezone
 from django.template.defaultfilters import slugify
 from polymorphic.models import PolymorphicModel
 
-from somatic_variant_db.settings import CLASSIFICATION_CHOICES
-
 import yaml
 import os
 from collections import OrderedDict
@@ -19,12 +17,53 @@ class Guideline(models.Model):
     """
     Model to store which guidelines are being used
     """
+
+    SOMATIC_OR_GERMLINE_CHOICES = (
+        ("S", "somatic"),
+        ("G", "germline")
+    )
+
     guideline = models.CharField(max_length=200, unique=True)
     criteria = models.ManyToManyField("ClassificationCriteria", related_name="guideline")
     sort_order = models.ManyToManyField("ClassificationCriteriaCategory", through="CategorySortOrder")
+    somatic_or_germline = models.CharField(max_length=1, choices=SOMATIC_OR_GERMLINE_CHOICES)
+    final_classifications = models.ManyToManyField('FinalClassification', related_name="guidelines")
 
     def __str__(self):
         return self.guideline
+    
+    def create_final_classification_ordered_dict(self):
+        """
+        Converts the final classificaiton information in to an ordered dict to work with the check model classification function
+        """
+        final_classification_dict = OrderedDict()
+        for classification in self.final_classifications.all().order_by('minimum_score').values():
+            final_classification_dict[classification["final_classification"]] = classification["minimum_score"]
+        return final_classification_dict
+
+    def create_final_classification_tuple(self):
+        """
+        Creates the final classificationn information in to a tuple for the html dropdowns
+        """
+        final_classification_list = []
+        for classification in self.final_classifications.all().order_by('minimum_score').values():
+            c = (classification["id"], classification["final_classification"])
+            final_classification_list.append(c)
+        return tuple(final_classification_list)
+
+    
+class FinalClassification(models.Model):
+    """
+    Final classification options. Minimum score set as -9999 for benign options 
+    """
+    final_classification = models.CharField(max_length=200)
+    minimum_score = models.IntegerField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ["final_classification", "minimum_score"]
+
+    def __str__(self):
+        return f"{self.final_classification} - minimum score {self.minimum_score}"
 
 
 class CategorySortOrder(models.Model):
@@ -157,7 +196,7 @@ class ClassifyVariantInstance(PolymorphicModel):
     """
     variant = models.ForeignKey("ClassifyVariant", on_delete=models.CASCADE)
     guideline = models.ForeignKey("Guideline", on_delete=models.CASCADE)
-    final_class = models.CharField(max_length=2, choices=CLASSIFICATION_CHOICES, blank=True, null=True)
+    final_class = models.ForeignKey("FinalClassification", on_delete=models.CASCADE, null=True, blank=True)
     final_score = models.IntegerField(blank=True, null=True)
     final_class_overridden = models.BooleanField(default=False)
     complete_date = models.DateTimeField(blank=True, null=True)
@@ -577,7 +616,7 @@ class Check(models.Model):
     check_complete = models.BooleanField(default=False)
     signoff_time = models.DateTimeField(blank=True, null=True)
     user = models.ForeignKey("auth.User", on_delete=models.PROTECT, blank=True, null=True, related_name="classification_checker")
-    final_class = models.CharField(max_length=2, choices=CLASSIFICATION_CHOICES, blank=True, null=True)
+    final_class = models.ForeignKey("FinalClassification", on_delete=models.CASCADE, null=True, blank=True)
     final_score = models.IntegerField(blank=True, null=True)
     final_class_overridden = models.BooleanField(default=False)
 
@@ -593,36 +632,18 @@ class Check(models.Model):
             if c.applied:
                 score_counter += c.applied_strength.evidence_points
 
-        #TODO this needs moving somewhere more modelly
         # work out class from score counter
-        if self.classification.guideline.guideline == "svig_2024":
-            class_list = OrderedDict(
-                {
-                    "Likely benign": -6,
-                    "VUS": 0,
-                    "Likely oncogenic": 6,
-                    "Oncogenic": 10,
-                }
-            )
-        elif self.classification.guideline.guideline == "acgs_2024":
-            class_list = OrderedDict(
-                {
-                    "Likely benign": -6,
-                    "VUS cold": 0,
-                    "VUS warm": 2,
-                    "VUS hot": 4,
-                    "Likely pathogenic": 6,
-                    "Pathogenic": 10
-                }
-            )
-
+        class_dict = self.classification.guideline.create_final_classification_ordered_dict()
         # loop through in order until the score no longer meets the threshold
         classification = "Benign"
-        for c, score in class_list.items():
+        for c, score in class_dict.items():
             if score_counter >= score:
                 classification = c
 
         return score_counter, classification
+    
+    def get_final_class_display(self):
+        return self.final_class.final_classification
 
     @transaction.atomic
     def update_codes(self, selections):
@@ -675,7 +696,7 @@ class Check(models.Model):
         if reuse_classification_obj:
             self.classification_check = True
             self.classification.reused_classification = reuse_classification_obj
-            self.final_class = reuse_classification_obj.final_class
+            self.final_class = reuse_classification_obj.final_class.final_classification
             self.final_score = reuse_classification_obj.final_score
             self.classification.save()
         else:
@@ -689,16 +710,12 @@ class Check(models.Model):
     def complete_classification_tab(self, override):
         """complete classification tab and same final class into to check model"""
         final_score, final_class = self.update_classification()
+        final_class_obj = self.classification.guideline.final_classifications.filter(final_classification=final_class)[0]
         # if final classification isnt overridden
-        if override == "No":
-            # TODO needs to be from models
-            class_dict = dict(map(reversed, CLASSIFICATION_CHOICES))
-            self.final_class = class_dict[final_class]
-        # if final class is overridden, override variable will contain what class its been overridden to
-        else:
-            self.final_class = override
+        if override != "No":
             self.final_class_overridden = True
-
+        else:
+            self.final_class = final_class_obj
         self.classification_check = True
         self.final_score = final_score
         self.save()

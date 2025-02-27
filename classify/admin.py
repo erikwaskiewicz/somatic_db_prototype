@@ -6,7 +6,7 @@ from .models import *
 @admin.register(Guideline)
 class GuidelineAdmin(admin.ModelAdmin):
     search_fields = ["guideline"]
-    filter_horizontal = ["criteria"]
+    filter_horizontal = ["criteria", "final_classifications"]
 
 @admin.register(ClassificationCriteria)
 class ClassificationCriteriaAdmin(admin.ModelAdmin):
@@ -66,3 +66,8 @@ class CheckAdmin(admin.ModelAdmin):
 @admin.register(CodeAnswer)
 class CodeAnswerAdmin(admin.ModelAdmin):
     search_fields = ["code", "check_object"]
+
+@admin.register(FinalClassification)
+class FinalClassificationAdmin(admin.ModelAdmin):
+    search_fields = ["final_classification"]
+    list_display = ["final_classification", "minimum_score"]

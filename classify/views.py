@@ -7,8 +7,6 @@ from .models import *
 from .forms import *
 
 from analysis.models import VariantPanelAnalysis
-from somatic_variant_db.settings import CLASSIFICATION_CHOICES
-
 
 import json
 
@@ -86,10 +84,11 @@ def classify(request, classification):
 
     # load in forms and add to context
     previous_class_choices = classification_obj.get_previous_classification_choices()
+    classification_options = classification_obj.guideline.create_final_classification_tuple()
     context["forms"] = {
         "complete_check_info_form": CompleteCheckInfoForm(),
         "complete_previous_class_form": CompletePreviousClassificationsForm(previous_class_choices=previous_class_choices),
-        "complete_classification_form": CompleteClassificationForm(),
+        "complete_classification_form": CompleteClassificationForm(classification_options=classification_options),
         "complete_analysis_form": CompleteAnalysisForm(),
         "reopen_check_info_form": ReopenCheckInfoForm(),
         "reopen_previous_class_form": ReopenPreviousClassificationsForm(),
@@ -138,7 +137,8 @@ def classify(request, classification):
 
         # button to complete classification
         if "complete_classification" in request.POST:
-            complete_classification_form = CompleteClassificationForm(request.POST)
+            complete_classification_form = CompleteClassificationForm(request.POST, 
+                                                                      classification_options=classification_options)
             if complete_classification_form.is_valid():
                 override = complete_classification_form.cleaned_data["override"]
                 current_check_obj.complete_classification_tab(override)

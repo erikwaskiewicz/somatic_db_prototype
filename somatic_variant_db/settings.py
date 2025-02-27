@@ -149,17 +149,3 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = f'/{URL_PREFIX}login/'
-
-# TODO classification settings - need to make into models?
-CLASSIFICATION_CHOICES = (
-    ('B', 'Benign'),
-    ('LB', 'Likely benign'),
-    ('V', 'VUS'),
-    ('VC', 'VUS cold'),
-    ('VW', 'VUS warm'),
-    ('VH', 'VUS hot'),
-    ('LO', 'Likely oncogenic'),
-    ('O', 'Oncogenic'),
-    ('LP', 'Likely pathogenic'),
-    ('P', 'Pathogenic'),
-)
