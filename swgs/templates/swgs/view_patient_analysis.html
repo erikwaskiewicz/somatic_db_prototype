@@ -5,14 +5,16 @@
 <div class="container-fluid breadcrumbs-custom">
   <div class="container">
     <ol class="breadcrumb" style="background-color: transparent;">
-      <li class="breadcrumb-item"><a href="{% url 'home' %}"><span class="fa fa-home"></span></a></li>
-      <li class="breadcrumb-item active"> Patient Analysis</li>
+      <li class="breadcrumb-item"><a href="{% url 'home_swgs' %}"><span class="fa fa-home"></span></a></li>
+      <li class="breadcrumb-item"><a href="{% url 'view_patient_analysis'}"></a> Patient Analysis</li>
+      <li class="breadcrumb-item"> !REPLACE with Patient Identifier </li>
     </ol>
   </div>
 </div>
 {% endblock %}
 
 {% block content %}
+
 <div class="container">
   <h3>Variants for tumour sample {{ patient_analysis.tumour_sample.sample_id }} and germline sample {{ patient_analysis.germline_sample.sample_id }}</h3>
   <h5>Variants have been filtered in the following way:</h5>
@@ -309,6 +311,117 @@
           }
       });
     })
+
+<div class="container-fluid">
+
+  <ul class="nav nav-tabs nav-justified">
+  
+    <!-- patient summary and QC information -->
+    <li class="nav-item">
+      <a class="nav-link section-button active" href="#details" data-target="details">Patient Details and QC</a>
+    </li>
+      
+    <!-- Coverage -->
+    <li class="nav-item">
+      <a class="nav-link section-button" href="#coverage" data-target="coverage">Coverage</a>
+    </li>
+
+    <!-- SNVs -->
+    <li class="nav-item">
+      <a class="nav-link section-button" href="#snvs" data-target="snvs">SNVs & Indels</a>
+    </li>
+
+    <!-- CNVs -->
+    <li class="nav-item">
+      <a class="nav-link section-button" href="#cnvs" data-target="cnvs">CNVs</a>
+    </li>
+
+    <!-- Fusions -->
+    <li class="nav-item">
+      <a class="nav-link section-button" href="#fusions" data-target="fusions">Fusions</a>
+    </li>
+
+    <!-- MDT Notes -->
+    <li class="nav-item">
+      <a class="nav-link section-button" href="#mdt" data-target="mdt">MDT Notes</a>
+    </li>
+
+    <!-- Analysis and Checks -->
+    <li class="nav-item">
+      <a class="nav-link section-button" href="#checks" data-target="checks">Checks and Report</a>
+    </li>
+    </ul>
+</div>
+
+<!-- load in each section from template -->
+<div class="container" id="details">{% include 'swgs/view_patient_analysis_details.html' %}</div>
+<div class="container" id="coverage">{% include 'swgs/view_patient_analysis_coverage.html' %}</div>
+<div class="container" id="snvs">{% include 'swgs/view_patient_analysis_snvs.html' %}</div>
+<div class="container" id="cnvs">{% include 'swgs/view_patient_analysis_cnvs.html' %}</div>
+<div class="container" id="fusions">{% include 'swgs/view_patient_analysis_fusions.html' %}</div>
+<div class="container" id="mdt">{% include 'swgs/view_patient_analysis_mdt.html' %}</div>
+<div class="container" id="checks">{% include 'swgs/view_patient_analysis_checks.html' %}</div>
+
+<!--------------------------------------------------------------------------------------- 
+    Javascript
+---------------------------------------------------------------------------------------->
+<script>
+
+  // function to clear all sections
+  function clear_sections(sections) {
+      var i;
+      for (i=0; i<sections.length; i++) {
+          $(sections[i]).hide();
+      };
+  };
+
+
+  // function to show specific section
+  function show_section(target, sections) {
+      // clear all sections content
+      clear_sections(sections);
+      // get button for section
+      for (i=0; i<$('.section-button').length; i++) {
+          var temp = '#' + $('.section-button')[i].dataset.target;
+          if ( target == temp ) {
+              var section_button = $('.section-button')[i];
+          };
+      };
+      // clear active class from all, then add to current button
+      $('.section-button').removeClass('active');
+      $(section_button).addClass('active');
+      // add section content
+      $(target).fadeIn(200);
+  };
+
+
+  // get a list of section buttons
+  var i; var sections_list = [];
+  for (i=0; i<$('.section-button').length; i++) {
+      sections_list.push('#' + $('.section-button')[i].dataset.target);
+  };
+
+
+  // page loadup - load section after hash otherwise load overview
+  clear_sections(sections_list);
+  if ( sections_list.includes(window.location.hash)) {
+      show_section(window.location.hash, sections_list);
+  } else {
+      $("#details").fadeIn(200)
+  };
+
+
+  // handler for section button click
+  $('.section-button').click(function() {
+      var target = '#' + $(this).data('target');
+      show_section(target, sections_list);
+  });
+
+  // allow tooltips
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
+
 </script>
 
 {% endblock %}
