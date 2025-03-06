@@ -11,15 +11,18 @@ from django.shortcuts import get_object_or_404
 from .forms import (NewVariantForm, SubmitForm, VariantCommentForm, UpdatePatientName, 
     CoverageCheckForm, FusionCommentForm, SampleCommentForm, UnassignForm, PaperworkCheckForm, 
     ConfirmPolyForm, ConfirmArtefactForm, AddNewPolyForm, AddNewArtefactForm, AddNewFusionArtefactForm, 
-    ManualVariantCheckForm, ReopenForm, ChangeLimsInitials, EditedPasswordChangeForm, EditedUserCreationForm, NewFusionForm)
+    ManualVariantCheckForm, ReopenForm, ChangeLimsInitials, EditedPasswordChangeForm, EditedUserCreationForm, NewFusionForm,SelfAuditSubmission)
 from .utils import (get_samples, unassign_check, reopen_check, signoff_check, make_next_check, 
     get_variant_info, get_coverage_data, get_sample_info, get_fusion_info, get_poly_list, get_fusion_list, 
-    create_myeloid_coverage_summary, variant_format_check, breakpoint_format_check, lims_initials_check)
+    create_myeloid_coverage_summary, variant_format_check, breakpoint_format_check, lims_initials_check, validate_variant)
 from .models import *
 
+import csv
 import json
 import os
 import pdfkit
+import datetime
+
 
 def signup(request):
     """
@@ -37,9 +40,9 @@ def signup(request):
         if signup_form.is_valid():
 
             # get data from form
-            username = signup_form.cleaned_data.get('username')
-            raw_password = signup_form.cleaned_data.get('password1')
-            lims_initials = signup_form.cleaned_data.get('lims_initials')
+            username = signup_form.cleaned_data('username')
+            raw_password = signup_form.cleaned_data('password1')
+            lims_initials = signup_form.cleaned_data('lims_initials')
 
             # check if LIMS initials already exists
             initials_check, warning_message = lims_initials_check(lims_initials)
@@ -80,6 +83,127 @@ def home(request):
     """
     return render(request, 'analysis/home.html', {})
 
+
+@login_required
+def self_audit(request):
+    """
+    Page where staff can view checks they have previously performed between specified dates with a variety of filters.
+    """
+    
+    # identify and store current user as a variable
+    username = request.user.username
+    
+    #empty context dict
+    context = {
+                'self_audit_form': SelfAuditSubmission(),
+                'check_data': [],
+            }
+    no_checks = 0
+    all_check_data = []
+    warnings = []
+    submit_check = "2"
+    #  when button is pressed
+    if request.method == 'POST':
+        
+        if 'which_assays' in request.POST:
+
+            self_audit_form = SelfAuditSubmission(request.POST)
+            
+            if self_audit_form.is_valid():
+                submit_check = self_audit_form.cleaned_data['submit_check']
+                start_date = self_audit_form.cleaned_data['start_date']
+                end_date = self_audit_form.cleaned_data['end_date']
+                which_assays = self_audit_form.cleaned_data['which_assays']
+
+                # filter to show only checks performed by current user
+                checks = Check.objects.filter(user__username = username, status__in = ["C", "F"])
+                for c in checks:
+
+                    # include marker
+                    include = True
+                        
+                    # see if within date specified with drop down menus
+                    within_date = c.signoff_time
+                    within_date = within_date.date()
+                    assay_type = c.analysis.panel.assay
+
+                    if within_date == None:
+                        include = False
+                    else:
+                        within_date = start_date <= within_date <= end_date
+                        if within_date:
+                            include = True
+                        else:
+                            include = False
+
+                    # check that the correct assays are displayed
+                    if assay_type in which_assays and include == True:
+                        include = True
+                    else:
+                        include = False
+                    
+                    # want to get check data here
+                    if include:
+                        no_checks += 1
+                        check_data = {
+                            'Worksheet': c.analysis.worksheet.ws_id,
+                            'Assay': c.analysis.worksheet.assay,
+                            'Date_Checked': c.signoff_time.strftime('%d-%b-%Y'),
+                            'Checker': username,
+                            'Sample': c.analysis.sample.sample_id,
+                            'Overall_Comments': c.overall_comment,
+                            'SVD_Link': f'http://127.0.0.1:8000/analysis/{c.analysis.id}#report'
+                        }
+
+                        all_check_data.append(check_data)
+
+                context['no_checks'] = no_checks
+                context['check_data'] = all_check_data
+
+
+        if "download_submit" in request.POST:
+            start_date = self_audit_form.cleaned_data['start_date']
+            end_date = self_audit_form.cleaned_data['end_date']
+            submit_check = self_audit_form.cleaned_data['submit_check']
+            response = HttpResponse(content_type="text/csv")
+            response[
+                    "Content-Disposition"
+            ] = f'attachment; filename={username}_{start_date}-{end_date}_checks.csv'
+
+            fieldnames = [
+                'Worksheet',                            
+                'Assay',
+                'Date_Checked',
+                'Checker',
+                'Sample',
+                'Overall_Comments',
+                'SVD_Link',
+            ]
+
+            writer = csv.DictWriter(response, fieldnames=fieldnames)
+            writer.writeheader()
+
+            for checks in all_check_data:
+
+                writer.writerow(checks)
+
+            if submit_check != "1":
+                warnings.append('Make sure you check the parameters are set and the tickboxes are ticked.')
+
+                return render(request, 'analysis/self_audit.html', {'self_audit_form': self_audit_form, 'warning': warnings})
+            
+            else:
+                return response
+
+        if submit_check != "1":
+            warnings.append('Make sure you check the parameters are set and the tickboxes are ticked.')
+
+            return render(request, 'analysis/self_audit.html', {'self_audit_form': self_audit_form, 'warning': warnings})
+            
+        else:
+            return render(request, 'analysis/self_audit.html', context)
+
+    return render(request, 'analysis/self_audit.html', context)
 
 def ajax_num_assigned_user(request, user_pk):
     """
@@ -268,6 +392,7 @@ def view_samples(request, worksheet_id=None, user_pk=None):
     Only one of the optional args will ever be passed in, each from different URLs, 
     this will control whether a worksheet or a user is displayed
     """
+
     # start context dictionary
     context = {
         'unassign_form': UnassignForm(),
@@ -314,6 +439,66 @@ def view_samples(request, worksheet_id=None, user_pk=None):
     ####################################
     #  If any buttons are pressed
     ####################################
+
+    if request.method == 'GET':
+
+        # whole worksheet coverage tsv download
+        if 'download-run-coverage' in request.GET:
+
+            # Create a Django response object, and specify content_type as tsv
+            filename = f"{worksheet_id}_coverage.tsv"
+            response = HttpResponse(content_type='text/tab-separated-values')
+            response['Content-Disposition'] = f'attachment; filename={filename}'
+
+            # Create a CSV writer object and write the header
+            writer = csv.writer(response, delimiter='\t')
+            writer.writerow([
+                'Sample ID',
+                'Panel',
+                'Gene',
+                'Percent Coverage 135x',
+                'Percent Coverage 270x',
+                'Percent Coverage 500x',
+                'Percent Coverage 1000x',
+            ])
+
+            # loop through all samples and load in sample data
+            for sample in samples:
+                sample_data = get_sample_info(sample)
+
+                # only process samples that look at SNVs
+                if sample_data['panel_obj'].show_snvs == True:
+                    coverage_data = get_coverage_data(sample, sample_data['panel_obj'].depth_cutoffs)
+
+                    # Making sure the sample ID isn't repeated in the csv
+                    sample_id_written = False
+
+                    # output % coverage per gene at each coverage threshold
+                    for gene, coverage in coverage_data['regions'].items():
+
+                        # set sample and panel output based on if its the first occurance for the sample
+                        if not sample_id_written:
+                            sample_id_out = sample_data['sample_id']
+                            panel_out = sample_data['panel']
+                            sample_id_written = True
+
+                        else:
+                            sample_id_out = ''
+                            panel_out = ''
+
+                        # write to file
+                        writer.writerow([
+                            sample_id_out,
+                            panel_out,
+                            gene,
+                            coverage['percent_135x'],
+                            coverage['percent_270x'],
+                            coverage['percent_500x'],
+                            coverage['percent_1000x'],
+                        ])
+
+            return response
+
     if request.method == 'POST':
         # if unassign modal button is pressed
         if 'unassign' in request.POST:
@@ -896,19 +1081,28 @@ def view_polys(request, list_name):
                 context['success'].append(f'Variant {variant} added to poly list')
 
         # if add new poly button is pressed
-        if 'variant' in request.POST:
+        if 'chrm' in request.POST:
             add_new_form = AddNewPolyForm(request.POST)
 
             if add_new_form.is_valid():
 
                 # get form data
-                variant = add_new_form.cleaned_data['variant']
+                chrm = add_new_form.cleaned_data['chrm']
+                position = add_new_form.cleaned_data['position']
+                ref = add_new_form.cleaned_data['ref']
+                alt = add_new_form.cleaned_data['alt']
                 comment = add_new_form.cleaned_data['comment']
             
-                # wrap in try/ except to handle when a variant doesnt match the input
-                try:
+                # check variant format is correct using variant validator
+                build = 'GRCh' + str(genome)
+                validation_error = validate_variant(chrm, position, ref, alt, build)
+                if validation_error:
+                    context['warning'].append(f'{validation_error}')
+                else:
+                    variant = chrm + ':' + str(position) + ref + '>' + alt
+
                     # load in variant and variant to list objects
-                    variant_obj = Variant.objects.get(variant=variant, genome_build=genome)
+                    variant_obj, _ = Variant.objects.get_or_create(variant=variant, genome_build=genome)
                     variant_to_variant_list_obj, created = VariantToVariantList.objects.get_or_create(
                         variant_list = poly_list,
                         variant = variant_obj,
@@ -932,10 +1126,6 @@ def view_polys(request, list_name):
                     confirmed_list, checking_list = get_poly_list(poly_list, request.user)
                     context['confirmed_list'] = confirmed_list
                     context['checking_list'] = checking_list
-
-                # throw error if there isnt a variant matching the input
-                except Variant.DoesNotExist:
-                    context['warning'].append(f'Cannot find variant matching {variant}, have you selected the correct genome build?')
 
     # render the page
     return render(request, 'analysis/view_polys.html', context)
@@ -1005,24 +1195,33 @@ def view_artefacts(request, list_name):
                 context['success'].append(f'Variant {variant} added to artefact list')
 
         # if add new artefact button is pressed
-        if 'variant' in request.POST:
+        if 'chrm' in request.POST:
             add_new_form = AddNewArtefactForm(request.POST)
 
             if add_new_form.is_valid():
 
                 # get form data
-                variant = add_new_form.cleaned_data['variant']
-                comment = add_new_form.cleaned_data['comment']
+                chrm = add_new_form.cleaned_data['chrm']
+                position = add_new_form.cleaned_data['position']
+                ref = add_new_form.cleaned_data['ref']
+                alt = add_new_form.cleaned_data['alt']
                 vaf_cutoff = add_new_form.cleaned_data['vaf_cutoff']
+                comment = add_new_form.cleaned_data['comment']
 
-                # wrap in try/ except to handle when a variant doesnt match the input
-                try:
+                # Check variant format is correct using variant validator
+                build = 'GRCh' + str(genome)
+                validation_error = validate_variant(chrm, position, ref, alt, build)
+                if validation_error:
+                    context['warning'].append(f'{validation_error}')
+                else:
+
+
                     # load in variant and variant to list objects
-                    variant_obj = Variant.objects.get(variant=variant, genome_build=genome)
+                    variant_obj, _ = Variant.objects.get_or_create(variant=variant, genome_build=genome)
                     variant_to_variant_list_obj, created = VariantToVariantList.objects.get_or_create(
                         variant_list = artefact_list,
                         variant = variant_obj,
-                    )
+                        )
 
                     # add user info if a new model is created
                     if created:
@@ -1032,7 +1231,7 @@ def view_artefacts(request, list_name):
                         variant_to_variant_list_obj.vaf_cutoff = vaf_cutoff
                         variant_to_variant_list_obj.save()
 
-                        # give success message
+                       # give success message
                         context['success'].append(f'Variant {variant} added to artefact checking list')
 
                     # throw error if already in poly list
@@ -1043,10 +1242,6 @@ def view_artefacts(request, list_name):
                     confirmed_list, checking_list = get_poly_list(artefact_list, request.user)
                     context['confirmed_list'] = confirmed_list
                     context['checking_list'] = checking_list
-
-                # throw error if there isnt a variant matching the input
-                except Variant.DoesNotExist:
-                    context['warning'].append(f'Cannot find variant matching {variant}, have you selected the correct genome build?')
 
     # render the page
     return render(request, 'analysis/view_artefacts.html', context)
@@ -1180,6 +1375,7 @@ def user_settings(request):
     """
     context = {
         'lims_form': ChangeLimsInitials(),
+        'self_audit_form': SelfAuditSubmission(),
         'warning': []
     }
 

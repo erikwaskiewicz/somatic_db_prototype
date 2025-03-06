@@ -1,9 +1,10 @@
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit
-from crispy_forms.bootstrap import Field, FieldWithButtons, StrictButton
+from crispy_forms.layout import Layout, Submit, Field, Div
+from crispy_forms.bootstrap import Field, FieldWithButtons, StrictButton, InlineCheckboxes
 from django.contrib.auth.forms import PasswordChangeForm, UserCreationForm
-
+from .models import Panel
+import datetime
 
 class UnassignForm(forms.Form):
     """
@@ -270,7 +271,7 @@ class ManualVariantCheckForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
 
-        # regions passed in as list
+        # make regions passed in as list
         self.regions = kwargs.pop('regions')
 
         super(ManualVariantCheckForm, self).__init__(*args, **kwargs)
@@ -333,7 +334,10 @@ class AddNewPolyForm(forms.Form):
     Add a variant to the poly list
 
     """
-    variant = forms.CharField()
+    chrm = forms.CharField(label='Chromosome')
+    position = forms.IntegerField(label='Genomic coordinates')
+    ref = forms.CharField(label='Reference nucleotide')
+    alt = forms.CharField(label='Alt nucleotide')
     comment = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 4}),
         label='Comments'
@@ -342,8 +346,11 @@ class AddNewPolyForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(AddNewPolyForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.fields['chrm'].widget.attrs['placeholder'] = 'e.g. 7'
+        self.fields['position'].widget.attrs['placeholder'] = 'e.g. 140453136'
+        self.fields['ref'].widget.attrs['placeholder'] = 'e.g. A'
+        self.fields['alt'].widget.attrs['placeholder'] = 'e.g. T'
         self.fields['comment'].widget.attrs['placeholder'] = 'Add comments or evidence to support this variant being a poly\ne.g. filepaths to documented evidence, sample IDs to check...'
-        self.fields['variant'].widget.attrs['placeholder'] = 'Must be in genomic format e.g. 7:140453136A>T'
         self.helper.form_method = 'POST'
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-25')
@@ -354,7 +361,10 @@ class AddNewArtefactForm(forms.Form):
     """
     Add a variant to the artefact list
     """
-    variant = forms.CharField()
+    chrm = forms.CharField(label='Chromosome')
+    position = forms.IntegerField(label='Genomic coordinates')
+    ref = forms.CharField(label='Reference nucleotide')
+    alt = forms.CharField(label='Alt nucleotide')
     vaf_cutoff = forms.DecimalField(label='VAF cutoff', min_value=0, max_value=100, decimal_places=5)
     comment = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 4}),
@@ -364,10 +374,13 @@ class AddNewArtefactForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(AddNewArtefactForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.fields['comment'].help_text = 'Add comments or evidence to support this variant being an artefact\ne.g. filepaths to documented evidence, sample IDs to check...'
-        self.fields['variant'].help_text = 'Must be in genomic format e.g. 7:140453136A>T'
+        self.fields['chrm'].widget.attrs['placeholder'] = 'e.g. 7'
+        self.fields['position'].widget.attrs['placeholder'] = 'e.g. 140453136'
+        self.fields['ref'].widget.attrs['placeholder'] = 'e.g. A'
+        self.fields['alt'].widget.attrs['placeholder'] = 'e.g. T'
         self.fields['vaf_cutoff'].initial = 0.0
-        self.fields['vaf_cutoff'].help_text = 'Only variants below this value will be filtered as artefacts. If no cutoff is required then leave as 0.'
+        self.fields['vaf_cutoff'].widget.attrs['placeholder'] = 'Only variants below this value will be filtered as artefacts. If no cutoff is required then leave as 0.'
+        self.fields['comment'].widget.attrs['placeholder'] = 'Add comments or evidence to support this variant being an artefact\ne.g. filepaths to documented evidence, sample IDs to check...'
         self.helper.form_method = 'POST'
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-25')
@@ -444,4 +457,68 @@ class EditedUserCreationForm(UserCreationForm):
         self.helper.form_method = 'POST'
         self.helper.add_input(
             Submit('submit', 'Submit', css_class='btn btn-info w-100')
+        )
+
+class SelfAuditSubmission(forms.Form):
+    """
+    Choose Assay and date range for self audit view
+
+    """
+
+    # Starting parameters for the dropdowns
+    current_year = datetime.datetime.now().year
+    current_month = datetime.datetime.now().month
+    current_day = datetime.datetime.now().day
+    last_year = current_year - 1
+
+    # Setting range for year choice
+    year_choices = range(2019, (current_year + 1))
+    
+    # Default to present day and 1 year ago
+    initial_start_date = datetime.datetime(last_year, current_month, current_day)
+    initial_end_date = datetime.datetime.now()
+    
+    start_date = forms.DateField(
+        initial = initial_start_date,
+         widget = forms.SelectDateWidget(years = year_choices,attrs={
+            'style': 'width: 150px',
+        }
+        )
+    )
+    end_date = forms.DateField(
+        initial = initial_end_date,
+        widget = forms.SelectDateWidget(years = year_choices,attrs={
+            'style': 'width: 150px',
+        }
+        )  
+    )
+
+    which_assays = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
+     choices=Panel.ASSAY_CHOICES,
+     required=True,
+    )
+    
+    # Radioselect for submission
+    submit_check = forms.ChoiceField(widget=forms.RadioSelect,
+     choices=[('1', 'I have selected the dates and assays')]
+     )
+    
+    def __init__(self, *args, **kwargs):
+        super(SelfAuditSubmission, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Div(
+                Field('start_date', css_class='form-control', wrapper_class='col-md-4'),
+                Field('end_date', css_class='form-control', wrapper_class='col-md-4'),
+                css_class='row'
+            ),
+            InlineCheckboxes('which_assays'),
+            Field('submit_check')
+            )
+        self.helper.form_method = 'POST'
+        self.helper.add_input(
+            Submit('display_submit', 'Search', css_class='btn btn-info')  
+        )
+        self.helper.add_input(
+            Submit('download_submit', 'Download', css_class='btn btn-success')
         )
