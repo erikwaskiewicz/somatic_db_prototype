@@ -112,6 +112,10 @@ class TestCheckStatusUpdate(TestCase):
             ntc_contamination = 0.02
         )
 
+        tumour_purity_obj = QCTumourPurity.objects.create(
+            tumour_purity = 0.95
+        )
+
         patient_analysis_obj = PatientAnalysis.objects.create(
             patient = patient_obj,
             tumour_sample = tumour_sample,
@@ -124,7 +128,8 @@ class TestCheckStatusUpdate(TestCase):
             relatedness = relatedness_obj,
             somatic_vaf_distribution = somatic_vaf_obj,
             tumour_in_normal_contamination =  tumour_in_normal,
-            tumour_ntc_contamination = tumour_ntc_obj
+            tumour_ntc_contamination = tumour_ntc_obj,
+            tumour_purity = tumour_purity_obj
         )
 
         variant_instance = GermlineVariantInstance.objects.create(
