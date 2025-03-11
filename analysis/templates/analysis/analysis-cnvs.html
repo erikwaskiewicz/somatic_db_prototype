@@ -1,0 +1,336 @@
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% if sample_data.panel_obj.show_fusion_coverage %}
+<div class="container">
+  <div class="row">
+    <div class="col-6">
+      {% if sample_data.total_reads >= 9000000 %}
+      <div class="alert alert-success"><p><b>Number of reads in sample:</b> {{ sample_data.total_reads | intcomma }}</p></div>
+    
+      {% else %}
+      <div class="alert alert-danger"><p><b>Number of reads in sample:</b> {{ sample_data.total_reads | intcomma }}</p></div>
+      
+      {% endif %}
+    </div>
+    <div class="col-6">
+      <div class="alert alert-secondary">
+        <p><b>Number of reads in NTC:</b> {{ sample_data.total_reads_ntc | intcomma }}  ({{ sample_data.percent_reads_ntc }}%)</p>
+      </div>
+    </div>
+  </div>
+</div>
+<br>
+{% endif %}
+
+
+<table id="fusions-table" class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th scope="col">Fusion</th>
+      <th scope="col">HGVS</th>
+      <th scope="col">Fusion supporting reads</th>
+      {% if sample_data.panel_obj.show_fusion_vaf %}<th scope="col">VAF</th>{% endif %}
+      <!--<th scope="col">Reference reads<br>(Gene 1 | Gene 2)</th>-->
+      <th scope="col">Left breakpoint</th>
+      <th scope="col">Right breakpoint</th>
+      <th scope="col">NTC</th>
+      <th scope="col">IGV</th>
+      {% if 'IGV' in sample_data.checks.current_status %}
+      <th scope="col">Action</th>
+      {% endif %}
+      <th><span class="fa fa-comment-alt"></span></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for v in fusion_data.fusion_calls %}
+
+    <tr>
+      <td class="variant-pk" style="display:none">{{ v.pk }}</td>
+      <td>
+        <p style="display:inline" id="igv-{{ v.pk }}">{{ v.fusion_genes }} </p><button class="btn btn-sm btn-info" onclick="copyToClipboard('#igv-{{ v.pk }}')"><span class="fa fa-copy"></span></button>
+        {% if v.manual_upload %}
+          <span class="badge badge-warning badge-pill">Manual</span>
+        {% endif %}
+      </td>
+      <td>{{ v.fusion_hgvs }}</td>
+      <td>{{ v.fusion_supporting_reads }}</td>
+      {% if sample_data.panel_obj.show_fusion_vaf %}<td>{{ v.vaf }}%</td>{% endif %}
+      <td>{{ v.left_breakpoint }}
+      {% if v.genome_build == 37 %}
+       <span class = "badge badge-info badge-pill">GRCh{{ v.genome_build }}
+       {% elif v.genome_build == 38 %}
+       <span class = "badge badge-success badge-pill">GRCh{{ v.genome_build }}
+       {% endif %}
+      </td>
+      <td>{{ v.right_breakpoint }}
+      {% if v.genome_build == 37 %}
+       <span class = "badge badge-info badge-pill">GRCh{{ v.genome_build }}
+       {% elif v.genome_build == 38 %}
+       <span class = "badge badge-success badge-pill">GRCh{{ v.genome_build }}
+       {% endif %}
+      </td>
+      <td>
+        <!--{{ v.this_run.count }} of {{ v.this_run.total }} samples<br>-->
+        
+        {% if v.this_run.ntc %}
+        <b>Present in NTC</b> <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
+
+        {% else %}
+        Not in NTC
+
+        {% endif %}
+      </td>
+      <td>
+        {% for check in v.checks %}
+          {{ forloop.counter }}: {{ check }}<br>
+        {% endfor %}
+      </td>
+
+      {% if 'IGV' in sample_data.checks.current_status %}
+      <td class=genuine-dropdown>
+        <select name="variant" id="variant">
+          {% for option in fusion_data.check_options %}
+            {% if v.latest_check.decision == option.0 %}
+            <option value="{{ option.0 }}" selected>{{ option.1 }}</option>
+            {% else %}
+            <option value="{{ option.0 }}">{{ option.1 }}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+
+        {% if v.latest_check.decision == '-'  or not v.latest_checks_agree %}
+        <span class="fa fa-exclamation-triangle" style="color:firebrick"></span>
+        {% endif %}
+      </td>
+      {% endif %}
+
+      <td>
+        <button type="button" data-toggle="modal" data-target="#comments-modal-{{ v.pk }}"
+        {% if v.comments %}
+        class="btn btn-warning">
+        {% else %}
+        class="btn btn-light">
+        {% endif %}
+        {{ v.comments | length }}</button>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+<!-- display buttons if there are calls, message if there are none -->
+{% if fusion_data.fusion_calls %}
+
+  <!-- submit button -->
+  {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail' %}
+  <div class="float-right">
+    <button type="button" class="btn btn-light" data-toggle="modal" data-target="#add-fusion-modal">Add fusion</button>
+    <button type="button" class="btn btn-success fusion-submit" id="fusion-submit">Update selections</button>
+  </div>
+  <br>
+  <br>
+  <br>
+  {% endif %}
+
+{% else %}
+
+<!-- message that there are no fusions in sample -->
+<div class="alert alert-info">
+  No calls in this sample
+</div>
+
+  {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail' %}
+  <div class="float-right">
+    <button type="button" class="btn btn-light" data-toggle="modal" data-target="#add-fusion-modal">Add fusion</button>
+  </div>
+  <br>
+  <br>
+  <br>
+  {% endif %}
+  
+{% endif %}
+
+
+<!-- Artefact list -->
+<div id="accordion">
+  <div class="card">
+    <div class="card-header" id="heading-artefacts">
+      <h5 class="mb-0">
+        <p><b>Filtered calls:</b>&nbsp;&nbsp;Artefacts list
+
+        {% if fusion_data.artefact_count > 0 %}
+        <span class="badge badge-warning">{{ fusion_data.artefact_count }}</span>
+        {% else %}
+        <span class="badge badge-secondary">{{ fusion_data.artefact_count }}</span>
+        {% endif %}
+
+        &nbsp;&nbsp;<button class="btn btn-outline-dark" data-toggle="collapse" data-target="#artefacts" aria-expanded="true" aria-controls="artefacts"><span class="fa fa-search"></span> Show/ hide</button>
+        </p>
+      </h5>
+    </div>
+
+    <div id="artefacts" class="collapse" aria-labelledby="heading-artefacts" data-parent="#accordion">
+      <div class="card-body">
+
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th class="col-3">Fusion</th>
+              <th class="col-3">Left Breakpoint</th>
+              <th class="col-3">Right Breakpoint</th>
+              <th class="col-3">Fusion Supporting Reads</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for fusion, fusion_type in fusion_data.filtered_calls %}
+            <tr>
+              <td>
+                {{ fusion.fusion_genes }}<br>
+                {% if fusion.genome_build == 37 %}
+                <span class="badge badge-info badge-pill">GRCh{{ fusion.genome_build }}</span>
+                {% elif fusion.genome_build == 38 %}
+                <span class="badge badge-success badge-pill">GRCh{{ fusion.genome_build }}</span>
+                {% endif %}
+                <span class="badge badge-secondary badge-pill">Artefacts</span>
+              </td>
+              <td>{{ fusion.left_breakpoint }}</td>
+              <td>{{ fusion.right_breakpoint }}</td>
+              <td>{{ fusion.fusion_supporting_reads }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Comments Modal -->
+{% for v in fusion_data.fusion_calls %}
+<div class="modal fade" id="comments-modal-{{ v.pk }}" tabindex="-1" role="dialog" aria-labelledby="comments-modal-label" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="comments-modal-label">Comments</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {% if v.comments %}
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th scope="col">Comment</th>
+              <th scope="col">User</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+            {% for c in v.comments %}
+            <tr>
+              <td class="col-9">{{ c.comment | linebreaks }}</td>
+              <td class="col-3">{{ c.user }}<br>{{ c.updated }}</td>
+            </tr>
+            {% endfor %}
+
+          </tbody>
+        </table>
+
+        {% else %}
+        <div class="alert alert-secondary">
+          No comments
+        </div>
+
+        {% endif %}
+
+        <!-- comment form here -->
+        {% if sample_data.checks.current_status != 'Complete' and sample_data.checks.current_status != 'Fail'%}
+        {% crispy v.comment_form %}
+        {% endif %}
+
+        <br>
+        <p>Variant ID: {{ v.fusion_instance_pk }}</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+
+<!-- Add fusion modal -->
+<div class="modal fade" id="add-fusion-modal" tabindex="-1" role="dialog" aria-labelledby="add-fusion-modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="add-fusion-modalLabel">Add new fusion</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        {% crispy new_fusion_form %}
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+    // copy IGV coords to clipboard
+    function copyToClipboard(element) {
+        var $temp = $("<input>");
+        $("body").append($temp);
+        $temp.val($(element).text()).select();
+        document.execCommand("copy");
+        $temp.remove();
+    }
+
+    // gather selections from dropdown
+    $(".fusion-submit").click(function(){
+      var rows = $("#fusions-table").children("tbody").children();
+      var selection_dict = {};
+
+      for (var i=0; i<rows.length; i++){
+        // extract required variables
+        var pk = $(rows[i]).children("td.variant-pk").text();
+        var genuine_selection = $(rows[i]).children("td.genuine-dropdown").children().val();
+        // compile into dictionary for individual variant
+        var d = {
+          'genuine_dropdown': genuine_selection,
+        };
+        // add to dictionary for all variants
+        selection_dict[pk] = d
+      }
+
+      // pass dict to JS form for AJAX POST
+      var formData = new FormData();
+      formData.append('csrfmiddlewaretoken',document.getElementsByName('csrfmiddlewaretoken')[0].value);
+      formData.append('selections', JSON.stringify(selection_dict));
+      formData.append('sample_pk', "{{ sample_data.sample_pk }}");
+      formData.append('variant_type', "fusion");
+
+      $.ajax({
+          url: "{% url 'ajax' %}",
+          type: 'POST',
+          data: formData,
+          contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
+          processData: false, // NEEDED, DON'T OMIT THIS
+          success: function(data) {
+              window.location = "{% url 'analysis_sheet' sample_data.sample_pk %}";
+          },
+          failure: function(data) {
+              alert('Got an error');
+          }
+      });
+    })
+</script>
